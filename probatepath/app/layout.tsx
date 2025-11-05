@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import "./globals.css";
 import { Navbar } from "./components/navbar";
 
@@ -6,7 +8,11 @@ export const metadata = {
   description: "BC probate documents in hours, not weeks.",
 };
 
-export default function RootLayout({ children }) {
+interface RootLayoutProps {
+  children: ReactNode;
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className="min-h-screen bg-white text-gray-900">

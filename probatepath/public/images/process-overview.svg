@@ -1,0 +1,36 @@
+<svg width="640" height="420" viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="processBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f15" />
+      <stop offset="100%" stop-color="#141824" />
+    </linearGradient>
+    <linearGradient id="processAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff6a00" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#ffb703" stop-opacity="0.4" />
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#processBg)" />
+  <g transform="translate(80,80)" fill="none">
+    <rect width="480" height="60" rx="16" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" />
+    <circle cx="30" cy="30" r="18" fill="url(#processAccent)" />
+    <rect x="70" y="18" width="180" height="12" rx="6" fill="rgba(255,255,255,0.18)" />
+    <rect x="70" y="36" width="240" height="10" rx="5" fill="rgba(255,255,255,0.12)" />
+  </g>
+  <g transform="translate(80,180)" fill="none">
+    <rect width="480" height="60" rx="16" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" />
+    <circle cx="450" cy="30" r="18" fill="url(#processAccent)" />
+    <rect x="30" y="18" width="210" height="12" rx="6" fill="rgba(255,255,255,0.18)" />
+    <rect x="30" y="36" width="260" height="10" rx="5" fill="rgba(255,255,255,0.12)" />
+  </g>
+  <g transform="translate(80,280)" fill="none">
+    <rect width="480" height="60" rx="16" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" />
+    <circle cx="30" cy="30" r="18" fill="url(#processAccent)" />
+    <rect x="70" y="18" width="210" height="12" rx="6" fill="rgba(255,255,255,0.18)" />
+    <rect x="70" y="36" width="260" height="10" rx="5" fill="rgba(255,255,255,0.12)" />
+  </g>
+  <path d="M160 140 L320 140" stroke="rgba(255,255,255,0.08)" stroke-width="6" stroke-linecap="round" />
+  <path d="M320 240 L480 240" stroke="rgba(255,255,255,0.08)" stroke-width="6" stroke-linecap="round" />
+  <text x="320" y="380" fill="rgba(255,255,255,0.28)" font-family="Inter, Arial, sans-serif" font-size="18" text-anchor="middle" letter-spacing="4">
+    INTAKE → PREP → FILE
+  </text>
+</svg>

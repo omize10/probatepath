@@ -1,0 +1,18 @@
+<svg width="520" height="320" viewBox="0 0 520 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mapBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1115" />
+      <stop offset="100%" stop-color="#181820" />
+    </linearGradient>
+  </defs>
+  <rect width="520" height="320" fill="url(#mapBg)" />
+  <path d="M140 70 C180 60 220 70 250 100 C282 132 310 148 350 146 C390 144 430 156 460 186 C432 232 392 260 346 268 C300 276 250 264 206 236 C162 208 126 166 112 120 Z" fill="rgba(255,255,255,0.07)" />
+  <path d="M200 120 C230 112 255 128 270 150 C285 172 310 188 336 186 C362 184 388 198 404 220 C384 248 352 264 320 266 C288 268 252 254 222 234 C192 214 170 188 160 158 Z" fill="rgba(255,106,0,0.15)" />
+  <g transform="translate(260,150)">
+    <circle r="26" fill="rgba(255,106,0,0.3)" />
+    <circle r="12" fill="#ff6a00" />
+  </g>
+  <text x="40" y="280" fill="rgba(255,255,255,0.32)" font-family="Inter, Arial, sans-serif" font-size="18" letter-spacing="4">
+    BC COVERAGE — VIRTUAL SUPPORT
+  </text>
+</svg>

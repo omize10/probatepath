@@ -1,0 +1,22 @@
+<svg width="560" height="360" viewBox="0 0 560 360" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="securityBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10121a" />
+      <stop offset="100%" stop-color="#181b29" />
+    </linearGradient>
+    <linearGradient id="shieldAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff6a00" />
+      <stop offset="100%" stop-color="#ffb703" />
+    </linearGradient>
+  </defs>
+  <rect width="560" height="360" fill="url(#securityBg)" />
+  <path d="M280 80 L380 120 L352 214 C336 268 296 300 280 300 C264 300 224 268 208 214 L180 120 Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" stroke-width="4" />
+  <path d="M280 124 L344 148 L328 202 C316 240 288 262 280 262 C272 262 244 240 232 202 L216 148 Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,106,0,0.4)" stroke-width="3" />
+  <path d="M280 164 L312 176 L304 204 C296 228 284 238 280 238 C276 238 264 228 256 204 L248 176 Z" fill="url(#shieldAccent)" opacity="0.65" />
+  <rect x="120" y="90" width="24" height="24" rx="6" fill="rgba(255,255,255,0.1)" />
+  <rect x="120" y="132" width="32" height="32" rx="10" fill="rgba(255,255,255,0.08)" />
+  <rect x="120" y="182" width="40" height="40" rx="12" fill="rgba(255,255,255,0.05)" />
+  <text x="60" y="320" fill="rgba(255,255,255,0.32)" font-family="Inter, Arial, sans-serif" font-size="18" letter-spacing="4">
+    ENCRYPTION • CANADIAN DATA RESIDENCY
+  </text>
+</svg>

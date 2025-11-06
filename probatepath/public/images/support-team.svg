@@ -1,0 +1,30 @@
+<svg width="560" height="360" viewBox="0 0 560 360" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="teamBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f15" />
+      <stop offset="100%" stop-color="#1a1c28" />
+    </linearGradient>
+  </defs>
+  <rect width="560" height="360" fill="url(#teamBg)" />
+  <g transform="translate(120,120)">
+    <circle cx="60" cy="60" r="52" fill="rgba(255,255,255,0.07)" />
+    <circle cx="60" cy="50" r="26" fill="rgba(255,255,255,0.1)" />
+    <path d="M22 92 C30 70 48 58 60 58 C72 58 90 70 98 92 Z" fill="rgba(255,255,255,0.1)" />
+  </g>
+  <g transform="translate(250,120)">
+    <circle cx="60" cy="60" r="52" fill="rgba(255,255,255,0.07)" />
+    <circle cx="60" cy="50" r="26" fill="rgba(255,255,255,0.1)" />
+    <path d="M22 92 C30 70 48 58 60 58 C72 58 90 70 98 92 Z" fill="rgba(255,106,0,0.28)" />
+  </g>
+  <g transform="translate(380,120)">
+    <circle cx="60" cy="60" r="52" fill="rgba(255,255,255,0.07)" />
+    <circle cx="60" cy="50" r="26" fill="rgba(255,255,255,0.1)" />
+    <path d="M22 92 C30 70 48 58 60 58 C72 58 90 70 98 92 Z" fill="rgba(255,255,255,0.1)" />
+  </g>
+  <rect x="90" y="60" width="70" height="16" rx="8" fill="rgba(255,255,255,0.14)" />
+  <rect x="220" y="60" width="90" height="16" rx="8" fill="rgba(255,255,255,0.14)" />
+  <rect x="360" y="60" width="70" height="16" rx="8" fill="rgba(255,255,255,0.14)" />
+  <text x="120" y="310" fill="rgba(255,255,255,0.32)" font-family="Inter, Arial, sans-serif" font-size="18" letter-spacing="4">
+    BC PROBATE SUPPORT TEAM
+  </text>
+</svg>

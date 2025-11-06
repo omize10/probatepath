@@ -1,0 +1,31 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ogBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0b0f" />
+      <stop offset="100%" stop-color="#171926" />
+    </linearGradient>
+    <linearGradient id="ogAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff6a00" />
+      <stop offset="100%" stop-color="#ffb703" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#ogBg)" />
+  <rect x="140" y="140" width="520" height="60" rx="18" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" />
+  <rect x="140" y="220" width="520" height="60" rx="18" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" />
+  <rect x="140" y="300" width="520" height="60" rx="18" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" />
+  <rect x="140" y="420" width="320" height="54" rx="27" fill="url(#ogAccent)" opacity="0.8" />
+  <rect x="480" y="420" width="180" height="54" rx="27" fill="rgba(255,255,255,0.08)" />
+  <g opacity="0.5">
+    <circle cx="900" cy="210" r="140" fill="rgba(255,106,0,0.35)" />
+    <circle cx="1000" cy="420" r="110" fill="rgba(255,255,255,0.06)" />
+  </g>
+  <text x="140" y="110" fill="#ff6a00" font-family="Inter, Arial, sans-serif" font-size="24" letter-spacing="4">
+    PROBATEPATH
+  </text>
+  <text x="140" y="360" fill="#ffffff" font-family="DM Serif Display, Georgia, serif" font-size="72">
+    BC Probate documents in hours.
+  </text>
+  <text x="140" y="500" fill="rgba(255,255,255,0.6)" font-family="Inter, Arial, sans-serif" font-size="20">
+    Fixed 2,500 CAD • Canadian data residency • Executors stay in control
+  </text>
+</svg>

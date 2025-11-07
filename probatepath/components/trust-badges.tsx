@@ -11,7 +11,7 @@ export function TrustBadges({ items, className }: TrustBadgesProps) {
   return (
     <div
       className={cn(
-        "grid gap-4 rounded-3xl border border-white/10 bg-[#111217]/80 p-6 text-sm text-slate-300 sm:grid-cols-2 lg:grid-cols-4",
+        "grid gap-4 rounded-3xl border border-white/10 bg-[#0b1524]/80 p-6 text-sm text-slate-300 sm:grid-cols-2 lg:grid-cols-4",
         className,
       )}
     >

@@ -120,7 +120,7 @@ export default function StepTwoPage() {
                   relationToDeceased: event.target.value as typeof values.relationToDeceased,
                 })
               }
-              className="w-full rounded-2xl border border-white/10 bg-[#0f1115] px-4 py-3 text-sm text-slate-100 shadow-sm transition focus:border-[#ff6a00] focus:outline-none focus:ring-2 focus:ring-[#ff6a00]/30"
+              className="w-full rounded-2xl border border-white/10 bg-[#081127] px-4 py-3 text-sm text-slate-100 shadow-sm transition focus:border-[#ff6a00] focus:outline-none focus:ring-2 focus:ring-[#ff6a00]/30"
             >
               <option value="spouse">Spouse</option>
               <option value="child">Child</option>

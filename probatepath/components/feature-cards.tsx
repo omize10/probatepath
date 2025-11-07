@@ -17,7 +17,7 @@ export function FeatureCards({ features, className }: FeatureCardsProps) {
   return (
     <div className={cn("grid gap-6 sm:grid-cols-2 lg:grid-cols-4", className)}>
       {features.map(({ title, description, icon: Icon }) => (
-        <Card key={title} className="h-full border-white/15 bg-[#111217]/90">
+        <Card key={title} className="h-full border-white/15 bg-[#0b1524]/90">
           <CardHeader className="space-y-5">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-[#ff6a00]/10 text-[#ff6a00]">
               <Icon className="h-5 w-5" />

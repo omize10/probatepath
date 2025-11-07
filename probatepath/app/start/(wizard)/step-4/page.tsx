@@ -72,7 +72,7 @@ export default function StepFourPage() {
                   estateValueRange: event.target.value as typeof values.estateValueRange,
                 })
               }
-              className="w-full rounded-2xl border border-white/10 bg-[#0f1115] px-4 py-3 text-sm text-slate-100 shadow-sm transition focus:border-[#ff6a00] focus:outline-none focus:ring-2 focus:ring-[#ff6a00]/30"
+              className="w-full rounded-2xl border border-white/10 bg-[#081127] px-4 py-3 text-sm text-slate-100 shadow-sm transition focus:border-[#ff6a00] focus:outline-none focus:ring-2 focus:ring-[#ff6a00]/30"
             >
               <option value="<$100k">Under $100,000</option>
               <option value="$100k-$500k">$100,000 – $500,000</option>
@@ -154,6 +154,6 @@ function cnRadio(active: boolean) {
     "rounded-2xl border px-5 py-3 text-sm font-semibold transition sm:flex-1",
     active
       ? "border-[#ff6a00]/50 bg-[#ff6a00]/10 text-white"
-      : "border-white/10 bg-[#0f1115] text-slate-200 hover:border-[#ff6a00]/30",
+      : "border-white/10 bg-[#081127] text-slate-200 hover:border-[#ff6a00]/30",
   ].join(" ");
 }

@@ -170,7 +170,7 @@ export default function HomePage() {
             </li>
           </ul>
         </div>
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#111217]">
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0b1524]">
           <Image
             src="/images/security.svg"
             alt="Stylised illustration of a secure shield representing encrypted storage"
@@ -202,9 +202,9 @@ export default function HomePage() {
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {journeySteps.map((step, index) => (
-            <Card key={step.title} className="border-white/12 bg-[#111217]/90">
+            <Card key={step.title} className="border-white/12 bg-[#0b1524]/90">
               <CardHeader className="space-y-4">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-[#0f1115] text-sm font-semibold text-white">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-[#081127] text-sm font-semibold text-white">
                   {index + 1}
                 </span>
                 <CardTitle className="text-xl text-white">{step.title}</CardTitle>
@@ -256,7 +256,7 @@ export default function HomePage() {
       </Section>
 
       <Section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#111217]">
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0b1524]">
           <Image
             src="/images/support-team.svg"
             alt="Stylised illustration of the ProbatePath support team"
@@ -299,7 +299,7 @@ export default function HomePage() {
         </div>
         <div className="grid gap-4 lg:grid-cols-3">
           {miniFaq.map((faq) => (
-            <Card key={faq.question} className="border-white/12 bg-[#111217]/85">
+            <Card key={faq.question} className="border-white/12 bg-[#0b1524]/85">
               <CardHeader className="space-y-3">
                 <CardTitle className="text-lg text-white">{faq.question}</CardTitle>
                 <CardDescription>{faq.answer}</CardDescription>

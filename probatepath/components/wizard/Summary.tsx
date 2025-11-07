@@ -59,7 +59,7 @@ export function Summary({ draft }: SummaryProps) {
   return (
     <div className="space-y-6">
       {sections.map((section) => (
-        <Card key={section.title} className="border-white/12 bg-[#111217]/90">
+        <Card key={section.title} className="border-white/12 bg-[#0b1524]/90">
           <CardHeader className="flex flex-col gap-4 space-y-0 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-1.5">
               <CardTitle className="text-xl text-white">{section.title}</CardTitle>

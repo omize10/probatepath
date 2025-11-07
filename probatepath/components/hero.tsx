@@ -74,7 +74,7 @@ export function Hero({
       </div>
       {image ? (
         <div className="relative">
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#111217] shadow-[0_45px_120px_-60px_rgba(0,0,0,0.85)]">
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0b1524] shadow-[0_45px_120px_-60px_rgba(0,0,0,0.85)]">
             <Image
               src={image.src}
               alt={image.alt}

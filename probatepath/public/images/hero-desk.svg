@@ -3,7 +3,7 @@
     <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1f1308" />
       <stop offset="50%" stop-color="#14141b" />
-      <stop offset="100%" stop-color="#0b0b0f" />
+      <stop offset="100%" stop-color="#050713" />
     </linearGradient>
     <linearGradient id="accentBar" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#ff6a00" stop-opacity="0.2" />
@@ -15,7 +15,7 @@
   </defs>
   <rect width="720" height="520" fill="url(#heroGradient)" />
   <g opacity="0.7">
-    <rect x="60" y="110" width="420" height="260" rx="24" fill="#111217" stroke="rgba(255,255,255,0.08)" />
+    <rect x="60" y="110" width="420" height="260" rx="24" fill="#0b1524" stroke="rgba(255,255,255,0.08)" />
     <rect x="92" y="150" width="170" height="24" rx="12" fill="url(#accentBar)" />
     <rect x="92" y="190" width="266" height="18" rx="9" fill="rgba(255,255,255,0.16)" />
     <rect x="92" y="222" width="224" height="14" rx="7" fill="rgba(255,255,255,0.12)" />

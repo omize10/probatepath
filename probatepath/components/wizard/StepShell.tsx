@@ -44,7 +44,7 @@ export function StepShell({
   return (
     <form
       className={cn(
-        "space-y-8 rounded-3xl border border-white/10 bg-[#111217]/90 p-8 shadow-[0_50px_140px_-80px_rgba(255,106,0,0.35)]",
+        "space-y-8 rounded-3xl border border-white/10 bg-[#0b1524]/90 p-8 shadow-[0_50px_140px_-80px_rgba(255,106,0,0.35)]",
         className,
       )}
       {...formProps}
@@ -55,7 +55,7 @@ export function StepShell({
         {description ? <p className="max-w-2xl text-sm text-slate-300">{description}</p> : null}
       </div>
       <div className="space-y-6">{children}</div>
-      <div className="space-y-4 rounded-2xl border border-white/10 bg-[#0f1115] p-4 text-xs text-slate-400">
+      <div className="space-y-4 rounded-2xl border border-white/10 bg-[#081127] p-4 text-xs text-slate-400">
         <p>Your progress saves automatically on this device. You can return and finish later anytime.</p>
       </div>
       {customFooter ? (

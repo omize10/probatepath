@@ -42,7 +42,7 @@ export default function ReviewPage() {
         <Summary draft={draft} />
 
         <div className="space-y-2">
-          <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#0f1115] p-4">
+          <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#081127] p-4">
             <input
               id="review-confirm"
               type="checkbox"

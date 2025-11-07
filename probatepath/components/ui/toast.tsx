@@ -113,7 +113,7 @@ function ToastViewport({ toasts, onDismiss }: ToastViewportProps) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
             className={cn(
-              "pointer-events-auto overflow-hidden rounded-2xl border bg-[#111217]/95 p-4 text-sm text-slate-200 shadow-[0_25px_60px_-45px_rgba(0,0,0,0.85)] backdrop-blur",
+              "pointer-events-auto overflow-hidden rounded-2xl border bg-[#0b1524]/95 p-4 text-sm text-slate-200 shadow-[0_25px_60px_-45px_rgba(0,0,0,0.85)] backdrop-blur",
               intent === "success" && "border-[#ff6a00]/30",
               intent === "warning" && "border-[#ffb703]/40",
               intent === "error" && "border-red-500/40"

@@ -16,7 +16,7 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      <Card className="bg-[#111217]/85 p-8">
+      <Card className="bg-[#0b1524]/85 p-8">
         <CardHeader className="space-y-2">
           <CardTitle className="text-2xl text-white">Client portal in development</CardTitle>
           <CardDescription className="text-sm text-slate-300">

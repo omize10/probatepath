@@ -24,7 +24,7 @@ export default function ContactPage() {
       <Section className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
         <ContactForm />
         <aside className="space-y-6">
-          <div className="rounded-3xl border border-white/10 bg-[#111217]/80 p-6 text-sm text-slate-300">
+          <div className="rounded-3xl border border-white/10 bg-[#0b1524]/80 p-6 text-sm text-slate-300">
             <p className="text-base font-semibold text-white">Contact details</p>
             <div className="mt-4 space-y-3">
               <p>

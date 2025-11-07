@@ -31,7 +31,7 @@ export function CTAPanel({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-[#1f1308] via-[#0f0f15] to-[#0f0f15] p-8 text-slate-200 sm:p-10",
+        "relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-[#1f1308] via-[#071021] to-[#071021] p-8 text-slate-200 sm:p-10",
         className,
       )}
     >

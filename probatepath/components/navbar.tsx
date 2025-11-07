@@ -47,7 +47,7 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b border-white/10 bg-[#0b0b0f]/75 backdrop-blur-xl transition-colors duration-300",
+        "sticky top-0 z-50 w-full border-b border-white/10 bg-[#050713]/75 backdrop-blur-xl transition-colors duration-300",
         scrolled ? "border-white/10" : "border-transparent"
       )}
       aria-label="Primary"
@@ -101,7 +101,7 @@ export function Navbar() {
               <Menu className="h-5 w-5" />
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[320px] bg-[#0b0b0f]">
+          <SheetContent side="right" className="w-[320px] bg-[#050713]">
             <SheetHeader className="flex items-center justify-between">
               <Link href="/" className="text-lg font-semibold text-white">
                 ProbatePath

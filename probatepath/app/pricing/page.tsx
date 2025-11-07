@@ -54,7 +54,7 @@ export default function PricingPage() {
       </header>
 
       <Section className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="border-white/12 bg-[#111217]">
+        <Card className="border-white/12 bg-[#0b1524]">
           <CardHeader className="space-y-6">
             <div className="space-y-3">
               <CardTitle className="text-5xl text-white">$2,500 CAD</CardTitle>
@@ -71,7 +71,7 @@ export default function PricingPage() {
               </p>
               <ul className="space-y-3">
                 {included.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#0f1115]/90 p-4">
+                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#081127]/90 p-4">
                     <span className="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-[#ff6a00]" />
                     <span>{item}</span>
                   </li>
@@ -84,7 +84,7 @@ export default function PricingPage() {
               </p>
               <ul className="space-y-3">
                 {notIncluded.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#0f1115]/60 p-4">
+                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#081127]/60 p-4">
                     <span className="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-white/40" />
                     <span>{item}</span>
                   </li>
@@ -99,7 +99,7 @@ export default function PricingPage() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/start"
-                className="inline-flex items-center justify-center rounded-full bg-[#ff6a00] px-6 py-3 text-sm font-semibold text-[#0b0b0f] transition hover:bg-[#ff7a1f]"
+                className="inline-flex items-center justify-center rounded-full bg-[#ff6a00] px-6 py-3 text-sm font-semibold text-[#050713] transition hover:bg-[#ff7a1f]"
               >
                 Start intake
               </Link>
@@ -114,7 +114,7 @@ export default function PricingPage() {
         </Card>
 
         <div className="space-y-8">
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#111217]">
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0b1524]">
             <Image
               src="/images/pricing-overview.svg"
               alt="ProbatePath pricing summary displayed on screen"
@@ -124,7 +124,7 @@ export default function PricingPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-br from-black/25 via-transparent to-black/40" />
           </div>
-          <Card className="border-white/12 bg-[#111217]/85">
+          <Card className="border-white/12 bg-[#0b1524]/85">
             <CardContent className="space-y-3 text-sm text-slate-300">
               {assurancePoints.map((point) => (
                 <p key={point}>{point}</p>

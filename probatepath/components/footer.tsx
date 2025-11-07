@@ -22,7 +22,7 @@ const LINKS = {
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-white/10 bg-[#111217] py-12 text-sm text-slate-300">
+    <footer className="mt-24 border-t border-white/10 bg-[#0b1524] py-12 text-sm text-slate-300">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 md:flex-row md:justify-between">
         <div className="max-w-sm space-y-3">
           <p className="text-base font-semibold text-white">ProbatePath</p>

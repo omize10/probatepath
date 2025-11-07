@@ -62,7 +62,7 @@ export default function DonePage() {
           </div>
         }
       >
-        <div className="space-y-4 rounded-2xl border border-white/10 bg-[#0f1115] p-6 text-sm text-slate-300">
+        <div className="space-y-4 rounded-2xl border border-white/10 bg-[#081127] p-6 text-sm text-slate-300">
           <p>
             We’ll keep this draft available on this browser so you can refine it anytime. When you’re ready, get in touch and we’ll guide you through the next steps.
           </p>

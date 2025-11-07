@@ -87,7 +87,7 @@ export function Accordion({
   return (
     <AccordionContext.Provider value={contextValue}>
       <div
-        className={cn("divide-y divide-white/10 rounded-3xl border border-white/10 bg-[#0f1115]", className)}
+        className={cn("divide-y divide-white/10 rounded-3xl border border-white/10 bg-[#081127]", className)}
         {...props}
       >
         {children}

@@ -37,7 +37,7 @@ export default function LegalPage() {
         <p className="max-w-3xl text-base text-slate-300">
           ProbatePath pairs modern intake with careful document preparation. Review the details below to understand how we work and how your information is handled.
         </p>
-        <div className="rounded-3xl border border-white/15 bg-[#111217]/80 p-5 text-sm text-slate-200">
+        <div className="rounded-3xl border border-white/15 bg-[#0b1524]/80 p-5 text-sm text-slate-200">
           ProbatePath provides document preparation support and general information. We are not your lawyers. Executors remain self-represented and in control of filing decisions.
         </div>
       </header>

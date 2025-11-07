@@ -35,10 +35,10 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className="bg-[#0b0b0f] text-slate-100">
+    <html lang="en" className="bg-[#050713] text-slate-100">
       <body
         className={cn(
-          "min-h-screen bg-[#0b0b0f] text-slate-100 antialiased",
+          "min-h-screen bg-[#050713] text-slate-100 antialiased",
           inter.variable,
           dmSerif.variable,
         )}

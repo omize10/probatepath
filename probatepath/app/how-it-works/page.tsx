@@ -65,9 +65,9 @@ export default function HowItWorksPage() {
       <Section className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-6">
           {steps.map((step, index) => (
-            <Card key={step.title} className="border-white/12 bg-[#111217]/85">
+            <Card key={step.title} className="border-white/12 bg-[#0b1524]/85">
               <CardHeader className="flex items-start gap-4">
-                <span className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-full border border-white/10 bg-[#0f1115] text-sm font-semibold text-white">
+                <span className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-full border border-white/10 bg-[#081127] text-sm font-semibold text-white">
                   {index + 1}
                 </span>
                 <div className="space-y-2">
@@ -80,7 +80,7 @@ export default function HowItWorksPage() {
         </div>
 
         <aside className="space-y-8 lg:sticky lg:top-28">
-          <Card className="border-white/12 bg-[#111217]">
+          <Card className="border-white/12 bg-[#0b1524]">
             <CardHeader className="space-y-2">
               <CardTitle className="text-2xl text-white">What you’ll need</CardTitle>
               <CardDescription>
@@ -98,7 +98,7 @@ export default function HowItWorksPage() {
               </ul>
             </CardContent>
           </Card>
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#111217]">
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0b1524]">
             <Image
               src="/images/process-overview.svg"
               alt="ProbatePath intake steps displayed on a laptop and notebook"
@@ -108,7 +108,7 @@ export default function HowItWorksPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/40" />
           </div>
-          <Card className="border-white/12 bg-[#111217]/85">
+          <Card className="border-white/12 bg-[#0b1524]/85">
             <CardContent className="space-y-2 text-sm text-slate-300">
               {preparationTips.map((tip) => (
                 <p key={tip}>{tip}</p>

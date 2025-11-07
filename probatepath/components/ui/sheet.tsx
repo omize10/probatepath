@@ -117,7 +117,7 @@ export function SheetContent({ className, children, side = "right", ...props }: 
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative flex flex-col border-l border-white/10 bg-[#111217] p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.8)] transition",
+          "relative flex flex-col border-l border-white/10 bg-[#0b1524] p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.8)] transition",
           sideClasses[side],
           className
         )}

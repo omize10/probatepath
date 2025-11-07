@@ -1,7 +1,7 @@
 <svg width="640" height="420" viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="processBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0f0f15" />
+      <stop offset="0%" stop-color="#071021" />
       <stop offset="100%" stop-color="#141824" />
     </linearGradient>
     <linearGradient id="processAccent" x1="0%" y1="0%" x2="100%" y2="0%">

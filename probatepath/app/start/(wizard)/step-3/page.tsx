@@ -115,6 +115,6 @@ function cnRadio(active: boolean) {
     "rounded-2xl border px-5 py-3 text-sm font-semibold transition sm:flex-1",
     active
       ? "border-[#ff6a00]/50 bg-[#ff6a00]/10 text-white"
-      : "border-white/10 bg-[#0f1115] text-slate-200 hover:border-[#ff6a00]/30",
+      : "border-white/10 bg-[#081127] text-slate-200 hover:border-[#ff6a00]/30",
   ].join(" ");
 }

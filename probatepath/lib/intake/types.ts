@@ -1,4 +1,4 @@
-export type RelationToDeceased = "spouse" | "child" | "relative" | "friend" | "other";
+export type RelationToDeceased = "partner" | "child" | "relative" | "friend" | "other";
 
 export type YesNo = "yes" | "no";
 
@@ -15,12 +15,38 @@ export type IntakeDraft = {
     phone: string;
     city: string;
     relationToDeceased: RelationToDeceased;
+    addressLine1: string;
+    addressLine2: string;
+    province: string;
+    postalCode: string;
+    preferredPronouns: string;
+    communicationPreference: "email" | "phone" | "either";
+    availabilityWindow: string;
+    timeZone: string;
+    employer: string;
+    supportContacts: string;
+    emergencyContactName: string;
+    emergencyContactPhone: string;
+    alternateExecutor: YesNo;
+    alternateExecutorDetails: string;
   };
   deceased: {
     fullName: string;
     dateOfDeath: string;
     cityProvince: string;
     hadWill: YesNo;
+    birthDate: string;
+    placeOfBirth: string;
+    maritalStatus: string;
+    occupation: string;
+    residenceAddress: string;
+    residenceType: string;
+    yearsLivedInBC: string;
+    hadPriorUnions: YesNo;
+    childrenCount: string;
+    assetsOutsideCanada: YesNo;
+    assetsOutsideDetails: string;
+    digitalEstateNotes: string;
   };
   will: {
     willLocation: string;
@@ -28,6 +54,21 @@ export type IntakeDraft = {
     anyRealProperty: YesNo;
     multipleBeneficiaries: YesNo;
     specialCircumstances: string;
+    hasCodicils: YesNo;
+    codicilDetails: string;
+    notaryNeeded: YesNo;
+    probateRegistry: string;
+    expectedFilingDate: string;
+    realPropertyDetails: string;
+    liabilities: string;
+    bankAccounts: string;
+    investmentAccounts: string;
+    insurancePolicies: string;
+    businessInterests: string;
+    charitableGifts: string;
+    digitalAssets: string;
+    documentDeliveryPreference: string;
+    specialRequests: string;
   };
   confirmation: {
     confirmed: boolean;
@@ -44,13 +85,39 @@ export const defaultIntakeDraft: IntakeDraft = {
     email: "",
     phone: "",
     city: "",
-    relationToDeceased: "spouse",
+    relationToDeceased: "partner",
+    addressLine1: "",
+    addressLine2: "",
+    province: "",
+    postalCode: "",
+    preferredPronouns: "",
+    communicationPreference: "email",
+    availabilityWindow: "",
+    timeZone: "",
+    employer: "",
+    supportContacts: "",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
+    alternateExecutor: "no",
+    alternateExecutorDetails: "",
   },
   deceased: {
     fullName: "",
     dateOfDeath: "",
     cityProvince: "",
     hadWill: "yes",
+    birthDate: "",
+    placeOfBirth: "",
+    maritalStatus: "",
+    occupation: "",
+    residenceAddress: "",
+    residenceType: "",
+    yearsLivedInBC: "",
+    hadPriorUnions: "no",
+    childrenCount: "",
+    assetsOutsideCanada: "no",
+    assetsOutsideDetails: "",
+    digitalEstateNotes: "",
   },
   will: {
     willLocation: "",
@@ -58,6 +125,21 @@ export const defaultIntakeDraft: IntakeDraft = {
     anyRealProperty: "no",
     multipleBeneficiaries: "yes",
     specialCircumstances: "",
+    hasCodicils: "no",
+    codicilDetails: "",
+    notaryNeeded: "yes",
+    probateRegistry: "",
+    expectedFilingDate: "",
+    realPropertyDetails: "",
+    liabilities: "",
+    bankAccounts: "",
+    investmentAccounts: "",
+    insurancePolicies: "",
+    businessInterests: "",
+    charitableGifts: "",
+    digitalAssets: "",
+    documentDeliveryPreference: "",
+    specialRequests: "",
   },
   confirmation: {
     confirmed: false,

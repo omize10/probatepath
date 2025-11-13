@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { DM_Serif_Display, Inter } from "next/font/google";
 import { Navbar } from "@/components/navbar";
-import { ToastProvider } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { Footer } from "@/components/footer";
+import { Providers } from "@/components/providers";
 
 import "./globals.css";
 
@@ -35,17 +35,16 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className="bg-[#050713] text-slate-100">
+    <html lang="en" className="bg-[#f7f8fa] text-[#0f172a]">
       <body
         className={cn(
-          "min-h-screen bg-[#050713] text-slate-100 antialiased",
+          "min-h-screen bg-[#f7f8fa] text-[#0f172a] antialiased",
           inter.variable,
           dmSerif.variable,
         )}
       >
-        <ToastProvider>
+        <Providers>
           <div className="relative flex min-h-screen flex-col">
-            <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[380px] bg-[radial-gradient(circle_at_top,_rgba(255,106,0,0.38),_transparent_60%)]" />
             <Navbar />
             <main
               id="main-content"
@@ -55,7 +54,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </main>
             <Footer />
           </div>
-        </ToastProvider>
+        </Providers>
       </body>
     </html>
   );

@@ -87,7 +87,7 @@ export function Accordion({
   return (
     <AccordionContext.Provider value={contextValue}>
       <div
-        className={cn("divide-y divide-white/10 rounded-3xl border border-white/10 bg-[#081127]", className)}
+        className={cn("divide-y divide-[#e2e8f0] rounded-3xl border border-[#e2e8f0] bg-white", className)}
         {...props}
       >
         {children}
@@ -107,7 +107,11 @@ export function AccordionItem({ value, className, children, ...props }: Accordio
   return (
     <div
       data-open={open ? "true" : "false"}
-      className={cn("overflow-hidden transition-[background-color] duration-200", open && "bg-white/3", className)}
+      className={cn(
+        "overflow-hidden transition-[background-color] duration-200",
+        open && "bg-[#f7f8fa]",
+        className
+      )}
       {...props}
     >
       {Children.map(children as ReactNode, (child) => {
@@ -143,15 +147,15 @@ export function AccordionTrigger({ className, children, value, ...props }: Accor
     <button
       type="button"
       className={cn(
-        "flex w-full items-center justify-between gap-4 px-6 py-5 text-left text-sm font-medium text-slate-100 transition",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff6a00]",
+        "flex w-full items-center justify-between gap-4 px-6 py-5 text-left text-sm font-medium text-[#0f172a] transition",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a8a]",
         className
       )}
       aria-expanded={open}
       onClick={() => toggleValue(value)}
       {...props}
     >
-      <span className="font-medium text-white">{children}</span>
+      <span className="font-medium text-[#0f172a]">{children}</span>
       <ChevronDown
         className={cn(
           "h-5 w-5 flex-none text-slate-400 transition-transform duration-200",
@@ -185,7 +189,7 @@ export function AccordionContent({ className, children, value, ...props }: Accor
       aria-hidden={!open}
       {...props}
     >
-      <div className={cn("overflow-hidden pb-5 text-sm text-slate-300", className)}>{children}</div>
+      <div className={cn("overflow-hidden pb-5 text-sm text-[#495067]", className)}>{children}</div>
     </div>
   );
 }

@@ -50,6 +50,7 @@ type ToastProviderProps = {
 export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastRecord[]>([]);
   const timers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+  const [mounted, setMounted] = useState(false);
 
   const dismiss = useCallback((id: number) => {
     setToasts((current) => current.filter((toast) => toast.id !== id));
@@ -81,12 +82,17 @@ export function ToastProvider({ children }: ToastProviderProps) {
     };
   }, []);
 
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
   const contextValue = useMemo(() => ({ toast, dismiss }), [toast, dismiss]);
 
   return (
     <ToastContext.Provider value={contextValue}>
       {children}
-      <ToastViewport toasts={toasts} onDismiss={dismiss} />
+      {mounted ? <ToastViewport toasts={toasts} onDismiss={dismiss} /> : null}
     </ToastContext.Provider>
   );
 }
@@ -113,21 +119,21 @@ function ToastViewport({ toasts, onDismiss }: ToastViewportProps) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
             className={cn(
-              "pointer-events-auto overflow-hidden rounded-2xl border bg-[#0b1524]/95 p-4 text-sm text-slate-200 shadow-[0_25px_60px_-45px_rgba(0,0,0,0.85)] backdrop-blur",
-              intent === "success" && "border-[#ff6a00]/30",
-              intent === "warning" && "border-[#ffb703]/40",
-              intent === "error" && "border-red-500/40"
+              "pointer-events-auto overflow-hidden rounded-2xl border border-[#dbe3f4] bg-white/95 p-4 text-sm text-[#0f172a] shadow-[0_25px_70px_-50px_rgba(15,23,42,0.45)] backdrop-blur",
+              intent === "success" && "border-[#c6f6d5] bg-[#f0fff4]",
+              intent === "warning" && "border-[#fde68a] bg-[#fffbeb]",
+              intent === "error" && "border-[#fecaca] bg-[#fff5f5]"
             )}
             role="status"
           >
             <div className="flex items-start gap-3">
               <div className="flex-1 space-y-1">
-                {title ? <p className="text-sm font-semibold text-white">{title}</p> : null}
-                {description ? <p className="text-xs text-slate-400">{description}</p> : null}
+                {title ? <p className="text-sm font-semibold text-[#0f172a]">{title}</p> : null}
+                {description ? <p className="text-xs text-[#4b5563]">{description}</p> : null}
               </div>
               <button
                 type="button"
-                className="rounded-full p-1 text-slate-400 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff6a00]"
+                className="rounded-full p-1 text-slate-400 transition hover:text-[#0f172a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a8a]"
                 onClick={() => onDismiss(id)}
                 aria-label="Dismiss notification"
               >

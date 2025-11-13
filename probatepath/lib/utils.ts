@@ -74,6 +74,6 @@ export function cloneWithClassName<T extends HTMLElement>(
       ...extraProps,
       className: cn(element.props.className, className),
       ref: mergedRef,
-    } as any,
+    } as Partial<typeof element.props> & { ref: typeof mergedRef },
   );
 }

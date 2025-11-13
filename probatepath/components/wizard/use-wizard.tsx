@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   getNextStep,
@@ -8,7 +8,6 @@ import {
   getStepById,
   getStepIndex,
   wizardSteps,
-  type StepDefinition,
   type StepId,
 } from "@/lib/intake/steps";
 
@@ -20,16 +19,22 @@ export function useWizard(stepId: StepId) {
   const next = getNextStep(stepId);
   const previous = getPreviousStep(stepId);
 
-  const goto = (target: StepId) => {
-    router.push(getStepById(target).href);
-  };
+  const goto = useCallback(
+    (target: StepId) => {
+      router.push(getStepById(target).href);
+    },
+    [router],
+  );
 
-  const gotoIndex = (targetIndex: number) => {
-    const step = wizardSteps[targetIndex];
-    if (step) {
-      router.push(step.href);
-    }
-  };
+  const gotoIndex = useCallback(
+    (targetIndex: number) => {
+      const step = wizardSteps[targetIndex];
+      if (step) {
+        router.push(step.href);
+      }
+    },
+    [router],
+  );
 
   return useMemo(
     () => ({
@@ -52,6 +57,6 @@ export function useWizard(stepId: StepId) {
       goto,
       gotoIndex,
     }),
-    [current, index, next, previous, router, total],
+    [current, goto, gotoIndex, index, next, previous, router, total],
   );
 }

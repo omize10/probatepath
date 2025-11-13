@@ -17,7 +17,7 @@ import {
 const NAV_LINKS = [
   { href: "/how-it-works", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/start", label: "Start now" },
+  { href: "/start", label: "Start" },
   { href: "/faqs", label: "FAQs" },
   { href: "/legal", label: "Legal" },
   { href: "/contact", label: "Contact" },
@@ -47,17 +47,17 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b border-white/10 bg-[#050713]/75 backdrop-blur-xl transition-colors duration-300",
-        scrolled ? "border-white/10" : "border-transparent"
+        "sticky top-0 z-50 w-full border-b border-transparent bg-transparent transition-colors duration-300",
+        scrolled ? "border-[#e2e8f0] bg-white/90 shadow-sm backdrop-blur" : "backdrop-blur-0"
       )}
       aria-label="Primary"
     >
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-6">
         <Link
           href="/"
-          className="flex items-center gap-2 text-base font-semibold tracking-tight text-white transition hover:text-[#ff6a00]"
+          className="flex items-center gap-2 text-base font-semibold tracking-tight text-[#1e3a8a] transition hover:text-[#ff6a00]"
         >
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#ff6a00] text-sm font-bold text-black">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#1e3a8a] text-sm font-bold text-white">
             PP
           </span>
           ProbatePath
@@ -71,8 +71,8 @@ export function Navbar() {
                 key={href}
                 href={href}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:text-white",
-                  isActive && "bg-white/10 text-white"
+                  "rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-[#1e3a8a]",
+                  isActive && "bg-[#eef1f9] text-[#1e3a8a]"
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
@@ -83,10 +83,10 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost" size="sm" className="border border-white/10">
-            <Link href="/contact">Contact</Link>
+          <Button asChild variant="outline" size="sm" className="border-[#e2e8f0] text-[#1e3a8a]">
+            <Link href="/signin">Sign in</Link>
           </Button>
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="bg-[#ff6a00] text-white hover:bg-[#e45f00]">
             <Link href="/start">Start now</Link>
           </Button>
         </div>
@@ -95,21 +95,21 @@ export function Navbar() {
           <SheetTrigger asChild>
             <button
               type="button"
-              className="inline-flex items-center justify-center rounded-md border border-white/10 p-2 text-slate-200 transition hover:border-white/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff6a00] md:hidden"
+              className="inline-flex items-center justify-center rounded-md border border-[#e2e8f0] bg-white/80 p-2 text-slate-600 transition hover:border-[#1e3a8a] hover:text-[#1e3a8a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a8a] md:hidden"
               aria-label="Open navigation menu"
             >
               <Menu className="h-5 w-5" />
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[320px] bg-[#050713]">
+          <SheetContent side="right" className="w-[320px] bg-white">
             <SheetHeader className="flex items-center justify-between">
-              <Link href="/" className="text-lg font-semibold text-white">
+              <Link href="/" className="text-lg font-semibold text-[#1e3a8a]">
                 ProbatePath
               </Link>
               <SheetClose asChild>
                 <button
                   type="button"
-                  className="rounded-full p-2 text-slate-300 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff6a00]"
+                  className="rounded-full p-2 text-slate-500 transition hover:text-[#1e3a8a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a8a]"
                   aria-label="Close navigation menu"
                 >
                   <X className="h-5 w-5" />
@@ -125,8 +125,8 @@ export function Navbar() {
                     <Link
                       href={href}
                       className={cn(
-                        "block rounded-2xl border border-transparent px-4 py-3 text-base font-medium text-slate-200 transition hover:border-white/10 hover:text-white",
-                        isActive && "border-white/15 bg-white/5 text-white"
+                        "block rounded-2xl border border-transparent px-4 py-3 text-base font-medium text-slate-600 transition hover:border-slate-200 hover:text-[#1e3a8a]",
+                        isActive && "border-[#1e3a8a]/30 bg-[#eef1f9] text-[#1e3a8a]"
                       )}
                       aria-current={isActive ? "page" : undefined}
                     >
@@ -137,14 +137,18 @@ export function Navbar() {
               })}
             </div>
 
-            <div className="mt-8 space-y-3 border-t border-white/10 pt-6">
+            <div className="mt-8 space-y-3 border-t border-slate-200 pt-6">
               <SheetClose asChild>
-                <Button asChild variant="ghost" className="w-full justify-center border border-white/10">
-                  <Link href="/contact">Contact</Link>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full justify-center border border-slate-200 text-[#1e3a8a]"
+                >
+                  <Link href="/signin">Sign in</Link>
                 </Button>
               </SheetClose>
               <SheetClose asChild>
-                <Button asChild className="w-full justify-center">
+                <Button asChild className="w-full justify-center bg-[#ff6a00] text-white hover:bg-[#e45f00]">
                   <Link href="/start">Start now</Link>
                 </Button>
               </SheetClose>

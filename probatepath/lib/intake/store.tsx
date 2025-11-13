@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/intake/persist";
+import { fetchServerDraft } from "@/lib/intake/api";
 import { defaultIntakeDraft, type IntakeDraft } from "@/lib/intake/types";
 
 type Action =
@@ -49,11 +50,30 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const stored = loadDraft();
-    if (stored) {
-      dispatch({ type: "LOAD", payload: stored });
-    }
-    setHydrated(true);
+    let isMounted = true;
+
+    const hydrate = async () => {
+      const stored = loadDraft();
+      if (stored) {
+        dispatch({ type: "LOAD", payload: stored });
+      }
+
+      await Promise.resolve();
+      if (isMounted) {
+        setHydrated(true);
+      }
+
+      const serverDraft = await fetchServerDraft();
+      if (isMounted && serverDraft?.draft) {
+        dispatch({ type: "LOAD", payload: serverDraft.draft });
+      }
+    };
+
+    void hydrate();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

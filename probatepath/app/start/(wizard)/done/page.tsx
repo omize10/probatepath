@@ -47,13 +47,13 @@ export default function DonePage() {
               Download summary (JSON)
             </Button>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild variant="ghost" className="justify-center border border-white/10">
+              <Button asChild variant="outline" className="justify-center">
                 <Link href="/contact">Contact us</Link>
               </Button>
               <Button
                 type="button"
                 variant="ghost"
-                className="justify-center border border-white/10 text-slate-200"
+                className="justify-center text-[#1e3a8a]"
                 onClick={handleStartOver}
               >
                 Start over
@@ -62,7 +62,7 @@ export default function DonePage() {
           </div>
         }
       >
-        <div className="space-y-4 rounded-2xl border border-white/10 bg-[#081127] p-6 text-sm text-slate-300">
+        <div className="space-y-4 rounded-2xl border border-[#e2e8f0] bg-[#f7f8fa] p-6 text-sm text-[#495067]">
           <p>
             We’ll keep this draft available on this browser so you can refine it anytime. When you’re ready, get in touch and we’ll guide you through the next steps.
           </p>

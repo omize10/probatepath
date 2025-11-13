@@ -110,14 +110,14 @@ export function SheetContent({ className, children, side = "right", ...props }: 
       <button
         type="button"
         aria-label="Close navigation overlay"
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/30 backdrop-blur-[2px]"
         onClick={() => setOpen(false)}
       />
       <div
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative flex flex-col border-l border-white/10 bg-[#0b1524] p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.8)] transition",
+          "relative flex flex-col border-l border-[#e2e8f0] bg-white p-6 shadow-[0_35px_90px_-55px_rgba(15,23,42,0.4)] transition",
           sideClasses[side],
           className
         )}

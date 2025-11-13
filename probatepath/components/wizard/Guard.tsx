@@ -7,7 +7,6 @@ import { useIntake } from "@/lib/intake/store";
 import {
   getStepIndex,
   wizardSteps,
-  type StepDefinition,
   type StepId,
 } from "@/lib/intake/steps";
 

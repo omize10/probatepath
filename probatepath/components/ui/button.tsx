@@ -1,13 +1,7 @@
 'use client';
 
 import { cloneElement, forwardRef, isValidElement } from "react";
-import type {
-  ButtonHTMLAttributes,
-  ForwardedRef,
-  MutableRefObject,
-  ReactElement,
-  ReactNode,
-} from "react";
+import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
@@ -22,13 +16,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-[#ff6a00] text-[#050713] shadow-[0_18px_44px_-24px_rgba(255,106,0,0.9)] hover:bg-[#ff7a1f] focus-visible:outline-[#ffb703]",
+    "bg-[#ff6a00] text-white shadow-[0_18px_40px_-20px_rgba(255,106,0,0.65)] hover:bg-[#e45f00] focus-visible:outline-[#ffb347]",
   secondary:
-    "bg-[#1b1d27] text-slate-100 hover:bg-[#232633] focus-visible:outline-[#ffb703]",
+    "bg-[#1e3a8a] text-white shadow-none hover:bg-[#1b3173] focus-visible:outline-[#1e3a8a]",
   outline:
-    "border border-white/15 bg-transparent text-slate-100 hover:border-[#ff6a00] hover:text-white focus-visible:outline-[#ffb703]",
+    "border border-[#1e3a8a] bg-white text-[#1e3a8a] hover:bg-[#eef2ff] focus-visible:outline-[#1e3a8a]",
   ghost:
-    "border border-white/10 bg-transparent text-slate-200 hover:border-white/25 hover:text-white focus-visible:outline-[#ffb703]",
+    "text-[#1e3a8a] hover:bg-[#eef2ff] focus-visible:outline-[#1e3a8a] border border-transparent",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -37,23 +31,6 @@ const sizeClasses: Record<ButtonSize, string> = {
   lg: "h-12 px-7 text-base",
   xl: "h-14 px-9 text-lg",
 };
-
-function assignRef<T>(target: ForwardedRef<T> | undefined, value: T | null) {
-  if (!target) {
-    return;
-  }
-
-  if (typeof target === "function") {
-    target(value);
-    return;
-  }
-
-  try {
-    (target as MutableRefObject<T | null>).current = value;
-  } catch {
-    // ignore if the ref is read-only
-  }
-}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "default", asChild = false, children, ...props }, ref) => {
@@ -69,17 +46,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (asChild && isValidElement(children)) {
       const child = children as ReactElement<{ className?: string }>;
-      const childRef = (child as ReactElement & { ref?: ForwardedRef<HTMLButtonElement> }).ref;
 
-      // eslint-disable-next-line react-hooks/refs -- merging forwarded refs when rendering `asChild`
       return cloneElement(child as ReactElement, {
         ...restProps,
         className: cn(child.props.className, baseClasses),
-        ref: (node: HTMLButtonElement | null) => {
-          assignRef(childRef, node);
-          assignRef(ref, node);
-        },
-      } as any);
+      });
     }
 
     return (

@@ -46,7 +46,10 @@ export function ContactForm() {
   };
 
   return (
-    <Form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-white/10 bg-[#0b1524]/90 p-8 shadow-[0_40px_120px_-70px_rgba(0,0,0,0.85)]">
+    <Form
+      onSubmit={handleSubmit}
+      className="space-y-6 rounded-3xl border border-[#e2e8f0] bg-white p-8 shadow-[0_35px_100px_-60px_rgba(15,23,42,0.35)]"
+    >
       <div className="grid gap-6 md:grid-cols-2">
         <FormItem>
           <FormLabel>Name</FormLabel>
@@ -99,8 +102,8 @@ export function ContactForm() {
           />
         </FormControl>
       </FormItem>
-      <div className="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-slate-400">
+      <div className="flex flex-col gap-3 border-t border-[#e2e8f0] pt-6 text-sm text-[#495067] sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs text-[#6b7280]">
           We respect your privacy. Information is stored securely in Canada and never shared without permission.
         </p>
         <Button type="submit" size="lg" className="min-w-[200px]">

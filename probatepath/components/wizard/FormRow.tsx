@@ -1,5 +1,4 @@
 import { cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
-import { cn } from "@/lib/utils";
 
 interface FormRowProps {
   fieldId: string;
@@ -31,20 +30,20 @@ export function FormRow({ fieldId, label, description, error, children, hint, re
     <div className="space-y-2">
       <label
         htmlFor={fieldId}
-        className="text-sm font-semibold text-slate-200"
+        className="text-sm font-semibold text-[#0f172a]"
       >
         {label}
-        {required ? <span className="ml-1 text-xs font-normal text-slate-400">(required)</span> : null}
+        {required ? <span className="ml-1 text-xs font-normal text-[#64748b]">(required)</span> : null}
       </label>
       {description ? (
-        <p id={descriptionId} className="text-sm text-slate-400">
+        <p id={descriptionId} className="text-sm text-[#6b7287]">
           {description}
         </p>
       ) : null}
       {control}
-      {hint ? <p className="text-xs text-slate-500">{hint}</p> : null}
+      {hint ? <p className="text-xs text-[#6b7287]">{hint}</p> : null}
       {error ? (
-        <p id={errorId} className="text-xs font-medium text-[#ffb703]">
+        <p id={errorId} className="text-xs font-medium text-[#c2410c]">
           {error}
         </p>
       ) : null}

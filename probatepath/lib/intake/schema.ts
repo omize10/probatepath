@@ -32,7 +32,24 @@ export const executorSchema = z.object({
     .string()
     .trim()
     .min(1, "Enter the executor’s city."),
-  relationToDeceased: z.enum(["spouse", "child", "relative", "friend", "other"]),
+  addressLine1: z.string().trim().min(1, "Enter the executor’s mailing address."),
+  addressLine2: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  province: z.string().trim().min(1, "Enter the province."),
+  postalCode: z
+    .string()
+    .trim()
+    .min(1, "Enter a postal code."),
+  preferredPronouns: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  communicationPreference: z.enum(["email", "phone", "either"]),
+  availabilityWindow: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  timeZone: z.string().trim().min(1, "Enter a time zone."),
+  employer: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  supportContacts: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  emergencyContactName: z.string().trim().min(1, "Enter an emergency contact name."),
+  emergencyContactPhone: z.string().trim().min(1, "Enter an emergency contact phone."),
+  alternateExecutor: z.enum(["yes", "no"]),
+  alternateExecutorDetails: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  relationToDeceased: z.enum(["partner", "child", "relative", "friend", "other"]),
 });
 
 export const deceasedSchema = z.object({
@@ -48,6 +65,18 @@ export const deceasedSchema = z.object({
     .trim()
     .min(1, "Enter the city and province."),
   hadWill: z.enum(["yes", "no"]),
+  birthDate: z.string().trim(),
+  placeOfBirth: z.string().trim(),
+  maritalStatus: z.string().trim(),
+  occupation: z.string().trim(),
+  residenceAddress: z.string().trim(),
+  residenceType: z.string().trim(),
+  yearsLivedInBC: z.string().trim(),
+  hadPriorUnions: z.enum(["yes", "no"]),
+  childrenCount: z.string().trim(),
+  assetsOutsideCanada: z.enum(["yes", "no"]),
+  assetsOutsideDetails: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  digitalEstateNotes: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
 });
 
 export const willSchema = z.object({
@@ -64,6 +93,21 @@ export const willSchema = z.object({
       z.literal(""),
     ])
     .transform((value) => value.trim()),
+  hasCodicils: z.enum(["yes", "no"]),
+  codicilDetails: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  notaryNeeded: z.enum(["yes", "no"]),
+  probateRegistry: z.string().trim(),
+  expectedFilingDate: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  realPropertyDetails: z.string().trim(),
+  liabilities: z.string().trim(),
+  bankAccounts: z.string().trim(),
+  investmentAccounts: z.string().trim(),
+  insurancePolicies: z.string().trim(),
+  businessInterests: z.string().trim(),
+  charitableGifts: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  digitalAssets: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  documentDeliveryPreference: z.string().trim(),
+  specialRequests: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
 });
 
 export const confirmationSchema = z.object({

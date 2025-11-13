@@ -9,7 +9,7 @@ export function Separator({ className, ...props }: SeparatorProps) {
   return (
     <div
       role="separator"
-      className={cn("h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent", className)}
+      className={cn("h-px w-full bg-gradient-to-r from-transparent via-[#dbe3f4] to-transparent", className)}
       {...props}
     />
   );

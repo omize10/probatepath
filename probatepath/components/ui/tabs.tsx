@@ -51,7 +51,7 @@ export function TabsList({ className, children, ...props }: HTMLAttributes<HTMLD
     <div
       role="tablist"
       className={cn(
-        "inline-flex rounded-full border border-white/12 bg-[#0b1524]/80 p-1 text-sm text-slate-200",
+        "inline-flex rounded-full border border-[#dbe3f4] bg-[#eef2ff] p-1 text-sm text-[#1e3a8a]",
         className,
       )}
       {...props}
@@ -89,10 +89,10 @@ export function TabsTrigger({ value, className, children, ...props }: TabsTrigge
       onClick={() => setValue(value)}
       className={cn(
         "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff6a00]",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a8a]",
         isActive
-          ? "bg-[#ff6a00] text-[#050713]"
-          : "text-slate-300 hover:text-white",
+          ? "bg-white text-[#1e3a8a] shadow-[0_6px_20px_-12px_rgba(30,58,138,0.65)]"
+          : "text-[#4c5a7a] hover:text-[#1e3a8a]",
         className,
       )}
       {...props}
@@ -117,7 +117,7 @@ export function TabsContent({ value, className, children, ...props }: TabsConten
       role="tabpanel"
       hidden={!isActive}
       className={cn(
-        "space-y-4 rounded-3xl border border-white/10 bg-[#0b1524]/80 p-6 text-sm leading-relaxed text-slate-300",
+        "space-y-4 rounded-3xl border border-[#e2e8f0] bg-white p-6 text-sm leading-relaxed text-[#495067]",
         className,
       )}
       {...props}

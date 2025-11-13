@@ -1,148 +1,96 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { CTAPanel } from "@/components/cta-panel";
-import { Section } from "@/components/section";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-
-export const metadata: Metadata = {
-  title: "Pricing",
-  description:
-    "ProbatePath offers a single 2,500 CAD fee for filing-ready BC probate documents, with clear notes on what is and isn’t included.",
-};
 
 const included = [
-  "Scope confirmation before payment so you know the engagement fits",
-  "Guided intake with specialist review for completeness",
-  "Drafting of required Supreme Court of BC probate forms and notices",
-  "Personalised signing instructions and courthouse checklist",
-  "One round of refinements within seven days of delivery",
-  "Secure Canadian-hosted portal with 12 months of access",
+  "Intake review for completeness",
+  "Document assembly (P1, P3/P4, P9, P10/P11, notices)",
+  "Cover letter and filing checklist",
+  "Secure delivery and vault for 12 months",
 ];
 
 const notIncluded = [
-  "Supreme Court of British Columbia filing fees (paid directly to the court)",
-  "Courier, mail, or notarization costs for affidavits and notices",
-  "Complex estate scenarios such as disputes, foreign assets, or trusts",
-  "In-person courthouse attendance or representation",
+  "Supreme Court filing fees",
+  "Postage/courier for notices",
+  "Notarisation/commissioning",
+  "Complex-estate extras (multiple executors, disputes)",
 ];
 
-const assurancePoints = [
-  "We flag complexity early and provide alternate options if needed.",
-  "Payment is collected in two instalments: 50% at intake, 50% on delivery.",
-  "Receipts and tax breakdown (GST/PST) are issued automatically.",
-];
+export const metadata: Metadata = {
+  title: "Pricing",
+  description: "ProbatePath charges a single 2,500 CAD fixed fee for BC probate document preparation.",
+};
 
 export default function PricingPage() {
   return (
-    <div className="space-y-20 pb-16">
-      <header className="space-y-6">
-        <Badge variant="outline">Pricing</Badge>
-        <h1 className="font-serif text-4xl text-white sm:text-5xl">Fixed fee, no surprises</h1>
-        <p className="max-w-3xl text-base text-slate-300">
-          ProbatePath keeps pricing simple so executors can focus on the estate. Our fixed 2,500 CAD fee covers everything required to prepare a filing-ready package.
+    <div className="space-y-16 pb-16">
+      <header className="space-y-4">
+        <Badge variant="outline" className="border-[#1e3a8a] text-[#1e3a8a]">
+          Pricing
+        </Badge>
+        <h1 className="font-serif text-4xl text-[#0f172a] sm:text-5xl">Transparent, fixed-fee probate support</h1>
+        <p className="max-w-3xl text-base text-[#495067]">
+          ProbatePath charges 2,500 CAD plus GST/PST. You stay in control of filing while we prepare every form and instruction. Court fees and out-of-pocket costs are paid directly to the registry.
         </p>
       </header>
 
-      <Section className="grid gap-12 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="border-white/12 bg-[#0b1524]">
-          <CardHeader className="space-y-6">
-            <div className="space-y-3">
-              <CardTitle className="text-5xl text-white">$2,500 CAD</CardTitle>
-              <CardDescription>
-                GST and PST apply. Fees are charged in two instalments: half at intake and half once your documents are delivered.
-              </CardDescription>
-            </div>
-            <Separator className="bg-white/10" />
-          </CardHeader>
-          <CardContent className="grid gap-8 lg:grid-cols-2">
-            <div className="space-y-4 text-sm text-slate-200">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                What’s included
-              </p>
-              <ul className="space-y-3">
-                {included.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#081127]/90 p-4">
-                    <span className="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-[#ff6a00]" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="space-y-4 text-sm text-slate-300">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                What’s not included
-              </p>
-              <ul className="space-y-3">
-                {notIncluded.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#081127]/60 p-4">
-                    <span className="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-white/40" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-slate-300 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-md">
-              Unsure if your estate qualifies? We scope every engagement personally and alert you if anything falls outside the flat fee.
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/start"
-                className="inline-flex items-center justify-center rounded-full bg-[#ff6a00] px-6 py-3 text-sm font-semibold text-[#050713] transition hover:bg-[#ff7a1f]"
-              >
-                Start intake
-              </Link>
-              <Link
-                href="/contact"
-                className="inline-flex items-center justify-center rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-slate-100 transition hover:border-white/30"
-              >
-                Ask a question
-              </Link>
-            </div>
-          </CardFooter>
-        </Card>
-
-        <div className="space-y-8">
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0b1524]">
-            <Image
-              src="/images/pricing-overview.svg"
-              alt="ProbatePath pricing summary displayed on screen"
-              width={560}
-              height={420}
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-black/25 via-transparent to-black/40" />
+      <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-3xl border border-[#e2e8f0] bg-white p-8 shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#1e3a8a]">Fixed fee</p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-6">
+            <h2 className="font-serif text-5xl text-[#0f172a]">$2,500 CAD</h2>
+            <p className="text-sm text-[#495067]">GST/PST plus court filing fee (paid separately)</p>
           </div>
-          <Card className="border-white/12 bg-[#0b1524]/85">
-            <CardContent className="space-y-3 text-sm text-slate-300">
-              {assurancePoints.map((point) => (
-                <p key={point}>{point}</p>
-              ))}
-            </CardContent>
-          </Card>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2">
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-[#1e3a8a]">Included</h3>
+              <ul className="mt-3 space-y-3 text-sm text-[#495067]">
+                {included.map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span className="mt-1 h-2 w-2 rounded-full bg-[#ff6a00]" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-[#1e3a8a]">Not included</h3>
+              <ul className="mt-3 space-y-3 text-sm text-[#495067]">
+                {notIncluded.map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span className="mt-1 h-2 w-2 rounded-full bg-[#e2e8f0]" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="mt-8 text-sm text-[#495067]">
+            <p>Payment schedule: 50% at intake review, 50% when documents are delivered.</p>
+          </div>
         </div>
-      </Section>
 
-      <Section>
-        <CTAPanel
-          eyebrow="Need a second look?"
-          title="Let’s confirm your estate fits the fixed-fee scope."
-          description="Share a few details and we’ll review eligibility together. If you need extra services, we’ll outline clear next steps before you decide."
-          primaryAction={{ label: "Book a call", href: "/contact" }}
-          secondaryAction={{ label: "Start intake", href: "/start", variant: "ghost" }}
-        />
-      </Section>
+        <div className="space-y-6">
+          <CTAPanel
+            eyebrow="Not sure if you qualify?"
+            title="Let’s confirm your estate fits the fixed-fee scope."
+            description="Call 604-689-3667 (Open Door Law) and we’ll walk through the estate, timeline, and next steps before you pay anything."
+            primaryAction={{ label: "Start intake", href: "/start" }}
+            secondaryAction={{
+              label: "Call 604-689-3667",
+              href: "tel:+16046893667",
+              variant: "ghost",
+              className: "border border-[#1e3a8a] text-[#1e3a8a]",
+            }}
+          />
+          <div className="rounded-3xl border border-[#e2e8f0] bg-white p-6 text-sm text-[#495067]">
+            <p className="font-semibold text-[#0f172a]">Need notarisation or commissioning?</p>
+            <p className="mt-2">
+              We can coordinate flat-fee notarisation appointments (typically ~10 minutes / ~$100) through our partner network. Just mention it during intake.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

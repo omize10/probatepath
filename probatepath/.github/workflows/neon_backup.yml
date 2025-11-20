@@ -1,0 +1,35 @@
+name: Neon DB Backups
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # daily at 09:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      BACKUP_DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install postgres client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run backup script
+        run: |
+          mkdir -p backups
+          bash scripts/db/backup.sh
+        # Only run if the secret is set; otherwise fail early and skip to avoid accidental leaks
+        if: ${{ env.BACKUP_DATABASE_URL }}
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: neon-db-backups
+          path: backups/*.gz
+          retention-days: 7
+        if: ${{ env.BACKUP_DATABASE_URL }}

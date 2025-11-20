@@ -15,6 +15,10 @@ export async function POST(request: Request) {
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const userId = (session.user as { id?: string })?.id;
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const json = await request.json();
   const input = BodySchema.safeParse(json);
   if (!input.success) {
@@ -22,7 +26,7 @@ export async function POST(request: Request) {
   }
 
   const matter = await prisma.matter.findFirst({
-    where: { id: input.data.matterId, userId: session.user.id },
+    where: { id: input.data.matterId, userId },
   });
   if (!matter) {
     return NextResponse.json({ error: "Matter not found" }, { status: 404 });

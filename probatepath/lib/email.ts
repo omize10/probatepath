@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/src/server/db/prisma";
 import { Resend } from "resend";
 
@@ -17,7 +18,7 @@ export async function sendTemplateEmail({
   html: string;
   template: string;
   matterId?: string;
-  meta?: Record<string, unknown>;
+  meta?: Prisma.InputJsonValue | null;
 }) {
   if (!resend) {
     console.warn("RESEND_API_KEY not configured; logging email only");
@@ -38,7 +39,7 @@ export async function logEmail({
   subject: string;
   template: string;
   matterId?: string;
-  meta?: Record<string, unknown>;
+  meta?: Prisma.InputJsonValue | null;
 }) {
   await prisma.emailLog.create({
     data: {
@@ -46,7 +47,7 @@ export async function logEmail({
       subject,
       template,
       matterId,
-      meta,
+      meta: meta ?? Prisma.JsonNull,
     },
   });
 }

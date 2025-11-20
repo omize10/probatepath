@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -17,10 +18,10 @@ import {
 const NAV_LINKS = [
   { href: "/how-it-works", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/start", label: "Start" },
   { href: "/faqs", label: "FAQs" },
   { href: "/legal", label: "Legal" },
   { href: "/contact", label: "Contact" },
+  { href: "/portal", label: "My portal" },
 ];
 
 function useScrolled(threshold = 12) {
@@ -43,6 +44,10 @@ function useScrolled(threshold = 12) {
 export function Navbar() {
   const pathname = usePathname();
   const scrolled = useScrolled();
+  const { data: session } = useSession();
+  const isAuthed = Boolean(session?.user);
+  const portalHref = isAuthed ? "/portal" : `/login?next=${encodeURIComponent("/portal")}`;
+  const startNowHref = isAuthed ? "/portal" : "/create-account";
 
   return (
     <header
@@ -65,11 +70,12 @@ export function Navbar() {
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
           {NAV_LINKS.map(({ href, label }) => {
-            const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
+            const targetHref = label === "My portal" ? portalHref : href;
+            const isActive = pathname === href || pathname.startsWith(href);
             return (
               <Link
                 key={href}
-                href={href}
+                href={targetHref}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-[#1e3a8a]",
                   isActive && "bg-[#eef1f9] text-[#1e3a8a]"
@@ -83,12 +89,23 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="outline" size="sm" className="border-[#e2e8f0] text-[#1e3a8a]">
-            <Link href="/signin">Sign in</Link>
+          <Button asChild variant="secondary" size="sm">
+            <Link href={portalHref}>My portal</Link>
           </Button>
-          <Button asChild size="sm" className="bg-[#ff6a00] text-white hover:bg-[#e45f00]">
-            <Link href="/start">Start now</Link>
-          </Button>
+          {isAuthed ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => signOut({ callbackUrl: "/" })}
+            >
+              Sign out
+            </Button>
+          ) : (
+            <Button asChild size="sm">
+              <Link href={startNowHref}>Start now</Link>
+            </Button>
+          )}
         </div>
 
         <Sheet>
@@ -119,11 +136,12 @@ export function Navbar() {
 
             <div className="mt-6 space-y-3">
               {NAV_LINKS.map(({ href, label }) => {
-                const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
+                const targetHref = label === "My portal" ? portalHref : href;
+                const isActive = pathname === href || pathname.startsWith(href);
                 return (
                   <SheetClose asChild key={href}>
                     <Link
-                      href={href}
+                      href={targetHref}
                       className={cn(
                         "block rounded-2xl border border-transparent px-4 py-3 text-base font-medium text-slate-600 transition hover:border-slate-200 hover:text-[#1e3a8a]",
                         isActive && "border-[#1e3a8a]/30 bg-[#eef1f9] text-[#1e3a8a]"
@@ -139,19 +157,28 @@ export function Navbar() {
 
             <div className="mt-8 space-y-3 border-t border-slate-200 pt-6">
               <SheetClose asChild>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full justify-center border border-slate-200 text-[#1e3a8a]"
-                >
-                  <Link href="/signin">Sign in</Link>
+                <Button asChild variant="secondary" className="w-full justify-center">
+                  <Link href={portalHref}>My portal</Link>
                 </Button>
               </SheetClose>
-              <SheetClose asChild>
-                <Button asChild className="w-full justify-center bg-[#ff6a00] text-white hover:bg-[#e45f00]">
-                  <Link href="/start">Start now</Link>
-                </Button>
-              </SheetClose>
+              {isAuthed ? (
+                <SheetClose asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full justify-center"
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                  >
+                    Sign out
+                  </Button>
+                </SheetClose>
+              ) : (
+                <SheetClose asChild>
+                  <Button asChild className="w-full justify-center">
+                    <Link href={startNowHref}>Start now</Link>
+                  </Button>
+                </SheetClose>
+              )}
             </div>
           </SheetContent>
         </Sheet>

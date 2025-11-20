@@ -59,6 +59,8 @@ export type IntakeDraft = {
     notaryNeeded: YesNo;
     probateRegistry: string;
     expectedFilingDate: string;
+    physicalWillDate: string;
+    electronicWillDate: string;
     realPropertyDetails: string;
     liabilities: string;
     bankAccounts: string;
@@ -130,6 +132,8 @@ export const defaultIntakeDraft: IntakeDraft = {
     notaryNeeded: "yes",
     probateRegistry: "",
     expectedFilingDate: "",
+    physicalWillDate: "",
+    electronicWillDate: "",
     realPropertyDetails: "",
     liabilities: "",
     bankAccounts: "",

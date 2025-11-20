@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
-            <Link href="/start">Start now</Link>
+            <Link href="/create-account">Start now</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
             <Link href="/contact">Questions? Contact us</Link>
@@ -239,14 +239,14 @@ export default function HowItWorksPage() {
             We’ll guide you through every field, confirm fit, and assemble your filing-ready package with Canadian-hosted security.
           </p>
           <Button asChild size="lg" className="bg-white text-[#1c2a44] hover:bg-white/90">
-            <Link href="/start">Start now</Link>
+            <Link href="/create-account">Start now</Link>
           </Button>
         </div>
       </ScrollFade>
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#e2e8f0] bg-white/95 p-4 shadow-[0_-20px_60px_-30px_rgba(15,23,42,0.35)] sm:hidden">
         <Button asChild className="w-full">
-          <Link href="/start">Start now</Link>
+          <Link href="/create-account">Start now</Link>
         </Button>
       </div>
     </div>

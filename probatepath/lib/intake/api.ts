@@ -21,14 +21,19 @@ export async function saveIntakeStep(step: string, data: unknown) {
     if (payload?.matterId) {
       setMatterId(payload.matterId);
     }
-    return payload;
+    return { ...payload, persisted: true };
   } catch (error) {
+    // Return a structured fallback so callers can show friendly UI.
     console.warn("[intake] saveIntakeStep failed; using local fallback", error);
     const fallbackMatterId = matterId ?? clientKey;
     if (fallbackMatterId && !matterId) {
       setMatterId(fallbackMatterId);
     }
-    return { matterId: fallbackMatterId, persisted: false };
+    return {
+      matterId: fallbackMatterId,
+      persisted: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 

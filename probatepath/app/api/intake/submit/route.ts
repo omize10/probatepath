@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/src/server/db/prisma";
-import { logAudit } from "@/lib/audit";
+import { logAudit, logSecurityAudit } from "@/lib/audit";
+import { getServerAuth } from "@/lib/auth";
 import { sendTemplateEmail } from "@/lib/email";
 
 const SubmitSchema = z.object({
@@ -18,6 +19,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
+  // If caller provided a matterId and is authenticated, perform an authenticated submit
+  const { session } = await getServerAuth();
+  if (input.data.matterId && session && session.user && (session.user as any).id) {
+    try {
+      const matter = await prisma.matter.findUnique({ where: { id: input.data.matterId }, include: { draft: true } });
+      if (!matter || !matter.draft) return NextResponse.json({ error: "Draft not found" }, { status: 404 });
+      // ensure ownership
+      const userId = (session.user as any).id as string;
+      if (matter.userId && matter.userId !== userId) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+      const now = new Date();
+      await prisma.intakeDraft.update({ where: { matterId: matter.id }, data: { submittedAt: now, finalSnapshot: matter.draft.payload ?? {} } });
+
+      await logAudit({ matterId: matter.id, action: "INTAKE_SUBMITTED", actorId: userId });
+      await logSecurityAudit({ userId, matterId: matter.id, action: "intake.submit" });
+
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      console.error("[intake.submit.auth] failed", err);
+      return NextResponse.json({ error: "Unable to submit" }, { status: 500 });
+    }
+  }
+
   const matter = await prisma.matter.findFirst({
     where: {
       OR: [{ id: input.data.matterId ?? "" }, { clientKey: input.data.clientKey }],
@@ -28,6 +52,7 @@ export async function POST(request: Request) {
   if (!matter || !matter.draft) {
     return NextResponse.json({ error: "Draft not found" }, { status: 404 });
   }
+  const draftEmail = matter.draft.email;
 
   const rez = await prisma.$transaction(async (tx) => {
     const updatedMatter = await tx.matter.update({
@@ -45,16 +70,15 @@ export async function POST(request: Request) {
       data: {
         token: crypto.randomUUID(),
         matterId: matter.id,
-        email: matter.draft.email,
+        email: draftEmail,
         expiresAt: new Date(Date.now() + DEFAULT_EXPIRY_HOURS * 60 * 60 * 1000),
       },
     });
 
-    await tx.willSearchRequest.upsert({
-      where: { matterId: matter.id },
-      create: { matterId: matter.id },
-      update: {},
-    });
+    const existingRequest = await tx.willSearchRequest.findFirst({ where: { matterId: matter.id } });
+    if (!existingRequest) {
+      await tx.willSearchRequest.create({ data: { matterId: matter.id } });
+    }
 
     await logAudit({
       matterId: matter.id,
@@ -62,12 +86,21 @@ export async function POST(request: Request) {
       actorId: matter.userId,
     });
 
+    // Security audit for intake submit
+    if (matter.userId) {
+      await logSecurityAudit({
+        userId: matter.userId,
+        matterId: matter.id,
+        action: "intake.submit",
+      });
+    }
+
     return { updatedMatter, pack, resumeToken };
   });
 
   const resumeLink = `${process.env.APP_URL ?? 'http://localhost:3000'}/resume/${rez.resumeToken.token}`;
   await sendTemplateEmail({
-    to: matter.draft.email,
+    to: draftEmail,
     subject: "Your ProbatePath draft",
     template: "intake-submitted",
     matterId: matter.id,

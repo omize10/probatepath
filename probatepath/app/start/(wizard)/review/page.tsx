@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { StepShell } from "@/components/wizard/StepShell";
 import { Summary } from "@/components/wizard/Summary";
 import { Guard } from "@/components/wizard/Guard";
@@ -12,7 +13,10 @@ import { submitIntake } from "@/lib/intake/api";
 export default function ReviewPage() {
   const { draft, update } = useIntake();
   const { goNext } = useWizard("review");
+  const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const values = draft.confirmation;
 
@@ -26,8 +30,55 @@ export default function ReviewPage() {
       return;
     }
     setErrors({});
-    await submitIntake(draft);
-    goNext();
+    setSubmitting(true);
+    try {
+      await submitIntake(draft);
+      // Notify unsaved-guard to allow navigation temporarily
+      try {
+        window.dispatchEvent(new CustomEvent('intake:submitted'));
+      } catch (err) {
+        // noop
+      }
+      // Redirect to confirmation page instead of goNext (wizard step)
+      router.push("/portal/confirmation");
+    } catch (err) {
+      console.error("Submit failed:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      setSubmitError(msg || "Failed to submit. Please try again.");
+      setErrors({ _form: "Failed to submit. You can retry or download a JSON backup." });
+      setSubmitting(false);
+    }
+  };
+
+  const handleRetry = async () => {
+    setSubmitError(null);
+    setSubmitting(true);
+    try {
+      await submitIntake(draft);
+      try {
+        window.dispatchEvent(new CustomEvent('intake:submitted'));
+      } catch {}
+      router.push("/portal/confirmation");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setSubmitError(msg || "Failed to submit. Please try again.");
+      setSubmitting(false);
+    }
+  };
+
+  const handleDownloadJson = () => {
+    try {
+      const payload = JSON.stringify(draft, null, 2);
+      const blob = new Blob([payload], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "probatepath-intake-draft.json";
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to download JSON", err);
+    }
   };
 
   return (
@@ -38,7 +89,7 @@ export default function ReviewPage() {
         title="Review your information"
         description="Check the details before we generate your summary. You can edit any section and confirm when ready to proceed."
         nextLabel="Confirm and finish"
-        isNextDisabled={!isValid}
+        isNextDisabled={!isValid || submitting}
         onSubmit={handleSubmit}
       >
         <Summary draft={draft} />
@@ -64,6 +115,32 @@ export default function ReviewPage() {
             <p id="review-confirm-error" className="text-xs font-medium text-[#c2410c]">
               {errors.confirmed}
             </p>
+          ) : null}
+          {errors._form ? (
+            <p className="text-xs font-medium text-[#c2410c]">
+              {errors._form}
+            </p>
+          ) : null}
+          {submitError ? (
+            <div className="flex items-center gap-3">
+              <p className="text-xs font-medium text-[#c2410c]">{submitError}</p>
+              <div className="ml-2 flex gap-2">
+                <button
+                  type="button"
+                  className="text-xs underline"
+                  onClick={handleRetry}
+                >
+                  Retry
+                </button>
+                <button
+                  type="button"
+                  className="text-xs underline"
+                  onClick={handleDownloadJson}
+                >
+                  Download draft JSON
+                </button>
+              </div>
+            </div>
           ) : null}
         </div>
       </StepShell>

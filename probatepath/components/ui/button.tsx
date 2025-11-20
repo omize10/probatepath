@@ -16,13 +16,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-[#ff6a00] text-white shadow-[0_18px_40px_-20px_rgba(255,106,0,0.65)] hover:bg-[#e45f00] focus-visible:outline-[#ffb347]",
+    "bg-[color:var(--accent)] text-[color:var(--ink)] shadow-[0_18px_40px_-20px_rgba(242,122,33,0.55)] hover:bg-[color:var(--accent)]/90 focus-visible:outline-[color:var(--ring)]",
   secondary:
-    "bg-[#1e3a8a] text-white shadow-none hover:bg-[#1b3173] focus-visible:outline-[#1e3a8a]",
+    "border border-[color:var(--ring)] bg-[color:var(--bg-surface)] text-[color:var(--brand)] hover:bg-[color:var(--bg-muted)] focus-visible:outline-[color:var(--ring)]",
   outline:
-    "border border-[#1e3a8a] bg-white text-[#1e3a8a] hover:bg-[#eef2ff] focus-visible:outline-[#1e3a8a]",
+    "border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] text-[color:var(--brand)] hover:bg-[color:var(--bg-muted)] focus-visible:outline-[color:var(--ring)]",
   ghost:
-    "text-[#1e3a8a] hover:bg-[#eef2ff] focus-visible:outline-[#1e3a8a] border border-transparent",
+    "border border-transparent text-[color:var(--brand)] hover:bg-[color:var(--bg-muted)] focus-visible:outline-[color:var(--ring)]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -47,8 +47,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     if (asChild && isValidElement(children)) {
       const child = children as ReactElement<{ className?: string }>;
 
-      return cloneElement(child as ReactElement, {
-        ...restProps,
+      return cloneElement(child as ReactElement<Record<string, unknown>>, {
+        ...(restProps as Record<string, unknown>),
         className: cn(child.props.className, baseClasses),
       });
     }

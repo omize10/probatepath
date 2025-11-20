@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar";
 import { cn } from "@/lib/utils";
 import { Footer } from "@/components/footer";
 import { Providers } from "@/components/providers";
+import { auth } from "@/lib/auth";
 
 import "./globals.css";
 
@@ -33,7 +34,8 @@ interface RootLayoutProps {
   children: ReactNode;
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const session = await auth();
   return (
     <html lang="en" className="bg-[#f7f8fa] text-[#0f172a]">
       <body
@@ -43,7 +45,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           dmSerif.variable,
         )}
       >
-        <Providers>
+        <Providers session={session}>
           <div className="relative flex min-h-screen flex-col">
             <Navbar />
             <main

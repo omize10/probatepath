@@ -75,6 +75,8 @@ export function Summary({ draft }: SummaryProps) {
         { label: "Codicil details", value: will.codicilDetails || "None shared" },
         { label: "Notary support needed", value: formatBoolean(will.notaryNeeded) },
         { label: "Probate registry", value: will.probateRegistry || "Not decided" },
+        { label: "Date on the physical will", value: will.physicalWillDate || "Not provided" },
+        { label: "Electronic will signing date", value: will.electronicWillDate || "Not provided" },
         { label: "Target filing date", value: will.expectedFilingDate || "Not set" },
         { label: "Real property details", value: will.realPropertyDetails || "Not provided" },
         { label: "Liabilities / debts", value: will.liabilities || "Not provided" },

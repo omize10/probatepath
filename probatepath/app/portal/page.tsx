@@ -1,336 +1,153 @@
 'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { ArrowRight, Download, FileText, HelpCircle, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollFade } from "@/components/scroll-fade";
-import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTrigger } from "@/components/ui/sheet";
+import { PortalShell } from "@/components/portal/PortalShell";
+import { ProgressRing } from "@/components/portal/ProgressRing";
+import { DraftStatusCard } from "@/components/portal/DraftStatusCard";
+import { usePortalStore } from "@/lib/portal/store";
+import { portalChecklistItems } from "@/lib/portal/mock";
+import { downloadJson } from "@/lib/portal/docs";
 import { useToast } from "@/components/ui/toast";
-import { deriveDraftStatus, loadChecklist, setChecklistItem, clearChecklist, type ChecklistState } from "@/lib/portal/storage";
-import { mockMarkComplete } from "@/lib/mock";
-import type { IntakeDraft } from "@/lib/intake/types";
 
-const CHECKLIST_ITEMS = [
+const quickActions = [
   {
-    id: "will-search",
-    title: "Will search packet",
-    description: "Download the wills registry request template and prepare the envelope.",
-    details: [
-      "Confirm you have the latest will or send a registry search",
-      "Print the cover letter and add executor ID photocopies",
-      "Use the prepaid envelope label from the pack",
-    ],
-    image: "/images/steps-1.jpg",
+    label: "Resume intake",
+    description: "Pick up where you left off and autosave every edit.",
+    href: "/portal/intake",
+    icon: RefreshCcw,
   },
   {
-    id: "intake",
-    title: "Intake completed",
-    description: "Finish the online intake so specialists can review for gaps.",
-    details: [
-      "All executor and deceased questions answered",
-      "Assets/liabilities notes shared",
-      "Uploaded supporting PDFs if available",
-    ],
-    image: "/images/steps-2.jpg",
+    label: "How to assemble",
+    description: "Print order, signature map, and registry tips.",
+    href: "/portal/how-to-assemble",
+    icon: FileText,
   },
   {
-    id: "pack-generated",
-    title: "Pack generated",
-    description: "Your filing-ready pack is created with signing tabs and notices.",
-    details: [
-      "Forms P1, P3/P4, P9, P10/P11 prepared",
-      "Cover letter customised for your registry",
-      "Notices bundled with mail labels",
-    ],
-    image: "/images/steps-3.jpg",
+    label: "Download summary (JSON)",
+    description: "Export everything stored in this browser.",
+    action: "download",
+    icon: Download,
   },
   {
-    id: "notarization",
-    title: "Notarization booked",
-    description: "Coordinate a $200 flat appointment with Open Door Law.",
-    details: [
-      "Bring original will, codicils, and ID",
-      "Executor signs the affidavit in front of the lawyer",
-      "Confirm two pieces of ID are ready",
-    ],
-    image: "/images/notary.jpg",
+    label: "Contact us",
+    description: "hello@probatepath.ca — BC probate specialists.",
+    href: "mailto:hello@probatepath.ca",
+    icon: HelpCircle,
   },
-  {
-    id: "assemble-mail",
-    title: "Assemble & mail",
-    description: "Print, tab, and courier your package with tracking.",
-    details: [
-      "Use the checklist to stack documents correctly",
-      "Add notarised originals and certified copies",
-      "Courier to the selected Supreme Court registry",
-    ],
-    image: "/images/mail.jpg",
-  },
-  {
-    id: "defects",
-    title: "Defect letters",
-    description: "If the court requests changes, track and resolve them quickly.",
-    details: [
-      "Upload a photo of the letter",
-      "We highlight what to fix inside your pack",
-      "Send replacements via courier",
-    ],
-    image: "/images/success.jpg",
-  },
-] as const;
+];
 
-type PortalSummary = {
-  id: string;
-  draft: IntakeDraft | null;
-};
-
-type PortalSummaryResponse = {
-  matter: {
-    id: string;
-    draft: { payload: IntakeDraft | null } | null;
-    pack: { zipUrl: string | null } | null;
-    willSearch: Array<{ packetUrl: string | null }> | null;
-  } | null;
-};
-
-type SummaryFileState = {
-  packetUrl: string | null;
-  packUrl: string | null;
-};
-
-export default function PortalPage() {
+export default function PortalDashboardPage() {
   const { toast } = useToast();
-  const { data: session, status } = useSession();
-  const [checklist, setChecklist] = useState<ChecklistState>({});
-  const [summary, setSummary] = useState<PortalSummary | null>(null);
-  const [files, setFiles] = useState<SummaryFileState>({ packetUrl: null, packUrl: null });
+  const { draft, checklist } = usePortalStore((state) => ({ draft: state.draft, checklist: state.checklist }));
+  const nextItem = portalChecklistItems.find((item) => !checklist[item.id]?.completed);
 
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      setChecklist(loadChecklist());
-    });
-    return () => cancelAnimationFrame(frame);
-  }, []);
-
-  useEffect(() => {
-    if (status !== "authenticated") return;
-
-    let active = true;
-
-    const loadSummary = async () => {
-      try {
-        const res = await fetch("/api/portal/summary");
-        if (!res.ok) return;
-        const data: PortalSummaryResponse = await res.json();
-        if (!active || !data.matter) return;
-
-        setSummary({
-          id: data.matter.id,
-          draft: data.matter.draft?.payload ?? null,
-        });
-        setFiles({
-          packetUrl: data.matter.willSearch?.[0]?.packetUrl ?? null,
-          packUrl: data.matter.pack?.zipUrl ?? null,
-        });
-      } catch {
-        // ignore network errors
-      }
-    };
-
-    void loadSummary();
-
-    return () => {
-      active = false;
-    };
-  }, [status]);
-
-  const draftStatus = useMemo(() => deriveDraftStatus(summary?.draft ?? null), [summary]);
-  const matterId = summary?.id ?? null;
-
-  const handleMarkComplete = async (id: string) => {
-    if (matterId && id === "will-search") {
-      const res = await fetch("/api/will-search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matterId }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        setFiles((prev) => ({ ...prev, packetUrl: json.packetUrl }));
-      }
-    } else if (matterId && id === "pack-generated") {
-      const res = await fetch("/api/pack", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matterId }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        setFiles((prev) => ({ ...prev, packUrl: json.zipUrl }));
-      }
-    } else {
-      toast({ title: "Saving…" });
-      await mockMarkComplete();
-    }
-    const next = setChecklistItem(id, true);
-    setChecklist({ ...next });
-    toast({ title: "Marked complete", intent: "success" });
+  const handleDownloadSummary = () => {
+    downloadJson("probatepath-summary.json", draft);
+    toast({ title: "Summary ready", description: "Check your downloads folder.", intent: "success" });
   };
-
-  const handleReset = () => {
-    clearChecklist();
-    setChecklist({});
-    toast({ title: "Progress reset", description: "Checklist progress cleared on this device." });
-  };
-
-  if (status === "loading") {
-    return <p className="text-sm text-[#495067]">Loading portal…</p>;
-  }
-
-  if (!session) {
-    return (
-      <div className="space-y-6 pb-16">
-        <h1 className="font-serif text-4xl text-[#0f172a]">Portal</h1>
-        <p className="max-w-2xl text-base text-[#495067]">
-          Sign in to your portal to view the live checklist. We only store details on this device.
-        </p>
-        <Button asChild className="w-fit bg-[#ff6a00] text-white hover:bg-[#e45f00]">
-          <Link href="/signin">Go to sign in</Link>
-        </Button>
-      </div>
-    );
-  }
 
   return (
-    <div className="space-y-10 pb-16">
-      <div className="grid gap-6 lg:grid-cols-[0.7fr_0.3fr]">
-        <Card className="border-[#d7ddec]">
-          <CardHeader>
-            <CardTitle>Welcome back</CardTitle>
-            <CardDescription>Your portal snapshot stays private inside this browser.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-6 lg:grid-cols-[0.6fr_0.4fr]">
-            <div className="space-y-4 text-sm text-[#0f172a]">
-              <p>
-                Email: <span className="font-semibold">{session.user?.email ?? ""}</span>
-              </p>
-              <p>
-                Draft status: <span className="font-semibold">{draftStatus}</span>
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/start">Resume intake</Link>
-                </Button>
-                {matterId ? (
-                  <Button asChild variant="ghost" size="sm">
-                    <Link href={`/portal/how-to-assemble?matterId=${matterId}`}>
-                      How to assemble & file
+    <PortalShell
+      title="Welcome back—let’s finish your probate packet."
+      description="Everything here runs locally. Keep this tab open while you complete intake, assemble documents, and track registry follow-ups."
+      actions={
+        <Button asChild>
+          <Link href="/portal/intake">Resume intake</Link>
+        </Button>
+      }
+    >
+      <div className="grid gap-6 lg:grid-cols-[0.5fr_0.5fr]">
+        <DraftStatusCard />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[0.5fr_0.5fr]">
+        <ProgressRing value={draft.progress} label="Overall progress" />
+        <div className="portal-card space-y-4 p-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Local autosave</p>
+          <p className="text-2xl font-serif text-[color:var(--ink)]">Everything stays on this device.</p>
+          <p className="text-sm text-[color:var(--ink-muted)]">
+            Last saved {draft.lastSaved ? new Date(draft.lastSaved).toLocaleString() : "just now"}. Use the quick export if you want a JSON backup.
+          </p>
+          <Button type="button" variant="secondary" onClick={handleDownloadSummary}>
+            Export JSON
+          </Button>
+        </div>
+      </div>
+
+      <section className="mt-10 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Quick actions</p>
+            <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Everything you need today</h2>
+          </div>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          {quickActions.map((action) => {
+            const Icon = action.icon;
+            const isDownload = action.action === "download";
+            const card = (
+              <div className="portal-card flex h-full flex-col p-5">
+                <div className="flex items-center gap-3 text-sm font-semibold text-[color:var(--ink)]">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[color:var(--bg-muted)] text-[color:var(--brand-navy)]">
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  {action.label}
+                </div>
+                <p className="mt-3 flex-1 text-sm text-[color:var(--ink-muted)]">{action.description}</p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="mt-4 justify-start px-0 text-[color:var(--brand-navy)] hover:bg-transparent hover:underline"
+                  onClick={isDownload ? handleDownloadSummary : undefined}
+                  asChild={Boolean(action.href)}
+                >
+                  {action.href ? (
+                    <Link href={action.href}>
+                      Go <ArrowRight className="ml-2 inline h-4 w-4" aria-hidden="true" />
                     </Link>
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-            <div className="relative h-36 overflow-hidden rounded-2xl bg-[#0c3b6c]">
-              <Image src="/images/portal-hero.jpg" alt="Portal preview" fill className="object-cover opacity-80" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-[#d7ddec]">
-          <CardHeader>
-            <CardTitle>Actions</CardTitle>
-            <CardDescription>Manage your checklist state.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {matterId ? (
-              <Button asChild className="w-full bg-[#ff6a00] text-white hover:bg-[#e45f00]">
-                <Link href={`/portal/how-to-assemble?matterId=${matterId}`}>Open how-to guide</Link>
-              </Button>
-            ) : null}
-            <Button variant="outline" className="w-full" onClick={handleReset}>
-              Reset checklist
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="font-serif text-3xl text-[#0f172a]">Rolling checklist</h2>
-        <p className="text-sm text-[#495067]">
-          Follow each step and mark it complete. Everything saves locally so you can resume anytime.
-        </p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        {CHECKLIST_ITEMS.map((item) => {
-          const completed = checklist[item.id];
-          return (
-            <ScrollFade key={item.id} className="h-full">
-              <Card className="flex h-full flex-col border-[#d7ddec]">
-                <CardHeader className="space-y-2">
-                  <CardTitle className="flex items-center justify-between text-lg">
-                    {item.title}
-                    <span className={completed ? "text-xs font-semibold text-[#0c3b6c]" : "text-xs text-[#94a3b8]"}>
-                      {completed ? "Completed" : "Pending"}
+                  ) : (
+                    <span>
+                      Go <ArrowRight className="ml-2 inline h-4 w-4" aria-hidden="true" />
                     </span>
-                  </CardTitle>
-                  <CardDescription>{item.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="mt-auto space-y-4">
-                  <div className="relative h-36 overflow-hidden rounded-2xl border border-[#e2e8f0]">
-                    <Image src={item.image} alt={item.title} fill className="object-cover" />
-                  </div>
-                  <Sheet>
-                    <SheetTrigger asChild>
-                      <Button variant="outline" className="w-full">
-                        View details
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent side="right" className="w-full max-w-md overflow-y-auto">
-                      <SheetHeader>
-                        <CardTitle className="text-left">{item.title}</CardTitle>
-                        <CardDescription className="text-left">{item.description}</CardDescription>
-                      </SheetHeader>
-                      <div className="mt-6 space-y-4">
-                        {item.details.map((detail) => (
-                          <div key={detail} className="flex items-start gap-3">
-                            <span className="mt-1 h-2 w-2 rounded-full bg-[#ff6a00]" />
-                            <p className="text-sm text-[#0f172a]">{detail}</p>
-                          </div>
-                        ))}
-                        {item.id === "will-search" && files.packetUrl ? (
-                          <Link href={files.packetUrl} className="text-sm font-semibold text-[#0c3b6c]" target="_blank">
-                            Download packet
-                          </Link>
-                        ) : null}
-                        {item.id === "pack-generated" && files.packUrl ? (
-                          <Link href={files.packUrl} className="text-sm font-semibold text-[#0c3b6c]" target="_blank">
-                            Download pack
-                          </Link>
-                        ) : null}
-                        <Button
-                          className="w-full bg-[#ff6a00] text-white hover:bg-[#e45f00]"
-                          onClick={() => handleMarkComplete(item.id)}
-                          disabled={completed}
-                        >
-                          {completed ? "Already completed" : "Mark complete"}
-                        </Button>
-                        <SheetClose asChild>
-                          <Button variant="ghost" className="w-full">
-                            Close
-                          </Button>
-                        </SheetClose>
-                      </div>
-                    </SheetContent>
-                  </Sheet>
-                </CardContent>
-              </Card>
-            </ScrollFade>
-          );
-        })}
-      </div>
-    </div>
+                  )}
+                </Button>
+              </div>
+            );
+
+            return <div key={action.label}>{card}</div>;
+          })}
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <div className="portal-card space-y-4 p-6">
+            <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Next step</p>
+            {nextItem ? (
+              <div className="space-y-4">
+                <h3 className="font-serif text-2xl text-[color:var(--ink)]">{nextItem.title}</h3>
+                <p className="text-sm text-[color:var(--ink-muted)]">{nextItem.description}</p>
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild>
+                    <Link href={nextItem.route}>Start now</Link>
+                  </Button>
+                  <Button asChild variant="secondary">
+                    <Link href="/portal/process">See the full checklist</Link>
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <h3 className="font-serif text-2xl text-[color:var(--ink)]">Nice work — everything is marked done.</h3>
+                <p className="text-sm text-[color:var(--ink-muted)]">Download your documents or keep tracking registry updates in the help area.</p>
+                <Button asChild>
+                  <Link href="/portal/documents">Open documents</Link>
+                </Button>
+              </div>
+            )}
+        </div>
+      </section>
+    </PortalShell>
   );
 }

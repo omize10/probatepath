@@ -18,6 +18,20 @@ export function Footer() {
               hello@probatepath.ca
             </a>
           </p>
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Link
+              href="/create-account"
+              className="rounded-full border border-[#1e3a8a] px-5 py-2 text-sm font-semibold text-[#1e3a8a] transition hover:bg-[#1e3a8a] hover:text-white"
+            >
+              Create account
+            </Link>
+            <Link
+              href="/portal"
+              className="rounded-full bg-[#ff6a00] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#e45f00]"
+            >
+              My portal
+            </Link>
+          </div>
         </div>
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#1e3a8a]">Explore</p>
@@ -38,7 +52,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/start" className="transition hover:text-[#1e3a8a]">
+              <Link href="/create-account" className="transition hover:text-[#1e3a8a]">
                 Start intake
               </Link>
             </li>

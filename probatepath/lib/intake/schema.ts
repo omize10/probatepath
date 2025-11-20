@@ -98,6 +98,8 @@ export const willSchema = z.object({
   notaryNeeded: z.enum(["yes", "no"]),
   probateRegistry: z.string().trim(),
   expectedFilingDate: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  physicalWillDate: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  electronicWillDate: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
   realPropertyDetails: z.string().trim(),
   liabilities: z.string().trim(),
   bankAccounts: z.string().trim(),

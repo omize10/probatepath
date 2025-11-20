@@ -15,6 +15,10 @@ export async function POST(request: Request) {
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const userId = (session.user as { id?: string })?.id;
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const json = await request.json();
   const input = BodySchema.safeParse(json);
   if (!input.success) {
@@ -22,7 +26,7 @@ export async function POST(request: Request) {
   }
 
   const matter = await prisma.matter.findFirst({
-    where: { id: input.data.matterId, userId: session.user.id },
+    where: { id: input.data.matterId, userId },
   });
   if (!matter) {
     return NextResponse.json({ error: "Matter not found" }, { status: 404 });
@@ -30,20 +34,24 @@ export async function POST(request: Request) {
 
   const placeholder = await savePlaceholder("packet");
 
-  const record = await prisma.willSearchRequest.upsert({
-    where: { matterId: matter.id },
-    create: {
-      matterId: matter.id,
-      status: "GENERATED",
-      packetUrl: placeholder.url,
-    },
-    update: {
-      status: "GENERATED",
-      packetUrl: placeholder.url,
-    },
+  const record = await prisma.$transaction(async (tx) => {
+    const existing = await tx.willSearchRequest.findFirst({ where: { matterId: matter.id } });
+    if (existing) {
+      return tx.willSearchRequest.update({
+        where: { id: existing.id },
+        data: { status: "GENERATED", packetUrl: placeholder.url },
+      });
+    }
+    return tx.willSearchRequest.create({
+      data: {
+        matterId: matter.id,
+        status: "GENERATED",
+        packetUrl: placeholder.url,
+      },
+    });
   });
 
-  await logAudit({ matterId: matter.id, actorId: session.user.id, action: "WILL_SEARCH_GENERATED" });
+  await logAudit({ matterId: matter.id, actorId: userId, action: "WILL_SEARCH_GENERATED" });
 
   return NextResponse.json({ packetUrl: record.packetUrl });
 }

@@ -13,6 +13,10 @@ export async function GET(request: Request) {
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const userId = (session.user as { id?: string })?.id;
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { searchParams } = new URL(request.url);
   const params = Object.fromEntries(searchParams);
   const input = QuerySchema.safeParse(params);
@@ -21,7 +25,7 @@ export async function GET(request: Request) {
   }
 
   const matter = await prisma.matter.findFirst({
-    where: { id: input.data.matterId, userId: session.user.id },
+    where: { id: input.data.matterId, userId },
     include: {
       willSearch: true,
       pack: true,

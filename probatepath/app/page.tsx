@@ -83,38 +83,41 @@ const miniFaq = [
 export default function HomePage() {
   return (
     <div className="space-y-24 pb-24">
-      <ScrollFade as="section" id="hero" className="full-bleed relative min-h-screen overflow-hidden -mt-24 sm:-mt-28">
-        <Image
-          src="/images/hero.jpg"
-          alt="Executor reviewing a probate package on a laptop"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/45 to-[#0f172a]/50" />
-        <div className="relative z-10 flex min-h-[90vh] flex-col justify-center px-6 py-16 text-white sm:px-12 lg:px-20">
-          <p className="text-sm font-semibold uppercase tracking-[0.4em] text-white/70">British Columbia</p>
-          <h1 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl">BC probate documents in hours.</h1>
-          <p className="mt-6 max-w-2xl text-lg text-white/85">
-            Fixed 2,500 CAD. You file. We prepare. Start online in minutes and get a filing-ready package assembled by BC probate
-            specialists with Canadian hosting and encryption.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="bg-[#ff6a00] text-white hover:bg-[#e45f00]">
-              <Link href="/start">Start now</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="border border-white/40 bg-transparent text-white hover:bg-white/10"
-            >
-              <Link href="/how-it-works">How it works</Link>
-            </Button>
-          </div>
-        </div>
-      </ScrollFade>
+     <ScrollFade
+  as="section"
+  id="hero"
+  className="full-bleed relative overflow-hidden -mt-24 sm:-mt-28 min-h-[70vh] sm:min-h-[80vh] md:min-h-[90vh] lg:min-h-screen"
+>
+  <Image
+    src="/images/Main_Img_Header.jpg"
+    alt="Executor filling in a document"
+    fill
+    priority
+    sizes="100vw"
+    className="object-cover object-[center_60%]"
+  />
+
+  {/* subtle vignette so buttons stay readable without crushing the image */}
+  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/35 to-[#0f172a]/40" />
+
+  {/* BUTTONS ONLY */}
+  <div className="relative z-10 flex min-h-[70vh] sm:min-h-[80vh] md:min-h-[90vh] lg:min-h-screen items-end px-6 pb-10 sm:px-12 lg:px-20">
+    <div className="flex gap-3">
+      <Button asChild size="lg" className="bg-[#ff6a00] text-white hover:bg-[#e45f00]">
+        <Link href="/create-account">Start now</Link>
+      </Button>
+
+      {/* White secondary button */}
+      <Button
+        asChild
+        size="lg"
+        className="bg-white text-[#0f172a] hover:bg-white/90 shadow-sm border-0"
+      >
+        <Link href="/how-it-works">How it works</Link>
+      </Button>
+    </div>
+  </div>
+</ScrollFade>
 
       <ScrollFade
         as="section"
@@ -215,7 +218,7 @@ export default function HomePage() {
           </ul>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="bg-[#ff6a00] text-white hover:bg-[#e45f00]">
-              <Link href="/start">Start intake</Link>
+              <Link href="/create-account">Start intake</Link>
             </Button>
             <Button
               asChild

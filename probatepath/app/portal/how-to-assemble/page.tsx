@@ -1,247 +1,134 @@
 'use client';
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { GripVertical, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ScrollFade } from "@/components/scroll-fade";
+import { PortalShell } from "@/components/portal/PortalShell";
+import { assembleSections, portalDocuments, printOrder } from "@/lib/portal/mock";
+import { downloadDocHtml } from "@/lib/portal/docs";
+import { setChecklistItem, usePortalStore } from "@/lib/portal/store";
 import { useToast } from "@/components/ui/toast";
-import { mockBookNotary, mockCreatePack, mockGeneratePacket, mockMarkComplete } from "@/lib/mock";
-
-const SECTIONS = [
-  {
-    key: "will-search",
-    title: "Will search (request packet)",
-    body:
-      "Generate the registry request letter, envelope labels, and required ID checklist. Drop it off at any Service BC office or mail it with tracking.",
-    image: "/images/envelope.jpg",
-    actionLabel: "Generate packet",
-    completionText: "Packet generated",
-  },
-  {
-    key: "notary",
-    title: "Notarization @ Open Door Law",
-    body:
-      "Book the $200 flat notarization appointment. Arrive with the original will, ID, and unsigned affidavits. We highlight where to sign.",
-    image: "/images/notary.jpg",
-    actionLabel: "Book appointment",
-    completionText: "Appointment booked",
-  },
-  {
-    key: "print-pack",
-    title: "Print & label your pack",
-    body:
-      "Download your latest pack (P1, P3/P4, P9, P10/P11, notices) and follow the signing map. Use the provided labels for each envelope.",
-    image: "/images/labels.jpg",
-    actionLabel: "Create pack",
-    completionText: "Pack ready",
-  },
-  {
-    key: "mail-track",
-    title: "Mail & track",
-    body:
-      "We recommend courier delivery to the registry. Stick the shipping label, keep the tracking number, and note estimated arrival.",
-    image: "/images/mail.jpg",
-    actionLabel: "Mark as mailed",
-    completionText: "Parcel sent",
-  },
-  {
-    key: "defects",
-    title: "Defect letters",
-    body:
-      "If the court sends a defect letter, upload a copy so we can highlight fixes. Respond quickly to avoid delays.",
-    image: "/images/success.jpg",
-    actionLabel: "Mark defect resolved",
-    completionText: "Defect cleared",
-  },
-] as const;
-
-const CONFETTI_PARTICLES = Array.from({ length: 14 }, (_, index) => ({
-  id: index,
-  left: `${(index * 37) % 100}%`,
-  top: `${(index * 53) % 100}%`,
-  delay: `${((index * 13) % 10) / 10}s`,
-}));
-
-function Confetti() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {CONFETTI_PARTICLES.map((particle) => (
-        <span
-          key={particle.id}
-          className="absolute h-2 w-2 rounded-full bg-[#ff6a00] opacity-70"
-          style={{
-            left: particle.left,
-            top: particle.top,
-            animation: `float 3s ease-in-out infinite`,
-            animationDelay: particle.delay,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 export default function HowToAssemblePage() {
   const { toast } = useToast();
-  const searchParams = useSearchParams();
-  const matterId = searchParams.get("matterId");
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [completion, setCompletion] = useState<Record<string, boolean>>({});
-  const [actionNote, setActionNote] = useState("");
-  const atFinalScreen = currentIndex >= SECTIONS.length;
-  const effectiveIndex = atFinalScreen ? SECTIONS.length - 1 : currentIndex;
-  const currentSection = SECTIONS[effectiveIndex];
-  const totalSteps = SECTIONS.length + 1;
-  const progressBase = atFinalScreen ? SECTIONS.length : effectiveIndex + (completion[currentSection.key] ? 1 : 0);
-  const progress = (progressBase / totalSteps) * 100;
+  const completed = usePortalStore((state) => state.checklist.assemble?.completed ?? false);
+  const [celebrate, setCelebrate] = useState(false);
 
-  const handleAction = async () => {
-    switch (currentSection.key) {
-      case "will-search": {
-        if (matterId) {
-          await fetch("/api/will-search", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ matterId }),
-          });
-        } else {
-          await mockGeneratePacket();
-        }
-        setActionNote("Packet ready — check your downloads for the PDF.");
-        break;
-      }
-      case "notary": {
-        const res = await mockBookNotary();
-        setActionNote(`Appointment ID ${res.confirmation} confirmed.`);
-        break;
-      }
-      case "print-pack": {
-        if (matterId) {
-          await fetch("/api/pack", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ matterId }),
-          });
-        } else {
-          const res = await mockCreatePack();
-          setActionNote(`Pack created with ${res.pages} pages.`);
-        }
-        break;
-      }
-      case "mail-track": {
-        await mockMarkComplete();
-        setActionNote("Logged courier tracking number.");
-        break;
-      }
-      case "defects": {
-        await mockMarkComplete();
-        setActionNote("Defect workflow marked as resolved.");
-        break;
-      }
-      default:
-        break;
-    }
-    toast({ title: currentSection.completionText, intent: "success" });
-    setCompletion((prev) => ({ ...prev, [currentSection.key]: true }));
+  const printOrderWithDocs = useMemo(() => {
+    return printOrder.map((row) => ({
+      ...row,
+      doc: portalDocuments.find((doc) => doc.id === row.id),
+    }));
+  }, []);
+
+  const handleMarkComplete = () => {
+    setChecklistItem("assemble", { completed: true });
+    toast({ title: "Marked assemble complete", intent: "success" });
+    setCelebrate(true);
+    setTimeout(() => setCelebrate(false), 3200);
   };
-
-  const canGoNext = completion[currentSection.key];
-
-  const goBack = () => {
-    setCurrentIndex((prev) => Math.max(prev - 1, 0));
-  };
-  const showingFinal = atFinalScreen;
-
-  if (showingFinal) {
-    return (
-      <div className="relative overflow-hidden rounded-[32px] border border-[#e2e8f0] bg-white p-10 shadow-[0_45px_120px_-80px_rgba(15,23,42,0.4)]">
-        <Confetti />
-        <div className="relative space-y-6 text-center">
-          <h1 className="font-serif text-4xl text-[#0f172a]">All set!</h1>
-          <p className="text-base text-[#495067]">
-            Your assemble & file checklist is complete. Keep tracking courier updates and wait for the grant. Need to revisit anything?
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Button asChild variant="outline">
-              <Link href="/portal">Return to dashboard</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/start">Open intake wizard</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="space-y-10 pb-16">
-      <div className="space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#0c3b6c]">Assemble & file</p>
-        <h1 className="font-serif text-4xl text-[#0f172a] sm:text-5xl">Step-by-step tutorial</h1>
-        <p className="max-w-3xl text-base text-[#495067]">
-          Follow each section, trigger the action button, and then move forward. Everything stays on this device — no uploads leave your
-          browser.
-        </p>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-[#e2e8f0]">
-          <div className="h-full rounded-full bg-[#ff6a00]" style={{ width: `${progress}%` }} />
-        </div>
-      </div>
-
-      <ScrollFade as="section" className="grid gap-8 rounded-[32px] border border-[#e2e8f0] bg-white p-8 shadow-[0_45px_120px_-80px_rgba(15,23,42,0.4)] lg:grid-cols-[0.55fr_0.45fr]">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <p className="text-sm uppercase tracking-[0.3em] text-[#94a3b8]">Step {currentIndex + 1}</p>
-            <h2 className="font-serif text-3xl text-[#0f172a]">{currentSection.title}</h2>
-            <p className="text-base text-[#495067]">{currentSection.body}</p>
-          </div>
-          <div className="space-y-3 text-sm text-[#0f172a]">
-            <p>
-              Action status: {completion[currentSection.key] ? currentSection.completionText : "Not completed"}
-            </p>
-            {actionNote ? <p className="rounded-2xl bg-[#f7f8fa] px-4 py-3 text-[#0c3b6c]">{actionNote}</p> : null}
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Button className="bg-[#ff6a00] text-white hover:bg-[#e45f00]" onClick={handleAction}>
-              {currentSection.actionLabel}
-            </Button>
-            <Button variant="ghost" onClick={() => setCompletion((prev) => ({ ...prev, [currentSection.key]: true }))}>
-              Mark step complete
-            </Button>
-          </div>
-        </div>
-        <div className="relative h-80 overflow-hidden rounded-3xl border border-[#e2e8f0]">
-          <Image src={currentSection.image} alt={currentSection.title} fill className="object-cover" />
-        </div>
-      </ScrollFade>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <Button variant="ghost" disabled={currentIndex === 0} onClick={goBack}>
-          Back
-        </Button>
-        <div className="flex items-center gap-2 text-sm">
-          {SECTIONS.map((section, idx) => (
-            <span
-              key={section.key}
-              className={
-                idx === currentIndex
-                  ? "h-2 w-6 rounded-full bg-[#ff6a00]"
-                  : completion[section.key]
-                    ? "h-2 w-2 rounded-full bg-[#0c3b6c]"
-                    : "h-2 w-2 rounded-full bg-[#d7ddec]"
-              }
-            />
-          ))}
-        </div>
-        <Button
-          onClick={() => (canGoNext ? setCurrentIndex((prev) => Math.min(prev + 1, SECTIONS.length)) : undefined)}
-          disabled={!canGoNext}
+    <PortalShell
+      title="Assemble & file"
+      description="Follow these sections to move from PDFs to a fully stacked, filing-ready package."
+    >
+      <div className="space-y-10">
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="portal-card space-y-6 p-6"
         >
-          {currentIndex === SECTIONS.length - 1 ? "Finish" : "Next"}
-        </Button>
+          <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">1. Print in this exact order</p>
+          <div className="space-y-4">
+            {printOrderWithDocs.map((row, index) => (
+              <div key={row.id} className="flex flex-wrap items-center gap-4 rounded-2xl border border-[color:var(--border-muted)] bg-white px-4 py-3 shadow-sm">
+                <GripVertical className="h-5 w-5 text-[color:var(--ink-muted)]" aria-hidden="true" />
+                <div className="flex-1">
+                  <p className="text-base font-semibold text-[color:var(--ink)]">{index + 1}. {row.title}</p>
+                  <p className="text-xs text-[color:var(--ink-muted)]">{row.note}</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={!row.doc}
+                  onClick={() => row.doc && downloadDocHtml(`${row.title}.html`, row.doc.html)}
+                >
+                  Download
+                </Button>
+              </div>
+            ))}
+          </div>
+        </motion.section>
+
+        {assembleSections.map((section, index) => (
+          <motion.section
+            key={section.id}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ delay: index * 0.05, duration: 0.5 }}
+            className="portal-card grid gap-8 p-6 lg:grid-cols-[0.55fr_0.45fr]"
+          >
+            <div className="space-y-4">
+              <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">{index + 2}. {section.title}</p>
+              <p className="text-2xl font-serif text-[color:var(--ink)]">{section.title}</p>
+              <p className="text-sm text-[color:var(--ink-muted)]">{section.description}</p>
+              <ul className="mt-4 grid gap-2 text-sm text-[color:var(--ink)] sm:grid-cols-2">
+                {section.highlights.map((highlight) => (
+                  <li key={highlight} className="flex items-center gap-2">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--brand-orange)]" aria-hidden="true" />
+                    {highlight}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="relative overflow-hidden rounded-[32px] border border-[color:var(--border-muted)] bg-white">
+              <Image src={section.image} alt={section.title} width={960} height={720} className="h-full w-full object-cover" />
+            </div>
+          </motion.section>
+        ))}
+
+        <div className="relative overflow-hidden rounded-[40px] border border-white/20 bg-gradient-to-r from-[#ff7a18] to-[#ffb347] p-6 text-[#1b0c02]">
+          {celebrate ? <Confetti /> : null}
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em]">Finalise assemble step</p>
+              <p className="text-3xl font-serif">Ready to mark this complete?</p>
+              <p className="text-sm text-[#4b2b13]">This updates the rolling checklist and unlocks filing checklist downloads.</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button type="button" onClick={handleMarkComplete} disabled={completed}>
+                {completed ? "Already marked" : "Mark assemble complete"}
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/portal/documents">Open documents</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
+    </PortalShell>
+  );
+}
+
+function Confetti() {
+  return (
+    <div className="pointer-events-none absolute inset-0">
+      {[...Array(20)].map((_, index) => (
+        <motion.span
+          key={index}
+          className="absolute h-2 w-2 rounded-full bg-white/80"
+          initial={{ opacity: 0, y: 0 }}
+          animate={{ opacity: 1, y: -80 - index * 5, x: (index - 10) * 6 }}
+          transition={{ duration: 1.6, delay: index * 0.05 }}
+        />
+      ))}
+      <Sparkles className="absolute right-4 top-4 h-6 w-6 text-[color:var(--accent)]" aria-hidden="true" />
     </div>
   );
 }

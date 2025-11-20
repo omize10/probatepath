@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/src/server/db/prisma";
 import { ResumeHydrator } from "@/components/resume-hydrator";
+import { defaultIntakeDraft, type IntakeDraft } from "@/lib/intake/types";
 
 interface ResumePageProps {
   params: { token: string };
@@ -17,9 +18,10 @@ export default async function ResumePage({ params }: ResumePageProps) {
   if (data.expiresAt < new Date()) {
     notFound();
   }
+  const draftPayload = (data.matter.draft.payload as IntakeDraft | null) ?? defaultIntakeDraft;
   return (
     <ResumeHydrator
-      draft={data.matter.draft}
+      draft={draftPayload}
       matterId={data.matterId}
       clientKey={data.matter.clientKey}
     />

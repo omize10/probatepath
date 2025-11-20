@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import type { StepId } from "@/lib/intake/steps";
 import { Progress } from "@/components/wizard/Progress";
 import { useWizard } from "@/components/wizard/use-wizard";
+import useIsWizardDirty from '@/lib/intake/use-dirty';
+import useUnsavedGuard from '@/lib/hooks/use-unsaved-guard';
 
 interface StepShellProps extends FormHTMLAttributes<HTMLFormElement> {
   stepId: StepId;
@@ -46,6 +48,12 @@ export function StepShell({
 
   const showBack = Boolean(previous) && !hideBack;
   const showNext = !hideNext;
+
+  // unsaved guard: warn if the wizard has unsaved changes
+  const isDirty = useIsWizardDirty();
+  // call the guard (it internally attaches listeners)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { setIgnoreUntil } = useUnsavedGuard({ isDirty });
 
   return (
     <form

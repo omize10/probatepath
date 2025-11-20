@@ -15,13 +15,17 @@ export async function POST(request: Request) {
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const userId = (session.user as { id?: string })?.id;
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const json = await request.json();
   const input = BodySchema.safeParse(json);
   if (!input.success) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  const matter = await prisma.matter.findFirst({ where: { id: input.data.matterId, userId: session.user.id } });
+  const matter = await prisma.matter.findFirst({ where: { id: input.data.matterId, userId } });
   if (!matter) {
     return NextResponse.json({ error: "Matter not found" }, { status: 404 });
   }
@@ -41,7 +45,7 @@ export async function POST(request: Request) {
   });
 
   await prisma.matter.update({ where: { id: matter.id }, data: { status: "PACK_READY" } });
-  await logAudit({ matterId: matter.id, actorId: session.user.id, action: "PACK_GENERATED" });
+  await logAudit({ matterId: matter.id, actorId: userId, action: "PACK_GENERATED" });
 
   return NextResponse.json({ zipUrl: pack.zipUrl });
 }

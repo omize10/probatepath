@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/src/server/db/prisma";
 import { authOptions } from "@/lib/auth";
-import { logAudit } from "@/lib/audit";
+import { logAudit, logSecurityAudit } from "@/lib/audit";
 
 type StepId = "welcome" | "executor" | "deceased" | "will";
 
@@ -78,40 +78,58 @@ async function ensureMatter(clientKey: string, matterId?: string, userId?: strin
 
 function mapDraftUpdates(step: string, data: Record<string, unknown>) {
   const payload = data ?? {};
-  const update: Partial<Prisma.IntakeDraftUncheckedUpdateInput> = {
+  const update: Partial<Prisma.IntakeDraftUncheckedCreateInput> = {
     payload: payload as Prisma.InputJsonValue,
   };
 
   if (step === "welcome") {
-    update.email = payload.email;
+    if (typeof payload.email === "string") {
+      update.email = payload.email;
+    }
     update.consent = Boolean(payload.consent);
   }
   if (step === "executor") {
-    update.exFullName = payload.fullName ?? update.exFullName;
-    update.exPhone = payload.phone ?? null;
-    update.exCity = payload.city ?? update.exCity;
-    update.exRelation = payload.relationToDeceased ?? update.exRelation;
+    if (typeof payload.fullName === "string") {
+      update.exFullName = payload.fullName;
+    }
+    update.exPhone = typeof payload.phone === "string" ? payload.phone : null;
+    if (typeof payload.city === "string") {
+      update.exCity = payload.city;
+    }
+    if (typeof payload.relationToDeceased === "string") {
+      update.exRelation = payload.relationToDeceased;
+    }
   }
   if (step === "deceased") {
-    update.decFullName = payload.fullName ?? update.decFullName;
-    if (payload.dateOfDeath) {
-      update.decDateOfDeath = new Date(payload.dateOfDeath as string);
+    if (typeof payload.fullName === "string") {
+      update.decFullName = payload.fullName;
     }
-    update.decCityProv = payload.cityProvince ?? update.decCityProv;
+    if (typeof payload.dateOfDeath === "string" && payload.dateOfDeath) {
+      update.decDateOfDeath = new Date(payload.dateOfDeath);
+    }
+    if (typeof payload.cityProvince === "string") {
+      update.decCityProv = payload.cityProvince;
+    }
     if (payload.hadWill !== undefined) {
       update.hadWill = payload.hadWill === "yes" || payload.hadWill === true;
     }
   }
   if (step === "will") {
-    update.willLocation = payload.willLocation ?? update.willLocation;
-    update.estateValueRange = payload.estateValueRange ?? update.estateValueRange;
+    if (typeof payload.willLocation === "string") {
+      update.willLocation = payload.willLocation;
+    }
+    if (typeof payload.estateValueRange === "string") {
+      update.estateValueRange = payload.estateValueRange;
+    }
     if (payload.anyRealProperty !== undefined) {
       update.anyRealProperty = payload.anyRealProperty === "yes" || payload.anyRealProperty === true;
     }
     if (payload.multipleBeneficiaries !== undefined) {
       update.multipleBeneficiaries = payload.multipleBeneficiaries === "yes" || payload.multipleBeneficiaries === true;
     }
-    update.specialCircumstances = payload.specialCircumstances ?? update.specialCircumstances;
+    if (typeof payload.specialCircumstances === "string") {
+      update.specialCircumstances = payload.specialCircumstances;
+    }
   }
 
   return update;
@@ -125,9 +143,11 @@ export async function POST(request: Request) {
   }
   const { clientKey, matterId, data, step } = input;
   const session = await getServerSession(authOptions);
+  const userId = (session?.user as { id?: string })?.id;
+  const draftUpdates = mapDraftUpdates(step, data);
 
   try {
-    const matter = await ensureMatter(clientKey, matterId, session?.user?.id);
+    const matter = await ensureMatter(clientKey, matterId, userId);
 
     await prisma.intakeDraft.upsert({
       where: { matterId: matter.id },
@@ -147,17 +167,27 @@ export async function POST(request: Request) {
         anyRealProperty: false,
         multipleBeneficiaries: false,
         specialCircumstances: null,
-        ...mapDraftUpdates(step, data),
+        ...draftUpdates,
       },
-      update: mapDraftUpdates(step, data),
+      update: draftUpdates as Prisma.IntakeDraftUncheckedUpdateInput,
     });
 
     await logAudit({
       matterId: matter.id,
-      actorId: session?.user?.id,
+      actorId: userId,
       action: `INTAKE_${step.toUpperCase()}`,
       meta: { step },
     });
+
+      // Log security audit for user intake activity
+      if (userId) {
+        await logSecurityAudit({
+          userId,
+          matterId: matter.id,
+          action: "intake.save",
+          meta: { step },
+        });
+      }
 
     return NextResponse.json({ matterId: matter.id });
   } catch (error) {

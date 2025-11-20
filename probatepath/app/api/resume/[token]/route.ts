@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/server/db/prisma";
 
-export async function GET(_: Request, { params }: { params: { token: string } }) {
-  const tokenValue = params.token;
+export async function GET(_: Request, context: { params: Promise<{ token: string }> }) {
+  const { token: tokenValue } = await context.params;
   const token = await prisma.resumeToken.findUnique({
     where: { token: tokenValue },
     include: { matter: { include: { draft: true } } },

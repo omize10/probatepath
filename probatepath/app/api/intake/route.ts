@@ -1,9 +1,11 @@
 import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { prisma } from "@/src/server/db/prisma";
+import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { logAudit, logSecurityAudit } from "@/lib/audit";
+import { ensureMatter } from "@/lib/matter/server";
+import { formatIntakeDraftRecord } from "@/lib/intake/format";
 
 type StepId = "welcome" | "executor" | "deceased" | "will";
 
@@ -52,28 +54,6 @@ function isPrismaConnectionError(error: unknown) {
     return true;
   }
   return typeof message === "string" && message.includes("Can't reach database server");
-}
-
-async function ensureMatter(clientKey: string, matterId?: string, userId?: string | null) {
-  if (matterId) {
-    const existing = await prisma.matter.findFirst({ where: { id: matterId } });
-    if (existing) {
-      if (!existing.userId && userId) {
-        await prisma.matter.update({ where: { id: existing.id }, data: { userId } });
-      }
-      return existing;
-    }
-  }
-
-  const matter = await prisma.matter.upsert({
-    where: { clientKey },
-    update: userId ? { userId } : {},
-    create: {
-      clientKey,
-      userId,
-    },
-  });
-  return matter;
 }
 
 function mapDraftUpdates(step: string, data: Record<string, unknown>) {
@@ -147,7 +127,7 @@ export async function POST(request: Request) {
   const draftUpdates = mapDraftUpdates(step, data);
 
   try {
-    const matter = await ensureMatter(clientKey, matterId, userId);
+    const matter = await ensureMatter({ clientKey, matterId, userId });
 
     await prisma.intakeDraft.upsert({
       where: { matterId: matter.id },
@@ -220,7 +200,8 @@ export async function GET(request: Request) {
     if (!matter || !matter.draft) {
       return NextResponse.json({ error: "Draft not found" }, { status: 404 });
     }
-    return NextResponse.json({ matterId: matter.id, draft: matter.draft });
+    const formatted = formatIntakeDraftRecord(matter.draft);
+    return NextResponse.json({ matterId: matter.id, draft: formatted });
   } catch (error) {
     if (isPrismaConnectionError(error)) {
       console.warn("[intake] Database unavailable, returning local-only state");

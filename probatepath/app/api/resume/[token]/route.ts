@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/src/server/db/prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(_: Request, context: { params: Promise<{ token: string }> }) {
   const { token: tokenValue } = await context.params;

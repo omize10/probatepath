@@ -3,64 +3,60 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { usePortalStore } from "@/lib/portal/store";
 
 const NAV_LINKS = [
-  { href: "/portal", label: "Dashboard" },
-  { href: "/portal/process", label: "My process" },
-  { href: "/portal/how-to-assemble", label: "How to assemble" },
-  { href: "/portal/intake", label: "Intake" },
+  { href: "/portal", label: "Overview" },
+  { href: "/portal/intake", label: "Intake wizard" },
+  { href: "/portal/steps", label: "Your Steps" },
+  { href: "/portal/info", label: "Your Info" },
   { href: "/portal/documents", label: "Documents" },
   { href: "/portal/help", label: "Help" },
 ];
 
-export function PortalNav() {
-  const pathname = usePathname();
-  const { progress, ready } = usePortalStore((state) => ({
-    progress: state.draft.progress,
-    ready: state.ready,
-  }));
+type PortalNavProps = {
+  statusLabel: string;
+};
 
-  const displayStatus = ready ? `Draft saved · ${progress}%` : "Syncing";
+export function PortalNav({ statusLabel }: PortalNavProps) {
+  const pathname = usePathname();
+  const displayStatus = statusLabel || "Start intake";
 
   return (
-    <div className="rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-5 shadow-[0_25px_80px_-60px_rgba(15,23,42,0.18)]">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6 shadow-[0_25px_80px_-60px_rgba(15,23,42,0.18)]">
+      <div className="space-y-3">
         <div className="flex items-center gap-3 text-sm font-semibold text-[color:var(--ink)]">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--brand-orange)] text-[color:var(--ink)]">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--brand-ink)] text-white shadow-[0_10px_25px_-12px_rgba(15,26,42,0.55)]">
             PP
           </span>
           ProbatePath portal
         </div>
-        <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">
-          <span className="rounded-full border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] px-4 py-1">
-            {displayStatus}
-          </span>
-          <span className="hidden rounded-full border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] px-3 py-1 sm:inline-flex">
-            YOU
-          </span>
-        </div>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">{displayStatus}</p>
       </div>
-      <div className="mt-4 flex flex-wrap gap-2">
+      <nav className="mt-6 space-y-1 text-sm font-medium text-[color:var(--ink-muted)]">
         {NAV_LINKS.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== "/portal" && pathname.startsWith(`${item.href}/`));
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "rounded-full px-4 py-2 text-sm font-medium transition",
+                "flex items-center justify-between rounded-2xl px-4 py-3 transition",
                 isActive
                   ? "bg-[color:var(--bg-muted)] text-[color:var(--brand-navy)]"
-                  : "text-[color:var(--ink-muted)] hover:text-[color:var(--brand-navy)] hover:bg-[color:var(--bg-muted)]"
+                  : "text-[color:var(--ink-muted)] hover:text-[color:var(--brand-navy)] hover:bg-[color:var(--bg-muted)]",
               )}
               aria-current={isActive ? "page" : undefined}
             >
-              {item.label}
+              <span>{item.label}</span>
+              <span aria-hidden="true" className="text-xs">
+                →
+              </span>
             </Link>
           );
         })}
-      </div>
+      </nav>
     </div>
   );
 }

@@ -45,7 +45,7 @@ export function StepShell({
           <h2 className="font-serif text-3xl leading-tight text-[color:var(--ink)]">{title}</h2>
           <p className="text-base text-[color:var(--ink-muted)]">{description}</p>
           <div className="h-2 w-full overflow-hidden rounded-full bg-[color:var(--bg-muted)]">
-            <div className="h-full rounded-full bg-[color:var(--brand-orange)] transition-[width]" style={{ width: `${progress}%` }} />
+            <div className="h-full rounded-full bg-[color:var(--brand-ink)] transition-[width]" style={{ width: `${progress}%` }} />
           </div>
         </div>
         <div className="mt-8 flex-1 space-y-5 text-sm text-[color:var(--ink)]">{children}</div>

@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { Prisma } from "@prisma/client";
-import { prisma } from "@/src/server/db/prisma";
+import "server-only";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Matter-scoped audit log (existing)

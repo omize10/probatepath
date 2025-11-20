@@ -119,21 +119,21 @@ function ToastViewport({ toasts, onDismiss }: ToastViewportProps) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
             className={cn(
-              "pointer-events-auto overflow-hidden rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)]/95 p-4 text-sm text-[color:var(--ink)] shadow-[0_25px_70px_-50px_rgba(15,23,42,0.35)] backdrop-blur",
-              intent === "success" && "border-[#b7f5db] bg-[#f1fdf6]",
-              intent === "warning" && "border-[#fde68a] bg-[#fffbeb]",
-              intent === "error" && "border-[#fecaca] bg-[#fff5f5]"
+              "pointer-events-auto overflow-hidden rounded-2xl border border-[color:var(--border-muted)] bg-[rgba(255,255,255,0.95)] p-4 text-sm text-[color:var(--ink)] shadow-[0_25px_70px_-50px_rgba(15,23,42,0.35)] backdrop-blur",
+              intent === "success" && "border-[rgba(15,26,42,0.2)] bg-[#f0f3f7]",
+              intent === "warning" && "border-[#d7c9b7] bg-[#f9f4ee]",
+              intent === "error" && "border-[#d7b8b5] bg-[#fbf5f4]",
             )}
             role="status"
           >
             <div className="flex items-start gap-3">
               <div className="flex-1 space-y-1">
-                {title ? <p className="text-sm font-semibold text-[#0f172a]">{title}</p> : null}
-                {description ? <p className="text-xs text-[#4b5563]">{description}</p> : null}
+                {title ? <p className="text-sm font-semibold text-[color:var(--brand)]">{title}</p> : null}
+                {description ? <p className="text-xs text-[#445266]">{description}</p> : null}
               </div>
               <button
                 type="button"
-                className="rounded-full p-1 text-slate-400 transition hover:text-[#0f172a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a8a]"
+                className="rounded-full p-1 text-[#8c95a8] transition hover:text-[color:var(--brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand)]"
                 onClick={() => onDismiss(id)}
                 aria-label="Dismiss notification"
               >

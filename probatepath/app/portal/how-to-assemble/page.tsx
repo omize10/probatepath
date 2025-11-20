@@ -1,134 +1,142 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { GripVertical, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PortalShell } from "@/components/portal/PortalShell";
-import { assembleSections, portalDocuments, printOrder } from "@/lib/portal/mock";
-import { downloadDocHtml } from "@/lib/portal/docs";
 import { setChecklistItem, usePortalStore } from "@/lib/portal/store";
 import { useToast } from "@/components/ui/toast";
+import { useEffect, useState } from "react";
+
+const steps = [
+  {
+    id: "print",
+    title: "Print your package",
+    description: "Use the Phase 1 package from the Documents tab. Print all pages double-sided if possible.",
+    bullets: ["Stack the forms in the order shown when you preview the package.", "Keep copies for yourself before signing."],
+  },
+  {
+    id: "fill",
+    title: "Fill in anything we can’t",
+    description: "Likely just checkboxes, initials, or credit card info for official fees.",
+    bullets: ["Go through each form and add any missing dates or boxes we can’t auto-fill.", "Use black ink and write legibly."],
+  },
+  {
+    id: "sign",
+    title: "Sign and date where indicated",
+    description: "Executors need to sign the signatures section on the Green form front and back.",
+    bullets: ["Sign in the presence of a commissioner of oaths or notary as required.", "Initial every page if the forms ask for it."],
+  },
+  {
+    id: "pay",
+    title: "Pay fees & submit",
+    description: "Service BC drop-off is fastest. Courier if you can’t wait.",
+    bullets: ["Include the fee receipt page in the package before you drop it with Service BC.", "If you courier, use the address confirmed in the mailing section."],
+  },
+  {
+    id: "next",
+    title: "What happens next",
+    description: "Service BC reviews your packet and gives a filing date.",
+    bullets: ["Expect a call or email if something needs more info.", "We’ll keep the portal updated when a registry note arrives."],
+  },
+];
 
 export default function HowToAssemblePage() {
   const { toast } = useToast();
   const completed = usePortalStore((state) => state.checklist.assemble?.completed ?? false);
-  const [celebrate, setCelebrate] = useState(false);
-
-  const printOrderWithDocs = useMemo(() => {
-    return printOrder.map((row) => ({
-      ...row,
-      doc: portalDocuments.find((doc) => doc.id === row.id),
-    }));
-  }, []);
+  const [confetti, setConfetti] = useState(false);
+  const [confettiDots, setConfettiDots] = useState<Array<{ top: number; left: number }>>([]);
 
   const handleMarkComplete = () => {
     setChecklistItem("assemble", { completed: true });
     toast({ title: "Marked assemble complete", intent: "success" });
-    setCelebrate(true);
-    setTimeout(() => setCelebrate(false), 3200);
+    setConfetti(true);
+    setConfettiDots(
+      Array.from({ length: 12 }, () => ({
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+      })),
+    );
+    setTimeout(() => {
+      setConfetti(false);
+      setConfettiDots([]);
+    }, 3200);
   };
+
+  useEffect(() => {
+    return () => setConfetti(false);
+  }, []);
 
   return (
     <PortalShell
-      title="Assemble & file"
-      description="Follow these sections to move from PDFs to a fully stacked, filing-ready package."
+      title="How to assemble Phase 1"
+      description="A simple, no-jargon checklist for printing, signing, paying, and submitting your probate packet."
     >
-      <div className="space-y-10">
-        <motion.section
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="portal-card space-y-6 p-6"
-        >
-          <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">1. Print in this exact order</p>
-          <div className="space-y-4">
-            {printOrderWithDocs.map((row, index) => (
-              <div key={row.id} className="flex flex-wrap items-center gap-4 rounded-2xl border border-[color:var(--border-muted)] bg-white px-4 py-3 shadow-sm">
-                <GripVertical className="h-5 w-5 text-[color:var(--ink-muted)]" aria-hidden="true" />
-                <div className="flex-1">
-                  <p className="text-base font-semibold text-[color:var(--ink)]">{index + 1}. {row.title}</p>
-                  <p className="text-xs text-[color:var(--ink-muted)]">{row.note}</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={!row.doc}
-                  onClick={() => row.doc && downloadDocHtml(`${row.title}.html`, row.doc.html)}
-                >
-                  Download
-                </Button>
-              </div>
-            ))}
-          </div>
-        </motion.section>
+      <div className="space-y-8">
+        <div className="relative aspect-video w-full overflow-hidden rounded-[32px] border border-[color:var(--border-muted)] bg-black">
+          <iframe
+            title="How to assemble packet"
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            className="h-full w-full"
+            allow="autoplay; fullscreen"
+            loading="lazy"
+          ></iframe>
+        </div>
 
-        {assembleSections.map((section, index) => (
-          <motion.section
-            key={section.id}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ delay: index * 0.05, duration: 0.5 }}
-            className="portal-card grid gap-8 p-6 lg:grid-cols-[0.55fr_0.45fr]"
-          >
-            <div className="space-y-4">
-              <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">{index + 2}. {section.title}</p>
-              <p className="text-2xl font-serif text-[color:var(--ink)]">{section.title}</p>
-              <p className="text-sm text-[color:var(--ink-muted)]">{section.description}</p>
-              <ul className="mt-4 grid gap-2 text-sm text-[color:var(--ink)] sm:grid-cols-2">
-                {section.highlights.map((highlight) => (
-                  <li key={highlight} className="flex items-center gap-2">
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--brand-orange)]" aria-hidden="true" />
-                    {highlight}
+        <div className="space-y-4">
+          {steps.map((step, index) => (
+            <div key={step.id} className="portal-card space-y-3 p-6">
+              <div className="flex items-center justify-between">
+                <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">
+                  Step {index + 1}
+                </p>
+                <Sparkles className="h-5 w-5 text-[color:var(--brand)]" aria-hidden="true" />
+              </div>
+              <h3 className="text-2xl font-serif text-[color:var(--ink)]">{step.title}</h3>
+              <p className="text-sm text-[color:var(--ink-muted)]">{step.description}</p>
+              <ul className="grid gap-2 text-sm text-[color:var(--ink-muted)]">
+                {step.bullets.map((bullet) => (
+                  <li key={bullet} className="flex items-start gap-2">
+                    <span className="mt-1 block h-1.5 w-1.5 rounded-full bg-[color:var(--brand)]" aria-hidden="true" />
+                    <span>{bullet}</span>
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="relative overflow-hidden rounded-[32px] border border-[color:var(--border-muted)] bg-white">
-              <Image src={section.image} alt={section.title} width={960} height={720} className="h-full w-full object-cover" />
-            </div>
-          </motion.section>
-        ))}
+          ))}
+        </div>
 
-        <div className="relative overflow-hidden rounded-[40px] border border-white/20 bg-gradient-to-r from-[#ff7a18] to-[#ffb347] p-6 text-[#1b0c02]">
-          {celebrate ? <Confetti /> : null}
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-sm uppercase tracking-[0.3em]">Finalise assemble step</p>
-              <p className="text-3xl font-serif">Ready to mark this complete?</p>
-              <p className="text-sm text-[#4b2b13]">This updates the rolling checklist and unlocks filing checklist downloads.</p>
+        <div className="portal-card relative overflow-hidden space-y-4 rounded-[40px] border border-white/20 bg-gradient-to-r from-[#ff7a18] to-[#ffb347] p-6 text-white/90 shadow-[0_35px_80px_-50px_rgba(15,23,42,0.65)]">
+          {confetti ? (
+            <div className="pointer-events-none absolute inset-0">
+              {confettiDots.map((dot, index) => (
+                <span
+                  key={index}
+                  className="absolute h-2 w-2 rounded-full bg-white/70"
+                  style={{
+                    top: `${dot.top}%`,
+                    left: `${dot.left}%`,
+                    opacity: 0.7,
+                  }}
+                />
+              ))}
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Button type="button" onClick={handleMarkComplete} disabled={completed}>
-                {completed ? "Already marked" : "Mark assemble complete"}
-              </Button>
-              <Button asChild variant="secondary">
-                <Link href="/portal/documents">Open documents</Link>
-              </Button>
-            </div>
+          ) : null}
+          <div className="relative space-y-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-white/80">Finalise assemble step</p>
+            <p className="text-3xl font-serif text-white">Ready to mark this as done?</p>
+            <p className="text-sm text-white/90">Marking this updates your checklist and keeps the registry on notice.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button type="button" onClick={handleMarkComplete} disabled={completed}>
+              {completed ? "Already marked" : "Mark assemble complete"}
+            </Button>
+            <Button asChild variant="secondary">
+              <Link href="/portal/documents">Open documents</Link>
+            </Button>
           </div>
         </div>
       </div>
     </PortalShell>
-  );
-}
-
-function Confetti() {
-  return (
-    <div className="pointer-events-none absolute inset-0">
-      {[...Array(20)].map((_, index) => (
-        <motion.span
-          key={index}
-          className="absolute h-2 w-2 rounded-full bg-white/80"
-          initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: 1, y: -80 - index * 5, x: (index - 10) * 6 }}
-          transition={{ duration: 1.6, delay: index * 0.05 }}
-        />
-      ))}
-      <Sparkles className="absolute right-4 top-4 h-6 w-6 text-[color:var(--accent)]" aria-hidden="true" />
-    </div>
   );
 }

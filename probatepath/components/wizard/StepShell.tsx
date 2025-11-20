@@ -9,6 +9,8 @@ import { Progress } from "@/components/wizard/Progress";
 import { useWizard } from "@/components/wizard/use-wizard";
 import useIsWizardDirty from '@/lib/intake/use-dirty';
 import useUnsavedGuard from '@/lib/hooks/use-unsaved-guard';
+import { useIntake } from "@/lib/intake/store";
+import { calculateIntakeProgress } from "@/lib/intake/progress";
 
 interface StepShellProps extends FormHTMLAttributes<HTMLFormElement> {
   stepId: StepId;
@@ -45,6 +47,8 @@ export function StepShell({
   ...formProps
 }: StepShellProps) {
   const { steps, stepIndex, previous, goBack } = useWizard(stepId);
+  const { draft } = useIntake();
+  const overallProgress = calculateIntakeProgress(draft);
 
   const showBack = Boolean(previous) && !hideBack;
   const showNext = !hideNext;
@@ -71,8 +75,11 @@ export function StepShell({
             {description ? <p className="max-w-2xl text-sm text-[#495067]">{description}</p> : null}
           </div>
           <div className="space-y-6">{children}</div>
-          <div className="space-y-4 rounded-2xl border border-[#e2e8f0] bg-[#f7f8fa] p-4 text-xs text-[#6b7287]">
+          <div className="space-y-2 rounded-2xl border border-[#e2e8f0] bg-[#f7f8fa] p-4 text-xs text-[#6b7287]">
             <p>Your progress saves automatically on this device. You can return and finish later anytime.</p>
+            <p className="text-[0.65rem] uppercase tracking-[0.35em] text-[#94a3b8]">
+              Overall completion · {overallProgress}%
+            </p>
           </div>
           {customFooter ? (
             customFooter

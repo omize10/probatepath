@@ -60,11 +60,11 @@ export default function FAQsPage() {
   return (
     <div className="space-y-10 pb-16">
       <header className="space-y-4 text-center">
-        <Badge variant="outline" className="border-[#1e3a8a] text-[#1e3a8a]">
+        <Badge variant="outline">
           FAQs
         </Badge>
-        <h1 className="font-serif text-4xl text-[#0f172a] sm:text-5xl">Probate questions, answered plainly</h1>
-        <p className="mx-auto max-w-3xl text-base text-[#495067]">
+        <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">Probate questions, answered plainly</h1>
+        <p className="mx-auto max-w-3xl text-base text-[#333333]">
           If you don’t see your question below, email hello@probatepath.ca and we’ll respond within one business day.
         </p>
       </header>

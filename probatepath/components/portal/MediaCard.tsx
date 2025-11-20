@@ -18,7 +18,7 @@ export function MediaCard({ image, alt, caption, tips }: MediaCardProps) {
         <ul className="mt-3 space-y-2 text-sm text-[color:var(--ink-muted)]">
           {tips.map((tip) => (
             <li key={tip} className="flex items-start gap-2">
-              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[color:var(--brand-orange)]" aria-hidden="true" />
+              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[color:var(--brand-ink)]" aria-hidden="true" />
               <span>{tip}</span>
             </li>
           ))}

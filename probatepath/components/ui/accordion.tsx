@@ -87,7 +87,10 @@ export function Accordion({
   return (
     <AccordionContext.Provider value={contextValue}>
       <div
-        className={cn("divide-y divide-[#e2e8f0] rounded-3xl border border-[#e2e8f0] bg-white", className)}
+        className={cn(
+          "divide-y divide-[color:var(--border-muted)] rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)]",
+          className,
+        )}
         {...props}
       >
         {children}
@@ -109,8 +112,8 @@ export function AccordionItem({ value, className, children, ...props }: Accordio
       data-open={open ? "true" : "false"}
       className={cn(
         "overflow-hidden transition-[background-color] duration-200",
-        open && "bg-[#f7f8fa]",
-        className
+        open && "bg-[color:var(--bg-muted)]",
+        className,
       )}
       {...props}
     >
@@ -147,19 +150,19 @@ export function AccordionTrigger({ className, children, value, ...props }: Accor
     <button
       type="button"
       className={cn(
-        "flex w-full items-center justify-between gap-4 px-6 py-5 text-left text-sm font-medium text-[#0f172a] transition",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a8a]",
-        className
+        "flex w-full items-center justify-between gap-4 px-6 py-5 text-left text-sm font-medium text-[color:var(--brand)] transition",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand)]",
+        className,
       )}
       aria-expanded={open}
       onClick={() => toggleValue(value)}
       {...props}
     >
-      <span className="font-medium text-[#0f172a]">{children}</span>
+      <span className="font-medium text-[color:var(--brand)]">{children}</span>
       <ChevronDown
         className={cn(
-          "h-5 w-5 flex-none text-slate-400 transition-transform duration-200",
-          open && "rotate-180 text-[#ff6a00]"
+          "h-5 w-5 flex-none text-[#8c95a8] transition-transform duration-200",
+          open && "rotate-180 text-[color:var(--brand)]",
         )}
         aria-hidden
       />
@@ -189,7 +192,7 @@ export function AccordionContent({ className, children, value, ...props }: Accor
       aria-hidden={!open}
       {...props}
     >
-      <div className={cn("overflow-hidden pb-5 text-sm text-[#495067]", className)}>{children}</div>
+      <div className={cn("overflow-hidden pb-5 text-sm text-[#333333]", className)}>{children}</div>
     </div>
   );
 }

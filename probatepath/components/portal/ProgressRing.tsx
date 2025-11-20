@@ -24,7 +24,7 @@ export function ProgressRing({ value, label }: ProgressRingProps) {
           cx="90"
           cy="90"
           r={radius}
-          stroke="var(--brand-orange)"
+          stroke="var(--brand-ink)"
           strokeWidth="16"
           fill="transparent"
           strokeLinecap="round"

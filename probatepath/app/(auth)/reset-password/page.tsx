@@ -139,17 +139,13 @@ export default function ResetPassword() {
           </div>
         </div>
 
-        <Button 
-          type="submit" 
-          disabled={loading}
-          className="w-full bg-[#ff6a00] text-white hover:bg-[#e45f00]"
-        >
+        <Button type="submit" disabled={loading} className="w-full">
           {loading ? 'Updating...' : 'Set new password'}
         </Button>
 
         <p className="text-center text-sm text-gray-500">
           Remember your password?{' '}
-          <a href="/login" className="text-[#ff6a00] hover:underline">
+          <a href="/login" className="text-[color:var(--brand)] hover:underline">
             Sign in
           </a>
         </p>

@@ -14,7 +14,14 @@ export default function VerifyEmail({ url, name, email }: { url: string; name?: 
           <p>
             <a
               href={url}
-              style={{ display: "inline-block", background: "#ff6a00", color: "white", padding: "10px 16px", borderRadius: 6, textDecoration: "none" }}
+              style={{
+                display: "inline-block",
+                background: "#0f1a2a",
+                color: "#ffffff",
+                padding: "10px 16px",
+                borderRadius: 6,
+                textDecoration: "none",
+              }}
             >
               Confirm email
             </a>

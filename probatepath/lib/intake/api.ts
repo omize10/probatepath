@@ -63,3 +63,17 @@ export async function fetchServerDraft() {
   }
   return payload as { draft: IntakeDraft; matterId: string } | null;
 }
+
+export async function saveMatterDraft(matterId: string, payload: IntakeDraft) {
+  const response = await fetch("/api/intake/save", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ matterId, payload }),
+  });
+  if (!response.ok) {
+    const errorPayload = await response.json().catch(() => ({}));
+    const message = (errorPayload as { error?: string }).error ?? "Failed to save matter intake";
+    throw new Error(message);
+  }
+  return response.json() as Promise<{ persisted: boolean; updatedAt?: string }>;
+}

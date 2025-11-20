@@ -55,7 +55,7 @@ export function LoginForm({ next }: { next: string }) {
           <Input id="password" name="password" type="password" required autoComplete="current-password" />
         </div>
         {error ? (
-          <p className="rounded-2xl border border-[color:var(--warning)]/40 bg-[color:var(--warning)]/10 px-4 py-2 text-sm text-[color:var(--ink)]">
+          <p className="rounded-2xl border border-[rgba(161,112,62,0.4)] bg-[rgba(161,112,62,0.1)] px-4 py-2 text-sm text-[color:var(--ink)]">
             {error}
           </p>
         ) : null}

@@ -105,24 +105,24 @@ export function Summary({ draft }: SummaryProps) {
         <Card key={section.title}>
           <CardHeader className="flex flex-col gap-4 space-y-0 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-1.5">
-              <CardTitle className="text-xl text-[#0f172a]">{section.title}</CardTitle>
-              <CardDescription>{section.description}</CardDescription>
+              <CardTitle className="text-xl text-[color:var(--brand)]">{section.title}</CardTitle>
+              <CardDescription className="text-[color:var(--muted-ink)]">{section.description}</CardDescription>
             </div>
             <Link
               href={section.href}
-              className="text-sm font-semibold text-[#1e3a8a] underline-offset-4 hover:text-[#ff6a00] hover:underline"
+              className="text-sm font-semibold text-[color:var(--brand)] underline-offset-4 hover:text-[color:var(--accent-dark)] hover:underline"
             >
               Edit
             </Link>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-[#495067]">
+          <CardContent className="space-y-3 text-sm text-[color:var(--muted-ink)]">
             {section.rows.map((row) => (
               <div
                 key={row.label}
-                className="flex flex-col gap-1 rounded-2xl border border-[#e2e8f0] bg-[#f7f8fa] p-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+                className="flex flex-col gap-1 rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] p-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
               >
-                <span className="text-[#6b7287]">{row.label}</span>
-                <span className="font-medium text-[#0f172a] sm:text-right">{row.value}</span>
+                <span className="text-[#445266]">{row.label}</span>
+                <span className="font-medium text-[color:var(--brand)] sm:text-right">{row.value}</span>
               </div>
             ))}
           </CardContent>

@@ -12,11 +12,11 @@ export default function ContactPage() {
   return (
     <div className="space-y-12 pb-16">
       <header className="space-y-4">
-        <Badge variant="outline" className="border-[#1e3a8a] text-[#1e3a8a]">
+        <Badge variant="outline">
           Contact
         </Badge>
-        <h1 className="font-serif text-4xl text-[#0f172a] sm:text-5xl">We’re here to help executors stay calm</h1>
-        <p className="max-w-3xl text-base text-[#495067]">
+        <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">We’re here to help executors stay calm</h1>
+        <p className="max-w-3xl text-base text-[#333333]">
           Reach out if you have questions about eligibility, timelines, or how ProbatePath fits your estate. We reply within one business day.
         </p>
       </header>
@@ -24,17 +24,17 @@ export default function ContactPage() {
       <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <ContactForm />
         <div className="space-y-4">
-          <div className="rounded-3xl border border-[#e2e8f0] bg-white p-6 text-sm text-[#495067]">
-            <p className="font-semibold text-[#0f172a]">Prefer email?</p>
+          <div className="rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6 text-sm text-[#333333] shadow-[0_20px_60px_-45px_rgba(15,26,42,0.2)]">
+            <p className="font-semibold text-[color:var(--brand)]">Prefer email?</p>
             <p className="mt-2">
               Email{" "}
-              <a href="mailto:hello@probatepath.ca" className="text-[#1e3a8a] underline-offset-4 hover:underline">
+              <a href="mailto:hello@probatepath.ca" className="text-[color:var(--brand)] underline-offset-4 hover:underline">
                 hello@probatepath.ca
               </a>{" "}
               and include the estate name and where you’ll be filing.
             </p>
           </div>
-          <div className="rounded-3xl border border-[#e2e8f0] bg-white p-4">
+          <div className="rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-4 shadow-[0_20px_60px_-50px_rgba(15,26,42,0.2)]">
             <Image
               src="/images/abstract-1.jpg"
               alt="Calm abstract placeholder"

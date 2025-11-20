@@ -38,20 +38,20 @@ export default function SignInPage() {
   return (
     <div className="space-y-8 pb-16">
       <div className="space-y-4">
-        <Badge variant="outline" className="border-[#0c3b6c] text-[#0c3b6c]">
+        <Badge variant="outline">
           Portal access
         </Badge>
-        <h1 className="font-serif text-4xl text-[#0f172a] sm:text-5xl">Sign in to your secure portal</h1>
-        <p className="max-w-2xl text-base text-[#495067]">
+        <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">Sign in to your secure portal</h1>
+        <p className="max-w-2xl text-base text-[#333333]">
           We store your information in your browser only. Use the same device to resume drafts and follow the assemble & file workflow.
         </p>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="space-y-6 rounded-3xl border border-[#e2e8f0] bg-white p-8 shadow-[0_40px_120px_-80px_rgba(15,23,42,0.4)] sm:max-w-xl"
+        className="space-y-6 rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-8 shadow-[0_40px_120px_-80px_rgba(15,23,42,0.25)] sm:max-w-xl"
       >
-        <label htmlFor="signin-email" className="text-sm font-semibold text-[#0f172a]">
+        <label htmlFor="signin-email" className="text-sm font-semibold text-[color:var(--brand)]">
           Email
         </label>
         <Input
@@ -62,10 +62,10 @@ export default function SignInPage() {
           placeholder="you@example.com"
           required
         />
-        <Button type="submit" className="w-full bg-[#ff6a00] text-white hover:bg-[#e45f00]" disabled={loading}>
+        <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Saving…" : "Continue"}
         </Button>
-        <p className="text-xs text-[#6b7280]">
+        <p className="text-xs text-[#445266]">
           By continuing you confirm ProbatePath provides document preparation only and executors remain self-represented.
         </p>
       </form>

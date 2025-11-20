@@ -88,10 +88,7 @@ export default async function DocumentsPage() {
             {documentTemplates.map((template) => (
               <div key={template.id} className="portal-card space-y-3 p-6">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">
-                    {template.id.toUpperCase()}
-                  </p>
-                  <h3 className="text-lg font-semibold text-[color:var(--ink)]">{template.title}</h3>
+                  <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">{template.title}</p>
                   <p className="text-sm text-[color:var(--ink-muted)]">{template.description}</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
@@ -101,11 +98,7 @@ export default async function DocumentsPage() {
                     </a>
                   </Button>
                   <Button size="sm" variant="secondary" asChild>
-                    <a
-                      href={`/api/forms/${template.route}/${matterId}/pdf?download=1`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a href={`/api/forms/${template.route}/${matterId}/pdf?download=1`} target="_blank" rel="noreferrer">
                       Download
                     </a>
                   </Button>
@@ -114,19 +107,14 @@ export default async function DocumentsPage() {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-[color:var(--border-muted)] p-6 text-sm text-[color:var(--ink-muted)]">
-            <p className="mb-3">Complete the intake to create a matter and unlock document generation.</p>
-            <Button asChild size="sm" variant="secondary">
-              <a href="/start/step-1">Open intake wizard</a>
-            </Button>
-          </div>
+          <p className="text-sm text-[color:var(--ink-muted)]">Finish the intake to assign a matter ID before generating documents.</p>
         )}
       </section>
 
-      <section className="mt-10 space-y-6">
+      <section className="space-y-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Supplemental schedules</p>
-          <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Automatic supplements</h2>
+          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Automatic supplements</p>
+          <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Combined packets</h2>
         </div>
         {matterId ? (
           matter?.schedules && matter.schedules.length > 0 ? (
@@ -166,26 +154,10 @@ export default async function DocumentsPage() {
           <div className="rounded-2xl border border-dashed border-[color:var(--border-muted)] p-5 text-sm text-[color:var(--ink-muted)]">
             <p className="mb-3">Finish the intake so supplemental schedules can be created automatically.</p>
             <Button asChild size="sm" variant="secondary">
-              <a href="/start/step-1">Open intake wizard</a>
+              <a href="/portal/intake">Open intake wizard</a>
             </Button>
           </div>
         )}
-      </section>
-
-      <section className="mt-10 space-y-3">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Other documents</p>
-          <h2 className="font-serif text-2xl text-[color:var(--ink)]">Coming soon</h2>
-          <p className="text-sm text-[color:var(--ink-muted)]">Cover letters, registry checklists, and other helpers will surface here shortly.</p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          {["Cover letter", "Registry checklist"].map((item) => (
-            <div key={item} className="portal-card space-y-3 p-5 opacity-60">
-              <h3 className="text-lg font-semibold text-[color:var(--ink)]">{item}</h3>
-              <p className="text-sm text-[color:var(--ink-muted)]">Coming soon</p>
-            </div>
-          ))}
-        </div>
       </section>
     </PortalShell>
   );

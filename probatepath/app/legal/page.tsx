@@ -41,11 +41,11 @@ export default function LegalPage() {
   return (
     <div className="space-y-12 pb-16">
       <header className="space-y-4">
-        <Badge variant="outline" className="border-[#1e3a8a] text-[#1e3a8a]">
+        <Badge variant="outline">
           Legal
         </Badge>
-        <h1 className="font-serif text-4xl text-[#0f172a] sm:text-5xl">Terms, privacy, and disclaimer</h1>
-        <p className="max-w-3xl text-base text-[#495067]">
+        <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">Terms, privacy, and disclaimer</h1>
+        <p className="max-w-3xl text-base text-[#333333]">
           Transparency matters. Review how ProbatePath works, how we handle your information, and important disclaimers.
         </p>
       </header>
@@ -67,7 +67,7 @@ export default function LegalPage() {
         ))}
       </Tabs>
 
-      <div className="rounded-3xl border border-[#e2e8f0] bg-white p-6 text-sm text-[#495067]">
+      <div className="rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6 text-sm text-[#333333] shadow-[0_20px_60px_-50px_rgba(15,26,42,0.35)]">
         ProbatePath provides document preparation support and general information. We do not provide legal advice or representation. Executors remain self-represented.
       </div>
     </div>

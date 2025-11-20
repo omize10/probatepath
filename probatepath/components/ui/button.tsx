@@ -16,13 +16,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-[color:var(--accent)] text-[color:var(--ink)] shadow-[0_18px_40px_-20px_rgba(242,122,33,0.55)] hover:bg-[color:var(--accent)]/90 focus-visible:outline-[color:var(--ring)]",
+    "bg-[color:var(--brand)] text-white shadow-[0_25px_50px_-30px_rgba(15,26,42,0.65)] hover:bg-[color:var(--accent-dark)] focus-visible:outline-[color:var(--ring)]",
   secondary:
-    "border border-[color:var(--ring)] bg-[color:var(--bg-surface)] text-[color:var(--brand)] hover:bg-[color:var(--bg-muted)] focus-visible:outline-[color:var(--ring)]",
-  outline:
     "border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] text-[color:var(--brand)] hover:bg-[color:var(--bg-muted)] focus-visible:outline-[color:var(--ring)]",
+  outline:
+    "border border-[color:var(--brand)] bg-transparent text-[color:var(--brand)] hover:bg-[rgba(15,26,42,0.04)] focus-visible:outline-[color:var(--ring)]",
   ghost:
-    "border border-transparent text-[color:var(--brand)] hover:bg-[color:var(--bg-muted)] focus-visible:outline-[color:var(--ring)]",
+    "border border-transparent text-[color:var(--brand)] hover:bg-[rgba(15,26,42,0.04)] focus-visible:outline-[color:var(--ring)]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

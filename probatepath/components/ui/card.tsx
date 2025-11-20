@@ -10,8 +10,8 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(({ className, ...props
   <div
     ref={ref}
     className={cn(
-      "group relative overflow-hidden rounded-3xl border border-[#e2e8f0] bg-white p-8 shadow-[0_35px_100px_-60px_rgba(15,23,42,0.35)] transition-all duration-300",
-      "hover:-translate-y-0.5 hover:border-[#c7d3ea] hover:shadow-[0_40px_120px_-70px_rgba(15,23,42,0.35)]",
+      "group relative overflow-hidden rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-8 shadow-[0_35px_100px_-60px_rgba(15,23,42,0.25)] transition-all duration-300",
+      "hover:-translate-y-0.5 hover:border-[color:var(--brand)] hover:shadow-[0_40px_120px_-70px_rgba(15,23,42,0.35)]",
       className
     )}
     {...props}
@@ -30,7 +30,7 @@ CardHeader.displayName = "CardHeader";
 
 export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("font-serif text-2xl text-[#0f172a]", className)} {...props} />
+    <h3 ref={ref} className={cn("font-serif text-2xl text-[color:var(--brand)]", className)} {...props} />
   )
 );
 
@@ -40,7 +40,7 @@ export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<H
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn("text-sm leading-relaxed text-[#495067]", className)}
+      className={cn("text-sm leading-relaxed text-[#333333]", className)}
       {...props}
     />
   )

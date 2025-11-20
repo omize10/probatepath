@@ -83,12 +83,12 @@ export default function HowItWorksPage() {
     <div className="space-y-20 pb-28">
       <ScrollFade
         as="section"
-        className="space-y-6 rounded-[32px] border border-[#e2e8f0] bg-white p-8 shadow-[0_40px_120px_-80px_rgba(15,23,42,0.4)] sm:p-12"
+        className="space-y-6 rounded-[32px] border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-8 shadow-[0_40px_90px_-70px_rgba(15,23,42,0.25)] sm:p-12"
         once={false}
       >
         <div className="space-y-4">
-          <h1 className="font-serif text-4xl text-[#0f172a] sm:text-5xl">How ProbatePath works</h1>
-          <p className="max-w-3xl text-base text-[#495067]">
+          <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">How ProbatePath works</h1>
+          <p className="max-w-3xl text-base text-[color:var(--muted-ink)]">
             Guided intake → specialist assembly → you file at the registry. Clear steps, saved progress, and Canadian hosting every step
             of the way.
           </p>
@@ -101,9 +101,9 @@ export default function HowItWorksPage() {
             <Link href="/contact">Questions? Contact us</Link>
           </Button>
         </div>
-        <div className="flex flex-wrap gap-3 text-sm text-[#0f172a]">
+        <div className="flex flex-wrap gap-3 text-sm text-[color:var(--brand)]">
           {["Built for BC probate", "Clear fixed fee", "Hosted in Canada"].map((item) => (
-            <span key={item} className="inline-flex items-center rounded-full border border-[#d7ddec] px-4 py-2">
+            <span key={item} className="inline-flex items-center rounded-full border border-[color:var(--border-muted)] px-4 py-2">
               {item}
             </span>
           ))}
@@ -111,33 +111,39 @@ export default function HowItWorksPage() {
       </ScrollFade>
 
       <ScrollFade as="section" className="space-y-8">
-        <div className="flex items-center gap-3 text-[#1c2a44]">
+        <div className="flex items-center gap-3 text-[color:var(--slate)]">
           {[0, 1, 2].map((dot) => (
-            <span key={dot} className="h-2 w-2 rounded-full bg-[#1c2a44]" />
+            <span key={dot} className="h-2 w-2 rounded-full bg-[color:var(--slate)]" />
           ))}
-          <span className="text-sm font-semibold uppercase tracking-[0.4em] text-[#1c2a44]">Three core stages</span>
+          <span className="text-sm font-semibold uppercase tracking-[0.4em] text-[color:var(--slate)]">Three core stages</span>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {timelineCards.map((stage) => (
-            <Card key={stage.title} className="h-full border-[#d7ddec] shadow-[0_30px_100px_-70px_rgba(15,23,42,0.45)]">
+            <Card
+              key={stage.title}
+              className="h-full border-[color:var(--border-muted)] shadow-[0_30px_80px_-70px_rgba(15,23,42,0.25)]"
+            >
               <div className="relative h-40 overflow-hidden rounded-t-[32px]">
-                <Image src={stage.image} alt={stage.title} fill className="object-cover" />
+                <Image src={stage.image} alt={stage.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
               </div>
               <CardHeader className="space-y-3">
-                <CardTitle className="text-xl text-[#0f172a]">{stage.title}</CardTitle>
-                <CardDescription className="text-sm text-[#495067]">{stage.body}</CardDescription>
+                <CardTitle className="text-xl text-[color:var(--brand)]">{stage.title}</CardTitle>
+                <CardDescription className="text-sm text-[color:var(--muted-ink)]">{stage.body}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <ul className="space-y-3 text-sm text-[#0f172a]">
+                <ul className="space-y-3 text-sm text-[color:var(--brand)]">
                   {stage.bullets.map((bullet) => (
                     <li key={bullet} className="flex items-start gap-3">
-                      <span className="mt-1 h-2 w-2 rounded-full bg-[#ff6a00]" />
+                      <span className="mt-1 h-2 w-2 rounded-full bg-[color:var(--accent)]" />
                       <span>{bullet}</span>
                     </li>
                   ))}
                 </ul>
                 {stage.link ? (
-                  <Link href={stage.link.href} className="inline-flex items-center text-sm font-semibold text-[#1c2a44] hover:text-[#ff6a00]">
+                  <Link
+                    href={stage.link.href}
+                    className="inline-flex items-center text-sm font-semibold text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]"
+                  >
                     {stage.link.label}
                     <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
                   </Link>
@@ -150,16 +156,16 @@ export default function HowItWorksPage() {
 
       <ScrollFade as="section" className="grid gap-6 md:grid-cols-2">
         {previewStrips.map((strip) => (
-          <Card key={strip.title} className="border-[#d7ddec] bg-[#0c3b6c]/5">
+          <Card key={strip.title} className="border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] shadow-[0_25px_60px_-55px_rgba(15,23,42,0.18)]">
             <CardHeader className="space-y-3">
-              <CardTitle className="text-xl text-[#0f172a]">{strip.title}</CardTitle>
+              <CardTitle className="text-xl text-[color:var(--brand)]">{strip.title}</CardTitle>
               <CardDescription>{strip.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="relative h-40 overflow-hidden rounded-2xl border border-[#e2e8f0]">
-                <Image src={strip.image} alt={strip.title} fill className="object-cover" />
+              <div className="relative h-40 overflow-hidden rounded-2xl border border-[color:var(--border-muted)]">
+                <Image src={strip.image} alt={strip.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
               </div>
-              <Button asChild variant="ghost" className="justify-start text-[#0c3b6c] hover:text-[#ff6a00]">
+              <Button asChild variant="ghost" className="justify-start text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]">
                 <Link href={strip.href}>
                   Open tutorial
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -171,7 +177,7 @@ export default function HowItWorksPage() {
       </ScrollFade>
 
       <ScrollFade as="section" id="prep-list" className="grid gap-6 md:grid-cols-2">
-        <Card className="border-[#d7ddec]">
+        <Card className="border-[color:var(--border-muted)]">
           <CardHeader>
             <CardTitle>What you’ll need</CardTitle>
             <CardDescription>Gather these items to breeze through intake.</CardDescription>
@@ -180,7 +186,7 @@ export default function HowItWorksPage() {
             <Checklist items={prepList} />
           </CardContent>
         </Card>
-        <Card className="border-[#d7ddec]">
+        <Card className="border-[color:var(--border-muted)]">
           <CardHeader>
             <CardTitle>What’s included</CardTitle>
             <CardDescription>Everything in the 2,500 CAD fixed fee.</CardDescription>
@@ -191,60 +197,72 @@ export default function HowItWorksPage() {
         </Card>
       </ScrollFade>
 
-      <ScrollFade as="section" className="grid gap-6 rounded-[28px] border border-[#e2e8f0] bg-white p-8 shadow-[0_40px_120px_-80px_rgba(15,23,42,0.4)] md:grid-cols-2">
+      <ScrollFade
+        as="section"
+        className="grid gap-6 rounded-[28px] border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-8 shadow-[0_40px_90px_-70px_rgba(15,23,42,0.25)] md:grid-cols-2"
+      >
         <div>
-          <h2 className="font-serif text-2xl text-[#0f172a]">Are we the right fit?</h2>
-          <p className="mt-3 text-sm text-[#495067]">
+          <h2 className="font-serif text-2xl text-[color:var(--brand)]">Are we the right fit?</h2>
+          <p className="mt-3 text-sm text-[color:var(--muted-ink)]">
             We’re designed for straightforward, uncontested BC estates with a valid will and Canadian assets.
           </p>
           <Checklist items={goodFit} className="mt-4" />
         </div>
         <div>
-          <h2 className="font-serif text-2xl text-[#0f172a]">Not a fit if…</h2>
-          <p className="mt-3 text-sm text-[#495067]">We refer out matters that require litigation, bespoke legal advice, or multi-jurisdiction planning.</p>
+          <h2 className="font-serif text-2xl text-[color:var(--brand)]">Not a fit if…</h2>
+          <p className="mt-3 text-sm text-[color:var(--muted-ink)]">We refer out matters that require litigation, bespoke legal advice, or multi-jurisdiction planning.</p>
           <Checklist items={notFit} className="mt-4" />
         </div>
       </ScrollFade>
 
-      <ScrollFade as="section" className="space-y-6 rounded-[28px] border border-[#e2e8f0] bg-white p-8 shadow-[0_40px_120px_-80px_rgba(15,23,42,0.4)]">
-        <h2 className="font-serif text-2xl text-[#0f172a]">Timeline & expectations</h2>
-        <ul className="space-y-3 text-sm text-[#0f172a]">
+      <ScrollFade
+        as="section"
+        className="space-y-6 rounded-[28px] border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-8 shadow-[0_40px_90px_-70px_rgba(15,23,42,0.25)]"
+      >
+        <h2 className="font-serif text-2xl text-[color:var(--brand)]">Timeline & expectations</h2>
+        <ul className="space-y-3 text-sm text-[color:var(--brand)]">
           <li className="flex items-start gap-3">
-            <span className="mt-1 h-2 w-2 rounded-full bg-[#ff6a00]" />
+            <span className="mt-1 h-2 w-2 rounded-full bg-[color:var(--accent)]" />
             <span>Most clients finish intake in ~15–25 minutes.</span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="mt-1 h-2 w-2 rounded-full bg-[#ff6a00]" />
+            <span className="mt-1 h-2 w-2 rounded-full bg-[color:var(--accent)]" />
             <span>Target: package ready within 24 hours after intake completion (not guaranteed; timelines can vary).</span>
           </li>
         </ul>
       </ScrollFade>
 
-      <ScrollFade as="section" className="space-y-4 rounded-[28px] border border-[#d7ddec] bg-[#f7f8fa] p-8">
-        <h2 className="font-serif text-2xl text-[#0f172a]">Security & data residency</h2>
-        <p className="text-sm text-[#495067]">
+      <ScrollFade as="section" className="space-y-4 rounded-[28px] border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] p-8">
+        <h2 className="font-serif text-2xl text-[color:var(--brand)]">Security & data residency</h2>
+        <p className="text-sm text-[color:var(--muted-ink)]">
           Encryption in transit and at rest. Data is hosted in Canada and retained per your instructions.
         </p>
-        <Link href="/legal" className="inline-flex items-center text-sm font-semibold text-[#1c2a44] hover:text-[#ff6a00]">
+        <Link
+          href="/legal"
+          className="inline-flex items-center text-sm font-semibold text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]"
+        >
           Review our privacy commitments
           <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
         </Link>
       </ScrollFade>
 
-      <ScrollFade as="section" className="rounded-[32px] border border-[#1c2a44]/20 bg-[#1c2a44] p-10 text-white shadow-[0_40px_120px_-80px_rgba(28,42,68,0.85)]">
+      <ScrollFade
+        as="section"
+        className="rounded-[32px] border border-[color:var(--border-muted)] bg-[color:var(--brand)] p-10 text-white shadow-[0_40px_100px_-80px_rgba(15,26,42,0.65)]"
+      >
         <div className="space-y-4">
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">Ready to start?</p>
           <h2 className="font-serif text-3xl sm:text-4xl">Begin your intake in minutes</h2>
           <p className="text-sm text-white/80">
             We’ll guide you through every field, confirm fit, and assemble your filing-ready package with Canadian-hosted security.
           </p>
-          <Button asChild size="lg" className="bg-white text-[#1c2a44] hover:bg-white/90">
+          <Button asChild size="lg" className="bg-white text-[color:var(--brand)] hover:bg-white/90">
             <Link href="/create-account">Start now</Link>
           </Button>
         </div>
       </ScrollFade>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#e2e8f0] bg-white/95 p-4 shadow-[0_-20px_60px_-30px_rgba(15,23,42,0.35)] sm:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[color:var(--border-muted)] bg-white/95 p-4 shadow-[0_-20px_60px_-30px_rgba(15,23,42,0.35)] sm:hidden">
         <Button asChild className="w-full">
           <Link href="/create-account">Start now</Link>
         </Button>
@@ -260,10 +278,10 @@ type ChecklistProps = {
 
 function Checklist({ items, className }: ChecklistProps) {
   return (
-    <ul className={["space-y-3 text-sm text-[#0f172a]", className].filter(Boolean).join(" ")}>
+    <ul className={["space-y-3 text-sm text-[color:var(--brand)]", className].filter(Boolean).join(" ")}>
       {items.map((item) => (
         <li key={item} className="flex items-start gap-3">
-          <span className="mt-1 inline-flex h-6 w-6 flex-none items-center justify-center rounded-full bg-[#fef4ed] text-[#ff6a00]">
+          <span className="mt-1 inline-flex h-6 w-6 flex-none items-center justify-center rounded-full bg-[#f0f3f7] text-[color:var(--brand)]">
             <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
           </span>
           <span>{item}</span>

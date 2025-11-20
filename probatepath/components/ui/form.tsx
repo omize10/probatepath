@@ -62,7 +62,7 @@ export const FormLabel = forwardRef<HTMLLabelElement, HTMLAttributes<HTMLLabelEl
       <label
         ref={ref}
         htmlFor={id}
-        className={cn("text-sm font-semibold text-[#0f172a]", className)}
+        className={cn("text-sm font-semibold text-[color:var(--brand)]", className)}
         {...props}
       />
     );
@@ -109,7 +109,7 @@ export const FormDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<H
       <p
         ref={ref}
         id={descriptionId}
-        className={cn("text-xs text-slate-500", className)}
+        className={cn("text-xs text-[#445266]", className)}
         {...props}
       />
     );
@@ -125,7 +125,7 @@ export const FormMessage = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLP
       <p
         ref={ref}
         id={messageId}
-        className={cn("text-xs font-medium text-[#c2410c]", className)}
+        className={cn("text-xs font-medium text-[color:var(--error)]", className)}
         {...props}
       >
         {children}

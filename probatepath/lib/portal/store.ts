@@ -7,9 +7,18 @@ import {
   type PortalDraft,
   type PortalChecklistDefinition,
 } from "@/lib/portal/mock";
+import {
+  journeySteps,
+  type JourneyStepId,
+  type JourneyStatus,
+  type JourneyState,
+  type JourneyEntry,
+  createDefaultJourneyState,
+} from "@/lib/portal/journey";
 
 const DRAFT_KEY = "pp.draft";
 const CHECKLIST_KEY = "pp.checklist";
+const STEPS_KEY = "pp.steps";
 
 type ChecklistEntry = {
   completed: boolean;
@@ -23,6 +32,7 @@ type PortalSnapshot = {
   ready: boolean;
   draft: PortalDraft;
   checklist: PortalChecklistState;
+  journey: JourneyState;
 };
 
 const defaultChecklistState: PortalChecklistState = portalChecklistItems.reduce((acc, item) => {
@@ -30,10 +40,13 @@ const defaultChecklistState: PortalChecklistState = portalChecklistItems.reduce(
   return acc;
 }, {} as PortalChecklistState);
 
+const defaultJourneyState: JourneyState = createDefaultJourneyState();
+
 let snapshot: PortalSnapshot = {
   ready: false,
   draft: defaultPortalDraft,
   checklist: defaultChecklistState,
+  journey: defaultJourneyState,
 };
 
 const listeners = new Set<() => void>();
@@ -72,6 +85,11 @@ function persistChecklist(state: PortalChecklistState) {
   window.localStorage.setItem(CHECKLIST_KEY, JSON.stringify(state));
 }
 
+function persistJourney(state: JourneyState) {
+  if (!isBrowser()) return;
+  window.localStorage.setItem(STEPS_KEY, JSON.stringify(state));
+}
+
 function mergeDraft(value: PortalDraft | null): PortalDraft {
   if (!value) {
     return clone(defaultPortalDraft);
@@ -105,17 +123,34 @@ function mergeChecklist(value: PortalChecklistState | null): PortalChecklistStat
   return merged;
 }
 
+function mergeJourney(value: JourneyState | null): JourneyState {
+  const merged: JourneyState = clone(defaultJourneyState);
+  if (!value) return merged;
+  for (const key of Object.keys(merged)) {
+    if (value[key as JourneyStepId]) {
+      merged[key as JourneyStepId] = {
+        status: value[key as JourneyStepId].status ?? "not_started",
+        updatedAt: value[key as JourneyStepId].updatedAt ?? null,
+      };
+    }
+  }
+  return merged;
+}
+
 function hydrate() {
   if (hydrated || !isBrowser()) return;
   hydrated = true;
   const storedDraft = readStorage<PortalDraft>(DRAFT_KEY);
   const storedChecklist = readStorage<PortalChecklistState>(CHECKLIST_KEY);
+  const storedJourney = readStorage<JourneyState>(STEPS_KEY);
   const draft = mergeDraft(storedDraft);
   const checklist = mergeChecklist(storedChecklist);
+  const journey = mergeJourney(storedJourney);
   draft.progress = calculateProgress(draft, checklist);
-  snapshot = { ready: true, draft, checklist };
+  snapshot = { ready: true, draft, checklist, journey };
   persistDraft(draft);
   persistChecklist(checklist);
+  persistJourney(journey);
   emit();
 }
 
@@ -232,8 +267,45 @@ export function resetPortalData() {
     ready: true,
     draft: clone(defaultPortalDraft),
     checklist: clone(defaultChecklistState),
+    journey: clone(defaultJourneyState),
   };
   persistDraft(snapshot.draft);
   persistChecklist(snapshot.checklist);
+  persistJourney(snapshot.journey);
   emit();
+}
+
+export function useJourneyState<T>(selector: (state: JourneyState) => T): T {
+  hydrate();
+  const state = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  return selector(state.journey);
+}
+
+export function setJourneyStepStatus(id: JourneyStepId, status: JourneyStatus) {
+  hydrate();
+  const current = snapshot.journey[id] ?? { status: "not_started", updatedAt: null };
+  const next: JourneyEntry = {
+    status,
+    updatedAt: new Date().toISOString(),
+  };
+  const nextJourney = { ...snapshot.journey, [id]: next };
+  snapshot = { ...snapshot, journey: nextJourney };
+  persistJourney(nextJourney);
+  emit();
+  return next;
+}
+
+export function getJourneyState() {
+  hydrate();
+  return snapshot.journey;
+}
+
+export function journeyProgress(journey: JourneyState) {
+  const total = journeySteps.length;
+  if (total === 0) return 0;
+  const completed = journeySteps.reduce(
+    (count, step) => (journey[step.id]?.status === "done" ? count + 1 : count),
+    0,
+  );
+  return Math.round((completed / total) * 100);
 }

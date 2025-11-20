@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/src/server/db/prisma";
+import { prisma } from "@/lib/prisma";
 
 const QuerySchema = z.object({
   matterId: z.string(),
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.json({
-    packetUrl: matter.willSearch[0]?.packetUrl,
+    packetUrl: null,
     packUrl: matter.pack?.zipUrl,
     files: matter.files,
   });

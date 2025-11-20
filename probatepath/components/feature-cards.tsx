@@ -19,11 +19,11 @@ export function FeatureCards({ features, className }: FeatureCardsProps) {
       {features.map(({ title, description, icon: Icon }) => (
         <Card key={title} className="h-full">
           <CardHeader className="space-y-5">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-[#ffe0cc] bg-[#fff3ec] text-[#ff6a00]">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-[color:var(--border-muted)] bg-[#f0f3f7] text-[color:var(--brand)]">
               <Icon className="h-5 w-5" />
             </span>
-            <CardTitle className="text-xl text-[#0f172a]">{title}</CardTitle>
-            <CardDescription className="text-sm text-[#495067]">{description}</CardDescription>
+            <CardTitle className="text-xl text-[color:var(--brand)]">{title}</CardTitle>
+            <CardDescription className="text-sm text-[#333333]">{description}</CardDescription>
           </CardHeader>
         </Card>
       ))}

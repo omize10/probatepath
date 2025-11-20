@@ -123,7 +123,7 @@ export function RegisterForm({ next, variant = "portal" }: { next: string; varia
           <Input id="confirm" name="confirm" type="password" minLength={12} autoComplete="new-password" required />
         </div>
         {error ? (
-          <p className="rounded-2xl border border-[color:var(--warning)]/40 bg-[color:var(--warning)]/10 px-4 py-2 text-sm text-[color:var(--ink)]">
+          <p className="rounded-2xl border border-[rgba(161,112,62,0.4)] bg-[rgba(161,112,62,0.1)] px-4 py-2 text-sm text-[color:var(--ink)]">
             {error}
           </p>
         ) : null}

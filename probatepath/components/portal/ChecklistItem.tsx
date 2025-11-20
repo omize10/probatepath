@@ -28,7 +28,7 @@ export function ChecklistItem({ title, description, learnMoreHref, media, action
             href={learnMoreHref}
             target="_blank"
             rel="noreferrer"
-            className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--brand-navy)] hover:text-[color:var(--brand-orange)]"
+            className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--brand-navy)] hover:text-[color:var(--brand-ink)]"
           >
             Learn more
           </a>

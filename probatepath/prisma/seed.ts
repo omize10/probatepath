@@ -1,6 +1,6 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
-import { prisma } from "../src/server/db/prisma";
+import { prisma } from "../lib/prisma";
 
 async function main() {
   const email = process.env.SEED_ADMIN_EMAIL?.toLowerCase();

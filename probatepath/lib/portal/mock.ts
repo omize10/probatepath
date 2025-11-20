@@ -94,7 +94,7 @@ export const portalChecklistItems: PortalChecklistDefinition[] = [
     title: "Will search",
     description: "Confirm the wills registry search is sent or documented if the original will is on hand.",
     learnMoreHref: "https://justice.gov.bc.ca/cso/esearch/willnotice.do",
-    route: "/portal/intake",
+    route: "/portal/will-search",
     media: {
       image: "/portal/willsearch-1.jpg",
       alt: "Wills registry search prep",
@@ -111,7 +111,7 @@ export const portalChecklistItems: PortalChecklistDefinition[] = [
     title: "Notices mailed",
     description: "Send section 121 notices and keep proof before filing.",
     learnMoreHref: "https://www2.gov.bc.ca/gov/content/justice/courthouse-services/wills-estates",
-    route: "/portal/process",
+    route: "/portal/documents",
     media: {
       image: "/portal/notices-1.jpg",
       alt: "Notice envelopes prepared",

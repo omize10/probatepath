@@ -2,31 +2,39 @@ import type { ReactNode } from "react";
 import { PortalNav } from "@/components/portal/PortalNav";
 import { requirePortalAuth } from "@/lib/auth";
 import { logSecurityAudit } from "@/lib/audit";
-import { prisma } from "@/lib/prisma";
+import { prisma, prismaEnabled } from "@/lib/prisma";
+import { resolvePortalMatter } from "@/lib/portal/server";
+import { calculatePortalProgress } from "@/lib/intake/portal/validation";
+import { formatIntakeDraftRecord } from "@/lib/intake/format";
 
 export default async function PortalLayout({ children }: { children: ReactNode }) {
-  // Defense-in-depth: require auth for portal SSR (middleware also checks JWT)
   const session = await requirePortalAuth("/portal");
-
-  // Keep user lookup for future checks if needed
-  // session is guaranteed to be non-null after requirePortalAuth()
   const userId = (session!.user as { id?: string }).id;
-  if (userId) {
-    // Log portal access
-    await logSecurityAudit({
-      userId,
-      action: "portal.view",
-    });
+  let navStatus = "Start intake";
 
-    // Previously we redirected unverified users to a verification flow.
-    // That flow has been removed — allow access and rely on password-reset instead.
-    await prisma.user.findUnique({ where: { id: userId } });
+  if (userId && prismaEnabled) {
+    await logSecurityAudit({ userId, action: "portal.view" });
+    try {
+      await prisma.user.findUnique({ where: { id: userId } });
+      const matter = await resolvePortalMatter(userId);
+      if (matter?.draft) {
+        const normalized = formatIntakeDraftRecord(matter.draft);
+        const pct = calculatePortalProgress(normalized);
+        navStatus = `Draft saved · ${pct}%`;
+      } else if (matter) {
+        navStatus = "Matter ready";
+      }
+    } catch (error) {
+      console.warn("[portal] Layout failed to resolve matter", { userId, error });
+    }
   }
 
   return (
-    <div className="space-y-8 pb-16">
-      <PortalNav />
-      {children}
+    <div className="pb-16 lg:grid lg:grid-cols-[270px,1fr] lg:gap-8">
+      <aside className="mb-8 lg:mb-0">
+        <PortalNav statusLabel={navStatus} />
+      </aside>
+      <main className="space-y-10">{children}</main>
     </div>
   );
 }

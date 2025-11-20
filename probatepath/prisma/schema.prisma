@@ -28,6 +28,42 @@ enum WillSearchStatus {
   SENT
 }
 
+enum BeneficiaryType {
+  SPOUSE
+  CHILD
+  STEPCHILD
+  GRANDCHILD
+  PARENT
+  SIBLING
+  OTHER_FAMILY
+  CHARITY
+  OTHER
+}
+
+enum BeneficiaryStatus {
+  ALIVE
+  DECEASED_BEFORE_WILL
+  DECEASED_AFTER_WILL
+  UNKNOWN
+}
+
+enum ScheduleKind {
+  EXECUTORS
+  BENEFICIARIES
+  MINORS
+  DECEASED_BENEFICIARIES
+  FOREIGN_ASSETS
+  IRREGULARITIES
+  NOTICES
+  OTHER
+}
+
+enum RightFitStatus {
+  UNKNOWN
+  ELIGIBLE
+  NOT_FIT
+}
+
 enum Role {
   USER
   ADMIN
@@ -55,6 +91,9 @@ model Matter {
   user       User?           @relation(fields: [userId], references: [id])
   clientKey  String          @unique
   status     MatterStatus    @default(DRAFT)
+  rightFitStatus    RightFitStatus @default(UNKNOWN)
+  rightFitCompletedAt DateTime?
+  rightFitAnswers    Json?
   draft      IntakeDraft?
   pack       GeneratedPack?
   files      File[]
@@ -62,6 +101,10 @@ model Matter {
   emails     EmailLog[]
   willSearch WillSearchRequest[]
   resumeLinks ResumeToken[]
+  executors  Executor[]
+  beneficiaries Beneficiary[]
+  schedules  SupplementalSchedule[]
+  journeyStatus Json?
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
 }
@@ -93,13 +136,34 @@ model IntakeDraft {
 }
 
 model WillSearchRequest {
-  id        String            @id @default(cuid())
-  matterId  String
-  matter    Matter            @relation(fields: [matterId], references: [id])
-  status    WillSearchStatus  @default(READY)
-  packetUrl String?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id                    String   @id @default(cuid())
+  matterId              String
+  matter                Matter   @relation(fields: [matterId], references: [id])
+
+  executorEmail         String
+  executorFullName      String
+  executorPhone         String?
+  executorCity          String?
+  executorRelationship  String?
+
+  deceasedFullName      String
+  deceasedGivenNames    String?
+  deceasedSurname       String?
+  deceasedDateOfDeath   DateTime?
+  deceasedCity          String?
+  deceasedProvince      String?
+  deceasedDateOfBirth   DateTime?
+  deceasedPlaceOfBirth  String?
+  deceasedMarriedSurname String?
+  deceasedAliases       String[]  @default([])
+
+  hasWill               Boolean?
+  searchNotes           String?
+  mailingPreference     String?
+  courierAddress        String?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 model GeneratedPack {
@@ -198,4 +262,82 @@ model Session {
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expires      DateTime
+}
+
+model Executor {
+  id           String   @id @default(cuid())
+  matterId     String
+  matter       Matter   @relation(fields: [matterId], references: [id])
+
+  isPrimary    Boolean  @default(false)
+  isAlternate  Boolean  @default(false)
+  orderIndex   Int      @default(0)
+
+  fullName     String
+  givenNames   String?
+  surname      String?
+  email        String?
+  phone        String?
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  province     String?
+  postalCode   String?
+  country      String?
+
+  isRenouncing Boolean  @default(false)
+  isMinor      Boolean  @default(false)
+  isDeceased   Boolean  @default(false)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Beneficiary {
+  id                  String           @id @default(cuid())
+  matterId            String
+  matter              Matter           @relation(fields: [matterId], references: [id])
+
+  type                BeneficiaryType
+  status              BeneficiaryStatus @default(ALIVE)
+
+  fullName            String
+  givenNames          String?
+  surname             String?
+
+  relationshipLabel   String?
+  isMinor             Boolean          @default(false)
+  dateOfBirth         DateTime?
+  addressLine1        String?
+  addressLine2        String?
+  city                String?
+  province            String?
+  postalCode          String?
+  country             String?
+
+  shareDescription    String?
+  notes               String?
+
+  representedById     String?
+  representedBy       Beneficiary?     @relation("Representation", fields: [representedById], references: [id])
+  representedChildren Beneficiary[]     @relation("Representation")
+
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+}
+
+model SupplementalSchedule {
+  id          String        @id @default(cuid())
+  matterId    String
+  matter      Matter        @relation(fields: [matterId], references: [id])
+
+  kind        ScheduleKind
+  title       String
+  description String?
+  sortOrder   Int           @default(0)
+
+  payload     Json
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }

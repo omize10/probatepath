@@ -1,7 +1,8 @@
+import "server-only";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { Role } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { NextAuthOptions, getServerSession } from "next-auth";
+import { NextAuthOptions, getServerSession, type Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
 import { Resend } from "resend";
@@ -162,11 +163,11 @@ export async function getServerAuth() {
   return { session };
 }
 
-export async function requirePortalAuth(currentPath: string) {
+export async function requirePortalAuth(currentPath: string): Promise<Session> {
   const { session } = await getServerAuth();
   if (!session) {
     const { redirect } = await import("next/navigation");
     redirect(`/login?next=${encodeURIComponent(currentPath)}`);
   }
-  return session;
+  return session as Session;
 }

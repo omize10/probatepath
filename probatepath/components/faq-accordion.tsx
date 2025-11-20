@@ -18,7 +18,13 @@ interface FAQAccordionProps {
 
 export function FAQAccordion({ items, className }: FAQAccordionProps) {
   return (
-    <Accordion type="multiple" className={cn("rounded-3xl border border-[#e2e8f0] bg-white", className)}>
+    <Accordion
+      type="multiple"
+      className={cn(
+        "rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] shadow-[0_20px_60px_-45px_rgba(15,26,42,0.35)]",
+        className,
+      )}
+    >
       {items.map((faq, index) => (
         <AccordionItem key={faq.question} value={`faq-${index}`}>
           <AccordionTrigger value={`faq-${index}`}>{faq.question}</AccordionTrigger>

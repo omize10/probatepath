@@ -2,11 +2,12 @@ import Link from "next/link";
 import { LoginForm } from "@/app/(auth)/login/login-form";
 
 interface PageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function LoginPage({ searchParams }: PageProps) {
-  const nextParam = typeof searchParams?.next === "string" && searchParams.next.startsWith("/") ? searchParams.next : "/portal";
+export default async function LoginPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const nextParam = typeof params?.next === "string" && params.next.startsWith("/") ? params.next : "/portal";
   return (
     <div className="py-20">
       <LoginForm next={nextParam} />

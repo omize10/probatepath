@@ -1,99 +1,52 @@
-'use client';
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { getMatterId } from '@/lib/intake/session';
+type DraftStatus = "draft" | "submitted";
 
-export function DraftStatusCard() {
-  const [draft, setDraft] = useState<{
-    status: 'draft' | 'submitted';
-    progress: number;
-    lastSaved: string | null;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
+type DraftStatusCardProps = {
+  status: DraftStatus;
+  progress: number;
+  lastSavedText?: string | null;
+  resumeHref: string;
+};
 
-  useEffect(() => {
-    const matterId = getMatterId();
-    if (!matterId) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchDraft = async () => {
-      try {
-        const res = await fetch(`/api/intake/${matterId}`);
-        if (!res.ok) {
-          setLoading(false);
-          return;
-        }
-        const data = await res.json();
-        const submitted = !!data.submittedAt;
-        const payload = data.payload || {};
-
-        // Calculate progress (rough estimate based on filled sections)
-        let filled = 0;
-        let total = 4; // 4 main sections
-        if (payload.welcome?.email) filled++;
-        if (payload.executor?.fullName) filled++;
-        if (payload.deceased?.fullName) filled++;
-        if (payload.will?.willLocation) filled++;
-
-        setDraft({
-          status: submitted ? 'submitted' : 'draft',
-          progress: Math.round((filled / total) * 100),
-          lastSaved: data.updatedAt ? new Date(data.updatedAt).toLocaleString() : null,
-        });
-      } catch (err) {
-        console.error('Failed to fetch draft status:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDraft();
-  }, []);
-
-  if (loading || !draft) return null;
+export function DraftStatusCard({ status, progress, lastSavedText, resumeHref }: DraftStatusCardProps) {
+  const submitted = status === "submitted";
+  const statusLabel = submitted ? "Submitted" : "In progress";
+  const description = submitted
+    ? "Your intake is locked in. You can still download packets or update executor / beneficiary details here."
+    : `${Math.min(100, Math.max(0, progress))}% complete${lastSavedText ? ` · last saved ${lastSavedText}` : ""}`;
 
   return (
-    <div className="portal-card space-y-4 p-6 mb-6 border-2 border-blue-100 bg-blue-50">
-      <div className="flex items-center justify-between">
+    <div className="portal-card space-y-4 border-2 border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-blue-900">
-              Intake Status
-            </p>
+          <div className="mb-2 flex items-center gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Intake status</p>
             <Badge
-              variant={draft.status === 'submitted' ? 'default' : 'outline'}
-              className={draft.status === 'submitted' ? 'bg-green-600 text-white' : 'border-orange-600 text-orange-600'}
+              variant={submitted ? "default" : "outline"}
+              className={submitted ? "bg-[color:var(--brand-navy)] text-white" : "border-[color:var(--brand-ink)] text-[color:var(--brand-ink)]"}
             >
-              {draft.status === 'submitted' ? 'Submitted' : 'In Progress'}
+              {statusLabel}
             </Badge>
           </div>
-          <p className="text-sm text-blue-800">
-            {draft.status === 'submitted'
-              ? 'Your intake has been submitted. Our team will review it shortly.'
-              : `${draft.progress}% complete — ${draft.lastSaved ? `last saved ${draft.lastSaved}` : 'never saved'}`}
-          </p>
+          <p className="text-sm text-[color:var(--ink-muted)]">{description}</p>
         </div>
-        {draft.status === 'draft' && (
+        {!submitted ? (
           <Button asChild size="sm">
-            <Link href="/portal/intake">
-              Resume
-            </Link>
+            <Link href={resumeHref}>Resume intake</Link>
           </Button>
-        )}
+        ) : null}
       </div>
-      {draft.status === 'draft' && (
-        <div className="w-full bg-gray-200 rounded-full h-2">
+      {!submitted ? (
+        <div className="h-2 w-full rounded-full bg-[color:var(--bg-muted)]">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all"
-            style={{ width: `${draft.progress}%` }}
+            className="h-2 rounded-full bg-[color:var(--brand-ink)] transition-all"
+            style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

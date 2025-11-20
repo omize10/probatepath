@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PDFDocument } from "pdf-lib";
 import { getServerAuth } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
-import { prisma } from "@/src/server/db/prisma";
+import { prisma } from "@/lib/prisma";
 import { renderSchedulePdf } from "@/lib/schedules/pdf";
 import { HandlerContext, resolveContextParams } from "@/lib/server/params";
 import { renderForm, type FormId } from "@/lib/pdf/forms";

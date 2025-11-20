@@ -1,48 +1,68 @@
-'use client';
-
 import Link from "next/link";
 import { PortalShell } from "@/components/portal/PortalShell";
 
-const faqs = [
+const helpSections = [
   {
-    question: "What does ProbatePath provide?",
-    answer: "Document preparation, filing-ready checklists, and BC-focused process guidance. Executors remain self-represented and responsible for filing fees.",
+    id: "probate",
+    title: "How probate works",
+    body: [
+      "Probate is the BC Supreme Court’s way of confirming the executor’s authority. You gather the will, inventory the estate, deliver notices, swear affidavits, and file the packet with the registry.",
+      "Most uncontested estates follow the same order: confirm the will, send notices, swear affidavits, and wait for the grant.",
+    ],
   },
   {
-    question: "Where is my data stored?",
-    answer: "Intake answers and documents stay on this device via localStorage until you choose to export them.",
+    id: "process",
+    title: "How our process works",
+    body: [
+      "ProbatePath guides you through the court packet only—we do not manage asset distribution or act as your lawyer.",
+      "Every answer in the intake flows into the documents. Update information once and re-download any form.",
+    ],
   },
   {
-    question: "Need to talk to someone?",
-    answer: "Email hello@probatepath.ca for document clarification. We respond within one business day.",
+    id: "signing",
+    title: "How to sign affidavits",
+    body: [
+      "Bring unsigned originals and two pieces of ID to a lawyer, notary, or commissioner for oaths.",
+      "Only sign or initial when the commissioner instructs you. They will witness your signature and stamp each affidavit.",
+    ],
+  },
+  {
+    id: "filing",
+    title: "How to file with the court",
+    body: [
+      "Assemble the packet with tabs and exhibits in the required order. Include the original will and death certificate.",
+      "File in person or send by tracked courier to the registry for the deceased’s residence. Keep copies of everything you submit.",
+    ],
   },
 ];
 
 export default function HelpPage() {
   return (
-    <PortalShell title="Help & contact" description="Find fast answers and get in touch with the ProbatePath team.">
-      <div className="grid gap-6 lg:grid-cols-[0.6fr_0.4fr]">
-        <div className="space-y-4">
-          {faqs.map((faq) => (
-            <div key={faq.question} className="portal-card space-y-3 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">FAQ</p>
-              <p className="text-lg font-semibold text-[color:var(--ink)]">{faq.question}</p>
-              <p className="text-sm text-[color:var(--ink-muted)]">{faq.answer}</p>
-            </div>
-          ))}
-        </div>
-        <div className="space-y-4">
-          <div className="portal-card space-y-4 p-6">
-            <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Contact us</p>
-            <p className="text-2xl font-serif text-[color:var(--ink)]">Need a human?</p>
-            <p className="text-sm text-[color:var(--ink-muted)]">Email us for document prep questions, timeline updates, or portal help.</p>
-            <Link href="mailto:hello@probatepath.ca" className="text-lg font-semibold text-[color:var(--brand-navy)]">
-              hello@probatepath.ca
-            </Link>
-            <p className="text-xs text-[color:var(--ink-muted)]">
-              We provide document preparation and general information only. We do not provide legal advice or representation.
-            </p>
-          </div>
+    <PortalShell
+      title="Help & guidance"
+      description="Plain-language explanations for the BC probate journey. We cover the packet from start to finish—no legal advice, just clear steps."
+      eyebrow="Help"
+    >
+      <div className="space-y-6">
+        {helpSections.map((section) => (
+          <article key={section.id} id={section.id} className="portal-card space-y-3 p-6">
+            <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">{section.title}</p>
+            {section.body.map((paragraph) => (
+              <p key={paragraph} className="text-sm text-[color:var(--ink-muted)]">
+                {paragraph}
+              </p>
+            ))}
+          </article>
+        ))}
+        <div className="portal-card space-y-3 p-6">
+          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Need a human?</p>
+          <h3 className="font-serif text-2xl text-[color:var(--ink)]">Contact support</h3>
+          <p className="text-sm text-[color:var(--ink-muted)]">
+            We respond within one business day. We provide document preparation guidance only and do not represent you.
+          </p>
+          <Link href="mailto:hello@probatepath.ca" className="text-lg font-semibold text-[color:var(--brand-navy)]">
+            hello@probatepath.ca
+          </Link>
         </div>
       </div>
     </PortalShell>

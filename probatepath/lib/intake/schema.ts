@@ -57,6 +57,12 @@ export const deceasedSchema = z.object({
     .string()
     .trim()
     .min(1, "Enter the deceased’s full name."),
+  firstName: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  middleName1: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  middleName2: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  middleName3: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  lastName: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  suffix: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
   dateOfDeath: z
     .string()
     .min(1, "Enter the date of death."),
@@ -70,6 +76,12 @@ export const deceasedSchema = z.object({
   maritalStatus: z.string().trim(),
   occupation: z.string().trim(),
   residenceAddress: z.string().trim(),
+  residenceLine1: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  residenceLine2: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  residenceCity: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  residenceRegion: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  residencePostalCode: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
+  residenceCountry: z.string().trim().optional().or(z.literal("")).transform((value) => value ?? ""),
   residenceType: z.string().trim(),
   yearsLivedInBC: z.string().trim(),
   hadPriorUnions: z.enum(["yes", "no"]),

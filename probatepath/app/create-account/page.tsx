@@ -1,12 +1,13 @@
 import { RegisterForm } from "@/app/(auth)/register/register-form";
 
 interface PageProps {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function CreateAccountPage({ searchParams }: PageProps) {
-  const searchNext = typeof searchParams?.next === "string" ? searchParams.next : undefined;
-  const nextParam = searchNext && searchNext.startsWith("/") ? searchNext : "/start/step-1";
+export default async function CreateAccountPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const searchNext = typeof params?.next === "string" ? params.next : undefined;
+  const nextParam = searchNext && searchNext.startsWith("/") ? searchNext : "/start";
 
   return (
     <div className="py-20">

@@ -47,12 +47,12 @@ export function Hero({
     >
       <div className="space-y-8">
         {eyebrow ? (
-          <span className="inline-flex items-center rounded-full border border-[#d7def0] bg-white px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-[#1e3a8a]">
+          <span className="inline-flex items-center rounded-full border border-[color:var(--border-muted)] bg-[#f0f3f7] px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--brand)]">
             {eyebrow}
           </span>
         ) : null}
-        <h1 className="font-serif text-4xl text-[#0f172a] sm:text-5xl">{title}</h1>
-        <p className="max-w-xl text-base leading-relaxed text-[#495067]">{description}</p>
+        <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">{title}</h1>
+        <p className="max-w-xl text-base leading-relaxed text-[#333333]">{description}</p>
         <div className="flex flex-wrap items-center gap-4">
           <Button asChild size="lg" variant={primaryAction.variant}>
             <Link href={primaryAction.href}>{primaryAction.label}</Link>
@@ -74,7 +74,7 @@ export function Hero({
       </div>
       {image ? (
         <div className="relative">
-          <div className="relative overflow-hidden rounded-3xl border border-[#e2e8f0] bg-white shadow-[0_45px_120px_-60px_rgba(15,23,42,0.35)]">
+          <div className="overflow-hidden rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] shadow-[0_45px_120px_-60px_rgba(15,23,42,0.25)]">
             <Image
               src={image.src}
               alt={image.alt}
@@ -83,7 +83,6 @@ export function Hero({
               className="h-full w-full object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-[#0f172a]/5" />
           </div>
         </div>
       ) : null}

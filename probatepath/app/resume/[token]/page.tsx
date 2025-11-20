@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/src/server/db/prisma";
+import { prisma } from "@/lib/prisma";
 import { ResumeHydrator } from "@/components/resume-hydrator";
 import { defaultIntakeDraft, type IntakeDraft } from "@/lib/intake/types";
 

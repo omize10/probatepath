@@ -1,3 +1,4 @@
+import "server-only";
 import { AuthAuditType, Prisma } from "@prisma/client";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";

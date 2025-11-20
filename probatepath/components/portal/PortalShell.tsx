@@ -22,7 +22,7 @@ export function PortalShell({
 }: PortalShellProps) {
   return (
     <section className={cn("space-y-10", className)}>
-      <div className="rounded-3xl border border-[color:var(--border-muted)] bg-white px-6 py-8 text-[color:var(--ink)] shadow-[0_25px_80px_-60px_rgba(15,23,42,0.25)] sm:px-10">
+      <div className="rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] px-6 py-8 text-[color:var(--ink)] shadow-[0_25px_80px_-60px_rgba(15,23,42,0.25)] sm:px-10">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-4">
             {eyebrow ? <span className="portal-badge text-[color:var(--ink-muted)]">{eyebrow}</span> : null}

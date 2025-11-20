@@ -4,6 +4,8 @@ export type YesNo = "yes" | "no";
 
 export type EstateValueRange = "<$100k" | "$100k-$500k" | "$500k-$1M" | ">$1M";
 
+import { emptyEstateIntake, type EstateIntake } from "@/lib/intake/case-blueprint";
+
 export type IntakeDraft = {
   welcome: {
     email: string;
@@ -32,6 +34,12 @@ export type IntakeDraft = {
   };
   deceased: {
     fullName: string;
+    firstName: string;
+    middleName1: string;
+    middleName2: string;
+    middleName3: string;
+    lastName: string;
+    suffix: string;
     dateOfDeath: string;
     cityProvince: string;
     hadWill: YesNo;
@@ -40,6 +48,12 @@ export type IntakeDraft = {
     maritalStatus: string;
     occupation: string;
     residenceAddress: string;
+    residenceLine1: string;
+    residenceLine2: string;
+    residenceCity: string;
+    residenceRegion: string;
+    residencePostalCode: string;
+    residenceCountry: string;
     residenceType: string;
     yearsLivedInBC: string;
     hadPriorUnions: YesNo;
@@ -75,6 +89,7 @@ export type IntakeDraft = {
   confirmation: {
     confirmed: boolean;
   };
+  estateIntake: EstateIntake;
 };
 
 export const defaultIntakeDraft: IntakeDraft = {
@@ -105,6 +120,12 @@ export const defaultIntakeDraft: IntakeDraft = {
   },
   deceased: {
     fullName: "",
+    firstName: "",
+    middleName1: "",
+    middleName2: "",
+    middleName3: "",
+    lastName: "",
+    suffix: "",
     dateOfDeath: "",
     cityProvince: "",
     hadWill: "yes",
@@ -113,6 +134,12 @@ export const defaultIntakeDraft: IntakeDraft = {
     maritalStatus: "",
     occupation: "",
     residenceAddress: "",
+    residenceLine1: "",
+    residenceLine2: "",
+    residenceCity: "",
+    residenceRegion: "",
+    residencePostalCode: "",
+    residenceCountry: "Canada",
     residenceType: "",
     yearsLivedInBC: "",
     hadPriorUnions: "no",
@@ -148,4 +175,5 @@ export const defaultIntakeDraft: IntakeDraft = {
   confirmation: {
     confirmed: false,
   },
+  estateIntake: emptyEstateIntake,
 };

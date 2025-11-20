@@ -23,7 +23,7 @@ type ScrollFadeProps = HTMLAttributes<HTMLElement> & {
   once?: boolean;
 };
 
-export function ScrollFade({ children, className, as = "div", delay = 0, once = true, ...rest }: ScrollFadeProps) {
+export function ScrollFade({ children, className, as = "div", delay = 0, once = false, ...rest }: ScrollFadeProps) {
   const Component = elements[as] ?? elements.div;
   const forwarded = rest as Record<string, unknown>;
   return (

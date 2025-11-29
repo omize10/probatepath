@@ -21,13 +21,13 @@ export function Footer() {
           <div className="flex flex-wrap gap-3 pt-2">
             <Link
               href="/create-account"
-              className="rounded-full border border-[color:var(--brand)] px-5 py-2 text-sm font-semibold text-[color:var(--brand)] transition hover:bg-[color:var(--brand)] hover:text-white"
+              className="rounded-full border border-[color:var(--brand)] bg-[color:var(--brand)] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)] focus-visible:bg-[color:var(--accent-dark)]"
             >
               Create account
             </Link>
             <Link
               href="/portal"
-              className="rounded-full bg-[color:var(--brand)] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)]"
+              className="rounded-full border border-[color:var(--brand)] bg-[color:var(--brand)] px-5 py-2 text-sm font-semibold text-white transition hover:bg-white hover:text-[color:var(--brand)] focus-visible:bg-white focus-visible:text-[color:var(--brand)] active:bg-white active:text-[color:var(--brand)]"
             >
               My portal
             </Link>

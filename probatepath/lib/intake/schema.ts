@@ -130,12 +130,15 @@ export const confirmationSchema = z.object({
   }),
 });
 
+const estateIntakeSchema: z.ZodType<IntakeDraft["estateIntake"]> = z.any();
+
 export const intakeDraftSchema = z.object({
   welcome: welcomeSchema,
   executor: executorSchema,
   deceased: deceasedSchema,
   will: willSchema,
   confirmation: confirmationSchema,
+  estateIntake: estateIntakeSchema,
 });
 
 export type SectionKey = keyof IntakeDraft;
@@ -146,6 +149,7 @@ export const sectionSchemas: Record<SectionKey, z.ZodType<IntakeDraft[SectionKey
   deceased: deceasedSchema,
   will: willSchema,
   confirmation: confirmationSchema,
+  estateIntake: estateIntakeSchema,
 };
 
 export type StepErrors = Record<string, string>;

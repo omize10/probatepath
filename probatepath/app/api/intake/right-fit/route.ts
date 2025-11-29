@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { resolvePortalMatter } from "@/lib/portal/server";
 import { evaluateEligibility, type EligibilityAnswers } from "@/lib/intake/eligibility";
+import { initializeMatterStepProgress } from "@/lib/portal/step-progress";
 
 const answerSchema = z.object({
   estateInBC: z.enum(["yes", "no", "unsure"] as const),
@@ -30,16 +31,22 @@ function toJson(answers: EligibilityAnswers): Prisma.JsonObject {
 }
 
 async function upsertRightFitMatter(userId: string, status: RightFitStatus, answers: EligibilityAnswers) {
-  let matter = await resolvePortalMatter(userId);
+  const matter = await resolvePortalMatter(userId);
 
   const needsNewMatter = !matter || Boolean(matter.draft?.submittedAt ?? false);
-  if (needsNewMatter) {
-    matter = await prisma.matter.create({
+  if (needsNewMatter || !matter) {
+    const created = await prisma.matter.create({
       data: {
         userId,
         clientKey: randomUUID(),
+        rightFitStatus: status,
+        rightFitCompletedAt: new Date(),
+        rightFitAnswers: toJson(answers),
       },
+      select: { id: true },
     });
+    await initializeMatterStepProgress(created.id);
+    return created.id;
   }
 
   const updated = await prisma.matter.update({
@@ -77,9 +84,13 @@ export async function POST(request: Request) {
 
   try {
     const matterId = await upsertRightFitMatter(userId, status, answers);
+    const normalizedDecision =
+      decision.status === "eligible"
+        ? { status: "eligible", reasons: decision.reasons }
+        : { status: "not_fit" as const, reasons: decision.reasons };
     return NextResponse.json({
       matterId,
-      decision,
+      decision: normalizedDecision,
     });
   } catch (error) {
     console.error("[right-fit] Failed to persist decision", error);

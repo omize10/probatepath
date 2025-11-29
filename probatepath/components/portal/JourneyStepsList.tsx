@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { journeySteps, type JourneyState } from "@/lib/portal/journey";
+import { canonicalizeJourneyStatus, journeySteps, type JourneyState } from "@/lib/portal/journey";
 import { JourneyStatusBadge } from "@/components/portal/JourneyStatusBadge";
 import { Button } from "@/components/ui/button";
 
@@ -23,14 +23,21 @@ const statusCopy: Record<string, { headline: string; subcopy: string }> = {
   },
 };
 
+function ctaLabelForStatus(status: string) {
+  if (status === "done") return "Review";
+  if (status === "in_progress") return "Resume";
+  return "Start";
+}
+
 export function JourneyStepsList({ journey }: JourneyStepsListProps) {
   return (
     <div className="space-y-5">
       {journeySteps.map((step, index) => {
         const entry = journey[step.id];
-        const status = entry?.status ?? "not_started";
-        const href = `/portal/steps/${step.id}`;
+        const status = canonicalizeJourneyStatus(entry?.status ?? "not_started");
+        const href = `/portal/steps/${step.id}/flow`;
         const copy = statusCopy[status];
+        const ctaLabel = ctaLabelForStatus(status);
 
         return (
           <div
@@ -52,21 +59,14 @@ export function JourneyStepsList({ journey }: JourneyStepsListProps) {
                 <p className="font-semibold text-[color:var(--ink)]">{copy?.headline}</p>
                 <p>{copy?.subcopy}</p>
               </div>
-              {status === "done" ? (
-                <Button asChild variant="secondary" className="flex items-center gap-2">
-                  <Link href={href}>
-                    Open again
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
-                </Button>
-              ) : (
+              <div className="flex flex-col items-start gap-2 md:items-end">
                 <Button asChild className="flex items-center gap-2">
                   <Link href={href}>
-                    Open step
+                    {ctaLabel}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Link>
                 </Button>
-              )}
+              </div>
             </div>
           </div>
         );

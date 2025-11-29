@@ -33,7 +33,7 @@ export type ApplicantContact = {
 export type CoApplicant = {
   id: string;
   name: PersonName;
-  relationship: Relationship | "";
+  relationship: string;
   email: string;
   phone: string;
   address: Address;

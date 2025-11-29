@@ -202,11 +202,12 @@ export default function HomePage() {
         </div>
         <div className="relative h-full overflow-hidden rounded-3xl shadow-[0_40px_120px_-70px_rgba(15,23,42,0.5)]">
           <Image
-            src="/images/support-1.jpg"
+            src="/images/7f15c393-fdc7-487d-b07e-4f6c8e7f0f39.png"
             alt="Executor reviewing timeline and checklist"
             width={720}
             height={540}
             className="h-full w-full object-cover"
+            priority
           />
         </div>
       </ScrollFade>
@@ -241,7 +242,7 @@ export default function HomePage() {
               <Link href="/create-account">Start intake</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="tel:+16046893667">Call 604-689-3667 (Open Door Law)</Link>
+              <Link href="tel:+16046703534">Call +1 (604) 670-3534</Link>
             </Button>
           </div>
         </div>

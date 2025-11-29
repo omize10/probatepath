@@ -84,11 +84,11 @@ export default function PricingPage() {
           <CTAPanel
             eyebrow="Not sure if you qualify?"
             title="Let’s confirm your estate fits the fixed-fee scope."
-            description="Call 604-689-3667 (Open Door Law) and we’ll walk through the estate, timeline, and next steps before you pay anything."
+            description="Call +1 (604) 670-3534 and we’ll walk through the estate, timeline, and next steps before you pay anything."
             primaryAction={{ label: "Start intake", href: "/create-account" }}
             secondaryAction={{
-              label: "Call 604-689-3667",
-              href: "tel:+16046893667",
+              label: "Call +1 (604) 670-3534",
+              href: "tel:+16046703534",
               variant: "outline",
             }}
           />

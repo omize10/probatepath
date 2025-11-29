@@ -3,6 +3,8 @@ import { EligibilityGate } from "@/components/intake/eligibility/eligibility-gat
 import { auth } from "@/lib/auth";
 import { resolvePortalMatter } from "@/lib/portal/server";
 
+export const dynamic = "force-dynamic";
+
 interface StartPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
@@ -18,10 +20,13 @@ export default async function StartPage({ searchParams }: StartPageProps) {
     if (matter?.rightFitStatus === "NOT_FIT") {
       redirect(`/matters/${matter.id}/not-a-fit`);
     }
+    if (matter && !(matter.draft?.submittedAt ?? false)) {
+      redirect(`/matters/${matter.id}/intake`);
+    }
+    if (matter?.rightFitStatus === "ELIGIBLE") {
+      redirect("/portal/intake");
+    }
     if (matter) {
-      if (matter.draft && !(matter.draft.submittedAt ?? false)) {
-        redirect(`/matters/${matter.id}/intake`);
-      }
       redirect("/portal");
     }
   }

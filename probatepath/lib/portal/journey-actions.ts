@@ -25,10 +25,17 @@ export async function updateJourneyStepStatus(stepId: JourneyStepId, status: Jou
   const current = normalizeJourneyState(matter.journeyStatus ?? undefined);
   const nextState = setJourneyStateValue(current, stepId, status);
 
-  await prisma.matter.update({
-    where: { id: matter.id },
-    data: { journeyStatus: nextState },
-  });
+  await prisma.$transaction([
+    prisma.matter.update({
+      where: { id: matter.id },
+      data: { journeyStatus: nextState },
+    }),
+    prisma.matterStepProgress.upsert({
+      where: { matterId_stepKey: { matterId: matter.id, stepKey: stepId } },
+      create: { matterId: matter.id, stepKey: stepId, status },
+      update: { status },
+    }),
+  ]);
 
   revalidatePath("/portal");
   revalidatePath("/portal/steps");

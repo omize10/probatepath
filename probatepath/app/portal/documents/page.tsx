@@ -2,14 +2,16 @@ import { Button } from "@/components/ui/button";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { requirePortalAuth } from "@/lib/auth";
 import { resolvePortalMatter } from "@/lib/portal/server";
+import { getFormPdfUrl, getPhase1PacketUrl, getSchedulePdfUrl, getWillSearchPdfUrl } from "@/lib/portal/downloads";
 
-const documentTemplates = [
-  { id: "p3", title: "P3 – Applicant’s affidavit", description: "Applicant affidavit form", route: "p3" },
-  { id: "p4", title: "P4 – Inventory", description: "Estate inventory statement", route: "p4" },
-  { id: "p10", title: "P10 – Executor’s oath", description: "Executor oath/declaration", route: "p10" },
-  { id: "p11", title: "P11 – Consent to notice", description: "Notice of intention / consent", route: "p11" },
-  { id: "p17", title: "P17 – Affidavit of service", description: "Proof of service for notices", route: "p17" },
-  { id: "p20", title: "P20 – Affidavit of notice", description: "Final notice affidavit", route: "p20" },
+const formTemplates = [
+  { id: "p3", title: "P3 – Affidavit of applicant", description: "Sworn statement for the executor/applicant", route: "p3" },
+  { id: "p4", title: "P4 – Inventory and valuation", description: "Assets & liabilities summary", route: "p4" },
+  { id: "p9", title: "P9 – Affidavit of delivery", description: "Proves notices were delivered", route: "p9" },
+  { id: "p10", title: "P10 – Assets and liabilities", description: "Detailed balance sheet", route: "p10" },
+  { id: "p11", title: "P11 – Consent / nomination", description: "Used when a beneficiary consents to the filing", route: "p11" },
+  { id: "p17", title: "P17 – Proof of service", description: "Alternate service affidavit", route: "p17" },
+  { id: "p20", title: "P20 – Affidavit of notice", description: "Summarizes who received the P1 notice", route: "p20" },
 ];
 
 export default async function DocumentsPage() {
@@ -22,141 +24,157 @@ export default async function DocumentsPage() {
   return (
     <PortalShell
       title="Documents"
-      description="Preview, download, or package the real probate documents generated from your saved matter data."
+      description="Every form is generated from your intake data. Preview before printing, and re-download anytime."
     >
-      <section className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Will search & notices</p>
-            <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Primary documents</h2>
-            <p className="text-sm text-[color:var(--ink-muted)]">
-              Each PDF regenerates from the matter information we store for you. Preview before downloading to confirm every detail.
-            </p>
+      <section id="will-search" className="space-y-4">
+        <header className="space-y-1">
+          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Will search</p>
+          <h2 className="font-serif text-2xl text-[color:var(--ink)]">Will Registry (VSA 532)</h2>
+          <p className="text-sm text-[color:var(--ink-muted)]">Download the pre-filled request that you mail to Vital Statistics.</p>
+        </header>
+        {matterId ? (
+          <div className="portal-card space-y-3 p-6">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Vital Statistics</p>
+              <h3 className="text-lg font-semibold text-[color:var(--ink)]">Will search packet</h3>
+              <p className="text-sm text-[color:var(--ink-muted)]">Use this in the “Will search” step of your guided flow.</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button size="sm" variant="ghost" asChild>
+                <a href={getWillSearchPdfUrl(matterId)} target="_blank" rel="noopener noreferrer">
+                  Preview
+                </a>
+              </Button>
+              <Button size="sm" asChild>
+                <a href={getWillSearchPdfUrl(matterId, { download: true })} target="_blank" rel="noopener noreferrer">
+                  Download
+                </a>
+              </Button>
+            </div>
+            {willSearchRecord ? (
+              <p className="text-xs text-[color:var(--ink-muted)]">
+                Last prepared on {new Intl.DateTimeFormat("en-CA", { dateStyle: "medium" }).format(new Date(willSearchRecord.updatedAt ?? willSearchRecord.createdAt))}
+              </p>
+            ) : null}
           </div>
-          {matterId ? (
-            <Button size="sm" variant="secondary" asChild>
-              <a href={`/api/matter/${matterId}/package/phase1/pdf`} target="_blank" rel="noreferrer">
-                Download full package (Phase 1)
-              </a>
-            </Button>
-          ) : (
-            <p className="text-xs text-[color:var(--ink-muted)]">Finish the intake to assign a matter ID before generating documents.</p>
-          )}
-        </div>
+        ) : (
+          <p className="text-sm text-[color:var(--ink-muted)]">Finish the intake to generate your will search packet.</p>
+        )}
+      </section>
+
+      <section id="notices" className="space-y-4">
+        <header className="space-y-1">
+          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Notices</p>
+          <h2 className="font-serif text-2xl text-[color:var(--ink)]">Notice of proposed application (P1)</h2>
+          <p className="text-sm text-[color:var(--ink-muted)]">Serve this on beneficiaries before filing. We regenerate it whenever your data changes.</p>
+        </header>
+        {matterId ? (
+          <div className="portal-card space-y-3 p-6">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Notice to recipients</p>
+              <h3 className="text-lg font-semibold text-[color:var(--ink)]">Form P1</h3>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button size="sm" variant="ghost" asChild>
+                <a href={getFormPdfUrl("p1", matterId)} target="_blank" rel="noopener noreferrer">
+                  Preview
+                </a>
+              </Button>
+              <Button size="sm" asChild>
+                <a href={getFormPdfUrl("p1", matterId, { download: true })} target="_blank" rel="noopener noreferrer">
+                  Download
+                </a>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-[color:var(--ink-muted)]">Complete the intake to unlock the notice forms.</p>
+        )}
+      </section>
+
+      <section id="forms" className="space-y-4">
+        <header className="space-y-1">
+          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Affidavits & schedules</p>
+          <h2 className="font-serif text-2xl text-[color:var(--ink)]">Core BC probate forms</h2>
+          <p className="text-sm text-[color:var(--ink-muted)]">Download each form individually. These are referenced throughout the “Review forms” and “Sign & notarize” steps.</p>
+        </header>
         {matterId ? (
           <div className="grid gap-4 md:grid-cols-2">
-            {willSearchRecord ? (
-              <div className="portal-card space-y-3 p-6" key="will-search">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">WILL SEARCH</p>
-                  <h3 className="text-lg font-semibold text-[color:var(--ink)]">Will Search Request (VSA 532)</h3>
-                  <p className="text-sm text-[color:var(--ink-muted)]">We&apos;ve pre-filled your BC will-search form.</p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Button size="sm" variant="ghost" asChild>
-                    <a href={`/api/will-search/${matterId}/pdf`} target="_blank" rel="noreferrer">
-                      Preview
-                    </a>
-                  </Button>
-                  <Button size="sm" variant="secondary" asChild>
-                    <a href={`/api/will-search/${matterId}/pdf?download=1`} target="_blank" rel="noreferrer">
-                      Download
-                    </a>
-                  </Button>
-                </div>
-              </div>
-            ) : null}
-            <div className="portal-card space-y-3 p-6" key="p1">
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">NOTICE</p>
-                <h3 className="text-lg font-semibold text-[color:var(--ink)]">Notice of proposed application (Form P1)</h3>
-                <p className="text-sm text-[color:var(--ink-muted)]">Draft notice to the court and interested parties for this estate.</p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button size="sm" variant="ghost" asChild>
-                  <a href={`/api/forms/p1/${matterId}/pdf`} target="_blank" rel="noreferrer">
-                    Preview
-                  </a>
-                </Button>
-                <Button size="sm" variant="secondary" asChild>
-                  <a href={`/api/forms/p1/${matterId}/pdf?download=1`} target="_blank" rel="noreferrer">
-                    Download
-                  </a>
-                </Button>
-              </div>
-            </div>
-            {documentTemplates.map((template) => (
+            {formTemplates.map((template) => (
               <div key={template.id} className="portal-card space-y-3 p-6">
                 <div>
                   <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">{template.title}</p>
                   <p className="text-sm text-[color:var(--ink-muted)]">{template.description}</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  <Button size="sm" variant="ghost" asChild>
-                    <a href={`/api/forms/${template.route}/${matterId}/pdf`} target="_blank" rel="noreferrer">
-                      Preview
-                    </a>
-                  </Button>
-                  <Button size="sm" variant="secondary" asChild>
-                    <a href={`/api/forms/${template.route}/${matterId}/pdf?download=1`} target="_blank" rel="noreferrer">
-                      Download
-                    </a>
-                  </Button>
+              <Button size="sm" variant="ghost" asChild>
+                <a href={getFormPdfUrl(template.route, matterId)} target="_blank" rel="noopener noreferrer">
+                  Preview
+                </a>
+              </Button>
+              <Button size="sm" asChild>
+                <a href={getFormPdfUrl(template.route, matterId, { download: true })} target="_blank" rel="noopener noreferrer">
+                  Download
+                </a>
+              </Button>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-[color:var(--ink-muted)]">Finish the intake to assign a matter ID before generating documents.</p>
+          <p className="text-sm text-[color:var(--ink-muted)]">Finish the intake to enable these forms.</p>
         )}
       </section>
 
-      <section className="space-y-3">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Automatic supplements</p>
-          <h2 className="mt-2 font-serif text-2xl text-[color:var(--ink)]">Combined packets</h2>
-        </div>
+      <section id="packets" className="space-y-4">
+        <header className="space-y-1">
+          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Packets & schedules</p>
+          <h2 className="font-serif text-2xl text-[color:var(--ink)]">Combined downloads</h2>
+          <p className="text-sm text-[color:var(--ink-muted)]">Use these when guided steps ask for a “packet” download.</p>
+        </header>
         {matterId ? (
-          matter?.schedules && matter.schedules.length > 0 ? (
-            <div className="grid gap-4 md:grid-cols-2">
-              {matter.schedules.map((schedule) => (
-                <div key={schedule.id} className="portal-card space-y-3 p-5">
-                  <div>
-                    <p className="text-[0.6rem] uppercase tracking-[0.4em] text-[color:var(--ink-muted)]">
-                      {schedule.kind.replace(/_/g, " ").toLowerCase()}
-                    </p>
-                    <h3 className="text-lg font-semibold text-[color:var(--ink)]">{schedule.title}</h3>
-                  </div>
-                  <p className="text-sm text-[color:var(--ink-muted)]">{schedule.description ?? "Supplemental notes"}</p>
-                  <div className="flex flex-wrap gap-3">
-                    <Button size="sm" variant="ghost" asChild>
-                      <a href={`/api/matter/${matterId}/schedules/${schedule.id}/pdf`} target="_blank" rel="noreferrer">
-                        Preview
-                      </a>
-                    </Button>
-                    <Button size="sm" variant="secondary" asChild>
-                      <a
-                        href={`/api/matter/${matterId}/schedules/${schedule.id}/pdf?download=1`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Download
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              ))}
+          <div className="space-y-4">
+            <div className="portal-card space-y-3 p-6">
+              <div>
+                <h3 className="text-lg font-semibold text-[color:var(--ink)]">Phase 1 packet</h3>
+                <p className="text-sm text-[color:var(--ink-muted)]">All core forms bundled for review and signing.</p>
+              </div>
+              <Button size="sm" asChild>
+                <a href={getPhase1PacketUrl(matterId)} target="_blank" rel="noopener noreferrer">
+                  Download packet
+                </a>
+              </Button>
             </div>
-          ) : (
-            <p className="text-sm text-[color:var(--ink-muted)]">No supplemental schedules have been generated for this matter yet.</p>
-          )
-        ) : (
-          <div className="rounded-2xl border border-dashed border-[color:var(--border-muted)] p-5 text-sm text-[color:var(--ink-muted)]">
-            <p className="mb-3">Finish the intake so supplemental schedules can be created automatically.</p>
-            <Button asChild size="sm" variant="secondary">
-              <a href="/portal/intake">Open intake wizard</a>
-            </Button>
+            {matter?.schedules?.length ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {matter.schedules.map((schedule) => (
+                  <div key={schedule.id} className="portal-card space-y-3 p-5">
+                    <div>
+                      <p className="text-[0.6rem] uppercase tracking-[0.4em] text-[color:var(--ink-muted)]">{schedule.kind.replace(/_/g, " ")}</p>
+                      <h3 className="text-lg font-semibold text-[color:var(--ink)]">{schedule.title}</h3>
+                    </div>
+                    <p className="text-sm text-[color:var(--ink-muted)]">{schedule.description ?? "Supplemental schedule"}</p>
+                    <div className="flex flex-wrap gap-3">
+                      <Button size="sm" variant="ghost" asChild>
+                        <a href={getSchedulePdfUrl(matterId, schedule.id)} target="_blank" rel="noopener noreferrer">
+                          Preview
+                        </a>
+                      </Button>
+                      <Button size="sm" asChild>
+                        <a href={getSchedulePdfUrl(matterId, schedule.id, { download: true })} target="_blank" rel="noopener noreferrer">
+                          Download
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-[color:var(--ink-muted)]">No supplemental schedules have been generated yet.</p>
+            )}
           </div>
+        ) : (
+          <p className="text-sm text-[color:var(--ink-muted)]">Complete intake to unlock the combined packets.</p>
         )}
       </section>
     </PortalShell>

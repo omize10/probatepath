@@ -6,7 +6,7 @@ interface PageProps {
 
 export default async function RegisterPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const nextParam = typeof params?.next === "string" && params.next.startsWith("/") ? params.next : "/portal";
+  const nextParam = typeof params?.next === "string" && params.next.startsWith("/") ? params.next : "/start";
   return (
     <div className="py-20">
       <RegisterForm next={nextParam} />

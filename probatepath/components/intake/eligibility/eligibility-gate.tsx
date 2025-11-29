@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { QuestionCard } from "@/components/intake/question-card";
 import { YesNoButtons } from "@/components/intake/patterns/yes-no-buttons";
-import { OpenDoorLawBanner } from "@/components/intake/open-door-law-banner";
 import type { EligibilityAnswers } from "@/lib/intake/eligibility";
 import { evaluateEligibility } from "@/lib/intake/eligibility";
 
@@ -27,6 +27,8 @@ type EligibilityGateProps = {
 
 export function EligibilityGate({ isAuthed = false }: EligibilityGateProps) {
   const router = useRouter();
+  const { status: sessionStatus } = useSession();
+  const hasPortalSession = isAuthed || sessionStatus === "authenticated";
   const [answers, setAnswers] = useState<EligibilityAnswers>(initialAnswers);
   const [decision, setDecision] = useState<Decision>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -61,7 +63,7 @@ export function EligibilityGate({ isAuthed = false }: EligibilityGateProps) {
     const localDecision = evaluateEligibility(answers);
     setDecision(localDecision);
 
-    if (!isAuthed) {
+    if (!hasPortalSession) {
       return;
     }
 
@@ -80,14 +82,24 @@ export function EligibilityGate({ isAuthed = false }: EligibilityGateProps) {
           },
         }),
       });
-      const payload = (await response.json().catch(() => null)) as { matterId?: string; decision?: Decision; error?: string } | null;
+      const payload = (await response.json().catch(() => null)) as
+        | {
+            matterId?: string;
+            decision?: { status: "eligible" | "not_fit"; reasons?: string[] };
+            error?: string;
+          }
+        | null;
       if (!response.ok || !payload?.matterId || !payload?.decision) {
         const message = payload?.error ?? "Unable to continue right now.";
         throw new Error(message);
       }
-      setDecision(payload.decision);
-      if (payload.decision.status === "eligible") {
-        router.push(`/matters/${payload.matterId}/intake`);
+      const normalizedDecision: Decision =
+        payload.decision.status === "eligible"
+          ? { status: "eligible", reasons: payload.decision.reasons ?? [] }
+          : { status: "not_fit", reasons: payload.decision.reasons ?? [] };
+      setDecision(normalizedDecision);
+      if (normalizedDecision.status === "eligible") {
+        router.push("/portal/intake");
         return;
       }
       router.push(`/matters/${payload.matterId}/not-a-fit`);
@@ -166,7 +178,7 @@ export function EligibilityGate({ isAuthed = false }: EligibilityGateProps) {
           helpers={[
             {
               title: "Why we ask this",
-              body: "ProbatePath is for uncontested estates. Active disputes or suspected challenges need Open Door Law from day one.",
+              body: "ProbatePath is for uncontested estates. Active disputes or suspected challenges require full legal representation.",
             },
             {
               title: "Examples",
@@ -231,9 +243,7 @@ export function EligibilityGate({ isAuthed = false }: EligibilityGateProps) {
         {submitError ? <p className="text-sm text-[color:var(--error)]">{submitError}</p> : null}
       </section>
 
-      {showResult ? <EligibilityResult decision={decision!} onReset={reset} isAuthed={isAuthed} /> : null}
-
-      <OpenDoorLawBanner />
+      {showResult ? <EligibilityResult decision={decision!} onReset={reset} isAuthed={hasPortalSession} /> : null}
     </div>
   );
 }
@@ -261,7 +271,6 @@ function EligibilityResult({
             <li>Complete detailed intake (about 20 minutes, autosave on every field).</li>
             <li>Our specialists review for completeness and flag anything unusual.</li>
             <li>We prepare the Case Blueprint, notices, and filing instructions.</li>
-            <li>You choose when to engage Open Door Law if you need full representation.</li>
           </ul>
         </div>
         {isAuthed ? (
@@ -269,14 +278,6 @@ function EligibilityResult({
             <Button size="lg" asChild>
               <Link href="/portal/intake">Open intake</Link>
             </Button>
-            <a
-              href="https://opendoorlaw.com"
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-semibold text-[color:var(--brand)] underline-offset-4 hover:underline"
-            >
-              Prefer to talk to a lawyer first? Visit Open Door Law →
-            </a>
           </div>
         ) : (
           <div className="flex flex-wrap items-center gap-4">

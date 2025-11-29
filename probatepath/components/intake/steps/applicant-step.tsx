@@ -42,7 +42,11 @@ export function ApplicantStep({ draft, errors, showErrors, updateWelcome, update
             <Input type="email" value={welcome.email} onChange={(event) => updateWelcome({ email: event.target.value })} placeholder="you@example.com" />
           </FormRow>
           <FormRow fieldId="applicant-phone" label="Phone" error={err("executorPhone")}>
-            <Input value={executor.phone} onChange={(event) => updateExecutor({ phone: event.target.value })} placeholder="604-555-0199" />
+            <Input
+              value={executor.phone}
+              onChange={(event) => updateExecutor({ phone: event.target.value })}
+              placeholder="+1 (604) 670-3534"
+            />
           </FormRow>
         </div>
         <div className="grid gap-4 md:grid-cols-2">

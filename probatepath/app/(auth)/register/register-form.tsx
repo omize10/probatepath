@@ -80,21 +80,20 @@ export function RegisterForm({ next, variant = "portal" }: { next: string; varia
       return;
     }
 
-    const callbackUrl = next.startsWith("/") ? next : "/portal";
+    const callbackUrl = next.startsWith("/") ? next : "/start";
     const result = await signIn("credentials", {
       redirect: false,
       email,
       password,
       callbackUrl,
     });
-
     if (result?.error) {
       setError(result.error);
       setLoading(false);
       return;
     }
-
     router.push(result?.url ?? callbackUrl);
+    router.refresh();
   };
 
   return (

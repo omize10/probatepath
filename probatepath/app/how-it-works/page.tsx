@@ -17,14 +17,14 @@ const timelineCards = [
     title: "Answer guided questions (15–25 min)",
     body: "Work through executor, deceased, and asset prompts with autosave and inline guidance. Pause anytime.",
     bullets: ["Executor & deceased details", "Will + codicils status", "Assets & property overview", "Key dates + locations"],
-    image: "/images/steps-1.jpg",
+    image: "/images/Screenshot 2025-11-27 at 8.01.30 PM.png",
     link: { label: "See what you’ll need", href: "#prep-list" },
   },
   {
     title: "We assemble your package",
     body: "Specialists check for gaps, apply the latest BC forms, and add personalised instructions with signing tabs.",
     bullets: ["Completeness checks", "Latest BC forms + notices", "Personalised cover letter", "Filing checklist"],
-    image: "/images/steps-3.jpg",
+    image: "/images/AdobeStock_3017601323-1.jpg",
   },
   {
     title: "You swear, mail, and track",
@@ -35,7 +35,7 @@ const timelineCards = [
       "Track responses and defect support",
       "Portal reminders to keep moving",
     ],
-    image: "/images/steps-6.jpg",
+    image: "/images/9779055e-0a67-4e73-868c-1ba539e024e5.png",
   },
 ];
 
@@ -44,13 +44,13 @@ const previewStrips = [
     title: "Will search toolkit",
     description: "Generate the registry request packet with cover letter, ID checklist, and envelope labels.",
     href: "/portal/how-to-assemble",
-    image: "/images/envelope.jpg",
+    image: null,
   },
   {
     title: "Self-filing walkthrough",
     description: "See every step of assemble, notarise, mail, and respond inside the portal tutorial.",
     href: "/portal/how-to-assemble",
-    image: "/images/tutorial-card.jpg",
+    image: null,
   },
 ];
 
@@ -154,27 +154,7 @@ export default function HowItWorksPage() {
         </div>
       </ScrollFade>
 
-      <ScrollFade as="section" className="grid gap-6 md:grid-cols-2">
-        {previewStrips.map((strip) => (
-          <Card key={strip.title} className="border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] shadow-[0_25px_60px_-55px_rgba(15,23,42,0.18)]">
-            <CardHeader className="space-y-3">
-              <CardTitle className="text-xl text-[color:var(--brand)]">{strip.title}</CardTitle>
-              <CardDescription>{strip.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="relative h-40 overflow-hidden rounded-2xl border border-[color:var(--border-muted)]">
-                <Image src={strip.image} alt={strip.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
-              </div>
-              <Button asChild variant="ghost" className="justify-start text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]">
-                <Link href={strip.href}>
-                  Open tutorial
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </ScrollFade>
+      {/* Removed tutorial preview cards */}
 
       <ScrollFade as="section" id="prep-list" className="grid gap-6 md:grid-cols-2">
         <Card className="border-[color:var(--border-muted)]">
@@ -248,17 +228,22 @@ export default function HowItWorksPage() {
 
       <ScrollFade
         as="section"
-        className="rounded-[32px] border border-[color:var(--border-muted)] bg-[color:var(--brand)] p-10 text-white shadow-[0_40px_100px_-80px_rgba(15,26,42,0.65)]"
+        className="rounded-[32px] border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-10 shadow-[0_40px_90px_-70px_rgba(15,23,42,0.2)]"
       >
         <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">Ready to start?</p>
-          <h2 className="font-serif text-3xl sm:text-4xl">Begin your intake in minutes</h2>
-          <p className="text-sm text-white/80">
+          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">Ready to start?</p>
+          <h2 className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">Begin your intake in minutes</h2>
+          <p className="text-sm text-[color:var(--ink-muted)]">
             We’ll guide you through every field, confirm fit, and assemble your filing-ready package with Canadian-hosted security.
           </p>
-          <Button asChild size="lg" className="bg-white text-[color:var(--brand)] hover:bg-white/90">
-            <Link href="/create-account">Start now</Link>
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button asChild size="lg">
+              <Link href="/create-account">Start now</Link>
+            </Button>
+            <Button asChild size="lg" variant="secondary">
+              <Link href="/contact">Talk to a specialist</Link>
+            </Button>
+          </div>
         </div>
       </ScrollFade>
 

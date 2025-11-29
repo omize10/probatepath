@@ -3,6 +3,7 @@ import { JourneyStepsList } from "@/components/portal/JourneyStepsList";
 import { requirePortalAuth } from "@/lib/auth";
 import { resolvePortalMatter } from "@/lib/portal/server";
 import { normalizeJourneyState } from "@/lib/portal/journey";
+import { journeyStateFromProgress } from "@/lib/portal/step-progress";
 
 export default async function PortalStepsPage() {
   const session = await requirePortalAuth("/portal");
@@ -23,13 +24,16 @@ export default async function PortalStepsPage() {
     );
   }
 
+  const fallbackJourney = normalizeJourneyState(matter.journeyStatus ?? undefined);
+  const journey = journeyStateFromProgress(matter.stepProgress, fallbackJourney);
+
   return (
     <PortalShell
       title="Your Steps"
       description="Follow each step in order. We’ll track your status and keep every action in context."
       eyebrow="Your Steps"
     >
-      <JourneyStepsList journey={normalizeJourneyState(matter.journeyStatus ?? undefined)} />
+      <JourneyStepsList journey={journey} />
     </PortalShell>
   );
 }

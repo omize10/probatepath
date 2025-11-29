@@ -7,6 +7,7 @@ import { signOut } from "next-auth/react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 import {
   Sheet,
   SheetClose,
@@ -41,11 +42,9 @@ function useScrolled(threshold = 12) {
   return scrolled;
 }
 
-type NavbarProps = {
-  isAuthed: boolean;
-};
-
-export function Navbar({ isAuthed }: NavbarProps) {
+export function Navbar() {
+  const { data: session } = useSession();
+  const isAuthed = Boolean(session?.user);
   const pathname = usePathname();
   const scrolled = useScrolled();
   const portalHref = isAuthed ? "/portal" : `/login?next=${encodeURIComponent("/portal")}`;

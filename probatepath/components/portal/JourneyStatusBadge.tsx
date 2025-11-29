@@ -1,6 +1,6 @@
 "use client";
 
-import type { JourneyStatus } from "@/lib/portal/journey";
+import { canonicalizeJourneyStatus, type JourneyStatus } from "@/lib/portal/journey";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -8,11 +8,12 @@ type Props = {
 };
 
 export function JourneyStatusBadge({ status }: Props) {
-  const label = status === "done" ? "Done" : status === "in_progress" ? "In progress" : "Not started";
+  const normalized = canonicalizeJourneyStatus(status);
+  const label = normalized === "done" ? "Done" : normalized === "in_progress" ? "In progress" : "Not started";
   const color =
-    status === "done"
-      ? "bg-[#f0f3f7] text-[color:var(--brand-navy)]"
-      : status === "in_progress"
+    normalized === "done"
+      ? "bg-[#e6f4ea] text-[#0f9d58]"
+      : normalized === "in_progress"
         ? "bg-[#faf8f5] text-[color:var(--ink-muted)]"
         : "bg-[#edeff3] text-[color:var(--ink-muted)]";
 

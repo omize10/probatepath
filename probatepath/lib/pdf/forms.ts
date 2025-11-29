@@ -4,6 +4,7 @@ import { loadTemplate } from "@/lib/pdf/loadTemplate";
 import { setCheckBox, setTextField } from "@/lib/pdf/fields";
 import { buildVsa532NameAndAliases, splitName } from "@/lib/name";
 import type { IntakeDraft } from "@/lib/intake/types";
+import type { Address, PersonName } from "@/lib/intake/case-blueprint";
 import { buildP1ApplicationData, type MatterForP1, type PostalAddress } from "@/lib/probate/p1";
 
 export type FormId = "will-search" | "p1" | "p3" | "p4" | "p10" | "p11" | "p17" | "p20";
@@ -58,24 +59,67 @@ function formatDate(value?: string | Date | null) {
   return date.toISOString().slice(0, 10);
 }
 
+function formatEstateName(name?: PersonName | null) {
+  if (!name) return "";
+  return [name.first, name.middle1, name.middle2, name.middle3, name.last, name.suffix]
+    .map((part) => (part ?? "").trim())
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+}
+
+function formatRelationship(value?: string | null) {
+  if (!value) return "";
+  const normalized = value.replace(/_/g, " ").trim();
+  if (!normalized) return "";
+  return normalized[0].toUpperCase() + normalized.slice(1);
+}
+
+function formatAddressLines(address?: Address | null) {
+  if (!address) return { line1: "", line2: "", city: "", region: "", postal: "" };
+  return {
+    line1: address.line1?.trim() ?? "",
+    line2: address.line2?.trim() ?? "",
+    city: address.city?.trim() ?? "",
+    region: address.region?.trim() ?? "",
+    postal: address.postalCode?.trim() ?? "",
+  };
+}
+
 function fillWillSearch(form: PDFForm, data: WillSearchRequest, intake?: IntakeDraft) {
-  const executorFull = data.executorFullName || intake?.executor.fullName || "";
+  const estateApplicant = intake?.estateIntake?.applicant;
+  const estateDeceased = intake?.estateIntake?.deceased;
+  const applicantContact = estateApplicant?.contact;
+  const applicantAddress = formatAddressLines(estateApplicant?.address);
+  const deceasedAddress = estateDeceased?.address;
+  const executorFull =
+    data.executorFullName ||
+    intake?.executor.fullName ||
+    formatEstateName(estateApplicant?.name) ||
+    "";
   const executorParts = splitName(executorFull);
-  const executorPhone = data.executorPhone ?? intake?.executor.phone ?? "";
-  const executorCity = data.executorCity ?? intake?.executor.city ?? "";
-  const executorProvince = intake?.executor.province ?? "";
-  const executorPostal = intake?.executor.postalCode ?? "";
-  const executorAddressLine1 = intake?.executor.addressLine1 ?? "";
-  const executorAddressLine2 = intake?.executor.addressLine2 ?? "";
+  const executorPhone = data.executorPhone ?? intake?.executor.phone ?? applicantContact?.phone ?? "";
+  const executorCity = data.executorCity ?? intake?.executor.city ?? applicantAddress.city ?? "";
+  const executorProvince = intake?.executor.province ?? applicantAddress.region ?? "";
+  const executorPostal = intake?.executor.postalCode ?? applicantAddress.postal ?? "";
+  const executorAddressLine1 = intake?.executor.addressLine1 ?? applicantAddress.line1 ?? "";
+  const executorAddressLine2 = intake?.executor.addressLine2 ?? applicantAddress.line2 ?? "";
   const courierAddress = data.courierAddress?.trim() ?? "";
   const mailingAddress = [executorAddressLine1, executorAddressLine2].filter(Boolean).join(", ") || courierAddress;
   const cityProvince = [executorCity, executorProvince].filter(Boolean).join(", ") || executorCity || executorProvince || courierAddress;
 
-  const deceasedName = data.deceasedFullName ?? intake?.deceased.fullName ?? "";
+  const deceasedName =
+    data.deceasedFullName || formatEstateName(estateDeceased?.name) || intake?.deceased.fullName || "";
   const deceasedParts = splitName(deceasedName);
-  const deceasedDate = formatDate(data.deceasedDateOfDeath ?? intake?.deceased.dateOfDeath);
-  const deceasedBirthDate = formatDate(data.deceasedDateOfBirth ?? intake?.deceased.birthDate);
-  const deceasedBirthPlace = data.deceasedPlaceOfBirth ?? intake?.deceased.placeOfBirth ?? "";
+  const deceasedDate =
+    formatDate(data.deceasedDateOfDeath ?? estateDeceased?.dateOfDeath ?? intake?.deceased.dateOfDeath);
+  const deceasedBirthDate =
+    formatDate(data.deceasedDateOfBirth ?? estateDeceased?.dateOfBirth ?? intake?.deceased.birthDate);
+  const deceasedBirthPlace =
+    data.deceasedPlaceOfBirth ||
+    intake?.deceased.placeOfBirth ||
+    deceasedAddress?.city ||
+    "";
 
   const canonicalNames = buildVsa532NameAndAliases({
     fullName: deceasedName,
@@ -99,10 +143,22 @@ function fillWillSearch(form: PDFForm, data: WillSearchRequest, intake?: IntakeD
   setTextField(form, "PBirth", deceasedBirthPlace);
   setTextField(form, "Death Date", deceasedDate);
   setTextField(form, "BDate", deceasedBirthDate);
-  setTextField(form, "place_death", data.deceasedCity ?? intake?.deceased.cityProvince ?? "");
-  setTextField(form, "rel_to_will_search", data.executorRelationship ?? intake?.executor.relationToDeceased ?? "");
-  setTextField(form, "work_no", executorPhone);
-  setTextField(form, "home_no", executorPhone);
+  const placeOfDeath =
+    data.deceasedCity ||
+    estateDeceased?.placeOfDeath?.city ||
+    [estateDeceased?.placeOfDeath?.province, estateDeceased?.placeOfDeath?.country].filter(Boolean).join(", ") ||
+    intake?.deceased.cityProvince ||
+    "";
+  setTextField(form, "place_death", placeOfDeath);
+  const relationship =
+    data.executorRelationship ??
+    intake?.executor.relationToDeceased ??
+    formatRelationship(estateApplicant?.relationship) ??
+    "";
+  setTextField(form, "rel_to_will_search", relationship);
+  const phoneValue = executorPhone || applicantContact?.phone || "";
+  setTextField(form, "work_no", phoneValue);
+  setTextField(form, "home_no", phoneValue);
 
   const hasWill = data.hasWill ?? (intake?.deceased.hadWill === "yes" ? true : intake?.deceased.hadWill === "no" ? false : null);
   if (hasWill !== null) {

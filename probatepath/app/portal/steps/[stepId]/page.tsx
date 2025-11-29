@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { StepDetailFrame } from "@/components/portal/StepDetailFrame";
@@ -13,8 +13,11 @@ import {
   type JourneyStepId,
   type JourneyStatus,
 } from "@/lib/portal/journey";
+import { journeyStateFromProgress } from "@/lib/portal/step-progress";
 import { formatIntakeDraftRecord } from "@/lib/intake/format";
+import { getFormPdfUrl, getPhase1PacketUrl, getSchedulePdfUrl, getWillSearchPdfUrl } from "@/lib/portal/downloads";
 import type { Address, EstateIntake, PersonName } from "@/lib/intake/case-blueprint";
+import { getStepFlow } from "@/lib/portal/step-flows";
 
 type StepPageProps = {
   params: {
@@ -25,30 +28,101 @@ type StepPageProps = {
 type PortalMatter = NonNullable<Awaited<ReturnType<typeof resolvePortalMatter>>>;
 type NormalizedDraft = ReturnType<typeof formatIntakeDraftRecord>;
 
+const overviewLinks: Partial<Record<
+  JourneyStepId,
+  {
+    href: string;
+    label: string;
+  }
+>> = {
+  "review-info": { href: "/portal/info", label: "Open Your Info" },
+  "will-search": { href: "/portal/will-search", label: "Open will search form" },
+  "executors-beneficiaries": { href: "/portal/executors", label: "Edit executors" },
+  "assets-debts": { href: "/portal/info", label: "View assets & debts" },
+  "review-forms": { href: "/portal/documents#forms", label: "Open documents" },
+  "sign-notarize": { href: "/portal/help#signing", label: "Read signing tips" },
+  "file-court": { href: "/portal/help#filing", label: "Review filing instructions" },
+};
+
 export default async function JourneyStepPage({ params }: StepPageProps) {
   const session = await requirePortalAuth("/portal");
   const userId = (session.user as { id?: string })?.id ?? null;
   const matter = await resolvePortalMatter(userId);
   if (!matter) {
-    notFound();
+    redirect("/portal");
   }
 
   const normalizedId = params.stepId as JourneyStepId;
   const step = journeySteps.find((item) => item.id === normalizedId);
   if (!step) {
-    notFound();
+    redirect("/portal/steps");
   }
 
   const draft = matter.draft ? formatIntakeDraftRecord(matter.draft) : null;
-  const journeyState = normalizeJourneyState(matter.journeyStatus ?? undefined);
+  const fallbackJourney = normalizeJourneyState(matter.journeyStatus ?? undefined);
+  const journeyState = journeyStateFromProgress(matter.stepProgress, fallbackJourney);
   const status: JourneyStatus = journeyState[step.id]?.status ?? "not_started";
   const stepIndex = journeySteps.findIndex((item) => item.id === step.id);
   const summarySections = renderSummarySections(step.id, { estate: draft?.estateIntake, matter, draft });
   const instructions = getInstructions(step.id);
   const confirmCopy = getConfirmCopy(step.id);
+  const overviewLink = overviewLinks[step.id] ?? { href: "/portal/help", label: "Read help" };
+  const flow = getStepFlow(step.id, { matter, draft });
+  const isWillSearch = step.id === "will-search";
+  const heroDescription = flow ? step.description : "Use the overview links to keep moving.";
+  const primaryHeroLabel = status === "done" ? "Review" : status === "in_progress" ? "Resume" : "Start";
+  const primaryHero = flow ? { href: `/portal/steps/${step.id}/flow`, label: primaryHeroLabel } : overviewLink;
 
   return (
     <PortalShell eyebrow="Your Steps" title={step.title} description={step.subtitle}>
+      <section className="portal-card space-y-4 rounded-[32px] border border-[color:var(--border-muted)] p-6">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">Before you begin</p>
+          <h2 className="font-serif text-3xl text-[color:var(--ink)]">{step.title}</h2>
+          <p className="text-sm text-[color:var(--ink-muted)]">{heroDescription}</p>
+        </div>
+        {isWillSearch ? (
+          <div className="flex flex-wrap gap-6">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">Estimated time</p>
+              <p className="text-base font-semibold text-[color:var(--ink)]">{step.timeEstimate}</p>
+            </div>
+            <div className="flex-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">You’ll need</p>
+              <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-[color:var(--ink-muted)]">
+                {step.beforeYouBegin.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">You’ll need</p>
+            <ul className="list-disc space-y-1 pl-4 text-sm text-[color:var(--ink-muted)]">
+              {step.beforeYouBegin.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href={primaryHero.href}>{primaryHero.label}</Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href="/portal/steps">Back to steps</Link>
+          </Button>
+          {!flow ? null : (
+            <Link
+              href={overviewLink.href}
+              className="text-xs font-semibold text-[color:var(--brand-navy)] underline-offset-4 hover:underline"
+            >
+              {overviewLink.label}
+            </Link>
+          )}
+        </div>
+      </section>
       <StepDetailFrame
         stepId={step.id}
         stepNumber={stepIndex + 1}
@@ -155,20 +229,18 @@ function renderSummarySections(stepId: JourneyStepId, context: StepContext): Rea
           <StepSummaryCard
             title="Download wills notice package"
             description="Print the packet, add photocopies of your ID, and bring it to Service BC or mail it with the fee."
-            footer={
-              <div className="flex flex-wrap gap-3">
-                <Button asChild>
-                  <Link href="/portal/documents">Open documents</Link>
-                </Button>
-                {context.matter.id ? (
-                  <Button asChild variant="secondary">
-                    <a href={`/api/will-search/${context.matter.id}/pdf?download=1`} target="_blank" rel="noreferrer">
-                      Download VSA 532
-                    </a>
-                  </Button>
-                ) : null}
-              </div>
-            }
+          footer={
+            <div className="flex flex-wrap gap-3">
+              <Button asChild>
+                <Link href="/portal/documents">Open documents</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <a href={getWillSearchPdfUrl(context.matter.id, { download: true })} target="_blank" rel="noopener noreferrer">
+                  Download VSA 532
+                </a>
+              </Button>
+            </div>
+          }
           >
             <ul className="list-disc space-y-2 pl-5">
               <li>Use black ink to sign the request after you print it.</li>
@@ -281,20 +353,18 @@ function renderSummarySections(stepId: JourneyStepId, context: StepContext): Rea
           <StepSummaryCard
             title="Download your forms"
             description="Open each PDF, scan the details, and keep unsigned copies for the notary appointment."
-            footer={
-              <div className="flex flex-wrap gap-3">
-                <Button asChild>
-                  <Link href="/portal/documents">Open documents</Link>
-                </Button>
-                {context.matter.id ? (
-                  <Button asChild variant="secondary">
-                    <a href={`/api/matter/${context.matter.id}/package/phase1/pdf`} target="_blank" rel="noreferrer">
-                      Download Phase 1 packet
-                    </a>
-                  </Button>
-                ) : null}
-              </div>
-            }
+          footer={
+            <div className="flex flex-wrap gap-3">
+              <Button asChild>
+                <Link href="/portal/documents">Open documents</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <a href={getPhase1PacketUrl(context.matter.id)} target="_blank" rel="noopener noreferrer">
+                  Download Phase 1 packet
+                </a>
+              </Button>
+            </div>
+          }
           >
             <ul className="list-disc space-y-2 pl-5">
               <li>Check the names, dates, registry, and asset summaries in each PDF.</li>

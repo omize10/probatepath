@@ -16,6 +16,7 @@ import { portalSteps, type PortalStepId, getPortalStepIndex, getPortalNextStep, 
 import { getPortalStepInfo } from "@/lib/intake/portal/info";
 import { saveMatterDraft } from "@/lib/intake/api";
 import { validatePortalStep, type PortalStepErrors } from "@/lib/intake/portal/validation";
+import type { Relationship } from "@/lib/intake/case-blueprint";
 
 interface MatterIntakeWizardProps {
   matterId: string;
@@ -121,7 +122,9 @@ export function MatterIntakeWizard({
     const next = getPortalNextStep(stepDefinition.id, draft);
     if (next) {
       router.push(`/matters/${matterId}/intake?step=${next.id}`);
+      return;
     }
+    router.push("/portal");
   };
 
   const handleBack = () => {
@@ -1846,8 +1849,16 @@ function Field({
   );
 }
 
-function RelationshipPicker({ value, onChange, error }: { value: string; onChange: (value: RenderContext["draft"]["estateIntake"]["applicant"]["relationship"]) => void; error?: string }) {
-  const options = [
+function RelationshipPicker({
+  value,
+  onChange,
+  error,
+}: {
+  value: RenderContext["draft"]["estateIntake"]["applicant"]["relationship"];
+  onChange: (value: RenderContext["draft"]["estateIntake"]["applicant"]["relationship"]) => void;
+  error?: string;
+}) {
+  const options: { label: string; value: Relationship }[] = [
     { label: "Spouse/Partner", value: "spouse" },
     { label: "Child", value: "child" },
     { label: "Sibling", value: "sibling" },
@@ -1866,7 +1877,7 @@ function RelationshipPicker({ value, onChange, error }: { value: string; onChang
             className={`rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${
               value === option.value ? "border-[color:var(--brand)] bg-[color:var(--brand)] text-white" : "border-[color:var(--border-muted)] text-[color:var(--ink)]"
             }`}
-            onClick={() => onChange(option.value as typeof value)}
+            onClick={() => onChange(option.value)}
           >
             {option.label}
           </button>

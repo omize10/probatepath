@@ -46,7 +46,7 @@ export default async function MatterIntakePage({ params, searchParams }: MatterI
 
   return (
     <MatterIntakeWizard
-      matterId={params.matterId}
+      matterId={resolvedParams.matterId}
       initialDraft={draftRecord}
       currentStep={resolvedStep}
       journeyHref="/portal/steps"

@@ -7,7 +7,8 @@ import { requirePortalAuth } from "@/lib/auth";
 import { resolvePortalMatter } from "@/lib/portal/server";
 import { formatIntakeDraftRecord } from "@/lib/intake/format";
 import { calculatePortalProgress } from "@/lib/intake/portal/validation";
-import { journeySteps, getNextJourneyStep, normalizeJourneyState, journeyProgressPercent } from "@/lib/portal/journey";
+import { getNextJourneyStep, journeyProgressPercent, normalizeJourneyState } from "@/lib/portal/journey";
+import { journeyStateFromProgress } from "@/lib/portal/step-progress";
 
 function formatTimestamp(value?: Date | null) {
   if (!value) return null;
@@ -29,10 +30,11 @@ export default async function PortalDashboardPage() {
   const status: "draft" | "submitted" = draft?.submittedAt ? "submitted" : "draft";
   const lastSavedText = formatTimestamp(draft?.updatedAt ?? draft?.createdAt ?? null);
   const resumeHref = matter ? `/matters/${matter.id}/intake` : "/portal/intake";
-  const journey = normalizeJourneyState(matter.journeyStatus ?? undefined);
+  const fallbackJourney = normalizeJourneyState(matter.journeyStatus ?? undefined);
+  const journey = journeyStateFromProgress(matter.stepProgress, fallbackJourney);
   const journeyProgress = journeyProgressPercent(journey);
   const nextJourneyStep = getNextJourneyStep(journey);
-  const continueHref = nextJourneyStep ? `/portal/steps/${nextJourneyStep.id}` : "/portal/steps";
+  const continueHref = nextJourneyStep ? `/portal/steps/${nextJourneyStep.id}/flow` : "/portal/steps";
 
   return (
     <PortalShell

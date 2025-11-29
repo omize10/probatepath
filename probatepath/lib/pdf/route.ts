@@ -8,6 +8,7 @@ import { renderForm, type FormId } from "@/lib/pdf/forms";
 import { sendPdfResponse } from "@/lib/pdf/response";
 import { formatIntakeDraftRecord } from "@/lib/intake/format";
 import type { IntakeDraft } from "@/lib/intake/types";
+import { seedWillSearchFromIntake } from "@/lib/portal/will-search";
 
 async function handleFormRequest(
   formId: FormId,
@@ -42,7 +43,15 @@ async function handleFormRequest(
   }
 
   if (formId === "will-search") {
-    const willSearch = matter.willSearch?.[0];
+    const existing = matter.willSearch?.[0] ?? null;
+    const seeded = await seedWillSearchFromIntake({
+      matterId,
+      intake: intakeDraft ?? null,
+      draft: matter.draft,
+      executors: matter.executors,
+      existing,
+    });
+    const willSearch = seeded ?? existing;
     if (!willSearch) {
       return NextResponse.json({ error: "Will search data missing" }, { status: 404 });
     }

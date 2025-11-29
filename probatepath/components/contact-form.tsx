@@ -83,7 +83,7 @@ export function ContactForm() {
               id="contact-phone"
               value={formData.phone}
               onChange={(event) => handleChange("phone", event.target.value)}
-              placeholder="604-555-0199"
+              placeholder="+1 (604) 670-3534"
             />
           </FormControl>
           <FormDescription>We call only if needed for intake support.</FormDescription>

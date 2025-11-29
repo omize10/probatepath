@@ -41,7 +41,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       <body className={cn("min-h-screen bg-[color:var(--bg-page)] text-[color:var(--ink)] antialiased", inter.variable, dmSerif.variable)}>
         <Providers session={session}>
           <div className="relative flex min-h-screen flex-col">
-            <Navbar isAuthed={Boolean(session?.user)} />
+            <Navbar />
             <main
               id="main-content"
               className="relative mx-auto w-full max-w-6xl flex-1 px-6 pb-24 pt-24 sm:px-10"

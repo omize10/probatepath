@@ -16,6 +16,22 @@ export type JourneyEntry = {
 
 export type JourneyState = Record<JourneyStepId, JourneyEntry>;
 
+const STATUS_WEIGHT: Record<JourneyStatus, number> = {
+  not_started: 0,
+  in_progress: 1,
+  done: 2,
+};
+
+export function canonicalizeJourneyStatus(value: JourneyStatus | string | null | undefined): JourneyStatus {
+  if (value === "in_progress") {
+    return "in_progress";
+  }
+  if (value === "done" || value === "completed") {
+    return "done";
+  }
+  return "not_started";
+}
+
 export function createDefaultJourneyState(): JourneyState {
   return journeySteps.reduce((acc, step) => {
     acc[step.id] = { status: "not_started", updatedAt: null };
@@ -41,16 +57,14 @@ export function normalizeJourneyState(value?: unknown): JourneyState {
     const stored = record[step.id];
     if (!stored) continue;
     if (typeof stored === "string") {
-      base[step.id] = { status: stored, updatedAt: null };
+      base[step.id] = { status: canonicalizeJourneyStatus(stored), updatedAt: null };
       continue;
     }
-    const status = stored.status ?? null;
-    if (status && (status === "not_started" || status === "in_progress" || status === "done")) {
-      base[step.id] = {
-        status,
-        updatedAt: stored.updatedAt ?? null,
-      };
-    }
+    const status = canonicalizeJourneyStatus(stored.status ?? null);
+    base[step.id] = {
+      status,
+      updatedAt: stored.updatedAt ?? null,
+    };
   }
   return base;
 }
@@ -58,18 +72,16 @@ export function normalizeJourneyState(value?: unknown): JourneyState {
 export function journeyProgressPercent(state: JourneyState) {
   const total = journeySteps.length;
   if (total === 0) return 0;
-  const completed = journeySteps.reduce(
-    (count, step) => (state[step.id]?.status === "done" ? count + 1 : count),
-    0,
-  );
+  const completed = journeySteps.reduce((count, step) => (canonicalizeJourneyStatus(state[step.id]?.status ?? null) === "done" ? count + 1 : count), 0);
   return Math.round((completed / total) * 100);
 }
 
 export function setJourneyStateValue(state: JourneyState, id: JourneyStepId, status: JourneyStatus): JourneyState {
+  const canonicalStatus = canonicalizeJourneyStatus(status);
   return {
     ...state,
     [id]: {
-      status,
+      status: canonicalStatus,
       updatedAt: new Date().toISOString(),
     },
   };
@@ -88,6 +100,8 @@ export type JourneyStepDefinition = {
   title: string;
   subtitle: string;
   description: string;
+  timeEstimate: string;
+  beforeYouBegin: string[];
   whatYouDo: string[];
   whatWeDo: string[];
   actions: JourneyStepAction[];
@@ -101,6 +115,8 @@ export const journeySteps: JourneyStepDefinition[] = [
     subtitle: "Confirm the key facts before any paperwork goes out.",
     description:
       "Start by double-checking the deceased’s details and your own executor contact information. This prevents small typos from turning into court delays later on.",
+    timeEstimate: "3–5 minutes",
+    beforeYouBegin: ["Have the death certificate handy", "Know your preferred mailing address"],
     whatYouDo: [
       "Confirm the deceased’s legal name, address, and date of death.",
       "Review your mailing address, phone number, and preferred email.",
@@ -122,6 +138,8 @@ export const journeySteps: JourneyStepDefinition[] = [
     subtitle: "Order the BC wills notice search and upload proof.",
     description:
       "BC requires a wills notice search before the court reviews the estate. We generate the VSA 532 form for you so you can submit it to Vital Statistics and save the receipt here.",
+    timeEstimate: "10 minutes to prepare, plus mailing time",
+    beforeYouBegin: ["Printer + black pen", "Executor ID photocopies", "Cheque or money order for Vital Statistics"],
     whatYouDo: [
       "Download the will-search PDF packet and print it.",
       "Bring the packet (plus ID photocopies) to Service BC or mail it with the fee.",
@@ -144,6 +162,8 @@ export const journeySteps: JourneyStepDefinition[] = [
     subtitle: "List everyone the court expects to see on the schedules.",
     description:
       "Courts expect a full list of executors and beneficiaries. Use this step to confirm who is acting, who stepped down, and who must receive notice letters.",
+    timeEstimate: "5 minutes",
+    beforeYouBegin: ["Executor names and mailing addresses", "List of beneficiaries"],
     whatYouDo: [
       "Confirm each executor’s name and mailing address.",
       "Add every beneficiary (even if they receive nothing) with an address for notices.",
@@ -166,6 +186,8 @@ export const journeySteps: JourneyStepDefinition[] = [
     subtitle: "Summarize property, accounts, and outstanding debts.",
     description:
       "The court wants a snapshot of estate assets and liabilities. Gather the info now so the affidavits are accurate on the first try.",
+    timeEstimate: "10–15 minutes",
+    beforeYouBegin: ["Rough list of assets and mortgages", "Any outstanding debt totals"],
     whatYouDo: [
       "List real property, bank accounts, investments, and business interests.",
       "Record mortgages, credit cards, and other outstanding debts.",
@@ -187,6 +209,8 @@ export const journeySteps: JourneyStepDefinition[] = [
     subtitle: "Preview every form before you sign anything.",
     description:
       "When the data looks right, open each PDF to confirm spelling, dates, registry info, and attachments. Catching issues here saves a second trip to the notary.",
+    timeEstimate: "15 minutes",
+    beforeYouBegin: ["Stable internet connection", "Printer or PDF viewer"],
     whatYouDo: [
       "Download each form: P1, P3/P4, P9, P10/P11, and the schedules.",
       "Confirm names, dates, registry location, and addresses.",
@@ -212,6 +236,8 @@ export const journeySteps: JourneyStepDefinition[] = [
     subtitle: "Meet a commissioner or notary to swear the affidavits.",
     description:
       "BC probate affidavits must be sworn or affirmed in front of a commissioner. Bring two pieces of ID and only sign when instructed.",
+    timeEstimate: "15 minutes at the appointment",
+    beforeYouBegin: ["Printed packet", "Two pieces of government ID", "Notary appointment"],
     whatYouDo: [
       "Book a commissioner/notary appointment and bring government ID.",
       "Print the packet, add exhibit tabs, and leave signatures blank.",
@@ -238,6 +264,8 @@ export const journeySteps: JourneyStepDefinition[] = [
     subtitle: "Deliver the packet and pay the filing fee.",
     description:
       "Once everything is signed, file the packet with the BC Supreme Court registry that matches the deceased’s residence. Keep courier tracking and note any grant numbers or defect letters.",
+    timeEstimate: "30–45 minutes",
+    beforeYouBegin: ["Fully assembled packet", "Original will + death certificate", "Payment method"],
     whatYouDo: [
       "Assemble the packet in order with tabs and exhibits.",
       "Deliver it in person or send by tracked courier to the right registry.",
@@ -267,7 +295,13 @@ export function getNextJourneyStep(
   const entry = journeySteps.find((step) => {
     const current = statusMap[step.id];
     const statusValue = typeof current === "string" ? current : current?.status;
-    return statusValue !== "done";
+    return canonicalizeJourneyStatus(statusValue ?? null) !== "done";
   });
   return entry ?? journeySteps[journeySteps.length - 1] ?? null;
+}
+
+export function mergeJourneyStatuses(primary: JourneyStatus, secondary: JourneyStatus): JourneyStatus {
+  const canonicalPrimary = canonicalizeJourneyStatus(primary);
+  const canonicalSecondary = canonicalizeJourneyStatus(secondary);
+  return STATUS_WEIGHT[canonicalSecondary] > STATUS_WEIGHT[canonicalPrimary] ? canonicalSecondary : canonicalPrimary;
 }

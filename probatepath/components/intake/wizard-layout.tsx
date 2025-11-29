@@ -28,8 +28,6 @@ interface IntakeWizardLayoutProps {
   saveError?: string | null;
 }
 
-const lawyerLink = process.env.NEXT_PUBLIC_OPEN_DOOR_LAW_URL ?? "https://opendoorlaw.ca";
-
 export function IntakeWizardLayout({
   stepIndex,
   totalSteps,
@@ -89,20 +87,6 @@ export function IntakeWizardLayout({
               <li key={tip}>{tip}</li>
             ))}
           </ul>
-          <div className="rounded-2xl border border-dashed border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] p-4 text-sm">
-            <p className="font-semibold text-[color:var(--ink)]">Prefer a lawyer?</p>
-            <p className="mt-1 text-[color:var(--ink-muted)]">
-              Open Door Law handles probate matters across BC. We can refer you if you would rather a law firm take over.
-            </p>
-            <a
-              href={lawyerLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center text-sm font-semibold text-[color:var(--brand-navy)] underline-offset-4 hover:underline"
-            >
-              Learn about legal help →
-            </a>
-          </div>
         </aside>
       </div>
     </div>

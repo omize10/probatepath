@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import { ensurePrismaRuntime } from "./scripts/ensure-prisma-runtime.mjs";
+
+ensurePrismaRuntime();
 
 const nextConfig: NextConfig = {
   /* config options here */

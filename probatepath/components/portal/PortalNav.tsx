@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -25,10 +26,8 @@ export function PortalNav({ statusLabel }: PortalNavProps) {
     <div className="rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6 shadow-[0_25px_80px_-60px_rgba(15,23,42,0.18)]">
       <div className="space-y-3">
         <div className="flex items-center gap-3 text-sm font-semibold text-[color:var(--ink)]">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--brand-ink)] text-white shadow-[0_10px_25px_-12px_rgba(15,26,42,0.55)]">
-            PP
-          </span>
-          ProbatePath portal
+          <Image src="/images/PPlogo.png" alt="ProbatePath" width={360} height={90} className="h-[84px] w-auto" priority />
+          <span className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Portal</span>
         </div>
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">{displayStatus}</p>
       </div>

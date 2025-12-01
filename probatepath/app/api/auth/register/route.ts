@@ -44,9 +44,9 @@ export async function POST(request: Request) {
       req: request,
     });
 
-    return NextResponse.json({ id: user.id, email: user.email });
+    return NextResponse.json({ success: true, id: user.id, email: user.email }, { status: 201 });
   } catch (error) {
     console.error("[auth] Failed to register user", error);
-    return NextResponse.json({ error: "Unable to create your account right now." }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Unable to create your account right now." }, { status: 500 });
   }
 }

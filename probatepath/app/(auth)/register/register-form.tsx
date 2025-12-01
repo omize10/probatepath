@@ -67,33 +67,44 @@ export function RegisterForm({ next, variant = "portal" }: { next: string; varia
 
     setLoading(true);
     setError(null);
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    if (!response.ok) {
-      const payload = await response.json().catch(() => null);
-      setError(payload?.error ?? "Unable to create your account right now.");
-      setLoading(false);
-      return;
-    }
+      if (!response.ok) {
+        let message = "Unable to create your account right now.";
+        try {
+          const payload = await response.json();
+          if (payload?.error) {
+            message = payload.error;
+          }
+        } catch {
+          // ignore body parse errors
+        }
+        throw new Error(message);
+      }
 
-    const callbackUrl = next.startsWith("/") ? next : "/start";
-    const result = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-      callbackUrl,
-    });
-    if (result?.error) {
-      setError(result.error);
+      const callbackUrl = next.startsWith("/") ? next : "/start";
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+        callbackUrl,
+      });
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+      router.push(result?.url ?? callbackUrl);
+      router.refresh();
+    } catch (err) {
+      console.error("[register] Failed to create account", err);
+      setError(err instanceof Error ? err.message : "Unable to create your account right now.");
+    } finally {
       setLoading(false);
-      return;
     }
-    router.push(result?.url ?? callbackUrl);
-    router.refresh();
   };
 
   return (

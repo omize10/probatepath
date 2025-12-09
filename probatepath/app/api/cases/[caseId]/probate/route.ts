@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requirePortalAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { markProbateFiled } from "@/lib/cases";
@@ -9,10 +9,13 @@ function parseDate(value: unknown): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-export async function POST(request: Request, { params }: { params: { caseId: string } }) {
+export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ caseId: string }> }
+) {
   const session = await requirePortalAuth("/portal");
   const userId = (session.user as { id?: string })?.id;
-  const caseId = params.caseId;
+  const { caseId } = await context.params;
 
   if (!userId || !caseId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

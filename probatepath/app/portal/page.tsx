@@ -80,13 +80,13 @@ export default async function PortalPage() {
     probatePackagePdfUrl: matter.probatePackagePdfUrl ?? null,
     registryName: matter.registryName ?? null,
     registryAddress: matter.registryAddress ?? null,
-    reminders: (matter.reminders ?? []).map((r) => ({
+    reminders: (matter.reminders ?? []).map((r: any) => ({
       id: r.id,
       type: r.type,
       dueAt: r.dueAt?.toISOString() ?? null,
       sentAt: r.sentAt?.toISOString() ?? null,
     })),
-    beneficiaries: (matter.beneficiaries ?? []).map((b) => ({
+    beneficiaries: (matter.beneficiaries ?? []).map((b: any) => ({
       id: b.id,
       name: b.fullName ?? b.name ?? "Recipient",
       relationship: b.relationship ?? b.type ?? null,

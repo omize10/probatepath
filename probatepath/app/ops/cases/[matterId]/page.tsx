@@ -833,7 +833,9 @@ function DocumentsCard({ recordId, willSearchUrl, p1PacketUrl, probateUrl, porta
           extraContent={
             <div className="mt-3 space-y-3">
               <div className="space-y-1 text-xs text-[color:var(--ink-muted)]">
-                <p>Current status: {portalStatusLabels[portalStatus] ?? portalStatus}</p>
+                <p>
+                  Current status: {portalStatusLabels[portalStatus as keyof typeof portalStatusLabels] ?? portalStatus}
+                </p>
                 <p>Probate filed at: {probateFiledAt ? dateTimeFormatter.format(probateFiledAt) : "—"}</p>
                 <p>Grant issued at: {grantIssuedAt ? dateTimeFormatter.format(grantIssuedAt) : "—"}</p>
               </div>

@@ -1,8 +1,8 @@
 import "server-only";
-import type { PortalStatus, Prisma } from "@prisma/client";
+import type { PortalStatus } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { scheduleNoticeWaitReminder, scheduleWillSearchReminder } from "@/lib/reminders";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 type PortalStateInput = {
   portalStatus?: PortalStatus;
@@ -144,7 +144,7 @@ export async function ensureCaseCode(matterId: string) {
     await prisma.matter.update({ where: { id: matterId }, data: { caseCode: code } });
     return code;
   } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       const fallback = await getNextCaseCode();
       await prisma.matter.update({ where: { id: matterId }, data: { caseCode: fallback } });
       return fallback;

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { promises as fs } from "fs";
 import { join } from "path";
@@ -24,8 +24,11 @@ async function fetchPdfBuffer(url: string): Promise<Uint8Array> {
   return new Uint8Array(array);
 }
 
-export async function GET(_: Request, { params }: { params: { matterId: string } }) {
-  const { matterId } = params;
+export async function GET(
+  _request: NextRequest,
+  context: { params: Promise<{ matterId: string }> }
+) {
+  const { matterId } = await context.params;
   const cookieStore = await cookies();
   const opsAllowed = cookieStore.get("ops_auth")?.value === "1";
 

@@ -6,6 +6,363 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String?
+  image        String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  passwordHash String?
+  role         Role           @default(USER)
+  accounts     Account[]
+  audits       AuditLog[]
+  authLogs     AuthAuditLog[]
+  matters      Matter[]
+  sessions     Session[]
+}
+
+model Matter {
+  id                          String                 @id @default(cuid())
+  userId                      String?
+  clientKey                   String                 @unique
+  status                      MatterStatus           @default(DRAFT)
+  createdAt                   DateTime               @default(now())
+  updatedAt                   DateTime               @updatedAt
+  journeyStatus               Json?
+  rightFitStatus              RightFitStatus         @default(UNKNOWN)
+  rightFitCompletedAt         DateTime?
+  rightFitAnswers             Json?
+  p1Mailed                    Boolean                @default(false)
+  p1MailedAt                  DateTime?
+  p1NoticesReady              Boolean                @default(false)
+  portalStatus                PortalStatus           @default(intake_complete)
+  standardProbatePackageReady Boolean                @default(false)
+  willSearchPackageReady      Boolean                @default(false)
+  noticesMailedAt             DateTime?
+  noticesPreparedAt           DateTime?
+  probateFiledAt              DateTime?
+  probatePackagePreparedAt    DateTime?
+  willSearchMailedAt          DateTime?
+  willSearchPreparedAt        DateTime?
+  p1NoticePdfUrl              String?
+  probatePackagePdfUrl        String?
+  willSearchPdfUrl            String?
+  caseCode                    String?                @unique
+  p1CoverLetterPdfUrl         String?
+  p1Status                    String                 @default("not_started")
+  probateStatus               String                 @default("not_started")
+  willSearchStatus            String                 @default("not_started")
+  grantIssuedAt               DateTime?
+  p1PacketPdfUrl              String?
+  registryAddress             String?
+  registryName                String?
+  audits                      AuditLog[]
+  beneficiaries               Beneficiary[]
+  emails                      EmailLog[]
+  executors                   Executor[]
+  files                       File[]
+  pack                        GeneratedPack?
+  draft                       IntakeDraft?
+  user                        User?                  @relation(fields: [userId], references: [id])
+  stepProgress                MatterStepProgress[]
+  reminders                   Reminder[]
+  resumeLinks                 ResumeToken[]
+  schedules                   SupplementalSchedule[]
+  willSearch                  WillSearchRequest[]
+}
+
+model MatterStepProgress {
+  id        String   @id @default(cuid())
+  matterId  String
+  stepKey   String
+  status    String   @default("not_started")
+  pageIndex Int      @default(0)
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  matter    Matter   @relation(fields: [matterId], references: [id])
+
+  @@unique([matterId, stepKey])
+}
+
+model IntakeDraft {
+  id                    String    @id @default(cuid())
+  matterId              String    @unique
+  email                 String
+  consent               Boolean
+  exFullName            String
+  exPhone               String?
+  exCity                String
+  exRelation            String
+  decFullName           String
+  decDateOfDeath        DateTime
+  decCityProv           String
+  hadWill               Boolean
+  willLocation          String
+  estateValueRange      String
+  anyRealProperty       Boolean
+  multipleBeneficiaries Boolean
+  specialCircumstances  String?
+  payload               Json?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  finalSnapshot         Json?
+  submittedAt           DateTime? @db.Timestamptz(6)
+  matter                Matter    @relation(fields: [matterId], references: [id])
+}
+
+model WillSearchRequest {
+  id                     String    @id @default(cuid())
+  matterId               String
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  courierAddress         String?
+  deceasedCity           String?
+  deceasedDateOfDeath    DateTime?
+  deceasedFullName       String
+  deceasedGivenNames     String?
+  deceasedProvince       String?
+  deceasedSurname        String?
+  executorCity           String?
+  executorEmail          String
+  executorFullName       String
+  executorPhone          String?
+  executorRelationship   String?
+  hasWill                Boolean?
+  mailingPreference      String?
+  searchNotes            String?
+  deceasedAliases        String[]  @default([])
+  deceasedDateOfBirth    DateTime?
+  deceasedPlaceOfBirth   String?
+  deceasedMarriedSurname String?
+  matter                 Matter    @relation(fields: [matterId], references: [id])
+}
+
+model GeneratedPack {
+  id        String     @id @default(cuid())
+  matterId  String     @unique
+  status    PackStatus @default(DRAFT)
+  zipUrl    String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  matter    Matter     @relation(fields: [matterId], references: [id])
+}
+
+model File {
+  id        String   @id @default(cuid())
+  matterId  String
+  name      String
+  mimeType  String
+  size      Int
+  url       String
+  createdAt DateTime @default(now())
+  matter    Matter   @relation(fields: [matterId], references: [id])
+}
+
+model EmailLog {
+  id        String   @id @default(cuid())
+  matterId  String?
+  to        String
+  subject   String
+  template  String
+  meta      Json?
+  createdAt DateTime @default(now())
+  matter    Matter?  @relation(fields: [matterId], references: [id])
+}
+
+model ResumeToken {
+  token     String   @id
+  matterId  String
+  email     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  matter    Matter   @relation(fields: [matterId], references: [id])
+}
+
+model Reminder {
+  id        String    @id @default(cuid())
+  caseId    String
+  type      String
+  channel   String
+  dueAt     DateTime
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+  case      Matter    @relation(fields: [caseId], references: [id])
+
+  @@unique([caseId, type])
+  @@index([dueAt, sentAt])
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  matterId     String?
+  actorId      String?
+  action       String
+  meta         Json?
+  createdAt    DateTime @default(now())
+  ip           String?
+  ua           String?
+  userId       String?
+  resourceType String?
+  resourceId   String?
+  metadata     Json?
+  ipAddress    String?
+  userAgent    String?
+  matter       Matter?  @relation(fields: [matterId], references: [id])
+  user         User?    @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model AuthAuditLog {
+  id        String        @id @default(cuid())
+  userId    String?
+  type      AuthAuditType
+  ip        String?
+  userAgent String?
+  meta      Json?
+  createdAt DateTime      @default(now())
+  user      User?         @relation(fields: [userId], references: [id])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  expires      DateTime
+  sessionToken String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Executor {
+  id           String   @id @default(cuid())
+  matterId     String
+  isPrimary    Boolean  @default(false)
+  isAlternate  Boolean  @default(false)
+  orderIndex   Int      @default(0)
+  fullName     String
+  givenNames   String?
+  surname      String?
+  email        String?
+  phone        String?
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  province     String?
+  postalCode   String?
+  country      String?
+  isRenouncing Boolean  @default(false)
+  isMinor      Boolean  @default(false)
+  isDeceased   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  matter       Matter   @relation(fields: [matterId], references: [id])
+}
+
+model Beneficiary {
+  id                  String            @id @default(cuid())
+  matterId            String
+  type                BeneficiaryType
+  status              BeneficiaryStatus @default(ALIVE)
+  fullName            String
+  givenNames          String?
+  surname             String?
+  relationshipLabel   String?
+  isMinor             Boolean           @default(false)
+  dateOfBirth         DateTime?
+  addressLine1        String?
+  addressLine2        String?
+  city                String?
+  province            String?
+  postalCode          String?
+  country             String?
+  shareDescription    String?
+  notes               String?
+  representedById     String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  matter              Matter            @relation(fields: [matterId], references: [id])
+  representedBy       Beneficiary?      @relation("Representation", fields: [representedById], references: [id])
+  representedChildren Beneficiary[]     @relation("Representation")
+}
+
+model SupplementalSchedule {
+  id          String       @id @default(cuid())
+  matterId    String
+  kind        ScheduleKind
+  title       String
+  description String?
+  sortOrder   Int          @default(0)
+  payload     Json
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  matter      Matter       @relation(fields: [matterId], references: [id])
+}
+
+model DisclaimerAcceptance {
+  id             String   @id
+  userId         String
+  disclaimerType String
+  ipAddress      String?
+  userAgent      String?
+  acceptedAt     DateTime @default(now())
+
+  @@index([userId])
+}
+
+model WillExtraction {
+  id                 String   @id
+  userId             String
+  uploadId           String
+  testatorName       String?
+  willDate           String?
+  executors          Json?
+  beneficiaries      Json?
+  hasCodicils        Boolean?
+  handwrittenChanges Boolean?
+  issues             Json?
+  rawText            String?
+  extractedAt        DateTime @default(now())
+
+  @@index([uploadId])
+  @@index([userId])
+}
+
+model WillUpload {
+  id          String    @id
+  userId      String
+  estateId    String?
+  fileName    String
+  fileType    String
+  fileSize    Int
+  storagePath String
+  uploadedAt  DateTime  @default(now())
+  expiresAt   DateTime
+  deletedAt   DateTime?
+
+  @@index([expiresAt])
+  @@index([userId])
+}
+
 enum MatterStatus {
   DRAFT
   INTAKE
@@ -85,329 +442,8 @@ enum PortalStatus {
   done
 }
 
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  image         String?
-  passwordHash  String?
-  role          Role      @default(USER)
-  accounts      Account[]
-  sessions      Session[]
-  matters       Matter[]
-  authLogs      AuthAuditLog[]
-  audits        AuditLog[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-}
-
-model Matter {
-  id         String          @id @default(cuid())
-  caseCode   String?         @unique
-  userId     String?
-  user       User?           @relation(fields: [userId], references: [id])
-  clientKey  String          @unique
-  portalStatus PortalStatus  @default(intake_complete)
-  willSearchStatus String    @default("not_started")
-  p1Status          String   @default("not_started")
-  probateStatus     String   @default("not_started")
-  status     MatterStatus    @default(DRAFT)
-  rightFitStatus    RightFitStatus @default(UNKNOWN)
-  rightFitCompletedAt DateTime?
-  rightFitAnswers    Json?
-  draft      IntakeDraft?
-  pack       GeneratedPack?
-  files      File[]
-  audits     AuditLog[]
-  emails     EmailLog[]
-  willSearch WillSearchRequest[]
-  resumeLinks ResumeToken[]
-  executors  Executor[]
-  beneficiaries Beneficiary[]
-  schedules  SupplementalSchedule[]
-  journeyStatus Json?
-  stepProgress MatterStepProgress[]
-  reminders  Reminder[]
-  willSearchPackageReady     Boolean @default(false)
-  p1NoticesReady             Boolean @default(false)
-  standardProbatePackageReady Boolean @default(false)
-  p1Mailed                   Boolean @default(false)
-  p1MailedAt                 DateTime?
-  willSearchPreparedAt       DateTime?
-  willSearchMailedAt         DateTime?
-  noticesPreparedAt          DateTime?
-  noticesMailedAt            DateTime?
-  probatePackagePreparedAt   DateTime?
-  probateFiledAt             DateTime?
-  grantIssuedAt              DateTime?
-  willSearchPdfUrl           String?
-  p1NoticePdfUrl             String?
-  p1PacketPdfUrl             String?
-  p1CoverLetterPdfUrl        String?
-  probatePackagePdfUrl       String?
-  registryName               String?
-  registryAddress            String?
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-}
-
-model MatterStepProgress {
-  id        String   @id @default(cuid())
-  matterId  String
-  matter    Matter   @relation(fields: [matterId], references: [id])
-  stepKey   String
-  status    String   @default("not_started")
-  pageIndex Int      @default(0)
-  metadata  Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([matterId, stepKey])
-}
-
-model IntakeDraft {
-  id                    String   @id @default(cuid())
-  matterId              String   @unique
-  matter                Matter   @relation(fields: [matterId], references: [id])
-  email                 String
-  consent               Boolean
-  exFullName            String
-  exPhone               String?
-  exCity                String
-  exRelation            String
-  decFullName           String
-  decDateOfDeath        DateTime
-  decCityProv           String
-  hadWill               Boolean
-  willLocation          String
-  estateValueRange      String
-  anyRealProperty       Boolean
-  multipleBeneficiaries Boolean
-  specialCircumstances  String?
-  payload               Json?
-  submittedAt           DateTime? @db.Timestamptz
-  finalSnapshot         Json?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-}
-
-model WillSearchRequest {
-  id                    String   @id @default(cuid())
-  matterId              String
-  matter                Matter   @relation(fields: [matterId], references: [id])
-
-  executorEmail         String
-  executorFullName      String
-  executorPhone         String?
-  executorCity          String?
-  executorRelationship  String?
-
-  deceasedFullName      String
-  deceasedGivenNames    String?
-  deceasedSurname       String?
-  deceasedDateOfDeath   DateTime?
-  deceasedCity          String?
-  deceasedProvince      String?
-  deceasedDateOfBirth   DateTime?
-  deceasedPlaceOfBirth  String?
-  deceasedMarriedSurname String?
-  deceasedAliases       String[]  @default([])
-
-  hasWill               Boolean?
-  searchNotes           String?
-  mailingPreference     String?
-  courierAddress        String?
-
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-}
-
-model GeneratedPack {
-  id        String     @id @default(cuid())
-  matterId  String     @unique
-  matter    Matter     @relation(fields: [matterId], references: [id])
-  status    PackStatus @default(DRAFT)
-  zipUrl    String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-}
-
-model File {
-  id        String   @id @default(cuid())
-  matterId  String
-  matter    Matter   @relation(fields: [matterId], references: [id])
-  name      String
-  mimeType  String
-  size      Int
-  url       String
-  createdAt DateTime @default(now())
-}
-
-model EmailLog {
-  id        String   @id @default(cuid())
-  matterId  String?
-  matter    Matter?  @relation(fields: [matterId], references: [id])
-  to        String
-  subject   String
-  template  String
-  meta      Json?
-  createdAt DateTime @default(now())
-}
-
-model ResumeToken {
-  token     String   @id
-  matterId  String
-  matter    Matter   @relation(fields: [matterId], references: [id])
-  email     String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-}
-
-model Reminder {
-  id        String   @id @default(cuid())
-  case      Matter   @relation(fields: [caseId], references: [id])
-  caseId    String
-  type      String
-  channel   String
-  dueAt     DateTime
-  sentAt    DateTime?
-  createdAt DateTime @default(now())
-
-  @@unique([caseId, type])
-  @@index([dueAt, sentAt])
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  matterId  String?
-  matter    Matter?  @relation(fields: [matterId], references: [id])
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  actorId   String?
-  action    String
-  ip        String?
-  ua        String?
-  meta      Json?
-  createdAt DateTime @default(now())
-}
-
 enum AuthAuditType {
   REGISTER
   LOGIN
   LOGOUT
-}
-
-model AuthAuditLog {
-  id        String         @id @default(cuid())
-  userId    String?
-  user      User?          @relation(fields: [userId], references: [id])
-  type      AuthAuditType
-  ip        String?
-  userAgent String?
-  meta      Json?
-  createdAt DateTime       @default(now())
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?  @db.Text
-  access_token      String?  @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?  @db.Text
-  session_state     String?
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expires      DateTime
-}
-
-model Executor {
-  id           String   @id @default(cuid())
-  matterId     String
-  matter       Matter   @relation(fields: [matterId], references: [id])
-
-  isPrimary    Boolean  @default(false)
-  isAlternate  Boolean  @default(false)
-  orderIndex   Int      @default(0)
-
-  fullName     String
-  givenNames   String?
-  surname      String?
-  email        String?
-  phone        String?
-  addressLine1 String?
-  addressLine2 String?
-  city         String?
-  province     String?
-  postalCode   String?
-  country      String?
-
-  isRenouncing Boolean  @default(false)
-  isMinor      Boolean  @default(false)
-  isDeceased   Boolean  @default(false)
-
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
-model Beneficiary {
-  id                  String           @id @default(cuid())
-  matterId            String
-  matter              Matter           @relation(fields: [matterId], references: [id])
-
-  type                BeneficiaryType
-  status              BeneficiaryStatus @default(ALIVE)
-
-  fullName            String
-  givenNames          String?
-  surname             String?
-
-  relationshipLabel   String?
-  isMinor             Boolean          @default(false)
-  dateOfBirth         DateTime?
-  addressLine1        String?
-  addressLine2        String?
-  city                String?
-  province            String?
-  postalCode          String?
-  country             String?
-
-  shareDescription    String?
-  notes               String?
-
-  representedById     String?
-  representedBy       Beneficiary?     @relation("Representation", fields: [representedById], references: [id])
-  representedChildren Beneficiary[]     @relation("Representation")
-
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-}
-
-model SupplementalSchedule {
-  id          String        @id @default(cuid())
-  matterId    String
-  matter      Matter        @relation(fields: [matterId], references: [id])
-
-  kind        ScheduleKind
-  title       String
-  description String?
-  sortOrder   Int           @default(0)
-
-  payload     Json
-
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
 }

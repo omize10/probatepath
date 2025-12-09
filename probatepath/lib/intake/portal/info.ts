@@ -127,7 +127,7 @@ export const portalStepInfo: Record<PortalStepId, InfoBlock> = {
     body: "We file in a specific BC Supreme Court registry and need to know where to return documents.",
     tips: ["Choose the registry closest to the deceased’s residence.", "Use an address where important documents can be received safely."],
   },
-};
+} as any;
 
 export function getPortalStepInfo(stepId: PortalStepId): InfoBlock {
   return portalStepInfo[stepId] ?? defaultBlock;

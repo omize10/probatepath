@@ -54,3 +54,33 @@ postgres://<user>:<password>@<host>:5432/<db>?sslmode=require
 2. The workflow will then run daily and upload the `backups/*.gz` artifact with a 7-day retention.
 
 Security note: store secrets in GitHub Secrets and rotate credentials according to your policy.
+
+### Reminders
+
+Run the reminder sender locally or via cron:
+
+```bash
+npx ts-node scripts/run-reminders.ts
+```
+
+### Reminders cron
+
+To keep clients moving, schedule the reminder runner:
+
+```bash
+npx ts-node scripts/run-reminders.ts
+```
+
+Suggested cron cadence: every 15 minutes (or hourly) on your server, with `DATABASE_URL`, `RESEND_API_KEY`, and `RESEND_FROM` set in the environment.
+
+### Ops workspace
+
+- Navigate to `/ops` (dev: any signed-in user; production: admin/ops emails).
+- Click “Open” on a case to reach the workspace.
+- Status & dates: adjust portal status, set timestamps (set to now / clear), or use quick actions to mark mailed/ filed.
+- Documents:
+  - Use “Generate…” to capture a system-generated PDF into `/uploads`.
+  - Use “Upload PDF” to drop in a flattened PDF for will search, P1 notices, or the probate package. Uploaded files are stored under `public/uploads/` and surfaced to the client portal.
+- Reminders:
+  - See all reminders, adjust due dates/channel, mark as sent.
+  - Quick buttons create will-search follow-up or 21-day notice wait reminders (dates taken from mailed timestamps).

@@ -15,6 +15,11 @@ export default async function StartPage({ searchParams }: StartPageProps) {
   const session = await auth();
   const userId = (session?.user as { id?: string })?.id ?? null;
 
+  // Always require an account before showing the eligibility gate to avoid double prompts.
+  if (!userId) {
+    redirect(`/create-account?next=${encodeURIComponent("/start")}`);
+  }
+
   if (userId && !forceGate) {
     const matter = await resolvePortalMatter(userId);
     if (matter?.rightFitStatus === "NOT_FIT") {

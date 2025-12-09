@@ -2,10 +2,9 @@ import type { ReactNode } from "react";
 import { PortalNav } from "@/components/portal/PortalNav";
 import { requirePortalAuth } from "@/lib/auth";
 import { logSecurityAudit } from "@/lib/audit";
-import { prisma, prismaEnabled } from "@/lib/prisma";
+import { prismaEnabled } from "@/lib/prisma";
 import { resolvePortalMatter } from "@/lib/portal/server";
-import { calculatePortalProgress } from "@/lib/intake/portal/validation";
-import { formatIntakeDraftRecord } from "@/lib/intake/format";
+import { portalStatusLabels } from "@/lib/portal/status";
 
 export default async function PortalLayout({ children }: { children: ReactNode }) {
   const session = await requirePortalAuth("/portal");
@@ -15,14 +14,9 @@ export default async function PortalLayout({ children }: { children: ReactNode }
   if (userId && prismaEnabled) {
     await logSecurityAudit({ userId, action: "portal.view" });
     try {
-      await prisma.user.findUnique({ where: { id: userId } });
       const matter = await resolvePortalMatter(userId);
-      if (matter?.draft) {
-        const normalized = formatIntakeDraftRecord(matter.draft);
-        const pct = calculatePortalProgress(normalized);
-        navStatus = `Draft saved · ${pct}%`;
-      } else if (matter) {
-        navStatus = "Matter ready";
+      if (matter) {
+        navStatus = portalStatusLabels[matter.portalStatus] ?? "Active case";
       }
     } catch (error) {
       console.warn("[portal] Layout failed to resolve matter", { userId, error });
@@ -30,11 +24,9 @@ export default async function PortalLayout({ children }: { children: ReactNode }
   }
 
   return (
-    <div className="pb-16 lg:grid lg:grid-cols-[270px,1fr] lg:gap-8">
-      <aside className="mb-8 lg:mb-0">
-        <PortalNav statusLabel={navStatus} />
-      </aside>
-      <main className="space-y-10">{children}</main>
+    <div className="space-y-8 pb-16">
+      <PortalNav statusLabel={navStatus} />
+      <main className="mx-auto max-w-6xl space-y-10 px-6">{children}</main>
     </div>
   );
 }

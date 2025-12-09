@@ -49,7 +49,11 @@ export function ReviewStep({ draft, errors, showErrors, updateConfirmation, jour
       <QuestionCard title="What happens next" description="Everything you just saved flows directly into the rest of the portal.">
         <ul className="space-y-3 text-sm text-[color:var(--ink-muted)]">
           <li>
-            <strong className="text-[color:var(--ink)]">Your Steps</strong> is the hub for your court packet journey. View it anytime on <Link href={journeyHref} className="text-[color:var(--brand-navy)] underline-offset-4 hover:underline">{journeyHref}</Link>.
+            <strong className="text-[color:var(--ink)]">Portal home</strong> is where new steps unlock after we prepare documents. View it anytime on{" "}
+            <Link href={journeyHref} className="text-[color:var(--brand-navy)] underline-offset-4 hover:underline">
+              {journeyHref}
+            </Link>
+            .
           </li>
           <li>
             <strong className="text-[color:var(--ink)]">Your Info</strong> lets you tweak details later without redoing the full intake. Visit <Link href={infoHref} className="text-[color:var(--brand-navy)] underline-offset-4 hover:underline">Your Info</Link>.

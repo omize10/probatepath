@@ -17,6 +17,7 @@ import { getPortalStepInfo } from "@/lib/intake/portal/info";
 import { saveMatterDraft } from "@/lib/intake/api";
 import { validatePortalStep, type PortalStepErrors } from "@/lib/intake/portal/validation";
 import type { Relationship } from "@/lib/intake/case-blueprint";
+import { submitIntake } from "@/lib/intake/api";
 
 interface MatterIntakeWizardProps {
   matterId: string;
@@ -124,7 +125,16 @@ export function MatterIntakeWizard({
       router.push(`/matters/${matterId}/intake?step=${next.id}`);
       return;
     }
-    router.push("/portal");
+    try {
+      setSaveStatus("saving");
+      await submitIntake(draft, matterId);
+      setSaveStatus("saved");
+      router.push("/portal");
+      router.refresh();
+    } catch (error) {
+      setSaveStatus("error");
+      setSaveError(error instanceof Error ? error.message : "Unable to submit");
+    }
   };
 
   const handleBack = () => {

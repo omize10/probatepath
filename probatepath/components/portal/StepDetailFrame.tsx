@@ -137,7 +137,7 @@ export function StepDetailFrame({
               {localStatus === "done" ? "Marked complete" : confirm.buttonLabel}
             </Button>
             <Button type="button" variant="secondary" asChild>
-              <Link href="/portal/steps">Back to Your Steps</Link>
+              <Link href="/portal">Back to portal</Link>
             </Button>
           </div>
         </div>

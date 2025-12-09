@@ -49,7 +49,7 @@ export default async function MatterIntakePage({ params, searchParams }: MatterI
       matterId={resolvedParams.matterId}
       initialDraft={draftRecord}
       currentStep={resolvedStep}
-      journeyHref="/portal/steps"
+      journeyHref="/portal"
       infoHref="/portal/info"
       documentsHref="/portal/documents"
       helpHref="/portal/help"

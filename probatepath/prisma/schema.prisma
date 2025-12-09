@@ -68,6 +68,23 @@ enum Role {
   ADMIN
 }
 
+enum PortalStatus {
+  intake_complete
+  will_search_prepping
+  will_search_ready
+  will_search_sent
+  notices_in_progress
+  notices_waiting_21_days
+  probate_package_prepping
+  probate_package_ready
+  probate_filing_ready
+  probate_filing_in_progress
+  probate_filed
+  waiting_for_grant
+  grant_complete
+  done
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -86,9 +103,14 @@ model User {
 
 model Matter {
   id         String          @id @default(cuid())
+  caseCode   String?         @unique
   userId     String?
   user       User?           @relation(fields: [userId], references: [id])
   clientKey  String          @unique
+  portalStatus PortalStatus  @default(intake_complete)
+  willSearchStatus String    @default("not_started")
+  p1Status          String   @default("not_started")
+  probateStatus     String   @default("not_started")
   status     MatterStatus    @default(DRAFT)
   rightFitStatus    RightFitStatus @default(UNKNOWN)
   rightFitCompletedAt DateTime?
@@ -105,6 +127,26 @@ model Matter {
   schedules  SupplementalSchedule[]
   journeyStatus Json?
   stepProgress MatterStepProgress[]
+  reminders  Reminder[]
+  willSearchPackageReady     Boolean @default(false)
+  p1NoticesReady             Boolean @default(false)
+  standardProbatePackageReady Boolean @default(false)
+  p1Mailed                   Boolean @default(false)
+  p1MailedAt                 DateTime?
+  willSearchPreparedAt       DateTime?
+  willSearchMailedAt         DateTime?
+  noticesPreparedAt          DateTime?
+  noticesMailedAt            DateTime?
+  probatePackagePreparedAt   DateTime?
+  probateFiledAt             DateTime?
+  grantIssuedAt              DateTime?
+  willSearchPdfUrl           String?
+  p1NoticePdfUrl             String?
+  p1PacketPdfUrl             String?
+  p1CoverLetterPdfUrl        String?
+  probatePackagePdfUrl       String?
+  registryName               String?
+  registryAddress            String?
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
 }
@@ -219,6 +261,20 @@ model ResumeToken {
   email     String
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+model Reminder {
+  id        String   @id @default(cuid())
+  case      Matter   @relation(fields: [caseId], references: [id])
+  caseId    String
+  type      String
+  channel   String
+  dueAt     DateTime
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@unique([caseId, type])
+  @@index([dueAt, sentAt])
 }
 
 model AuditLog {

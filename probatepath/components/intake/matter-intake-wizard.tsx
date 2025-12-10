@@ -156,6 +156,7 @@ export function MatterIntakeWizard({
       disableNext={!validation.valid}
       saveStatus={saveStatus}
       saveError={saveError}
+      currentStepId={stepDefinition.id}
     >
       {content}
     </IntakeWizardLayout>

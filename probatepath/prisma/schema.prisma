@@ -222,17 +222,19 @@ model ResumeToken {
 }
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  matterId  String?
-  matter    Matter?  @relation(fields: [matterId], references: [id])
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  actorId   String?
-  action    String
-  ip        String?
-  ua        String?
-  meta      Json?
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  matterId     String?
+  matter       Matter?  @relation(fields: [matterId], references: [id])
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
+  actorId      String?
+  action       String
+  resourceType String?
+  resourceId   String?
+  ip           String?
+  ua           String?
+  meta         Json?
+  createdAt    DateTime @default(now())
 }
 
 enum AuthAuditType {
@@ -354,4 +356,45 @@ model SupplementalSchedule {
 
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+}
+
+model WillUpload {
+  id          String   @id @default(cuid())
+  userId      String
+  fileName    String
+  fileType    String
+  fileSize    Int
+  storagePath String
+  uploadedAt  DateTime @default(now())
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  extraction  WillExtraction?
+}
+
+model WillExtraction {
+  id                 String   @id @default(cuid())
+  userId             String
+  uploadId           String   @unique
+  upload             WillUpload @relation(fields: [uploadId], references: [id])
+  testatorName       String?
+  willDate           String?
+  executors          Json
+  beneficiaries      Json
+  hasCodicils        Boolean?
+  handwrittenChanges Boolean?
+  issues             Json
+  rawText            String
+  extractedAt        DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model DisclaimerAcceptance {
+  id             String   @id @default(cuid())
+  userId         String?
+  disclaimerType String
+  ipAddress      String?
+  userAgent      String?
+  acceptedAt     DateTime @default(now())
 }

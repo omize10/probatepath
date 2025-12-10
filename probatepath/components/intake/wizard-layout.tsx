@@ -1,8 +1,10 @@
 'use client';
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { WillUploadModal } from "@/components/intake/WillUploadModal";
+import { AskHelper } from "@/components/intake/AskHelper";
 
 interface RightPanelInfo {
   title: string;
@@ -26,6 +28,7 @@ interface IntakeWizardLayoutProps {
   backLabel?: string;
   saveStatus: SaveStatus;
   saveError?: string | null;
+  currentStepId?: string;
 }
 
 export function IntakeWizardLayout({
@@ -42,8 +45,23 @@ export function IntakeWizardLayout({
   backLabel = "Back",
   saveStatus,
   saveError,
+  currentStepId = "",
 }: IntakeWizardLayoutProps) {
   const statusCopy = getSaveCopy(saveStatus, saveError);
+  const [willUploadOpen, setWillUploadOpen] = useState(false);
+  const [extractionId, setExtractionId] = useState<string | null>(null);
+
+  // Determine if we should show the upload button on this step
+  const shouldShowUploadButton =
+    currentStepId.includes("will") ||
+    currentStepId.includes("executor") ||
+    currentStepId.includes("beneficiar") ||
+    currentStepId.includes("family");
+
+  const handleWillUploadComplete = (newExtractionId: string) => {
+    setWillUploadOpen(false);
+    setExtractionId(newExtractionId);
+  };
 
   return (
     <div className="space-y-6">
@@ -76,19 +94,48 @@ export function IntakeWizardLayout({
             </Button>
           </div>
         </div>
-        <aside className="space-y-4 rounded-3xl border border-[color:var(--border-muted)] bg-white p-6">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">More information</p>
-            <h2 className="font-serif text-xl text-[color:var(--ink)]">{info.title}</h2>
-            <p className="text-sm text-[color:var(--ink-muted)]">{info.body}</p>
+        <aside className="space-y-4">
+          {shouldShowUploadButton && (
+            <div className="space-y-3 rounded-3xl border border-[color:var(--border-muted)] bg-white p-4">
+              <Button
+                onClick={() => setWillUploadOpen(true)}
+                className="w-full"
+              >
+                <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Upload your will
+              </Button>
+              <p className="text-xs text-center text-[color:var(--ink-muted)]">
+                We will read it to help answer will questions
+              </p>
+            </div>
+          )}
+
+          <div className="rounded-3xl border border-[color:var(--border-muted)] bg-white p-6">
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">More information</p>
+              <h2 className="font-serif text-xl text-[color:var(--ink)]">{info.title}</h2>
+              <p className="text-sm text-[color:var(--ink-muted)]">{info.body}</p>
+            </div>
+            <ul className="list-disc space-y-2 pl-4 text-sm text-[color:var(--ink-muted)]">
+              {info.tips.map((tip) => (
+                <li key={tip}>{tip}</li>
+              ))}
+            </ul>
           </div>
-          <ul className="list-disc space-y-2 pl-4 text-sm text-[color:var(--ink-muted)]">
-            {info.tips.map((tip) => (
-              <li key={tip}>{tip}</li>
-            ))}
-          </ul>
+
+          <div className="h-[500px]">
+            <AskHelper currentStepId={currentStepId} extractionId={extractionId} />
+          </div>
         </aside>
       </div>
+
+      <WillUploadModal
+        open={willUploadOpen}
+        onClose={() => setWillUploadOpen(false)}
+        onComplete={handleWillUploadComplete}
+      />
     </div>
   );
 }

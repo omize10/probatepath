@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { WillUploadModal } from "@/components/intake/WillUploadModal";
+import { AskHelper } from "@/components/intake/AskHelper";
 
 interface RightPanelInfo {
   title: string;
@@ -18,6 +21,7 @@ interface IntakeWizardLayoutProps {
   title: string;
   description: string;
   info: RightPanelInfo;
+  currentStepId: string;
   children: ReactNode;
   onNext: () => void;
   onBack?: () => void;
@@ -34,6 +38,7 @@ export function IntakeWizardLayout({
   title,
   description,
   info,
+  currentStepId,
   children,
   onNext,
   onBack,
@@ -44,6 +49,18 @@ export function IntakeWizardLayout({
   saveError,
 }: IntakeWizardLayoutProps) {
   const statusCopy = getSaveCopy(saveStatus, saveError);
+  const [willUploadOpen, setWillUploadOpen] = useState(false);
+  const [extractionId, setExtractionId] = useState<string | null>(null);
+  const [helperOpenKey, setHelperOpenKey] = useState<number | null>(null);
+
+  const handleWillUploadComplete = (id: string) => {
+    setWillUploadOpen(false);
+    setExtractionId(id);
+    setHelperOpenKey((key) => (key ?? 0) + 1);
+  };
+
+  const showWillUpload =
+    currentStepId?.includes("will") || currentStepId?.includes("executor") || currentStepId?.includes("beneficiar");
 
   return (
     <div className="space-y-6">
@@ -77,6 +94,19 @@ export function IntakeWizardLayout({
           </div>
         </div>
         <aside className="space-y-4 rounded-3xl border border-[color:var(--border-muted)] bg-white p-6">
+          {showWillUpload ? (
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setWillUploadOpen(true)}
+                className="w-full rounded-lg bg-[color:var(--brand)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
+              >
+                Upload your will
+              </button>
+              <p className="text-xs text-[color:var(--ink-muted)] text-center">We’ll help fill will-related answers.</p>
+            </div>
+          ) : null}
+          <AskHelper currentStepId={currentStepId} extractionId={extractionId} autoOpenKey={helperOpenKey} />
           <div className="space-y-2">
             <p className="text-xs uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">More information</p>
             <h2 className="font-serif text-xl text-[color:var(--ink)]">{info.title}</h2>
@@ -89,6 +119,7 @@ export function IntakeWizardLayout({
           </ul>
         </aside>
       </div>
+      <WillUploadModal open={willUploadOpen} onClose={() => setWillUploadOpen(false)} onComplete={handleWillUploadComplete} />
     </div>
   );
 }

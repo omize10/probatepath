@@ -319,8 +319,8 @@ model SupplementalSchedule {
 }
 
 model DisclaimerAcceptance {
-  id             String   @id
-  userId         String
+  id             String   @id @default(cuid())
+  userId         String?
   disclaimerType String
   ipAddress      String?
   userAgent      String?
@@ -330,7 +330,7 @@ model DisclaimerAcceptance {
 }
 
 model WillExtraction {
-  id                 String   @id
+  id                 String   @id @default(cuid())
   userId             String
   uploadId           String
   testatorName       String?
@@ -342,13 +342,15 @@ model WillExtraction {
   issues             Json?
   rawText            String?
   extractedAt        DateTime @default(now())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@index([uploadId])
   @@index([userId])
 }
 
 model WillUpload {
-  id          String    @id
+  id          String    @id @default(cuid())
   userId      String
   estateId    String?
   fileName    String
@@ -358,6 +360,8 @@ model WillUpload {
   uploadedAt  DateTime  @default(now())
   expiresAt   DateTime
   deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([expiresAt])
   @@index([userId])

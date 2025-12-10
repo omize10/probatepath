@@ -161,6 +161,7 @@ export function MatterIntakeWizard({
       title={stepDefinition.title}
       description={stepDefinition.section}
       info={infoBlock}
+      currentStepId={stepDefinition.id}
       onNext={handleNext}
       onBack={getPortalPreviousStep(stepDefinition.id, draft) ? handleBack : undefined}
       disableNext={!validation.valid}

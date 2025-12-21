@@ -34,7 +34,7 @@ export default async function AdminAuditPage() {
     nextCursor = last.id;
   }
 
-  const items: AuditItem[] = itemsRaw.map((it) => ({
+  const items: AuditItem[] = itemsRaw.map((it: any) => ({
     id: it.id,
     createdAt: it.createdAt.toISOString(),
     action: it.action,

@@ -19,14 +19,14 @@ export default async function PortalIntakePage() {
 
   try {
     const matter = await resolvePortalMatter(userId);
-    if (matter?.rightFitStatus === "NOT_FIT") {
-      redirect(`/matters/${matter.id}/not-a-fit`);
-    }
-    if (matter && !(matter.draft?.submittedAt ?? false)) {
+    if (matter) {
+      if (matter.rightFitStatus === "NOT_FIT") {
+        redirect(`/matters/${matter.id}/not-a-fit`);
+      }
       redirect(`/matters/${matter.id}/intake`);
     }
 
-    const newMatter = await prisma.matter.create({
+    const freshMatter = await prisma.matter.create({
       data: {
         userId,
         clientKey: randomUUID(),
@@ -34,9 +34,9 @@ export default async function PortalIntakePage() {
         rightFitCompletedAt: new Date(),
       } satisfies Prisma.MatterUncheckedCreateInput,
     });
-    await initializeMatterStepProgress(newMatter.id);
+    await initializeMatterStepProgress(freshMatter.id);
 
-    redirect(`/matters/${newMatter.id}/intake`);
+    redirect(`/matters/${freshMatter.id}/intake`);
   } catch (error) {
     console.warn("[portal] Failed to create intake matter", { userId, error });
     redirect("/start?error=intake");

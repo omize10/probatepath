@@ -18,6 +18,7 @@ interface IntakeWizardLayoutProps {
   title: string;
   description: string;
   info: RightPanelInfo;
+  currentStepId: string;
   children: ReactNode;
   onNext: () => void;
   onBack?: () => void;
@@ -34,6 +35,7 @@ export function IntakeWizardLayout({
   title,
   description,
   info,
+  currentStepId,
   children,
   onNext,
   onBack,
@@ -44,6 +46,7 @@ export function IntakeWizardLayout({
   saveError,
 }: IntakeWizardLayoutProps) {
   const statusCopy = getSaveCopy(saveStatus, saveError);
+  void currentStepId;
 
   return (
     <div className="space-y-6">

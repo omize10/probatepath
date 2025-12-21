@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
 import { ScrollFade } from "@/components/scroll-fade";
 import { FAQAccordion } from "@/components/faq-accordion";
 
@@ -83,56 +84,56 @@ const miniFaq = [
 export default function HomePage() {
   return (
     <div className="space-y-16 pb-20 sm:space-y-20 sm:pb-24">
-    <ScrollFade
-      as="section"
-      id="hero"
-      className="relative isolate left-1/2 flex min-h-screen w-screen -translate-x-1/2 items-center overflow-hidden text-white -mt-12 sm:-mt-16"
-    >
-      <Image
-        src="/images/Main_Image_Header.png"
-        alt="Executor preparing probate documents"
-        fill
-        priority
-        sizes="100vw"
-        className="absolute inset-0 -z-20 h-full w-full object-cover object-right lg:object-right"
-      />
-      <div className="relative z-10 w-full px-6 py-16 sm:px-12 lg:px-[12%] lg:py-28">
-        <div className="max-w-[680px] space-y-10 text-center text-white lg:-translate-y-2 lg:text-left">
-          <div className="space-y-6">
-            <h1 className="font-serif text-4xl leading-tight !text-white drop-shadow-[0_14px_36px_rgba(0,0,0,0.85)] sm:text-5xl lg:text-6xl xl:text-[4.5rem]">
-              Your estate, organised step by step.
-            </h1>
-            <p className="text-lg !text-white drop-shadow-[0_10px_24px_rgba(0,0,0,0.65)]">
-              ProbatePath prepares filing-ready Supreme Court forms, notices, and guidance for BC executors with a fixed 2,500 CAD fee.
-              Every detail stays encrypted and hosted in Canada.
-            </p>
-          </div>
-          <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-            <Button asChild size="lg" className="w-full !bg-white/15 text-white hover:!bg-white/25 sm:w-auto">
-              <Link href="/create-account">Start intake</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="w-full !border-white/80 !bg-transparent text-white hover:!bg-white/10 sm:w-auto"
-            >
-              <Link href="/how-it-works">How it works</Link>
-            </Button>
-          </div>
-          <div className="flex flex-col gap-6 text-center text-sm text-white md:flex-row md:items-start md:gap-12 md:text-left">
-            <div className="space-y-1 text-white">
-              <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">2,500 CAD</p>
-              <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Fixed preparation fee</p>
+      <ScrollFade
+        as="section"
+        id="hero"
+        className="relative isolate left-1/2 flex min-h-screen w-screen -translate-x-1/2 items-center overflow-hidden text-white -mt-12 sm:-mt-16"
+      >
+        <Image
+          src="/images/Main_Image_Header.png"
+          alt="Executor preparing probate documents"
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 -z-20 h-full w-full object-cover object-right lg:object-right"
+        />
+        <div className="relative z-10 w-full px-6 py-16 sm:px-12 lg:px-[12%] lg:py-28">
+          <div className="max-w-[680px] space-y-10 text-center text-white lg:-translate-y-2 lg:text-left">
+            <div className="space-y-6">
+              <h1 className="font-serif text-4xl leading-tight !text-white drop-shadow-[0_14px_36px_rgba(0,0,0,0.85)] sm:text-5xl lg:text-6xl xl:text-[4.5rem]">
+                Your estate, organised step by step.
+              </h1>
+              <p className="text-lg !text-white drop-shadow-[0_10px_24px_rgba(0,0,0,0.65)]">
+                ProbatePath prepares filing-ready Supreme Court forms, notices, and guidance for BC executors with a fixed 2,500 CAD fee.
+                Every detail stays encrypted and hosted in Canada.
+              </p>
             </div>
-            <div className="space-y-1 text-white">
-              <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">&lt;24 hours</p>
-              <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Target delivery after intake</p>
+            <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+              <Button asChild size="lg" className="w-full !bg-white/15 text-white hover:!bg-white/25 sm:w-auto">
+                <Link href="/create-account">Start intake</Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="w-full !border-white/80 !bg-transparent text-white hover:!bg-white/10 sm:w-auto"
+              >
+                <Link href="/how-it-works">How it works</Link>
+              </Button>
+            </div>
+            <div className="flex flex-col gap-6 text-center text-sm text-white md:flex-row md:items-start md:gap-12 md:text-left">
+              <div className="space-y-1 text-white">
+                <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">2,500 CAD</p>
+                <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Fixed preparation fee</p>
+              </div>
+              <div className="space-y-1 text-white">
+                <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">&lt;24 hours</p>
+                <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Target delivery after intake</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </ScrollFade>
+      </ScrollFade>
 
       <ScrollFade
         as="section"
@@ -210,6 +211,10 @@ export default function HomePage() {
             priority
           />
         </div>
+      </ScrollFade>
+
+      <ScrollFade>
+        <TestimonialsSection />
       </ScrollFade>
 
       <ScrollFade

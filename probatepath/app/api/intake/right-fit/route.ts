@@ -5,6 +5,7 @@ import type { Prisma, RightFitStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { resolvePortalMatter } from "@/lib/portal/server";
+import { getNextCaseCode } from "@/lib/cases";
 import { evaluateEligibility, type EligibilityAnswers } from "@/lib/intake/eligibility";
 import { initializeMatterStepProgress } from "@/lib/portal/step-progress";
 
@@ -35,10 +36,12 @@ async function upsertRightFitMatter(userId: string, status: RightFitStatus, answ
 
   const needsNewMatter = !matter || Boolean(matter.draft?.submittedAt ?? false);
   if (needsNewMatter || !matter) {
+    const nextCaseCode = await getNextCaseCode();
     const created = await prisma.matter.create({
       data: {
         userId,
         clientKey: randomUUID(),
+        caseCode: nextCaseCode,
         rightFitStatus: status,
         rightFitCompletedAt: new Date(),
         rightFitAnswers: toJson(answers),

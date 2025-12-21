@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import type { WillFileClient } from "@/lib/will-files/types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -17,10 +18,13 @@ import { getPortalStepInfo } from "@/lib/intake/portal/info";
 import { saveMatterDraft } from "@/lib/intake/api";
 import { validatePortalStep, type PortalStepErrors } from "@/lib/intake/portal/validation";
 import type { Relationship } from "@/lib/intake/case-blueprint";
+import { submitIntake } from "@/lib/intake/api";
+import { WillUploadStep } from "@/components/intake/will-upload-step";
 
 interface MatterIntakeWizardProps {
   matterId: string;
   initialDraft: IntakeDraft;
+  initialWillFiles: WillFileClient[];
   currentStep: PortalStepId;
   journeyHref: string;
   infoHref: string;
@@ -33,6 +37,7 @@ const newId = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto
 export function MatterIntakeWizard({
   matterId,
   initialDraft,
+  initialWillFiles,
   currentStep,
   journeyHref,
   infoHref,
@@ -41,6 +46,7 @@ export function MatterIntakeWizard({
 }: MatterIntakeWizardProps) {
   const router = useRouter();
   const [draft, setDraft] = useState<IntakeDraft>(initialDraft);
+  const [willFiles, setWillFiles] = useState<WillFileClient[]>(initialWillFiles);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("saved");
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showErrors, setShowErrors] = useState(false);
@@ -56,6 +62,30 @@ export function MatterIntakeWizard({
   useEffect(() => {
     hydratedRef.current = true;
   }, []);
+
+  useEffect(() => {
+    setWillFiles(initialWillFiles);
+  }, [initialWillFiles]);
+
+  useEffect(() => {
+    setDraft((prev) => {
+      const hasFiles = willFiles.length > 0;
+      const lastUploadedAt = willFiles[willFiles.length - 1]?.createdAt ?? "";
+      if (prev.estateIntake.willUpload.hasFiles === hasFiles && prev.estateIntake.willUpload.lastUploadedAt === lastUploadedAt) {
+        return prev;
+      }
+      return {
+        ...prev,
+        estateIntake: {
+          ...prev.estateIntake,
+          willUpload: {
+            hasFiles,
+            lastUploadedAt,
+          },
+        },
+      };
+    });
+  }, [willFiles]);
 
   useEffect(() => {
     if (!hydratedRef.current) return;
@@ -124,7 +154,16 @@ export function MatterIntakeWizard({
       router.push(`/matters/${matterId}/intake?step=${next.id}`);
       return;
     }
-    router.push("/portal");
+    try {
+      setSaveStatus("saving");
+      await submitIntake(draft, matterId);
+      setSaveStatus("saved");
+      router.push("/portal");
+      router.refresh();
+    } catch (error) {
+      setSaveStatus("error");
+      setSaveError(error instanceof Error ? error.message : "Unable to submit");
+    }
   };
 
   const handleBack = () => {
@@ -137,9 +176,12 @@ export function MatterIntakeWizard({
   const stepErrors: PortalStepErrors = validation.errors;
 
   const renderProps: RenderContext = {
+    matterId,
     draft,
     updateEstate,
     errors: showErrors ? stepErrors : {},
+    willFiles,
+    onWillFilesChange: setWillFiles,
   };
 
   const content = renderStep(stepDefinition.id, renderProps);
@@ -151,6 +193,7 @@ export function MatterIntakeWizard({
       title={stepDefinition.title}
       description={stepDefinition.section}
       info={infoBlock}
+      currentStepId={stepDefinition.id}
       onNext={handleNext}
       onBack={getPortalPreviousStep(stepDefinition.id, draft) ? handleBack : undefined}
       disableNext={!validation.valid}
@@ -163,13 +206,26 @@ export function MatterIntakeWizard({
 }
 
 interface RenderContext {
+  matterId: string;
   draft: IntakeDraft;
   errors: PortalStepErrors;
   updateEstate: (updater: (estate: IntakeDraft["estateIntake"]) => IntakeDraft["estateIntake"]) => void;
+  willFiles: WillFileClient[];
+  onWillFilesChange: (files: WillFileClient[]) => void;
 }
 
 function renderStep(stepId: PortalStepId, context: RenderContext) {
   switch (stepId) {
+    case "will-upload":
+      return (
+        <WillUploadStep
+          matterId={context.matterId}
+          files={context.willFiles}
+          onFilesChange={context.onWillFilesChange}
+          uploadStatus={context.draft.estateIntake.willUpload}
+          errorMessage={context.errors["willUpload.hasFiles"]}
+        />
+      );
     case "applicant-name-contact":
       return <ApplicantNameContact {...context} />;
     case "applicant-address-relationship":

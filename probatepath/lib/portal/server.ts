@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import type { Prisma } from "@prisma/client";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { ensureMatterStepProgress, type PrismaStepProgress } from "@/lib/portal/step-progress";
+import { ensureCaseCode } from "@/lib/cases";
 
 const portalMatterInclude = {
   executors: {
@@ -16,6 +17,8 @@ const portalMatterInclude = {
     orderBy: { sortOrder: "asc" },
   },
   draft: true,
+  reminders: true,
+  user: true,
 } as const;
 
 type BasePortalMatter = Prisma.MatterGetPayload<{ include: typeof portalMatterInclude }>;
@@ -127,6 +130,11 @@ export async function resolvePortalMatter(userId?: string | null): Promise<Porta
 async function ensurePortalMatterProgress(matter: BasePortalMatter | null): Promise<PortalMatter | null> {
   if (!matter) return null;
   if (!prismaEnabled) return { ...matter, stepProgress: [] };
+  if (!matter.caseCode) {
+    await ensureCaseCode(matter.id);
+    const refreshed = await prisma.matter.findUnique({ where: { id: matter.id }, include: portalMatterInclude });
+    matter = refreshed ?? matter;
+  }
   const stepProgress = await ensureMatterStepProgress({
     matterId: matter.id,
     existing: undefined,

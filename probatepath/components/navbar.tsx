@@ -20,6 +20,7 @@ import {
 const NAV_LINKS = [
   { href: "/how-it-works", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/info", label: "About probate" },
   { href: "/faqs", label: "FAQs" },
   { href: "/legal", label: "Legal" },
   { href: "/contact", label: "Contact" },
@@ -75,8 +76,8 @@ export function Navbar() {
                 key={href}
                 href={targetHref}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium text-[#445266] transition-colors hover:text-[color:var(--brand)]",
-                  isActive && "bg-[#f0f3f7] text-[color:var(--brand)]",
+                  "rounded-full px-4 py-2 text-sm font-medium text-[#0a0d12] transition-colors hover:text-[#0a0d12]",
+                  isActive && "bg-[#f0f3f7] text-[#0a0d12]",
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
@@ -136,8 +137,8 @@ export function Navbar() {
                     <Link
                       href={targetHref}
                       className={cn(
-                        "block rounded-2xl border border-transparent px-4 py-3 text-base font-medium text-[#445266] transition hover:border-[color:var(--border-muted)] hover:text-[color:var(--brand)]",
-                        isActive && "border-[color:var(--border-muted)] bg-[#f0f3f7] text-[color:var(--brand)]",
+                        "block rounded-2xl border border-transparent px-4 py-3 text-base font-medium text-[#0a0d12] transition hover:border-[color:var(--border-muted)] hover:text-[#0a0d12]",
+                        isActive && "border-[color:var(--border-muted)] bg-[#f0f3f7] text-[#0a0d12]",
                       )}
                       aria-current={isActive ? "page" : undefined}
                     >

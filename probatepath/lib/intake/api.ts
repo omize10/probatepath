@@ -37,16 +37,19 @@ export async function saveIntakeStep(step: string, data: unknown) {
   }
 }
 
-export async function submitIntake(draft: IntakeDraft) {
+export async function submitIntake(draft: IntakeDraft, matterIdOverride?: string) {
   const clientKey = getClientKey();
-  const matterId = getMatterId();
+  const matterId = matterIdOverride ?? getMatterId();
+  const safeClientKey = clientKey || matterId || "local-client";
   const response = await fetch("/api/intake/submit", {
     method: "POST",
     headers,
-    body: JSON.stringify({ clientKey, matterId, draft }),
+    body: JSON.stringify({ clientKey: safeClientKey, matterId, draft }),
   });
   if (!response.ok) {
-    throw new Error("Unable to submit intake");
+    const payload = await response.json().catch(() => ({}));
+    const message = (payload as { error?: string; details?: unknown }).error ?? "Unable to submit intake";
+    throw new Error(message);
   }
   return response.json();
 }

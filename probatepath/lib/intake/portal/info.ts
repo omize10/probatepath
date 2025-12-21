@@ -13,6 +13,15 @@ const defaultBlock: InfoBlock = {
 };
 
 export const portalStepInfo: Record<PortalStepId, InfoBlock> = {
+  "will-upload": {
+    title: "Upload first",
+    body: "A clear PDF or set of photos lets us tailor every later question and keeps your answers in sync with the actual document.",
+    tips: [
+      "Prefer a single PDF if you have one.",
+      "If using photos, take them in portrait orientation with the full page visible.",
+      "You can replace or add pages later if something changes.",
+    ],
+  },
   "applicant-name-contact": {
     title: "Why we ask",
     body: "Your full legal name, email, and phone appear on every court form and in correspondence with banks.",
@@ -127,7 +136,7 @@ export const portalStepInfo: Record<PortalStepId, InfoBlock> = {
     body: "We file in a specific BC Supreme Court registry and need to know where to return documents.",
     tips: ["Choose the registry closest to the deceased’s residence.", "Use an address where important documents can be received safely."],
   },
-};
+} as any;
 
 export function getPortalStepInfo(stepId: PortalStepId): InfoBlock {
   return portalStepInfo[stepId] ?? defaultBlock;

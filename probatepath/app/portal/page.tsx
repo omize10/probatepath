@@ -1,88 +1,101 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { PortalShell } from "@/components/portal/PortalShell";
-import { DraftStatusCard } from "@/components/portal/DraftStatusCard";
-import { Button } from "@/components/ui/button";
 import { requirePortalAuth } from "@/lib/auth";
 import { resolvePortalMatter } from "@/lib/portal/server";
-import { formatIntakeDraftRecord } from "@/lib/intake/format";
-import { calculatePortalProgress } from "@/lib/intake/portal/validation";
-import { getNextJourneyStep, journeyProgressPercent, normalizeJourneyState } from "@/lib/portal/journey";
-import { journeyStateFromProgress } from "@/lib/portal/step-progress";
+import { portalStatusLabels } from "@/lib/portal/status";
+import type { PortalMatterVM } from "@/components/portal/PortalClient";
+import { PortalClient } from "@/components/portal/PortalClient";
 
-function formatTimestamp(value?: Date | null) {
-  if (!value) return null;
-  return new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeStyle: "short" }).format(value);
-}
-
-export default async function PortalDashboardPage() {
+export default async function PortalPage() {
   const session = await requirePortalAuth("/portal");
   const userId = (session.user as { id?: string })?.id ?? null;
   const matter = await resolvePortalMatter(userId);
 
   if (!matter) {
-    redirect("/start");
+    return (
+      <PortalClient
+        matter={{
+          id: "",
+          portalStatus: "intake_complete",
+          statusLabel: "Intake not started",
+          willSearchPackageReady: false,
+          p1NoticesReady: false,
+          standardProbatePackageReady: false,
+          willSearchPreparedAt: null,
+          willSearchMailedAt: null,
+          noticesPreparedAt: null,
+          noticesMailedAt: null,
+          probatePackagePreparedAt: null,
+          probateFiledAt: null,
+          grantIssuedAt: null,
+          willSearchPdfUrl: null,
+          p1NoticePdfUrl: null,
+          p1PacketPdfUrl: null,
+          p1CoverLetterPdfUrl: null,
+          probatePackagePdfUrl: null,
+          registryName: null,
+          registryAddress: null,
+          reminders: [],
+          beneficiaries: [],
+          editHref: "/start",
+          daysRemaining: null,
+          noticesMailedAtDisplay: null,
+          willSearchMailedAtDisplay: null,
+        }}
+        empty
+      />
+    );
   }
 
-  const draft = matter.draft ?? null;
-  const normalizedDraft = draft ? formatIntakeDraftRecord(draft) : null;
-  const progress = normalizedDraft ? calculatePortalProgress(normalizedDraft) : 0;
-  const status: "draft" | "submitted" = draft?.submittedAt ? "submitted" : "draft";
-  const lastSavedText = formatTimestamp(draft?.updatedAt ?? draft?.createdAt ?? null);
-  const resumeHref = matter ? `/matters/${matter.id}/intake` : "/portal/intake";
-  const fallbackJourney = normalizeJourneyState(matter.journeyStatus ?? undefined);
-  const journey = journeyStateFromProgress(matter.stepProgress, fallbackJourney);
-  const journeyProgress = journeyProgressPercent(journey);
-  const nextJourneyStep = getNextJourneyStep(journey);
-  const continueHref = nextJourneyStep ? `/portal/steps/${nextJourneyStep.id}/flow` : "/portal/steps";
+  // If intake isn’t completed yet, send the user to intake instead of showing a completed portal.
+  if (!(matter.draft?.submittedAt ?? false)) {
+    redirect(`/matters/${matter.id}/intake`);
+  }
 
-  return (
-    <PortalShell
-      title="Welcome back—let’s finish your probate packet."
-      description="Keep everything in one place: intake data, will searches, executors, beneficiaries, schedules, and printable forms."
-    >
-      <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
-        <section className="portal-card space-y-5 rounded-[32px] border border-[color:var(--border-muted)] p-6">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">
-              Court packet progress
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="h-3 flex-1 rounded-full bg-[color:var(--bg-muted)]">
-                <div
-                  className="h-3 rounded-full bg-[color:var(--brand-navy)] transition-all"
-                  style={{ width: `${journeyProgress}%` }}
-                />
-              </div>
-              <span className="text-sm font-semibold text-[color:var(--ink)]">{journeyProgress}%</span>
-            </div>
-          </div>
-          <div className="space-y-1 text-sm text-[color:var(--ink-muted)]">
-            <p>
-              Next recommended step:{" "}
-              <span className="font-semibold text-[color:var(--ink)]">{nextJourneyStep?.title ?? "All steps complete"}</span>
-            </p>
-            <p>{nextJourneyStep?.subtitle ?? "Every required step is finished. You can still open any step to review details."}</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild className="px-6 py-5 text-base">
-              <Link href={continueHref}>{nextJourneyStep ? "Start now" : "View Your Steps"}</Link>
-            </Button>
-            <Button asChild variant="secondary">
-              <Link href="/portal/steps">View all steps</Link>
-            </Button>
-          </div>
-          <div className="flex flex-wrap gap-4 text-sm font-semibold text-[color:var(--brand-navy)]">
-            <Link href="/portal/documents" className="underline-offset-4 hover:underline">
-              Open documents
-            </Link>
-            <Link href="/portal/help" className="underline-offset-4 hover:underline">
-              Get help
-            </Link>
-          </div>
-        </section>
-        <DraftStatusCard status={status} progress={progress} lastSavedText={lastSavedText} resumeHref={resumeHref} />
-      </div>
-    </PortalShell>
-  );
+  // eslint-disable-next-line react-hooks/purity
+  const now = Date.now();
+  const daysRemaining =
+    matter.noticesMailedAt !== null
+      ? Math.max(0, 21 - Math.floor((now - matter.noticesMailedAt.getTime()) / (1000 * 60 * 60 * 24)))
+      : null;
+
+  const serialized: PortalMatterVM = {
+    id: matter.id,
+    caseCode: matter.caseCode ?? null,
+    portalStatus: matter.portalStatus,
+    statusLabel: portalStatusLabels[matter.portalStatus] ?? matter.portalStatus,
+    willSearchPackageReady: matter.willSearchPackageReady,
+    p1NoticesReady: matter.p1NoticesReady,
+    standardProbatePackageReady: matter.standardProbatePackageReady,
+    willSearchPreparedAt: matter.willSearchPreparedAt?.toISOString() ?? null,
+    willSearchMailedAt: matter.willSearchMailedAt?.toISOString() ?? null,
+    noticesPreparedAt: matter.noticesPreparedAt?.toISOString() ?? null,
+    noticesMailedAt: matter.noticesMailedAt?.toISOString() ?? null,
+    probatePackagePreparedAt: matter.probatePackagePreparedAt?.toISOString() ?? null,
+    probateFiledAt: matter.probateFiledAt?.toISOString() ?? null,
+    grantIssuedAt: matter.grantIssuedAt?.toISOString() ?? null,
+    willSearchPdfUrl: matter.willSearchPdfUrl ?? null,
+    p1NoticePdfUrl: matter.p1NoticePdfUrl ?? null,
+    p1PacketPdfUrl: matter.p1PacketPdfUrl ?? null,
+    p1CoverLetterPdfUrl: matter.p1CoverLetterPdfUrl ?? null,
+    probatePackagePdfUrl: matter.probatePackagePdfUrl ?? null,
+    registryName: matter.registryName ?? null,
+    registryAddress: matter.registryAddress ?? null,
+    reminders: (matter.reminders ?? []).map((r: any) => ({
+      id: r.id,
+      type: r.type,
+      dueAt: r.dueAt?.toISOString() ?? null,
+      sentAt: r.sentAt?.toISOString() ?? null,
+    })),
+    beneficiaries: (matter.beneficiaries ?? []).map((b: any) => ({
+      id: b.id,
+      name: b.fullName ?? b.name ?? "Recipient",
+      relationship: b.relationship ?? b.type ?? null,
+    })),
+    editHref: `/matters/${matter.id}/intake`,
+    daysRemaining,
+    noticesMailedAtDisplay: matter.noticesMailedAt ? matter.noticesMailedAt.toLocaleDateString() : null,
+    willSearchMailedAtDisplay: matter.willSearchMailedAt ? matter.willSearchMailedAt.toLocaleDateString() : null,
+  };
+
+  return <PortalClient matter={serialized} />;
 }

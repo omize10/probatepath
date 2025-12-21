@@ -8,6 +8,13 @@ type Validator = (draft: IntakeDraft) => PortalStepErrors;
 const required = (value?: string | null) => typeof value === "string" && value.trim().length > 0;
 
 const validators: Partial<Record<PortalStepId, Validator>> = {
+  "will-upload": (draft) => {
+    const errors: PortalStepErrors = {};
+    if (!draft.estateIntake.willUpload.hasFiles) {
+      errors["willUpload.hasFiles"] = "Please upload the will before continuing.";
+    }
+    return errors;
+  },
   "applicant-name-contact": (draft) => {
     const errors: PortalStepErrors = {};
     const applicant = draft.estateIntake.applicant;

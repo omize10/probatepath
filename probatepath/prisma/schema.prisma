@@ -70,6 +70,7 @@ model Matter {
   resumeLinks                 ResumeToken[]
   schedules                   SupplementalSchedule[]
   willSearch                  WillSearchRequest[]
+  willFiles                   WillFile[]
 }
 
 model MatterStepProgress {
@@ -367,6 +368,21 @@ model WillUpload {
   @@index([userId])
 }
 
+model WillFile {
+  id               String       @id @default(cuid())
+  matterId         String
+  fileUrl          String
+  fileType         WillFileType
+  originalFilename String
+  pageIndex        Int?
+  uploadedBy       String?
+  createdAt        DateTime     @default(now())
+  matter           Matter       @relation(fields: [matterId], references: [id])
+
+  @@index([matterId])
+  @@index([matterId, fileType])
+}
+
 enum MatterStatus {
   DRAFT
   INTAKE
@@ -386,6 +402,11 @@ enum WillSearchStatus {
   READY
   GENERATED
   SENT
+}
+
+enum WillFileType {
+  pdf
+  image
 }
 
 enum BeneficiaryType {

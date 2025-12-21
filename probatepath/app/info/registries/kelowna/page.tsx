@@ -1,0 +1,145 @@
+/* eslint-disable react/no-unescaped-entities */
+import type { Metadata } from "next";
+import Link from "next/link";
+import { InfoPageLayout } from "@/components/info/InfoPageLayout";
+import { localBusinessSchema } from "@/lib/info/schema";
+import { MapPin, Phone, Clock, AlertCircle } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Kelowna Probate Registry | Address, Hours & Filing Guide",
+  description: "Kelowna Supreme Court Probate Registry at 1355 Water St. Address, phone, hours, filing steps, and parking advice.",
+};
+
+const toc = [
+  { id: "location", title: "Location & contact", level: 2 },
+  { id: "what-to-bring", title: "What to bring", level: 2 },
+  { id: "filing-process", title: "Filing process", level: 2 },
+  { id: "parking", title: "Parking & transit", level: 2 },
+  { id: "tips", title: "Tips", level: 2 },
+];
+
+const schema = localBusinessSchema({
+  name: "Kelowna Supreme Court Probate Registry",
+  street: "1355 Water Street",
+  city: "Kelowna",
+  postalCode: "V1Y 9R3",
+  phone: "250-470-6900",
+  hours: "Mo-Fr 09:00-16:00",
+  lat: 49.8879,
+  lng: -119.4966,
+});
+
+export default function KelownaRegistryPage() {
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+
+      <InfoPageLayout
+        breadcrumbs={[
+          { label: "Info Center", href: "/info" },
+          { label: "Registries", href: "/info/registries" },
+          { label: "Kelowna" },
+        ]}
+        eyebrow="Probate Registry"
+        title="Kelowna Probate Registry"
+        description="How to file probate documents in Kelowna: address, hours, parking, and a simple checklist."
+        lastUpdated="December 2025"
+        readingTime="5 min"
+        toc={toc}
+      >
+        <p className="text-[color:var(--muted-ink)]">Review the <Link href="/info/guides/bc-probate-guide" className="text-[color:var(--brand)] underline">Complete BC Probate Guide</Link> before you go to avoid requisitions.</p>
+
+        <h2 id="location" className="scroll-mt-24">Location & contact</h2>
+
+        <div className="grid gap-4 sm:grid-cols-2 my-6">
+          <div className="rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-5">
+            <div className="flex items-start gap-3">
+              <MapPin className="mt-1 h-5 w-5 text-[color:var(--brand)]" />
+              <div>
+                <p className="font-semibold text-[color:var(--brand)]">Address</p>
+                <p className="text-[color:var(--muted-ink)]">1355 Water Street<br />Kelowna, BC V1Y 9R3</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-5">
+            <div className="flex items-start gap-3">
+              <Phone className="mt-1 h-5 w-5 text-[color:var(--brand)]" />
+              <div>
+                <p className="font-semibold text-[color:var(--brand)]">Phone</p>
+                <p className="text-[color:var(--muted-ink)]">250-470-6900</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-5">
+            <div className="flex items-start gap-3">
+              <Clock className="mt-1 h-5 w-5 text-[color:var(--brand)]" />
+              <div>
+                <p className="font-semibold text-[color:var(--brand)]">Hours</p>
+                <p className="text-[color:var(--muted-ink)]">Monday to Friday<br />9:00 AM - 4:00 PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="what-to-bring" className="scroll-mt-24">What to bring</h2>
+        <ul>
+          <li>Original will and any codicils</li>
+          <li>Complete forms: P2, P3/P4 (or P5), P9, P10/P11</li>
+          <li>Death certificate</li>
+          <li>Wills notice search result</li>
+          <li>Proof of P1 delivery</li>
+          <li>Payment for fees</li>
+          <li>Photo ID</li>
+        </ul>
+
+        <div className="rounded-2xl border-l-4 border-[color:var(--warning)] bg-[color:var(--bg-muted)] p-5 my-6">
+          <div className="flex gap-3">
+            <AlertCircle className="h-5 w-5 text-[color:var(--warning)] shrink-0" />
+            <div>
+              <p className="font-semibold text-[color:var(--brand)]">Checklist</p>
+              <p className="mt-1 text-[color:var(--muted-ink)]">Bring two copies of the P2 submission. Staff often stamp one for your records.</p>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="filing-process" className="scroll-mt-24">Filing process</h2>
+        <ol>
+          <li>Enter the Kelowna Law Courts main doors on Water Street</li>
+          <li>Head to the estates counter</li>
+          <li>Take a ticket and wait to be called</li>
+          <li>Submit the complete application and pay fees</li>
+          <li>Get your file number for follow-ups</li>
+          <li>Processing typically 4-8 weeks</li>
+        </ol>
+
+        <h2 id="parking" className="scroll-mt-24">Parking & transit</h2>
+        <h3>Parking</h3>
+        <ul>
+          <li>Library Parkade (1380 Ellis St) – 3-minute walk</li>
+          <li>Street parking on Doyle Ave and Ellis St</li>
+          <li>Arrive early; downtown spots fill quickly</li>
+        </ul>
+        <h3>Transit</h3>
+        <ul>
+          <li>Kelowna Regional routes along Water Street and Bernard Avenue</li>
+          <li>Bike racks available near the entrance</li>
+        </ul>
+
+        <h2 id="tips" className="scroll-mt-24">Tips</h2>
+        <ul>
+          <li>Morning openings are busiest; mid-afternoon is calmer</li>
+          <li>Label exhibits clearly; smaller registries appreciate organized packages</li>
+          <li>Include a prepaid return envelope if you prefer mail delivery of the grant</li>
+        </ul>
+
+        <section className="mt-12 rounded-3xl bg-[color:var(--bg-muted)] p-8 text-center">
+          <h2 className="font-serif text-2xl text-[color:var(--brand)]">Filing in Kelowna?</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">ProbatePath packages your documents so the registry can accept them on the first review.</p>
+          <Link href="/create-account" className="mt-6 inline-block rounded-full bg-[color:var(--brand)] px-6 py-3 font-semibold text-white hover:bg-[color:var(--accent-dark)]">
+            Start intake
+          </Link>
+        </section>
+      </InfoPageLayout>
+    </>
+  );
+}

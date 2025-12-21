@@ -5,6 +5,7 @@ import { requirePortalAuth } from "@/lib/auth";
 import { calculatePortalProgress } from "@/lib/intake/portal/validation";
 import { formatIntakeDraftRecord } from "@/lib/intake/format";
 import { getMatterForUser } from "@/lib/matter/server";
+import { getWillFilesForMatter, serializeWillFiles } from "@/lib/will-files";
 
 interface MatterLayoutProps {
   children: ReactNode;
@@ -24,9 +25,23 @@ export default async function MatterLayout({ children, params }: MatterLayoutPro
     redirect("/portal");
   }
 
+  const willFiles = await getWillFilesForMatter(resolvedParams.matterId);
+  const serializedWillFiles = serializeWillFiles(willFiles);
   const formattedDraft = matter.draft ?? null;
   const normalizedDraft = formattedDraft?.payload ? formatIntakeDraftRecord(formattedDraft) : null;
-  const progress = normalizedDraft ? calculatePortalProgress(normalizedDraft) : 0;
+  const enhancedDraft = normalizedDraft
+    ? {
+        ...normalizedDraft,
+        estateIntake: {
+          ...normalizedDraft.estateIntake,
+          willUpload: {
+            hasFiles: serializedWillFiles.length > 0,
+            lastUploadedAt: serializedWillFiles[serializedWillFiles.length - 1]?.createdAt ?? "",
+          },
+        },
+      }
+    : null;
+  const progress = enhancedDraft ? calculatePortalProgress(enhancedDraft) : 0;
   const statusLabel = formattedDraft?.submittedAt ? "Submitted" : `Draft saved · ${progress}%`;
 
   return (

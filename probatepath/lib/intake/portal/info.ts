@@ -13,6 +13,15 @@ const defaultBlock: InfoBlock = {
 };
 
 export const portalStepInfo: Record<PortalStepId, InfoBlock> = {
+  "will-upload": {
+    title: "Upload first",
+    body: "A clear PDF or set of photos lets us tailor every later question and keeps your answers in sync with the actual document.",
+    tips: [
+      "Prefer a single PDF if you have one.",
+      "If using photos, take them in portrait orientation with the full page visible.",
+      "You can replace or add pages later if something changes.",
+    ],
+  },
   "applicant-name-contact": {
     title: "Why we ask",
     body: "Your full legal name, email, and phone appear on every court form and in correspondence with banks.",

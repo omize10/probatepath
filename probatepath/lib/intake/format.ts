@@ -19,6 +19,7 @@ function mergePayload(base: IntakeDraft, payload?: Partial<IntakeDraft> | null) 
       applicant: { ...base.estateIntake.applicant, ...payload.estateIntake.applicant },
       deceased: { ...base.estateIntake.deceased, ...payload.estateIntake.deceased },
       will: { ...base.estateIntake.will, ...payload.estateIntake.will },
+      willUpload: { ...base.estateIntake.willUpload, ...payload.estateIntake.willUpload },
       family: { ...base.estateIntake.family, ...payload.estateIntake.family },
       beneficiaries: { ...base.estateIntake.beneficiaries, ...payload.estateIntake.beneficiaries },
       assets: { ...base.estateIntake.assets, ...payload.estateIntake.assets },

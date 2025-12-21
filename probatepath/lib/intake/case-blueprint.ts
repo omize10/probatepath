@@ -145,6 +145,10 @@ export type EstateIntake = {
       notes: string;
     }[];
   };
+  willUpload: {
+    hasFiles: boolean;
+    lastUploadedAt: string;
+  };
   family: {
     hasSpouse: "yes" | "no" | null;
     spouse: {
@@ -229,6 +233,10 @@ export const emptyEstateIntake: EstateIntake = {
     namedExecutors: [],
     hasCodicils: "no",
     codicils: [],
+  },
+  willUpload: {
+    hasFiles: false,
+    lastUploadedAt: "",
   },
   family: {
     hasSpouse: null,

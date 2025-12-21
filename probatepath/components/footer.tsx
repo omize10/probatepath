@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { SupportWidget } from "@/components/support/SupportWidget";
 
 export function Footer() {
   const [showPrompt, setShowPrompt] = useState(false);
@@ -60,6 +61,9 @@ export function Footer() {
             >
               My portal
             </Link>
+          </div>
+          <div className="pt-3">
+            <SupportWidget placement="inline" />
           </div>
         </div>
         <div>

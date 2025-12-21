@@ -12,6 +12,7 @@ import { updatePortalState, markNoticesMailed, markProbateFiled, markWillSearchM
 import { downloadAndStorePdf, savePdfToUploads } from "@/lib/uploads";
 import { notifyPacketReady, notifyProbatePackageReady, notifyProbateFilingReady } from "@/lib/reminders";
 import { PdfUploadControl } from "@/components/ops/PdfUploadControl";
+import { getWillFilesForMatter } from "@/lib/will-files";
 
 const dateFormatter = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium" });
 const dateTimeFormatter = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeStyle: "short" });
@@ -352,6 +353,7 @@ export default async function CaseDetailPage({ params, searchParams }: CaseDetai
     notFound();
   }
 
+  const willFiles = await getWillFilesForMatter(caseId);
   const intake = record.draft ? formatIntakeDraftRecord(record.draft) : null;
   const noticeReminder = record.reminders.find((r) => r.type === NOTICES_WAIT_REMINDER_TYPE);
   const successMessage = typeof query?.updated === "string" ? "Saved" : null;
@@ -398,6 +400,7 @@ export default async function CaseDetailPage({ params, searchParams }: CaseDetai
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <div className="space-y-4">
           <IntakeSnapshot intake={intake} />
+          <WillFilesCard files={willFiles} />
         </div>
 
         <div className="space-y-6">
@@ -529,6 +532,45 @@ function IntakeSnapshot({ intake }: IntakeSnapshotProps) {
           {JSON.stringify(intake, null, 2)}
         </pre>
       </details>
+    </div>
+  );
+}
+
+type WillFilesCardProps = {
+  files: Awaited<ReturnType<typeof getWillFilesForMatter>>;
+};
+
+function WillFilesCard({ files }: WillFilesCardProps) {
+  const hasFiles = files.length > 0;
+  return (
+    <div className="space-y-3 rounded-2xl border border-[color:var(--border-muted)] bg-white p-4 shadow-sm">
+      <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Will files</p>
+      {hasFiles ? (
+        <div className="divide-y divide-[color:var(--border-muted)] rounded-xl border border-[color:var(--border-muted)]">
+          {files.map((file) => (
+            <div key={file.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm">
+              <div>
+                <p className="font-semibold text-[color:var(--ink)]">{file.originalFilename}</p>
+                <p className="text-xs text-[color:var(--ink-muted)]">
+                  {file.fileType === "image" ? (file.pageIndex ? `Photo page ${file.pageIndex}` : "Photo") : "PDF"}
+                  {" · "}
+                  {dateFormatter.format(file.createdAt)}
+                </p>
+              </div>
+              <a
+                href={file.fileUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm font-semibold text-[color:var(--brand)] underline"
+              >
+                Download
+              </a>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-[color:var(--ink-muted)]">No will files uploaded yet.</p>
+      )}
     </div>
   );
 }

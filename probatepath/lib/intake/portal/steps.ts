@@ -1,6 +1,7 @@
 import type { IntakeDraft } from "@/lib/intake/types";
 
 export type PortalStepId =
+  | "will-upload"
   | "applicant-name-contact"
   | "applicant-address-relationship"
   | "applicant-coapp-question"
@@ -40,6 +41,7 @@ export interface PortalStepDefinition {
 }
 
 export const portalSteps: PortalStepDefinition[] = [
+  { id: "will-upload", title: "Upload the will", description: "Start by adding a PDF or clear photos.", section: "Step 0 · Upload" },
   { id: "applicant-name-contact", title: "Your legal name", description: "Tell us who is applying.", section: "Step 1 · About you" },
   { id: "applicant-address-relationship", title: "Address & relationship", description: "How to reach you and how you’re connected.", section: "Step 1 · About you" },
   { id: "applicant-coapp-question", title: "Are you the only applicant?", description: "Let us know if others are acting with you.", section: "Step 1 · About you" },

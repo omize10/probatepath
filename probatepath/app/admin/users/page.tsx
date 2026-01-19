@@ -18,8 +18,7 @@ export default async function UsersPage() {
     nextCursor = encodeCursor({ id: last.id, createdAt: last.createdAt.toISOString() });
   }
 
-  const items: UserItem[] = itemsRaw.map((u) => ({ id: u.id, email: u.email, name: u.name ?? null, role: u.role, createdAt: u.createdAt.toISOString() }));
-
+itemsRaw.map((u: any)
   return (
     <div className="p-6">
       <h1 className="text-2xl font-semibold mb-4">Users</h1>

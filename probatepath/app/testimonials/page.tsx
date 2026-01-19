@@ -5,7 +5,7 @@ import { TestimonialsContent } from "./TestimonialsContent";
 export const metadata: Metadata = {
   title: "Testimonials",
   description:
-    "Anonymised feedback from executors who used ProbatePath to prepare BC probate documents with clear guidance and calm support.",
+    "Anonymised feedback from executors who used Probate Desk to prepare BC probate documents with clear guidance and calm support.",
 };
 
 export default function TestimonialsPage() {

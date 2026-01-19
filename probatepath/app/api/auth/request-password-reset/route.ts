@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     }
     await logEmail({
       to: user.email,
-      subject: "Your ProbatePath password reset code",
+      subject: "Your Probate Desk password reset code",
       template: "password-reset-code",
       meta: {
         userId: user.id,

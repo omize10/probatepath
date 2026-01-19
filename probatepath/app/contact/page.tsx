@@ -5,7 +5,7 @@ import { ContactForm } from "@/components/contact-form";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Reach the ProbatePath team with questions about eligibility, timelines, or onboarding.",
+  description: "Reach the Probate Desk team with questions about eligibility, timelines, or onboarding.",
 };
 
 export default function ContactPage() {
@@ -17,7 +17,7 @@ export default function ContactPage() {
         </Badge>
         <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">We’re here to help executors stay calm</h1>
         <p className="max-w-3xl text-base text-[#333333]">
-          Reach out if you have questions about eligibility, timelines, or how ProbatePath fits your estate. We reply within one business day.
+          Reach out if you have questions about eligibility, timelines, or how Probate Desk fits your estate. We reply within one business day.
         </p>
       </header>
 

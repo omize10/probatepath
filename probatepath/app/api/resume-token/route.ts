@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   const link = `${process.env.APP_URL ?? 'http://localhost:3000'}/resume/${token}`;
   await sendTemplateEmail({
     to: input.data.email,
-    subject: "Resume your ProbatePath draft",
+    subject: "Resume your Probate Desk draft",
     template: "resume-token",
     matterId: matter.id,
     html: `<p>Resume your draft: <a href="${link}">${link}</a></p>`,

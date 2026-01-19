@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Form P2 - Submission for Estate Grant</title>
+    <link rel="stylesheet" href="css/court-forms.css">
+    <style>
+        @page { size: letter; margin: 0.5in 0.75in; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.3; color: #000; background: #fff; }
+        .page { width: 7in; min-height: 9.5in; margin: 0 auto; padding: 0; }
+        .form-title-block { text-align: center; margin-bottom: 15pt; }
+        .form-id { font-size: 12pt; font-weight: bold; margin-bottom: 8pt; }
+        .form-title { font-size: 11pt; font-weight: bold; text-transform: uppercase; }
+        .section-header { font-weight: bold; font-size: 10pt; background-color: #d3d3d3; padding: 4pt 6pt; margin: 12pt 0 8pt 0; }
+        .field-row { display: flex; align-items: baseline; margin-bottom: 6pt; }
+        .field-label { font-size: 10pt; min-width: 140pt; padding-right: 8pt; }
+        .field-value { flex: 1; border-bottom: 1pt solid #000; min-height: 14pt; padding: 0 4pt; }
+        .checkbox { display: inline-block; width: 10pt; height: 10pt; border: 1pt solid #000; margin-right: 6pt; vertical-align: middle; text-align: center; font-size: 8pt; line-height: 10pt; }
+        .checkbox.checked::before { content: "\2713"; font-weight: bold; }
+        .checkbox-row { display: flex; align-items: flex-start; margin: 6pt 0; }
+        .checkbox-label { flex: 1; font-size: 10pt; }
+        .indent { margin-left: 20pt; }
+        .page-footer { display: flex; justify-content: space-between; font-size: 8pt; color: #666; margin-top: 20pt; }
+        .small { font-size: 9pt; }
+        .italic { font-style: italic; }
+        .bracket-note { font-size: 9pt; color: #444; font-style: italic; }
+        .applicant-table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9pt; }
+        .applicant-table th, .applicant-table td { border: 1pt solid #000; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+        .applicant-table th { background-color: #e8e8e8; font-weight: bold; }
+        .documents-list { margin: 8pt 0; padding-left: 20pt; }
+        .documents-list li { margin: 4pt 0; font-size: 10pt; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="form-title-block">
+            <div class="form-id">FORM P2 (RULE 25-3 (1))</div>
+            <div class="form-title">SUBMISSION FOR ESTATE GRANT</div>
+        </div>
+
+        <!-- Section 1: File Information -->
+        <div class="section-header">1.) File Information</div>
+        <div class="field-row">
+            <span class="field-label">Registry name</span>
+            <span class="field-value">{{registryName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">File number</span>
+            <span class="field-value">{{fileNumber}}</span>
+            <span class="bracket-note" style="margin-left: 10pt;">(leave blank if initiating file)</span>
+        </div>
+
+        <!-- Section 2: Type of Grant -->
+        <div class="section-header">2.) Type of Grant Requested</div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isGrantOfProbate}} checked{{/if}}"></span>
+            <span class="checkbox-label">Grant of Probate</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isAdminWithWill}} checked{{/if}}"></span>
+            <span class="checkbox-label">Grant of Administration with Will Annexed</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isAdminNoWill}} checked{{/if}}"></span>
+            <span class="checkbox-label">Grant of Administration</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isResealing}} checked{{/if}}"></span>
+            <span class="checkbox-label">Resealing of a foreign grant</span>
+        </div>
+
+        <!-- Section 3: Information about the Deceased -->
+        <div class="section-header">3.) Information about the Deceased <span class="italic">[Enter the legal name of the deceased]</span></div>
+        <div class="field-row">
+            <span class="field-label">First name</span>
+            <span class="field-value">{{deceasedFirstName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Middle names</span>
+            <span class="field-value">{{deceasedMiddleNames}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Last name</span>
+            <span class="field-value">{{deceasedLastName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Also known as</span>
+            <span class="field-value">{{deceasedAliases}}</span>
+            <span class="bracket-note" style="margin-left: 10pt;">(if applicable)</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Date of Death</span>
+            <span class="field-value">{{deceasedDateOfDeath}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Last address</span>
+            <span class="field-value">{{deceasedLastAddress}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Place of death</span>
+            <span class="field-value">{{deceasedPlaceOfDeath}}</span>
+        </div>
+
+        <!-- Section 4: Will Information -->
+        <div class="section-header">4.) Information about the Will <span class="italic">[if applicable]</span></div>
+        <div class="field-row">
+            <span class="field-label">Date of will</span>
+            <span class="field-value">{{willDate}}</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if hasCodicils}} checked{{/if}}"></span>
+            <span class="checkbox-label">The will has {{numberOfCodicils}} codicil(s) dated: {{codicilDates}}</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#unless hasCodicils}} checked{{/unless}}"></span>
+            <span class="checkbox-label">The will has no codicils</span>
+        </div>
+
+        <!-- Section 5: Applicant Information -->
+        <div class="section-header">5.) Information about the Applicant(s)</div>
+        <table class="applicant-table">
+            <thead>
+                <tr>
+                    <th style="width: 35%;">Full Legal Name</th>
+                    <th style="width: 40%;">Address</th>
+                    <th style="width: 25%;">Capacity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each applicants}}
+                <tr>
+                    <td>{{this.fullName}}</td>
+                    <td>{{this.address}}</td>
+                    <td>{{this.capacity}}</td>
+                </tr>
+                {{/each}}
+                {{#unless applicants.length}}
+                <tr>
+                    <td>{{applicantName}}</td>
+                    <td>{{applicantAddress}}</td>
+                    <td>Executor</td>
+                </tr>
+                {{/unless}}
+            </tbody>
+        </table>
+
+        <!-- Section 6: Value of Estate -->
+        <div class="section-header">6.) Estimated Value of Estate in British Columbia</div>
+        <div class="field-row">
+            <span class="field-label">Real property</span>
+            <span class="field-value">{{totalRealProperty}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Personal property</span>
+            <span class="field-value">{{totalPersonalProperty}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label" style="font-weight: bold;">TOTAL VALUE</span>
+            <span class="field-value" style="font-weight: bold;">{{totalEstateValue}}</span>
+        </div>
+
+        <!-- Section 7: Documents Submitted -->
+        <div class="section-header">7.) Documents Submitted with this Application</div>
+        <div class="documents-list">
+            {{#each submittedDocuments}}
+            <div class="checkbox-row">
+                <span class="checkbox checked"></span>
+                <span class="checkbox-label">{{this}}</span>
+            </div>
+            {{/each}}
+        </div>
+
+        <!-- Section 8: Declaration -->
+        <div class="section-header">8.) Declaration</div>
+        <p class="small" style="margin: 8pt 0;">
+            The applicant(s) named above confirm that the information provided in this submission and all supporting documents is true and complete to the best of their knowledge and belief.
+        </p>
+
+        <div class="page-footer">
+            <span>Last updated: {{generatedDate}}</span>
+            <span>Page 1 of 1</span>
+        </div>
+    </div>
+</body>
+</html>

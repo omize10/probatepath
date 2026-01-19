@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Form P5 - Affidavit of Applicant for Grant of Administration</title>
+    <link rel="stylesheet" href="css/court-forms.css">
+    <style>
+        @page { size: letter; margin: 0.5in 0.75in; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.3; color: #000; background: #fff; }
+        .page { width: 7in; min-height: 9.5in; margin: 0 auto; padding: 0; }
+        .form-title-block { text-align: center; margin-bottom: 15pt; }
+        .form-id { font-size: 12pt; font-weight: bold; margin-bottom: 8pt; }
+        .form-title { font-size: 11pt; font-weight: bold; text-transform: uppercase; }
+        .section-header { font-weight: bold; font-size: 10pt; background-color: #d3d3d3; padding: 4pt 6pt; margin: 12pt 0 8pt 0; }
+        .field-row { display: flex; align-items: baseline; margin-bottom: 6pt; }
+        .field-label { font-size: 10pt; min-width: 160pt; padding-right: 8pt; }
+        .field-value { flex: 1; border-bottom: 1pt solid #000; min-height: 14pt; padding: 0 4pt; }
+        .checkbox { display: inline-block; width: 10pt; height: 10pt; border: 1pt solid #000; margin-right: 6pt; vertical-align: middle; text-align: center; font-size: 8pt; line-height: 10pt; }
+        .checkbox.checked::before { content: "\2713"; font-weight: bold; }
+        .checkbox-row { display: flex; align-items: flex-start; margin: 6pt 0; }
+        .checkbox-label { flex: 1; font-size: 10pt; }
+        .indent { margin-left: 20pt; }
+        .page-footer { display: flex; justify-content: space-between; font-size: 8pt; color: #666; margin-top: 20pt; }
+        .small { font-size: 9pt; }
+        .italic { font-style: italic; }
+        .bracket-note { font-size: 9pt; color: #444; font-style: italic; }
+        .entitled-table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9pt; }
+        .entitled-table th, .entitled-table td { border: 1pt solid #000; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+        .entitled-table th { background-color: #e8e8e8; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="form-title-block">
+            <div class="form-id">FORM P5 (RULE 25-3 (2))</div>
+            <div class="form-title">AFFIDAVIT OF APPLICANT FOR GRANT OF ADMINISTRATION</div>
+        </div>
+
+        <!-- Section 1: Affidavit Information -->
+        <div class="section-header">1.) Affidavit Information</div>
+        <div class="field-row">
+            <span class="field-label">Number</span>
+            <span class="field-value">{{affidavitNumber}}</span>
+            <span class="bracket-note" style="margin-left: 10pt;">(eg. 1st / 2nd / 3rd / etc)</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Name of person swearing affidavit</span>
+            <span class="field-value">{{applicantName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Date</span>
+            <span class="field-value">{{affidavitDate}}</span>
+            <span class="bracket-note" style="margin-left: 10pt;">(Date affidavit will be sworn) leave blank if unknown</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Location</span>
+            <span class="field-value">{{commissionerLocation}}</span>
+        </div>
+
+        <!-- Section 2: File Information -->
+        <div class="section-header">2.) File Information</div>
+        <div class="field-row">
+            <span class="field-label">Registry name</span>
+            <span class="field-value">{{registryName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">File number</span>
+            <span class="field-value">{{fileNumber}}</span>
+            <span class="bracket-note" style="margin-left: 10pt;">(File number is not required if initiating the file)</span>
+        </div>
+
+        <!-- Section 3: Information about the Applicant -->
+        <div class="section-header">3.) Information about the Applicant</div>
+        <div class="field-row">
+            <span class="field-label">Name</span>
+            <span class="field-value">{{applicantName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Address</span>
+            <span class="field-value">{{applicantAddress}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Occupation</span>
+            <span class="field-value">{{applicantOccupation}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">I am</span>
+            <span class="field-value">the applicant</span>
+        </div>
+
+        <!-- Section 4: Information about the Deceased -->
+        <div class="section-header">4.) Information about the Deceased <span class="italic">[Enter the legal name of the deceased]</span></div>
+        <div class="field-row">
+            <span class="field-label">First name</span>
+            <span class="field-value">{{deceasedFirstName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Middle names</span>
+            <span class="field-value">{{deceasedMiddleNames}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Last name</span>
+            <span class="field-value">{{deceasedLastName}}</span>
+        </div>
+
+        <!-- Section 5: Intestacy Information -->
+        <div class="section-header">5.) Information about Intestacy</div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if diedIntestate}} checked{{/if}}"></span>
+            <span class="checkbox-label">The deceased died intestate (without a valid will).</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if noKnownWill}} checked{{/if}}"></span>
+            <span class="checkbox-label">After a careful search, I believe there is no will of the deceased.</span>
+        </div>
+
+        <!-- Section 6: Applicant's Entitlement -->
+        <div class="section-header">6.) Applicant's Entitlement to Apply</div>
+        <div class="field-row">
+            <span class="field-label">Relationship to deceased</span>
+            <span class="field-value">{{relationshipToDeceased}}</span>
+        </div>
+
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isSpouse}} checked{{/if}}"></span>
+            <span class="checkbox-label">I am the spouse of the deceased.</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isChild}} checked{{/if}}"></span>
+            <span class="checkbox-label">I am a child of the deceased.</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isParent}} checked{{/if}}"></span>
+            <span class="checkbox-label">I am a parent of the deceased.</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isSibling}} checked{{/if}}"></span>
+            <span class="checkbox-label">I am a sibling of the deceased.</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isOtherRelative}} checked{{/if}}"></span>
+            <span class="checkbox-label">I am a {{otherRelationship}} of the deceased.</span>
+        </div>
+
+        <!-- Section 7: Persons Entitled to Priority -->
+        <div class="section-header">7.) Persons Entitled to Priority</div>
+        <p class="small" style="margin: 6pt 0;">Under the Wills, Estates and Succession Act, the following persons have priority to apply for a grant of administration:</p>
+
+        {{#if hasPersonsWithPriority}}
+        <table class="entitled-table">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Name</th>
+                    <th style="width: 25%;">Relationship</th>
+                    <th style="width: 45%;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each personsWithPriority}}
+                <tr>
+                    <td>{{this.name}}</td>
+                    <td>{{this.relationship}}</td>
+                    <td>
+                        {{#if this.hasRenounced}}Renounced priority{{/if}}
+                        {{#if this.isDeceased}}Deceased{{/if}}
+                        {{#if this.consents}}Consents to this application{{/if}}
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        <div class="checkbox-row">
+            <span class="checkbox checked"></span>
+            <span class="checkbox-label">There are no persons with greater priority to apply for a grant of administration, or all such persons have renounced or consented to this application.</span>
+        </div>
+        {{/if}}
+
+        <!-- Section 8: Delivery -->
+        <div class="section-header">8.) Delivery</div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#unless requiresPGT}} checked{{/unless}}"></span>
+            <span class="checkbox-label">I am not obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if requiresPGT}} checked{{/if}}"></span>
+            <span class="checkbox-label">I am obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee.</span>
+        </div>
+
+        <!-- Section 9: Additional Information -->
+        {{#if additionalInfo}}
+        <div class="section-header">9.) Additional information <span class="italic">[if required, insert additional information in paragraph format below]</span></div>
+        <div style="border: 1pt solid #000; min-height: 60pt; padding: 6pt; margin-top: 6pt;">
+            {{additionalInfo}}
+        </div>
+        {{/if}}
+
+        <div class="page-footer">
+            <span>Last updated: {{generatedDate}}</span>
+            <span>Page 1 of 1</span>
+        </div>
+    </div>
+</body>
+</html>

@@ -13,7 +13,7 @@ export type EligibilityDecision =
   | { status: "not_fit"; reasons: string[] };
 
 const disqualifyingReasons = {
-  bc: "ProbatePath is currently limited to estates probated in British Columbia.",
+  bc: "Probate Desk is currently limited to estates probated in British Columbia.",
   executor: "We need to work directly with the executor or appointed administrator.",
   disputes: "Contested or litigated wills require a full-service law firm.",
   assets: "Highly complex assets are better handled by a full-service law firm.",

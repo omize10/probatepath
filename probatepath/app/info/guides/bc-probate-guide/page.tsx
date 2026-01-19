@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: "The complete guide to probate in British Columbia. Learn when you need it, what forms to file, how long it takes, what it costs, and what happens after the grant.",
   keywords: ["probate BC", "BC probate guide", "grant of probate BC", "executor BC", "probate British Columbia"],
   openGraph: {
-    title: "BC Probate Guide 2025 | ProbatePath",
+    title: "BC Probate Guide 2025 | Probate Desk",
     description: "The complete guide to probate in British Columbia for executors.",
     url: "https://probatepath.ca/info/guides/bc-probate-guide",
     type: "article",
@@ -45,7 +45,7 @@ const faqs = [
   },
   {
     question: "Can I do probate without a lawyer in BC?",
-    answer: "Yes. BC allows executors to handle probate themselves. ProbatePath helps you prepare all forms for $2,500 without needing a lawyer."
+    answer: "Yes. BC allows executors to handle probate themselves. Probate Desk helps you prepare all forms starting at $799 depending on the service level you need."
   },
   {
     question: "What's the difference between probate and grant of administration?",
@@ -463,7 +463,7 @@ export default function BCProbateGuidePage() {
           <li>Commissioner/notary: $50-$150</li>
           <li>Wills notice search: ~$20</li>
           <li>Certified grant copies: $40 each</li>
-          <li>Professional help: $2,500-$15,000+</li>
+          <li>Professional help: $799-$15,000+ depending on service level</li>
           <li>Registered mail for P1: $15-$25 per person</li>
           <li>Land title searches/transfers: $50-$200+</li>
         </ul>
@@ -888,7 +888,7 @@ export default function BCProbateGuidePage() {
         <section className="mt-16 rounded-3xl bg-[color:var(--bg-muted)] p-8 text-center">
           <h2 className="font-serif text-2xl text-[color:var(--brand)]">Need help with BC probate?</h2>
           <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">
-            ProbatePath prepares all your BC probate forms for a fixed $2,500 fee.
+            Probate Desk prepares all your BC probate forms with flexible service tiers starting at $799.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-4">
             <Link href="/create-account" className="rounded-full bg-[color:var(--brand)] px-6 py-3 font-semibold text-white hover:bg-[color:var(--accent-dark)]">

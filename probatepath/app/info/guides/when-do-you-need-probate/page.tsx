@@ -248,7 +248,7 @@ export default function WhenNeedProbatePage() {
         <section className="mt-12 rounded-3xl bg-[color:var(--bg-muted)] p-8">
           <h2 className="font-serif text-2xl text-[color:var(--brand)]">Need probate?</h2>
           <p className="mt-4 text-[color:var(--muted-ink)]">
-            ProbatePath prepares all your BC probate forms for $2,500. We handle the paperwork 
+            Probate Desk prepares all your BC probate forms starting at $799. We handle the paperwork
             so you can focus on the estate.
           </p>
           <Link

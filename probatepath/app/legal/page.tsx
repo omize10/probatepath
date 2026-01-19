@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const metadata: Metadata = {
   title: "Legal",
-  description: "Review ProbatePath terms, privacy commitments, and disclaimer.",
+  description: "Review Probate Desk terms, privacy commitments, and disclaimer.",
 };
 
 const sections = [
@@ -12,7 +12,7 @@ const sections = [
     id: "terms",
     label: "Terms",
     body: [
-      "ProbatePath provides technology-enabled probate document preparation for British Columbia executors. By using this service you authorise us to collect the information required to generate filing-ready documents.",
+      "Probate Desk provides technology-enabled probate document preparation for British Columbia executors. By using this service you authorise us to collect the information required to generate filing-ready documents.",
       "You remain responsible for reviewing the materials, ensuring accuracy, signing, filing, and complying with the Supreme Court of British Columbia.",
       "Fees are fixed once scope is confirmed. We may decline or pause engagements that fall outside our process or introduce conflicts of interest.",
     ],
@@ -30,7 +30,7 @@ const sections = [
     id: "disclaimer",
     label: "Disclaimer",
     body: [
-      "ProbatePath provides document preparation support and general information. We do not provide legal advice or representation. Executors remain self-represented.",
+      "Probate Desk provides document preparation support and general information. We do not provide legal advice or representation. Executors remain self-represented.",
       "Court rules and requirements may change; you are responsible for verifying current procedures with the Supreme Court of British Columbia.",
       "If your matter becomes complex or contested, we encourage you to seek independent legal counsel.",
     ],
@@ -46,7 +46,7 @@ export default function LegalPage() {
         </Badge>
         <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">Terms, privacy, and disclaimer</h1>
         <p className="max-w-3xl text-base text-[#333333]">
-          Transparency matters. Review how ProbatePath works, how we handle your information, and important disclaimers.
+          Transparency matters. Review how Probate Desk works, how we handle your information, and important disclaimers.
         </p>
       </header>
 
@@ -68,7 +68,7 @@ export default function LegalPage() {
       </Tabs>
 
       <div className="rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6 text-sm text-[#333333] shadow-[0_20px_60px_-50px_rgba(15,26,42,0.35)]">
-        ProbatePath provides document preparation support and general information. We do not provide legal advice or representation. Executors remain self-represented.
+        Probate Desk provides document preparation support and general information. We do not provide legal advice or representation. Executors remain self-represented.
       </div>
     </div>
   );

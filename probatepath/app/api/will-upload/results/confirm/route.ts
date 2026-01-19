@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       action: "confirmed_will_extraction",
       resourceType: "will_extraction",
       resourceId: extractionId,
-      metadata: confirmedItems ?? null,
+      metadata: (confirmedItems ?? undefined) as any,
     },
   });
 

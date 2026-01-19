@@ -19,14 +19,13 @@ import { FAQAccordion } from "@/components/faq-accordion";
 export const metadata: Metadata = {
   title: "BC probate documents in hours",
   description:
-    "ProbatePath prepares filing-ready probate documents for British Columbia executors with a fixed 2,500 CAD fee, Canadian data hosting, and specialist support.",
+    "Probate Desk prepares filing-ready probate documents for British Columbia executors starting at $799 CAD, with flexible service tiers, Canadian data hosting, and specialist support.",
 };
 
 const trustPoints = [
   { icon: ShieldCheck, label: "Built for BC probate" },
-  { icon: CheckCircle2, label: "Clear fixed fee" },
-  { icon: Sparkles, label: "Target delivery: <24 hrs (not guaranteed)" },
-  { icon: FileText, label: "Hosted & encrypted in Canada" },
+  { icon: CheckCircle2, label: "Starting at $799" },
+  { icon: Timer, label: "Save thousands in legal and notary fees" },
 ];
 
 const whyCards = [
@@ -63,12 +62,12 @@ const scopeHighlights = [
   "Single executor with a valid BC will",
   "Canadian assets + no active disputes",
   "We review for completeness before preparing the package",
-  "Transparent 2,500 CAD fixed fee (plus GST/PST)",
+  "Transparent pricing from $799 to $2,499 depending on service level",
 ];
 
 const miniFaq = [
   {
-    question: "Who is ProbatePath for?",
+    question: "Who is Probate Desk for?",
     answer: "Executors handling straightforward BC estates with a valid will, Canadian assets, and no ongoing disputes.",
   },
   {
@@ -98,37 +97,38 @@ export default function HomePage() {
           className="absolute inset-0 -z-20 h-full w-full object-cover object-right lg:object-right"
         />
         <div className="relative z-10 w-full px-6 py-16 sm:px-12 lg:px-[12%] lg:py-28">
-          <div className="max-w-[680px] space-y-10 text-center text-white lg:-translate-y-2 lg:text-left">
-            <div className="space-y-6">
-              <h1 className="font-serif text-4xl leading-tight !text-white drop-shadow-[0_14px_36px_rgba(0,0,0,0.85)] sm:text-5xl lg:text-6xl xl:text-[4.5rem]">
-                Your estate, organised step by step.
-              </h1>
-              <p className="text-lg !text-white drop-shadow-[0_10px_24px_rgba(0,0,0,0.65)]">
-                ProbatePath prepares filing-ready Supreme Court forms, notices, and guidance for BC executors with a fixed 2,500 CAD fee.
-                Every detail stays encrypted and hosted in Canada.
-              </p>
-            </div>
-            <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-              <Button asChild size="lg" className="w-full !bg-white/15 text-white hover:!bg-white/25 sm:w-auto">
-                <Link href="/create-account">Start intake</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="w-full !border-white/80 !bg-transparent text-white hover:!bg-white/10 sm:w-auto"
-              >
-                <Link href="/how-it-works">How it works</Link>
-              </Button>
-            </div>
-            <div className="flex flex-col gap-6 text-center text-sm text-white md:flex-row md:items-start md:gap-12 md:text-left">
-              <div className="space-y-1 text-white">
-                <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">2,500 CAD</p>
-                <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Fixed preparation fee</p>
+          <div className="relative">
+            <div className="max-w-[680px] text-center text-white lg:-translate-y-2 lg:text-left">
+              <div className="space-y-6">
+                <h1 className="font-serif text-5xl leading-tight !text-white drop-shadow-[0_14px_36px_rgba(0,0,0,0.85)] sm:text-6xl lg:text-7xl xl:text-[5rem]">
+                  Probate, without the lawyers bill.
+                </h1>
+                <p className="text-xl !text-white drop-shadow-[0_10px_24px_rgba(0,0,0,0.65)]">
+                  BC probate and administration forms without legal invloment.
+                </p>
               </div>
-              <div className="space-y-1 text-white">
-                <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">&lt;24 hours</p>
-                <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Target delivery after intake</p>
+              <div className="mt-10 flex w-full flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+                <Button asChild size="lg" className="w-full !bg-white/15 text-white hover:!bg-white/25 sm:w-auto">
+                  <Link href="/create-account">Start intake</Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="w-full !border-white/80 !bg-transparent text-white hover:!bg-white/10 sm:w-auto"
+                >
+                  <Link href="/how-it-works">How it works</Link>
+                </Button>
+              </div>
+              <div className="mt-8 flex flex-col gap-6 text-center text-sm text-white md:mt-10 md:flex-row md:items-start md:gap-12 md:text-left">
+                <div className="space-y-1 text-white">
+                  <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Starting at $799</p>
+                  <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Flexible service tiers</p>
+                </div>
+                <div className="space-y-1 text-white">
+                  <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">&lt;24 hours</p>
+                  <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Target delivery after intake</p>
+                </div>
               </div>
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function HomePage() {
 
       <ScrollFade
         as="section"
-        className="grid gap-4 rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6 shadow-[0_40px_120px_-80px_rgba(14,26,42,0.2)] md:grid-cols-4"
+        className="grid gap-4 rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6 shadow-[0_40px_120px_-80px_rgba(14,26,42,0.2)] md:grid-cols-3 md:justify-items-center"
       >
         {trustPoints.map((point, index) => (
           <ScrollFade
@@ -155,7 +155,7 @@ export default function HomePage() {
 
       <ScrollFade as="section" className="space-y-12">
         <div className="space-y-4 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">Why ProbatePath</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">Why Probate Desk</p>
           <h2 className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">Premium support for straightforward BC estates</h2>
           <p className="mx-auto max-w-3xl text-base text-[color:var(--muted-ink)]">
             We blend technology with probate specialists so executors can move from intake to filing without second-guessing forms,
@@ -225,7 +225,7 @@ export default function HomePage() {
           <div className="space-y-3">
             <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[color:var(--brand)]">Scope confirmation</p>
             <h2 className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">
-              Let’s confirm your estate fits the fixed-fee scope
+              Let's confirm your estate fits our service
             </h2>
             <p className="text-sm text-[#333333]">
               Share a few details and we’ll confirm timing, fit, and next steps before you commit court fees. Everything stays private

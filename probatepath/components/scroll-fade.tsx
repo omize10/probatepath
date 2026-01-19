@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -24,8 +25,25 @@ type ScrollFadeProps = HTMLAttributes<HTMLElement> & {
 };
 
 export function ScrollFade({ children, className, as = "div", delay = 0, once = false, ...rest }: ScrollFadeProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const Component = elements[as] ?? elements.div;
   const forwarded = rest as Record<string, unknown>;
+
+  // Prevent hydration mismatch by skipping animations until client-side mount
+  if (!mounted) {
+    const PlainComponent = as === "section" ? "section" : as === "li" ? "li" : as === "article" ? "article" : "div";
+    return (
+      <PlainComponent className={cn(className)} {...(forwarded as HTMLAttributes<HTMLElement>)}>
+        {children}
+      </PlainComponent>
+    );
+  }
+
   return (
     <Component
       className={cn(className)}

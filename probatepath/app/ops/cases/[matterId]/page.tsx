@@ -414,6 +414,7 @@ export default async function CaseDetailPage({ params, searchParams }: CaseDetai
             probateFiledAt={record.probateFiledAt}
             grantIssuedAt={record.grantIssuedAt}
           />
+          <FormsGenerationCard recordId={record.id} />
           <RemindersCard recordId={record.id} reminders={record.reminders} noticeReminder={noticeReminder} noticeMailDate={record.noticesMailedAt} />
         </div>
       </div>
@@ -1007,6 +1008,68 @@ function RemindersCard({ recordId, reminders, noticeReminder }: RemindersCardPro
             Create 21-day wait reminder
           </button>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function FormsGenerationCard({ recordId }: { recordId: string }) {
+  const forms = [
+    { id: "P2", name: "Submission for Estate Grant", available: true, endpoint: "generated" },
+    { id: "P3", name: "Affidavit of Applicant (Short Form)", available: true, endpoint: "generated" },
+    { id: "P4", name: "Affidavit of Applicant (Long Form)", available: true, endpoint: "generated" },
+    { id: "P9", name: "Affidavit of Delivery", available: true, endpoint: "p9" },
+    { id: "P10", name: "Assets & Liabilities (Domiciled)", available: true, endpoint: "generated" },
+    { id: "P11", name: "Assets & Liabilities (Non-Domiciled)", available: false, endpoint: "generated" },
+    { id: "P17", name: "Affidavit of Attesting Witness", available: false, endpoint: "generated" },
+    { id: "P20", name: "Affidavit of Condition of Will", available: false, endpoint: "generated" },
+  ];
+
+  // Build the correct URL based on form type
+  const getFormUrl = (form: { id: string; endpoint: string }) => {
+    if (form.endpoint === "p9") {
+      return `/api/forms/p9/${recordId}?download=1`;
+    }
+    return `/api/forms/generated/${form.id}/${recordId}?download=1`;
+  };
+
+  return (
+    <div className="space-y-4 rounded-3xl border border-[color:var(--border-muted)] bg-white p-6 shadow-[0_25px_80px_-60px_rgba(15,23,42,0.22)]">
+      <header className="space-y-1">
+        <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">AI Forms Generation</p>
+        <h3 className="font-serif text-xl text-[color:var(--ink)]">Dynamically Generated Forms</h3>
+        <p className="text-sm text-[color:var(--ink-muted)]">
+          Generate probate forms with dynamic content based on case data. Forms automatically include all beneficiaries, assets, and other details.
+        </p>
+      </header>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {forms.map((form) => (
+          <a
+            key={form.id}
+            href={getFormUrl(form)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+              form.available
+                ? "border-[color:var(--brand)] text-[color:var(--brand)] hover:bg-[color:var(--brand)] hover:text-white"
+                : "border-[color:var(--border-muted)] text-[color:var(--ink-muted)] cursor-not-allowed opacity-50"
+            }`}
+          >
+            <span>{form.name}</span>
+            <span className="text-xs opacity-75">({form.id})</span>
+          </a>
+        ))}
+      </div>
+
+      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+        <p className="font-semibold">How it works:</p>
+        <ul className="mt-2 list-disc pl-5 space-y-1">
+          <li>Forms are generated in real-time from case data</li>
+          <li>Beneficiary lists, assets, and liabilities auto-populate</li>
+          <li>No manual data entry required - everything comes from the database</li>
+          <li>PDFs are court-ready and can be printed immediately</li>
+        </ul>
       </div>
     </div>
   );

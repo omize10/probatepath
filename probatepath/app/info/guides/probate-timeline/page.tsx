@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "Can I hire someone to speed up the process?",
-    answer: "Professional help (lawyers or services like ProbatePath) can reduce delays from paperwork errors. But court processing time is fixed - no one can make the registry work faster."
+    answer: "Professional help (lawyers or services like Probate Desk) can reduce delays from paperwork errors. But court processing time is fixed - no one can make the registry work faster."
   },
 ];
 

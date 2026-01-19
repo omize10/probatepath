@@ -244,6 +244,39 @@ select:focus-visible {
   }
 }
 
+@keyframes banner-pop {
+  0% {
+    transform: translateY(16px) scale(0.98);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes badgePulse {
+  0%,
+  10%,
+  100% {
+    transform: scale(1);
+  }
+  5% {
+    transform: scale(1.02);
+  }
+}
+
 @keyframes aurora {
   0% {
     transform: translate3d(-5%, 0, 0);

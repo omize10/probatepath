@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form P1 - Notice of Proposed Application</title>
+    <style>
+        @page { size: letter; margin: 0.5in 0.75in; }
+        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .form-title { text-align: center; font-weight: bold; font-size: 14pt; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        table, th, td { border: 1px solid #000; }
+        th, td { padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="header"><strong>IN THE SUPREME COURT OF BRITISH COLUMBIA</strong></div>
+    <div class="form-title">Form P1<br>Notice of Proposed Application</div>
+    <div><strong>IN THE ESTATE OF:</strong></div>
+    <p>Full Legal Name: {{deceased.fullLegalName}}</p>
+    <p>Date of Death: {{deceased.dateOfDeath}}</p>
+    <table>
+        <tr><th>Name</th><th>Relationship</th><th>Address</th></tr>
+        {{#each notifiedPersons}}
+        <tr><td>{{this.name}}</td><td>{{this.relationship}}</td><td>{{this.address}}</td></tr>
+        {{/each}}
+    </table>
+</body>
+</html>

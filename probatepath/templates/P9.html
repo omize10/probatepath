@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form P9 - Affidavit of Delivery</title>
+  <style>
+    @page {
+      size: Letter;
+      margin: 0.6in 0.75in;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 10pt;
+      line-height: 1.35;
+      color: #000;
+      background: white;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 9.5in;
+      position: relative;
+      page-break-after: always;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    /* Header */
+    .page-info {
+      text-align: right;
+      font-size: 9pt;
+      margin-bottom: 8pt;
+      color: #333;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 12pt;
+    }
+
+    .form-id {
+      font-size: 11pt;
+      font-weight: bold;
+    }
+
+    .form-title {
+      font-size: 12pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-top: 2pt;
+    }
+
+    /* Instruction Box */
+    .instruction-box {
+      background-color: #f0f0f0;
+      border: 1pt solid #999;
+      padding: 10pt;
+      margin-bottom: 14pt;
+      font-size: 9pt;
+    }
+
+    .instruction-box .warning-icon {
+      color: #c00;
+      font-weight: bold;
+      margin-right: 4pt;
+    }
+
+    .instruction-box p {
+      margin-bottom: 6pt;
+    }
+
+    .instruction-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Section Headers */
+    .section-header {
+      background-color: #d0d0d0;
+      border: 1pt solid #999;
+      padding: 4pt 8pt;
+      font-weight: bold;
+      font-size: 10pt;
+      margin-top: 12pt;
+      margin-bottom: 8pt;
+    }
+
+    /* Form Fields */
+    .field-row {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 6pt;
+    }
+
+    .field-label {
+      width: 180pt;
+      font-size: 9pt;
+      padding-right: 8pt;
+      flex-shrink: 0;
+    }
+
+    .field-value {
+      flex-grow: 1;
+      border-bottom: 1pt solid #000;
+      min-height: 14pt;
+      padding: 0 4pt;
+      font-size: 10pt;
+    }
+
+    .field-value.filled {
+      background-color: #fffde7;
+    }
+
+    /* Checkbox rows */
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 6pt;
+    }
+
+    .checkbox {
+      width: 12pt;
+      height: 12pt;
+      border: 1pt solid #000;
+      margin-right: 8pt;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10pt;
+    }
+
+    .checkbox.checked::after {
+      content: "✓";
+    }
+
+    .checkbox-label {
+      flex-grow: 1;
+      font-size: 9pt;
+    }
+
+    /* Tables for delivery info */
+    .delivery-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6pt 0;
+    }
+
+    .delivery-table th,
+    .delivery-table td {
+      border: 1pt solid #000;
+      padding: 4pt 6pt;
+      text-align: left;
+      font-size: 9pt;
+    }
+
+    .delivery-table th {
+      background-color: #e8e8e8;
+      font-weight: bold;
+    }
+
+    /* Indent for sub-items */
+    .indent {
+      margin-left: 20pt;
+    }
+
+    .indent-2 {
+      margin-left: 40pt;
+    }
+
+    /* Bracket text */
+    .bracket-text {
+      font-size: 8pt;
+      color: #444;
+      font-style: italic;
+    }
+
+    /* Signature section */
+    .signature-section {
+      margin-top: 20pt;
+    }
+
+    .signature-line {
+      border-top: 1pt solid #000;
+      width: 250pt;
+      margin-top: 40pt;
+      padding-top: 4pt;
+      font-size: 9pt;
+    }
+
+    /* Jurat */
+    .jurat {
+      margin-top: 30pt;
+      border: 1pt solid #000;
+      padding: 12pt;
+    }
+
+    .jurat-line {
+      margin-bottom: 8pt;
+    }
+
+    /* Notes */
+    .note {
+      font-size: 8pt;
+      font-style: italic;
+      color: #333;
+      margin-top: 4pt;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==================== PAGE 1 ==================== -->
+<div class="page">
+  <div class="page-info">Page 1 of 3</div>
+
+  <div class="form-header">
+    <div class="form-id">FORM P9 (RULE 25-3 (2))</div>
+    <div class="form-title">AFFIDAVIT OF DELIVERY</div>
+  </div>
+
+  <!-- Instruction Box -->
+  <div class="instruction-box">
+    <p><span class="warning-icon">!</span> To complete the form electronically -</p>
+    <p><strong>Step 1:</strong> FILL in the blanks below ensuring that you answer each of the items.</p>
+    <p><strong>Step 2:</strong> PREVIEW - If you want to preview the form prior to printing click on the Preview and Sign button at the bottom of the page.</p>
+    <p><strong>Step 3:</strong> PRINTING - to print the form click on the Print Form button at the bottom of the page or the print icon on the Adobe toolbar.</p>
+    <p><strong>NOTE:</strong> All mandatory paragraphs will populate when form is previewed</p>
+    <p style="margin-top: 8pt;">To complete the form manually -</p>
+    <p>Click on the Preview Blank Copy button and then click either the Click here to PRINT form button or the print icon on the Adobe toolbar.</p>
+  </div>
+
+  <!-- Section 1: Affidavit Information -->
+  <div class="section-header">1.) Affidavit Information</div>
+  
+  <div class="field-row">
+    <div class="field-label">Number (eg. 1st / 2nd / 3rd / etc)</div>
+    <div class="field-value filled">{{affidavitNumber}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">Name of person swearing affidavit</div>
+    <div class="field-value filled">{{deponentName}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">Date (Date affidavit will be sworn) leave blank if unknown</div>
+    <div class="field-value filled">{{affidavitDate}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">Commissioner's Location</div>
+    <div class="field-value filled">{{commissionerLocation}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">Sworn or affirmed by video conference:</div>
+    <div class="checkbox {{#if videoConference}}checked{{/if}}"></div>
+  </div>
+
+  <!-- Section 2: File Information -->
+  <div class="section-header">2.) File Information</div>
+
+  <div class="field-row">
+    <div class="field-label">Registry name</div>
+    <div class="field-value filled">{{registryName}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">File number (File number is not required if initiating the file)</div>
+    <div class="field-value filled">{{fileNumber}}</div>
+  </div>
+
+  <!-- Section 3: Information about the Person that delivered the Documents -->
+  <div class="section-header">3.) Information about the Person that delivered the Documents</div>
+
+  <div class="field-row">
+    <div class="field-label">Name</div>
+    <div class="field-value filled">{{delivererName}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">Address</div>
+    <div class="field-value filled">{{delivererAddress}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">Occupation</div>
+    <div class="field-value filled">{{delivererOccupation}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">Documents Delivered along with the Notice of Proposed Application</div>
+    <div class="field-value filled">{{documentsDelivered}}</div>
+  </div>
+
+  <!-- Section 4: Information about the Deceased -->
+  <div class="section-header">4.) Information about the Deceased [Enter the legal name of the deceased]</div>
+
+  <div class="field-row">
+    <div class="field-label">First name</div>
+    <div class="field-value filled">{{deceased.firstName}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">Middle names</div>
+    <div class="field-value filled">{{deceased.middleNames}}</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-label">Last name</div>
+    <div class="field-value filled">{{deceased.lastName}}</div>
+  </div>
+
+</div>
+
+<!-- ==================== PAGE 2 ==================== -->
+<div class="page">
+  <div class="page-info">Page 2 of 3</div>
+
+  <!-- Section 5: Delivery of notice and other documents -->
+  <div class="section-header">5.) Delivery of notice and other documents</div>
+
+  <!-- Delivery by ordinary mail -->
+  <div class="checkbox-row">
+    <div class="checkbox {{#if deliveryByMail.used}}checked{{/if}}"></div>
+    <div class="checkbox-label"><strong>by mailing it/them to the following persons by ordinary mail:</strong></div>
+  </div>
+
+  {{#if deliveryByMail.used}}
+  <table class="delivery-table indent">
+    <thead>
+      <tr>
+        <th style="width: 50%;">Name(s)</th>
+        <th style="width: 50%;">On [date]</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each deliveryByMail.recipients}}
+      <tr>
+        <td>{{this.name}}</td>
+        <td>{{this.date}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+
+  <!-- Delivery by hand -->
+  <div class="checkbox-row" style="margin-top: 12pt;">
+    <div class="checkbox {{#if deliveryByHand.used}}checked{{/if}}"></div>
+    <div class="checkbox-label"><strong>by handing it/them to and leaving it/them with the following persons as follows:</strong></div>
+  </div>
+
+  {{#if deliveryByHand.used}}
+  <table class="delivery-table indent">
+    <thead>
+      <tr>
+        <th style="width: 50%;">Name(s)</th>
+        <th style="width: 50%;">On [date]</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each deliveryByHand.recipients}}
+      <tr>
+        <td>{{this.name}}</td>
+        <td>{{this.date}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+
+  <!-- Delivery by electronic means -->
+  <div class="checkbox-row" style="margin-top: 12pt;">
+    <div class="checkbox {{#if deliveryByElectronic.used}}checked{{/if}}"></div>
+    <div class="checkbox-label"><strong>by sending it/them to the following persons by e-mail, fax or other electronic means to that person</strong></div>
+  </div>
+
+  {{#if deliveryByElectronic.used}}
+  <table class="delivery-table indent">
+    <thead>
+      <tr>
+        <th style="width: 50%;">Name(s)</th>
+        <th style="width: 50%;">On [date]</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each deliveryByElectronic.recipients}}
+      <tr>
+        <td>{{this.name}}</td>
+        <td>{{this.date}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <div class="bracket-text indent" style="margin: 8pt 0;">
+    [If you have checked the third of the immediately preceding 3 boxes, check both of the immediately following boxes. If you cannot check both of the immediately following boxes in relation to any person to whom the notice was sent by email, fax or other electronic means because he or she has not provided the required acknowledgement, you must re-deliver the notice and Rule 25-2 (1.1) documents by mail or personal delivery and swear to that delivery under the first or second of the boxes in this section 2.]
+  </div>
+
+  <div class="checkbox-row indent">
+    <div class="checkbox {{#if electronicAcknowledgementReceived}}checked{{/if}}"></div>
+    <div class="checkbox-label">Each of the persons who received delivery by e-mail, fax or other electronic means has, in writing, acknowledged receipt of the document(s) referred to in this section.</div>
+  </div>
+
+  <div class="checkbox-row indent">
+    <div class="checkbox {{#if willRetainAcknowledgements}}checked{{/if}}"></div>
+    <div class="checkbox-label">I will retain a copy of those acknowledgements until the personal representative of the deceased is discharged and will produce those acknowledgements promptly after being requested to do so by the registrar.</div>
+  </div>
+  {{/if}}
+
+  <!-- Section 6: Delivery information -->
+  <div class="section-header">6.) Delivery information</div>
+
+  <div class="bracket-text" style="margin-bottom: 8pt;">
+    [Complete the following phrase for each person referred to in the section above who received delivery of the notice on behalf of another person under Rule 25-2(8), (10) or (12).]
+  </div>
+
+  {{#each deliveryOnBehalf}}
+  <div style="margin-bottom: 10pt;">
+    <p>I delivered the document(s) referred to in section 2 to</p>
+    <div class="field-value filled" style="margin: 4pt 0;">{{this.deliveredToName}}</div>
+    <p class="bracket-text">[Name]</p>
+    
+    <p style="margin-top: 6pt;">in the person's capacity as the</p>
+    <div class="field-value filled" style="margin: 4pt 0;">{{this.capacity}}</div>
+    <p class="bracket-text">[identify capacity, e.g. parent, guardian, committee, etc.]</p>
+    
+    <p style="margin-top: 6pt;">of</p>
+    <div class="field-value filled" style="margin: 4pt 0;">{{this.onBehalfOfName}}</div>
+    <p class="bracket-text">[name of person to whom, under Rule 25-2(2), the document(s) referred to in section 2 was (were) required to be delivered and on whose behalf the person referred to in this section received delivery of the document(s)]</p>
+  </div>
+  {{/each}}
+
+  {{#unless deliveryOnBehalf}}
+  <div style="margin-bottom: 10pt;">
+    <p>I delivered the document(s) referred to in section 2 to</p>
+    <div class="field-value" style="margin: 4pt 0; min-width: 200pt;"></div>
+    <p class="bracket-text">[Name]</p>
+    
+    <p style="margin-top: 6pt;">in the person's capacity as the</p>
+    <div class="field-value" style="margin: 4pt 0; min-width: 200pt;"></div>
+    <p class="bracket-text">[identify capacity, e.g. parent, guardian, committee, etc.]</p>
+    
+    <p style="margin-top: 6pt;">of</p>
+    <div class="field-value" style="margin: 4pt 0; min-width: 200pt;"></div>
+    <p class="bracket-text">[name of person to whom, under Rule 25-2(2), the document(s) referred to in section 2 was (were) required to be delivered and on whose behalf the person referred to in this section received delivery of the document(s)]</p>
+  </div>
+  {{/unless}}
+
+  <!-- Section 7: Delivery to Public Guardian and Trustee -->
+  <div class="section-header">7.) Delivery to Public Guardian and Trustee (if applicable)</div>
+
+  <div class="bracket-text" style="margin-bottom: 8pt;">
+    [check whichever one or more of the immediately following 3 boxes are correct]
+  </div>
+
+  <div class="checkbox-row">
+    <div class="checkbox {{#if pgtDelivery.byMail}}checked{{/if}}"></div>
+    <div class="checkbox-label">by mailing it/them to the Public Guardian and Trustee by ordinary mail.</div>
+  </div>
+
+  <div class="checkbox-row">
+    <div class="checkbox {{#if pgtDelivery.byHand}}checked{{/if}}"></div>
+    <div class="checkbox-label">by handing it/them to and leaving it/them with the Public Guardian and Trustee.</div>
+  </div>
+
+  <div class="checkbox-row">
+    <div class="checkbox {{#if pgtDelivery.byElectronic}}checked{{/if}}"></div>
+    <div class="checkbox-label">by sending it/them to the Public Guardian and Trustee by e-mail, fax or other electronic means to that person.</div>
+  </div>
+
+</div>
+
+<!-- ==================== PAGE 3 ==================== -->
+<div class="page">
+  <div class="page-info">Page 3 of 3</div>
+
+  <!-- Section 8: Electronic Will -->
+  <div class="section-header">8.) In accordance with Rule 25-2 (1.1)(b) [name of person served]</div>
+
+  <div class="checkbox-row">
+    <div class="checkbox {{#if electronicWill.noDemand}}checked{{/if}}"></div>
+    <div class="checkbox-label">No person who received notice demanded the will in its original electronic form.</div>
+  </div>
+
+  <div class="checkbox-row">
+    <div class="checkbox {{#if electronicWill.provided}}checked{{/if}}"></div>
+    <div class="checkbox-label">I provided the will or access to the will in its original electronic form to the following person(s): {{electronicWill.providedTo}}</div>
+  </div>
+
+  <!-- Section 9: Additional information -->
+  <div class="section-header">9.) Additional information [if required, insert additional information in paragraph format below]</div>
+
+  <div style="min-height: 100pt; border: 1pt solid #ccc; padding: 8pt;">
+    {{additionalInformation}}
+  </div>
+
+  <!-- Jurat / Signature Section -->
+  <div class="jurat">
+    <div class="jurat-line">
+      {{#if videoConference}}
+      SWORN (OR AFFIRMED) REMOTELY by {{deponentName}}, stated as being located in {{commissionerLocation}}, before me at {{commissionerCity}}, {{commissionerProvince}}, on {{affidavitDate}}, in accordance with O. Reg 431/20, Administering Oath or Declaration Remotely.
+      {{else}}
+      SWORN (OR AFFIRMED) before me at {{commissionerLocation}}, on {{affidavitDate}}.
+      {{/if}}
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-top: 40pt;">
+      <div style="width: 45%;">
+        <div style="border-top: 1pt solid #000; padding-top: 4pt;">
+          A Commissioner for taking Affidavits<br>for British Columbia
+        </div>
+      </div>
+      <div style="width: 45%;">
+        <div style="border-top: 1pt solid #000; padding-top: 4pt;">
+          {{deponentName}}<br>Signature of person swearing affidavit
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

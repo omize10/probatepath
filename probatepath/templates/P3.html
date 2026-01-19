@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Form P3 - Affidavit of Applicant (Short Form)</title>
+    <link rel="stylesheet" href="css/court-forms.css">
+    <style>
+        @page { size: letter; margin: 0.5in 0.75in; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.3; color: #000; background: #fff; }
+        .page { width: 7in; min-height: 9.5in; margin: 0 auto; padding: 0; }
+        .form-title-block { text-align: center; margin-bottom: 15pt; }
+        .form-id { font-size: 12pt; font-weight: bold; margin-bottom: 8pt; }
+        .form-title { font-size: 11pt; font-weight: bold; text-transform: uppercase; }
+        .section-header { font-weight: bold; font-size: 10pt; background-color: #d3d3d3; padding: 4pt 6pt; margin: 12pt 0 8pt 0; }
+        .field-row { display: flex; align-items: baseline; margin-bottom: 6pt; }
+        .field-label { font-size: 10pt; min-width: 120pt; padding-right: 8pt; }
+        .field-value { flex: 1; border-bottom: 1pt solid #000; min-height: 14pt; padding: 0 4pt; }
+        .checkbox { display: inline-block; width: 10pt; height: 10pt; border: 1pt solid #000; margin-right: 6pt; vertical-align: middle; text-align: center; font-size: 8pt; line-height: 10pt; }
+        .checkbox.checked::before { content: "✓"; font-weight: bold; }
+        .checkbox-row { display: flex; align-items: flex-start; margin: 6pt 0; }
+        .checkbox-label { flex: 1; font-size: 10pt; }
+        .indent { margin-left: 20pt; }
+        .page-footer { display: flex; justify-content: space-between; font-size: 8pt; color: #666; margin-top: 20pt; }
+        .inline-field { display: inline-block; border-bottom: 1pt solid #000; min-width: 150pt; padding: 0 4pt; }
+        .small { font-size: 9pt; }
+        .italic { font-style: italic; }
+        .bracket-note { font-size: 9pt; color: #444; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="form-title-block">
+            <div class="form-id">FORM P3 (RULE 25-3 (2))</div>
+            <div class="form-title">AFFIDAVIT OF APPLICANT FOR GRANT OF PROBATE<br>OR GRANT OF ADMINISTRATION WITH WILL ANNEXED (SHORT FORM)</div>
+        </div>
+
+        <!-- Section 1: Affidavit Information -->
+        <div class="section-header">1.) Affidavit Information</div>
+        <div class="field-row">
+            <span class="field-label">Number</span>
+            <span class="field-value">{{affidavitNumber}}</span>
+            <span class="bracket-note" style="margin-left: 10pt;">(eg. 1st / 2nd / 3rd / etc)</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Name of person swearing affidavit</span>
+            <span class="field-value">{{applicantName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Date</span>
+            <span class="field-value">{{affidavitDate}}</span>
+            <span class="bracket-note" style="margin-left: 10pt;">(Date affidavit will be sworn) leave blank if unknown</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Location</span>
+            <span class="field-value">{{commissionerLocation}}</span>
+        </div>
+
+        <!-- Section 2: File Information -->
+        <div class="section-header">2.) File Information</div>
+        <div class="field-row">
+            <span class="field-label">Registry name</span>
+            <span class="field-value">{{registryName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">File number</span>
+            <span class="field-value">{{fileNumber}}</span>
+            <span class="bracket-note" style="margin-left: 10pt;">(File number is not required if initiating the file)</span>
+        </div>
+
+        <!-- Section 3: Information about the Applicant -->
+        <div class="section-header">3.) Information about the Applicant</div>
+        <div class="field-row">
+            <span class="field-label">Name</span>
+            <span class="field-value">{{applicantName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Address</span>
+            <span class="field-value">{{applicantAddress}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Occupation</span>
+            <span class="field-value">{{applicantOccupation}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">I am</span>
+            <span class="field-value">the applicant</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">I am applying for</span>
+            <span class="field-value">{{grantType}}</span>
+        </div>
+
+        <!-- Section 4: Information about the Executor -->
+        <div class="section-header">4.) Information about the Executor <span class="italic">[name as it appears in the will]</span></div>
+
+        <div class="checkbox-row">
+            <span class="checkbox{{#if isNamedExecutor}} checked{{/if}}"></span>
+            <span class="checkbox-label">I am named as an executor or alternate executor in the will and my appointment has not been revoked under section 56 (2) of the <em>Wills, Estates and Succession Act</em> or by a codicil to the will.</span>
+        </div>
+
+        <div class="field-row indent">
+            <span class="field-label">Executor name</span>
+            <span class="field-value">{{executorNameInWill}}</span>
+        </div>
+
+        {{#if hasOtherExecutors}}
+        <div class="checkbox-row">
+            <span class="checkbox checked"></span>
+            <span class="checkbox-label">Other persons are named in the will as executor and, of those, the following person(s) is/are not named as an applicant on the submission for estate grant for the reason shown after that person's name(s):</span>
+        </div>
+
+        {{#each otherExecutors}}
+        <div class="indent" style="margin: 8pt 0; padding: 6pt; border: 1pt solid #ccc;">
+            <div class="field-row">
+                <span class="field-label">Name</span>
+                <span class="field-value">{{this.name}}</span>
+            </div>
+            <p class="small">is not named as an applicant on the submission for estate because that person:</p>
+            <div class="checkbox-row indent">
+                <span class="checkbox{{#if this.renounced}} checked{{/if}}"></span>
+                <span class="checkbox-label">has renounced executorship</span>
+                <span class="checkbox{{#if this.deceased}} checked{{/if}}" style="margin-left: 20pt;"></span>
+                <span class="checkbox-label">is deceased</span>
+                <span class="checkbox{{#if this.other}} checked{{/if}}" style="margin-left: 20pt;"></span>
+                <span class="checkbox-label">other: {{this.otherReason}}</span>
+            </div>
+        </div>
+        {{/each}}
+        {{else}}
+        <div class="checkbox-row">
+            <span class="checkbox checked"></span>
+            <span class="checkbox-label">No other persons are named in the will as executor.</span>
+        </div>
+        {{/if}}
+
+        <!-- Section 5: Information about the Deceased -->
+        <div class="section-header">5.) Information about the Deceased <span class="italic">[Enter the legal name of the deceased]</span></div>
+        <div class="field-row">
+            <span class="field-label">First name</span>
+            <span class="field-value">{{deceasedFirstName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Middle names</span>
+            <span class="field-value">{{deceasedMiddleNames}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Last name</span>
+            <span class="field-value">{{deceasedLastName}}</span>
+        </div>
+
+        <!-- Section 6: Delivery -->
+        <div class="section-header">6.) Delivery</div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#unless requiresPGT}} checked{{/unless}}"></span>
+            <span class="checkbox-label">I am not obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee</span>
+        </div>
+        <div class="checkbox-row">
+            <span class="checkbox{{#if requiresPGT}} checked{{/if}}"></span>
+            <span class="checkbox-label">I am obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee.</span>
+        </div>
+
+        <!-- Section 7: Additional Information -->
+        {{#if additionalInfo}}
+        <div class="section-header">7.) Additional information <span class="italic">[if required, insert additional information in paragraph format below]</span></div>
+        <div style="border: 1pt solid #000; min-height: 60pt; padding: 6pt; margin-top: 6pt;">
+            {{additionalInfo}}
+        </div>
+        {{/if}}
+
+        <div class="page-footer">
+            <span>Last updated: {{generatedDate}}</span>
+            <span>Page 1 of 1</span>
+        </div>
+    </div>
+</body>
+</html>

@@ -5,8 +5,8 @@ import { InfoPageLayout } from "@/components/info/InfoPageLayout";
 import { FAQSection } from "@/components/info/FAQSection";
 
 export const metadata: Metadata = {
-  title: "Probate Costs: DIY vs. ProbatePath vs. Lawyer | Comparison",
-  description: "Compare the costs of handling BC probate yourself, using ProbatePath, or hiring a lawyer. Real numbers and what you get for each option.",
+  title: "Probate Costs: DIY vs. Probate Desk vs. Lawyer | Comparison",
+  description: "Compare the costs of handling BC probate yourself, using Probate Desk, or hiring a lawyer. Real numbers and what you get for each option.",
 };
 
 const faqs = [
@@ -15,8 +15,8 @@ const faqs = [
     answer: "If there's a dispute or potential litigation, complex business assets, significant foreign assets, or an insolvent estate. Also if you're uncomfortable handling legal documents."
   },
   {
-    question: "Can I start with ProbatePath and switch to a lawyer later?",
-    answer: "Yes. Some people use ProbatePath for document preparation and consult a lawyer only if issues arise. You're not locked in."
+    question: "Can I start with Probate Desk and switch to a lawyer later?",
+    answer: "Yes. Some people use Probate Desk for document preparation and consult a lawyer only if issues arise. You're not locked in."
   },
 ];
 
@@ -29,15 +29,15 @@ export default function ProbateVsLawyerCostsPage() {
         { label: "Cost Comparison" },
       ]}
       eyebrow="Quick Answer"
-      title="Probate Costs: DIY vs. ProbatePath vs. Lawyer"
+      title="Probate Costs: DIY vs. Probate Desk vs. Lawyer"
       description="What each option costs and what you get."
       lastUpdated="December 2025"
       readingTime="4 min"
       toc={[]}
     >
       <p className="text-lg leading-relaxed">
-        <strong>DIY costs $0 but takes the most time and has the highest error risk. 
-        ProbatePath is $2,500 fixed. Lawyers charge $3,000-$15,000+</strong> depending on 
+        <strong>DIY costs $0 but takes the most time and has the highest error risk.
+        Probate Desk starts at $799 with flexible tiers. Lawyers charge $3,000-$15,000+</strong> depending on
         complexity. All options still require you to pay court fees separately.
       </p>
 
@@ -59,9 +59,9 @@ export default function ProbateVsLawyerCostsPage() {
               <td className="py-3">You figure everything out yourself</td>
             </tr>
             <tr className="border-b border-[color:var(--border-muted)]">
-              <td className="py-3 font-medium">ProbatePath</td>
-              <td className="py-3">$2,500 fixed</td>
-              <td className="py-3">All forms prepared, step-by-step guidance, document portal</td>
+              <td className="py-3 font-medium">Probate Desk</td>
+              <td className="py-3">$799 - $2,499</td>
+              <td className="py-3">All forms prepared, step-by-step guidance, document portal (tier-based)</td>
             </tr>
             <tr className="border-b border-[color:var(--border-muted)]">
               <td className="py-3 font-medium">Notary</td>
@@ -89,7 +89,7 @@ export default function ProbateVsLawyerCostsPage() {
         <li>No family disputes or complications</li>
       </ul>
 
-      <h3>ProbatePath is good if:</h3>
+      <h3>Probate Desk is good if:</h3>
       <ul>
         <li>Standard BC estate with house, bank accounts, investments</li>
         <li>You want forms done correctly without DIY research</li>

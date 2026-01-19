@@ -60,7 +60,7 @@ export function WillUploadModal({ open, onClose, onComplete }: WillUploadModalPr
     </button>
   ) : null;
 
-  let body: JSX.Element;
+  let body: React.ReactElement;
   if (!accepted || mode === "disclaimer") {
     body = (
       <div className="space-y-6">

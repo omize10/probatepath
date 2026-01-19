@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Form P11 - Affidavit of Assets and Liabilities (Non-Domiciled)</title>
+    <link rel="stylesheet" href="css/court-forms.css">
+    <style>
+        @page { size: letter; margin: 0.5in 0.75in; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.3; color: #000; background: #fff; }
+        .page { width: 7in; min-height: 9.5in; margin: 0 auto; padding: 0; }
+        .form-title-block { text-align: center; margin-bottom: 15pt; }
+        .form-id { font-size: 12pt; font-weight: bold; margin-bottom: 8pt; }
+        .form-title { font-size: 11pt; font-weight: bold; text-transform: uppercase; }
+        .section-header { font-weight: bold; font-size: 10pt; background-color: #d3d3d3; padding: 4pt 6pt; margin: 12pt 0 8pt 0; }
+        .field-row { display: flex; align-items: baseline; margin-bottom: 6pt; }
+        .field-label { font-size: 10pt; min-width: 140pt; padding-right: 8pt; }
+        .field-value { flex: 1; border-bottom: 1pt solid #000; min-height: 14pt; padding: 0 4pt; }
+        .checkbox { display: inline-block; width: 10pt; height: 10pt; border: 1pt solid #000; margin-right: 6pt; vertical-align: middle; text-align: center; font-size: 8pt; line-height: 10pt; }
+        .checkbox.checked::before { content: "\2713"; font-weight: bold; }
+        .checkbox-row { display: flex; align-items: flex-start; margin: 6pt 0; }
+        .checkbox-label { flex: 1; font-size: 10pt; }
+        .page-footer { display: flex; justify-content: space-between; font-size: 8pt; color: #666; margin-top: 20pt; }
+        .asset-table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9pt; }
+        .asset-table th, .asset-table td { border: 1pt solid #000; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+        .asset-table th { background-color: #e8e8e8; font-weight: bold; }
+        .asset-table .amount { text-align: right; }
+        .asset-table .total-row { font-weight: bold; background-color: #f0f0f0; }
+        .part-header { font-weight: bold; font-size: 9pt; margin: 10pt 0 6pt 0; }
+        .indent { margin-left: 20pt; }
+        .small { font-size: 9pt; }
+        .italic { font-style: italic; }
+        .bracket-note { font-size: 9pt; color: #444; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="form-title-block">
+            <div class="form-id">FORM P11 (RULE 25-3 (2))</div>
+            <div class="form-title">AFFIDAVIT OF ASSETS AND LIABILITIES FOR NON-DOMICILED ESTATE GRANT</div>
+        </div>
+
+        <!-- Section 1: Affidavit Information -->
+        <div class="section-header">1.) Affidavit Information</div>
+        <div class="field-row">
+            <span class="field-label">Number</span>
+            <span class="field-value">{{affidavitNumber}}</span>
+            <span class="bracket-note" style="margin-left: 10pt;">(eg. 1st / 2nd / 3rd / etc)</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Name of person swearing affidavit</span>
+            <span class="field-value">{{applicantName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Date</span>
+            <span class="field-value">{{affidavitDate}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Commissioner's Location</span>
+            <span class="field-value">{{commissionerLocation}}</span>
+        </div>
+
+        <!-- Section 2: File Information -->
+        <div class="section-header">2.) File Information</div>
+        <div class="field-row">
+            <span class="field-label">Registry name</span>
+            <span class="field-value">{{registryName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">File number</span>
+            <span class="field-value">{{fileNumber}}</span>
+        </div>
+
+        <!-- Section 3: Information about the Applicant -->
+        <div class="section-header">3.) Information about the Applicant</div>
+        <div class="field-row">
+            <span class="field-label">Name</span>
+            <span class="field-value">{{applicantName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Address</span>
+            <span class="field-value">{{applicantAddress}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Occupation</span>
+            <span class="field-value">{{applicantOccupation}}</span>
+        </div>
+
+        <!-- Section 4: Information about the Deceased -->
+        <div class="section-header">4.) Information about the Deceased <span class="italic">[Enter the legal name of the deceased]</span></div>
+        <div class="field-row">
+            <span class="field-label">First name</span>
+            <span class="field-value">{{deceasedFirstName}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Middle names</span>
+            <span class="field-value">{{deceasedMiddleNames}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Last name</span>
+            <span class="field-value">{{deceasedLastName}}</span>
+        </div>
+
+        <!-- Section 5: Domicile Information -->
+        <div class="section-header">5.) Information about Domicile</div>
+        <div class="field-row">
+            <span class="field-label">Deceased was domiciled in</span>
+            <span class="field-value">{{domicileLocation}}</span>
+        </div>
+        <div class="field-row">
+            <span class="field-label">Province/State/Country</span>
+            <span class="field-value">{{domicileJurisdiction}}</span>
+        </div>
+
+        <!-- Section 6: Grant Option -->
+        <div class="section-header">6.) Grant option</div>
+        <div class="field-row">
+            <span class="field-label">Grant options</span>
+            <span class="field-value">{{grantOption}}</span>
+        </div>
+
+        <!-- Section 7: Real Property within BC -->
+        <div class="section-header">7.) Real property within British Columbia</div>
+        <div class="part-header">Part I - Real Property within British Columbia (BC assets only for non-domiciled estate)</div>
+
+        <table class="asset-table">
+            <thead>
+                <tr>
+                    <th style="width: 70%;">Description <span class="bracket-note">[List item details]</span></th>
+                    <th style="width: 30%;">Value at Death</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each realProperty}}
+                <tr>
+                    <td>
+                        <strong>{{this.description}}</strong><br>
+                        {{#if this.location}}Location: {{this.location}}<br>{{/if}}
+                        {{#if this.pid}}PID: {{this.pid}}<br>{{/if}}
+                        {{#if this.legalDescription}}Legal Description: {{this.legalDescription}}{{/if}}
+                    </td>
+                    <td class="amount">{{this.formattedValue}}</td>
+                </tr>
+                {{/each}}
+                {{#unless realProperty.length}}
+                <tr>
+                    <td colspan="2" class="italic">No real property within BC</td>
+                </tr>
+                {{/unless}}
+                <tr class="total-row">
+                    <td><strong>TOTAL REAL PROPERTY WITHIN BRITISH COLUMBIA</strong></td>
+                    <td class="amount">{{totalRealProperty}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Section 8: Tangible Personal Property within BC -->
+        <div class="section-header">8.) Tangible Personal property within British Columbia</div>
+        <div class="part-header">Part II - Tangible Personal Property within British Columbia</div>
+
+        <table class="asset-table">
+            <thead>
+                <tr>
+                    <th style="width: 70%;">Description</th>
+                    <th style="width: 30%;">Value at Death</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each tangibleProperty}}
+                <tr>
+                    <td>{{this.description}}</td>
+                    <td class="amount">{{this.formattedValue}}</td>
+                </tr>
+                {{/each}}
+                {{#unless tangibleProperty.length}}
+                <tr>
+                    <td colspan="2" class="italic">No tangible personal property within BC</td>
+                </tr>
+                {{/unless}}
+                <tr class="total-row">
+                    <td><strong>TOTAL TANGIBLE PERSONAL PROPERTY WITHIN BRITISH COLUMBIA</strong></td>
+                    <td class="amount">{{totalTangibleProperty}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Section 9: Intangible Personal Property within BC -->
+        <div class="section-header">9.) Intangible Personal property within British Columbia</div>
+        <div class="part-header">Part III - Intangible Personal Property within British Columbia</div>
+
+        <table class="asset-table">
+            <thead>
+                <tr>
+                    <th style="width: 70%;">Description</th>
+                    <th style="width: 30%;">Value at Death</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each intangibleProperty}}
+                <tr>
+                    <td>
+                        {{#if this.institution}}<strong>{{this.institution}}</strong> - {{/if}}{{this.description}}
+                    </td>
+                    <td class="amount">{{this.formattedValue}}</td>
+                </tr>
+                {{/each}}
+                {{#unless intangibleProperty.length}}
+                <tr>
+                    <td colspan="2" class="italic">No intangible personal property within BC</td>
+                </tr>
+                {{/unless}}
+                <tr class="total-row">
+                    <td><strong>TOTAL INTANGIBLE PERSONAL PROPERTY WITHIN BRITISH COLUMBIA</strong></td>
+                    <td class="amount">{{totalIntangibleProperty}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Section 10: Gross Value Summary -->
+        <div class="section-header">10.) Gross value of assets within British Columbia</div>
+        <p class="small" style="margin: 6pt 0; font-style: italic;">
+            Note: For non-domiciled estates, only assets physically located within British Columbia are included in this affidavit.
+        </p>
+        <div class="field-row">
+            <span class="field-label">Total BC Assets</span>
+            <span class="field-value" style="font-weight: bold;">{{grossValueAssets}}</span>
+        </div>
+
+        <div class="page-footer">
+            <span>Last updated: {{generatedDate}}</span>
+            <span>Page 1 of 1</span>
+        </div>
+    </div>
+</body>
+</html>

@@ -5,7 +5,7 @@ export default function ResetEmail({ url, email }: { url: string; email: string 
     <html>
       <body style={{ fontFamily: "system-ui, Arial, sans-serif", color: "#0f172a" }}>
         <div style={{ maxWidth: 600, margin: "0 auto", padding: 24 }}>
-          <h2>Reset your ProbatePath password</h2>
+          <h2>Reset your Probate Desk password</h2>
           <p>
             A request was made to reset the password for <strong>{email}</strong>. Click the button below to set a new
             password. The link will expire in 30 minutes.
@@ -27,7 +27,7 @@ export default function ResetEmail({ url, email }: { url: string; email: string 
           </p>
           <p>If you didn't request a password reset, you can ignore this email.</p>
           <hr />
-          <p style={{ fontSize: 12, color: "#6b7280" }}>ProbatePath</p>
+          <p style={{ fontSize: 12, color: "#6b7280" }}>Probate Desk</p>
         </div>
       </body>
     </html>

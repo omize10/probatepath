@@ -63,8 +63,8 @@ export function Navbar() {
       aria-label="Primary"
     >
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center transition hover:opacity-90" aria-label="ProbatePath home">
-          <Image src="/images/PPlogo.png" alt="ProbatePath" width={440} height={110} className="h-24 w-auto" priority />
+        <Link href="/" className="flex items-center transition hover:opacity-90" aria-label="Probate Desk home">
+          <Image src="/images/PPlogo.png" alt="Probate Desk" width={440} height={110} className="h-24 w-auto" priority />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
@@ -114,8 +114,8 @@ export function Navbar() {
           </SheetTrigger>
           <SheetContent side="right" className="w-[320px] bg-[color:var(--bg-surface)]">
             <SheetHeader className="flex items-center justify-between">
-              <Link href="/" className="flex items-center" aria-label="ProbatePath home">
-                <Image src="/images/PPlogo.png" alt="ProbatePath" width={360} height={90} className="h-[84px] w-auto" priority />
+              <Link href="/" className="flex items-center" aria-label="Probate Desk home">
+                <Image src="/images/PPlogo.png" alt="Probate Desk" width={360} height={90} className="h-[84px] w-auto" priority />
               </Link>
               <SheetClose asChild>
                 <button

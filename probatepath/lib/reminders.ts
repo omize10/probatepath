@@ -45,16 +45,16 @@ export async function sendReminder(reminder: ReminderWithRelations) {
   const resendKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM ?? "notifications@example.com";
   const email = reminder.case?.user?.email ?? "";
-  const subject = "ProbatePath – It’s time for your next step";
+  const subject = "Probate Desk – It’s time for your next step";
   const portalLink = `${(process.env.APP_URL ?? "https://probatepath.ca").replace(/\/$/, "")}/portal`;
   const body = [
     "Hi there,",
     "",
-    "It’s time to continue your ProbatePath steps.",
+    "It’s time to continue your Probate Desk steps.",
     `Log in to review what’s next: ${portalLink}`,
     "",
     "Thanks,",
-    "ProbatePath",
+    "Probate Desk",
   ].join("\n");
 
   if (!email) {
@@ -79,15 +79,15 @@ export async function notifyPacketReady(record: CaseWithUser) {
   const from = process.env.RESEND_FROM ?? "notifications@example.com";
   const email = record.user?.email ?? "";
   const portalLink = `${(process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "")}/portal`;
-  const subject = "Your ProbatePath packet is ready";
+  const subject = "Your Probate Desk packet is ready";
   const body = [
     "Hi there,",
     "",
-    "Your ProbatePath packet is ready. Log in to start your next step.",
+    "Your Probate Desk packet is ready. Log in to start your next step.",
     `Portal: ${portalLink}`,
     "",
     "Thanks,",
-    "ProbatePath",
+    "Probate Desk",
   ].join("\n");
 
   if (!email) {
@@ -116,7 +116,7 @@ export async function notifyProbatePackageReady(record: CaseWithUser) {
     `Portal: ${portalLink}`,
     "",
     "Thanks,",
-    "ProbatePath",
+    "Probate Desk",
   ].join("\n");
 
   if (!email) {
@@ -137,17 +137,17 @@ export async function notifyProbateFilingReady(record: CaseWithUser) {
   const from = process.env.RESEND_FROM ?? "notifications@example.com";
   const email = record.user?.email ?? "";
   const portalLink = `${(process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "")}/portal/probate-filing`;
-  const subject = "Your ProbatePath filing packet is ready";
+  const subject = "Your Probate Desk filing packet is ready";
   const body = [
     "Hi there,",
     "",
     "We’ve prepared your probate filing forms.",
-    "Log into your ProbatePath portal and go to “My portal” → “Prepare probate filing”.",
+    "Log into your Probate Desk portal and go to “My portal” → “Prepare probate filing”.",
     "You’ll download your packet, sign and notarize where indicated, assemble your documents, and mail or file them at court.",
     `Portal: ${portalLink}`,
     "",
     "Thanks,",
-    "ProbatePath",
+    "Probate Desk",
   ].join("\n");
 
   if (!email) {
@@ -186,7 +186,7 @@ export async function sendGrantCheckInReminders() {
       console.warn("[grant-check-in] Missing email for case", { caseId: record.id });
       continue;
     }
-    const subject = "ProbatePath – quick check-in on your grant";
+    const subject = "Probate Desk – quick check-in on your grant";
     const body = [
       `Hi ${record.user?.name ?? "there"},`,
       "",
@@ -196,7 +196,7 @@ export async function sendGrantCheckInReminders() {
       `Portal: ${portalLink}`,
       "",
       "Thanks,",
-      "ProbatePath",
+      "Probate Desk",
     ].join("\n");
 
     if (!resendKey) {

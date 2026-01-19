@@ -1,3 +1,5 @@
+# Claude config
+.claude/
 
 # generated
 node_modules/

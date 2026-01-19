@@ -19,9 +19,8 @@ export async function GET(
 ) {
   const { matterId } = await resolveContextParams(context);
   const cookieStore = await cookies();
-  const opsPass = cookieStore.get("opsPass")?.value;
-  const opsAllowed = opsPass && opsPass === (process.env.OPS_PASSWORD ?? "123");
-
+  const opsPass = cookieStore.get("ops_auth")?.value;
+  const opsAllowed = opsPass === "1";
   const { session } = await getServerAuth();
   const user = session?.user as { id?: string } | undefined;
   const userId = user?.id;

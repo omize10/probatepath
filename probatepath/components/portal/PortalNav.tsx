@@ -30,14 +30,14 @@ export function PortalNav({ statusLabel }: PortalNavProps) {
         <div className="flex items-center gap-4">
           <Image
             src="/images/PPlogo.png"
-            alt="ProbatePath"
+            alt="Probate Desk"
             width={360}
             height={90}
             className="h-14 w-auto sm:h-16"
             priority
           />
           <div className="leading-tight">
-            <p className="text-sm font-semibold text-gray-900 sm:text-base">ProbatePath Portal</p>
+            <p className="text-sm font-semibold text-gray-900 sm:text-base">Probate Desk Portal</p>
             <p className="text-xs text-gray-500">Your guided probate workspace</p>
           </div>
         </div>

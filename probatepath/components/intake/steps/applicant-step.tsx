@@ -110,7 +110,7 @@ export function ApplicantStep({ draft, errors, showErrors, updateWelcome, update
               className="mt-1 h-4 w-4 rounded border-[color:var(--border-muted)] text-[color:var(--brand-navy)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-navy)]"
             />
             <label htmlFor="welcome-consent" className="text-sm text-[color:var(--ink)]">
-              I understand ProbatePath provides document preparation support and general information, not legal advice.
+              I understand Probate Desk provides document preparation support and general information, not legal advice.
             </label>
           </div>
         </FormRow>

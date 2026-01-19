@@ -21,7 +21,7 @@ const sections: HelpSection[] = [
   {
     id: "portal",
     eyebrow: "Using this portal",
-    title: "What ProbatePath does (and doesn’t) cover",
+    title: "What Probate Desk does (and doesn’t) cover",
     body: [
       "We provide document preparation and court-packet guidance only. We’re not a law firm and we don’t give legal advice. If you need bespoke representation, we can connect you with partner firms.",
       "Every answer in the intake wizard flows into the portal, documents, and steps. Update the intake once and regenerate PDFs whenever you need an updated version.",

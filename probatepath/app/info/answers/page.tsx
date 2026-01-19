@@ -36,7 +36,7 @@ const answers = [
   },
   {
     title: "Probate costs vs. hiring a lawyer",
-    description: "Compare DIY, ProbatePath, and full legal representation.",
+    description: "Compare DIY, Probate Desk, and full legal representation.",
     href: "/info/answers/probate-vs-lawyer-costs",
   },
 ];

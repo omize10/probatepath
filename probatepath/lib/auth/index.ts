@@ -24,8 +24,8 @@ async function sendMagicLinkEmail(params: { identifier: string; url: string }) {
   await resend.emails.send({
     from: fromEmail,
     to: identifier,
-    subject: "Your ProbatePath sign-in link",
-    html: `<p>Hello,</p><p>Click <a href="${url}">here</a> to access your ProbatePath portal.</p><p>This link expires in 10 minutes.</p>`,
+    subject: "Your Probate Desk sign-in link",
+    html: `<p>Hello,</p><p>Click <a href="${url}">here</a> to access your Probate Desk portal.</p><p>This link expires in 10 minutes.</p>`,
   });
   await logEmail({ to: identifier, subject: "Magic link", template: "magic-link" });
 }

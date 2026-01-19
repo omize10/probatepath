@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ScrollFade } from "@/components/scroll-fade";
 
 export const metadata: Metadata = {
-  title: "How ProbatePath works",
+  title: "How Probate Desk works",
   description:
     "Guided intake, optional will search support, specialist assembly, and self-filing confidence for BC probate executors.",
 };
@@ -64,10 +64,10 @@ const prepList = [
 
 const includedList = [
   "Guided intake with autosave + reminders",
-  "Specialist completeness review",
-  "Court forms & notices (latest versions)",
-  "Personalised checklist + cover letter",
-  "Email support from BC probate specialists",
+  "BC court forms & notices",
+  "PDF filing instructions",
+  "Secure Canadian data hosting",
+  "Flexible service tiers ($799 to $2,499)",
 ];
 
 const goodFit = [
@@ -87,7 +87,7 @@ export default function HowItWorksPage() {
         once={false}
       >
         <div className="space-y-4">
-          <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">How ProbatePath works</h1>
+          <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">How Probate Desk works</h1>
           <p className="max-w-3xl text-base text-[color:var(--muted-ink)]">
             Guided intake → specialist assembly → you file at the registry. Clear steps, saved progress, and Canadian hosting every step
             of the way.
@@ -102,7 +102,7 @@ export default function HowItWorksPage() {
           </Button>
         </div>
         <div className="flex flex-wrap gap-3 text-sm text-[color:var(--brand)]">
-          {["Built for BC probate", "Clear fixed fee", "Hosted in Canada"].map((item) => (
+          {["Built for BC probate", "Starting at $799", "Hosted in Canada"].map((item) => (
             <span key={item} className="inline-flex items-center rounded-full border border-[color:var(--border-muted)] px-4 py-2">
               {item}
             </span>
@@ -168,8 +168,8 @@ export default function HowItWorksPage() {
         </Card>
         <Card className="border-[color:var(--border-muted)]">
           <CardHeader>
-            <CardTitle>What’s included</CardTitle>
-            <CardDescription>Everything in the 2,500 CAD fixed fee.</CardDescription>
+            <CardTitle>Service tiers</CardTitle>
+            <CardDescription>Choose from Basic ($799), Standard ($1,499), or Premium ($2,499) based on your needs.</CardDescription>
           </CardHeader>
           <CardContent>
             <Checklist items={includedList} />

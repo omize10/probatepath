@@ -10,9 +10,9 @@ export async function POST() {
   }
   await sendTemplateEmail({
     to: session.user.email,
-    subject: "ProbatePath test email",
+    subject: "Probate Desk test email",
     template: "test",
-    html: `<p>This is a test email from ProbatePath.</p>`,
+    html: `<p>This is a test email from Probate Desk.</p>`,
   });
   return NextResponse.json({ ok: true });
 }

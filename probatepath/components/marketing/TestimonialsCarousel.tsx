@@ -19,7 +19,7 @@ export function TestimonialsCarousel({
   className,
 }: TestimonialsCarouselProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const frameRef = useRef<number>();
+  const frameRef = useRef<number | undefined>(undefined);
   const [isHovered, setIsHovered] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 

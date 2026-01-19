@@ -28,7 +28,7 @@ export function TestimonialsSection({ className }: TestimonialsSectionProps) {
             What past BC executors say
           </h2>
           <p className="text-base leading-relaxed text-[color:var(--muted-ink)]">
-            These are typical comments from people who used ProbatePath to go from “I have no idea how probate works”
+            These are typical comments from people who used Probate Desk to go from “I have no idea how probate works”
             to having a complete court filing ready to review. Names and details are anonymized. This feedback is
             general information only and is not legal advice.
           </p>
@@ -39,7 +39,7 @@ export function TestimonialsSection({ className }: TestimonialsSectionProps) {
         <TestimonialsCarousel testimonials={testimonials} motionEnabled />
 
         <p className="text-center text-xs text-[color:var(--slate)]">
-          ProbatePath is not a law firm. We do not give legal advice. If you are unsure about your situation, you should speak with a BC lawyer.
+          Probate Desk is not a law firm. We do not give legal advice. If you are unsure about your situation, you should speak with a BC lawyer.
         </p>
       </div>
     </section>

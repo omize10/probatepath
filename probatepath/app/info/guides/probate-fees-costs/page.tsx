@@ -217,9 +217,9 @@ export default function ProbateFeesCostsPage() {
                 <td className="py-3">You do everything yourself</td>
               </tr>
               <tr className="border-b border-[color:var(--border-muted)]">
-                <td className="py-3 font-medium">ProbatePath</td>
-                <td className="py-3">$2,500 fixed</td>
-                <td className="py-3">All forms prepared, guidance throughout</td>
+                <td className="py-3 font-medium">Probate Desk</td>
+                <td className="py-3">$799 - $2,499</td>
+                <td className="py-3">All forms prepared, guidance throughout (tier-based)</td>
               </tr>
               <tr className="border-b border-[color:var(--border-muted)]">
                 <td className="py-3">Notary</td>

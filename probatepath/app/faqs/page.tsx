@@ -4,14 +4,29 @@ import { FAQAccordion } from "@/components/faq-accordion";
 
 export const metadata: Metadata = {
   title: "Probate FAQs",
-  description: "Answers to the most common questions executors ask before using ProbatePath.",
+  description: "Answers to the most common questions executors ask before using Probate Desk.",
 };
 
 const faqs = [
   {
-    question: "Who is ProbatePath built for?",
+    question: "Who is Probate Desk built for?",
     answer:
       "Executors of straightforward BC estates with a valid will, Canadian assets, and no active disputes.",
+  },
+  {
+    question: "How much does Probate Desk cost?",
+    answer:
+      "We offer three service tiers: Basic ($799), Standard ($1,499), and Premium ($2,499). Choose based on the level of support you need. Most executors choose Standard for the peace of mind that comes with human document review and phone support.",
+  },
+  {
+    question: "What's the difference between the tiers?",
+    answer:
+      "Basic includes automated form generation and email support. Standard adds human document review, phone support, free notarization in Vancouver, and one requisition response. Premium includes everything in Standard plus priority same-day support, a dedicated coordinator, and unlimited requisition assistance. Visit our pricing page for a complete comparison.",
+  },
+  {
+    question: "Can I upgrade my tier later?",
+    answer:
+      "Yes. If you start with Basic or Standard and need additional support, contact us and we'll adjust your service level. You'll only pay the difference.",
   },
   {
     question: "Do I still need to go to court?",
@@ -25,12 +40,12 @@ const faqs = [
   {
     question: "How quickly will I receive documents?",
     answer:
-      "Most packages are ready within 24 hours after intake completion. That’s a target, not a guarantee—timelines can vary.",
+      "Standard and Basic tiers: 5-7 business days. Premium tier: 3-5 business days priority. Add Rush Processing ($299) to any tier for 48-hour delivery.",
   },
   {
     question: "What if I need legal advice?",
     answer:
-      "ProbatePath provides document preparation and general information. For legal advice, contact independent counsel.",
+      "Probate Desk provides document preparation and general information. For legal advice, contact independent counsel.",
   },
   {
     question: "Is my data stored in Canada?",
@@ -42,16 +57,11 @@ const faqs = [
       "Intake takes ~15–25 minutes. Wills Notice search ~20 business days. Court processing varies by registry (weeks–months).",
   },
   {
-    question: "What’s included in the fixed fee?",
-    answer:
-      "Intake review for completeness, document assembly, filing checklist, and cover letter.",
+    question: "What's not included in the service fees?",
+    answer: "Court filing fees, postage/courier for notices, and BC probate fees are paid separately directly to the court based on estate value. These government fees are not included in our service fees.",
   },
   {
-    question: "What’s not included?",
-    answer: "Court fees, postage/courier, notarisation/commissioning, complex-estate extras.",
-  },
-  {
-    question: "Can multiple executors use ProbatePath?",
+    question: "Can multiple executors use Probate Desk?",
     answer: "V1 supports a single executor. Multi-executor support is planned.",
   },
 ];

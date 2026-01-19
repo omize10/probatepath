@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export default async function OpsLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
@@ -15,11 +15,23 @@ export default async function OpsLayout({ children }: { children: ReactNode }) {
             <h1 className="font-serif text-2xl text-[color:var(--ink)]">Access denied</h1>
             <p className="text-sm text-[color:var(--ink-muted)]">Enter the ops password from the footer prompt to continue.</p>
           </div>
-          <div className="text-sm text-[color:var(--ink-muted)]">Return to the homepage and use the “Ops” link.</div>
+          <div className="text-sm text-[color:var(--ink-muted)]">Return to the homepage and use the "Ops" link.</div>
         </div>
       </div>
     );
   }
 
-  return <div className="space-y-10 pb-16">{children}</div>;
+  return (
+    <div className="space-y-6 pb-16">
+      <nav className="flex gap-4 border-b border-[color:var(--border-muted)] pb-4">
+        <Link href="/ops" className="text-sm font-semibold text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]">
+          Cases
+        </Link>
+        <Link href="/ops/callbacks" className="text-sm font-semibold text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]">
+          Callbacks
+        </Link>
+      </nav>
+      {children}
+    </div>
+  );
 }

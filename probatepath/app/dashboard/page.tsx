@@ -3,7 +3,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 
 export const metadata: Metadata = {
   title: "Dashboard (coming soon)",
-  description: "Preview of the ProbatePath client dashboard experience.",
+  description: "Preview of the Probate Desk client dashboard experience.",
 };
 
 export default function DashboardPage() {

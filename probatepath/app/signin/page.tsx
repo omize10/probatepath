@@ -66,7 +66,7 @@ export default function SignInPage() {
           {loading ? "Saving…" : "Continue"}
         </Button>
         <p className="text-xs text-[#445266]">
-          By continuing you confirm ProbatePath provides document preparation only and executors remain self-represented.
+          By continuing you confirm Probate Desk provides document preparation only and executors remain self-represented.
         </p>
       </form>
     </div>

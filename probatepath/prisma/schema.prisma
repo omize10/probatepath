@@ -7,19 +7,26 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(cuid())
-  email        String         @unique
-  name         String?
-  image        String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  passwordHash String?
-  role         Role           @default(USER)
-  accounts     Account[]
-  audits       AuditLog[]
-  authLogs     AuthAuditLog[]
-  matters      Matter[]
-  sessions     Session[]
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  name                String?
+  image               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  passwordHash        String?
+  role                Role                 @default(USER)
+  selectedTier        Tier?
+  intakeMethod        String?
+  isPremium           Boolean              @default(false)
+  accounts            Account[]
+  audits              AuditLog[]
+  authLogs            AuthAuditLog[]
+  matters             Matter[]
+  sessions            Session[]
+  tierSelections      TierSelection[]
+  betaPayments        BetaPayment[]
+  callbackSchedules   CallbackSchedule[]
+  callbackWillUploads CallbackWillUpload[]
 }
 
 model Matter {
@@ -71,6 +78,9 @@ model Matter {
   schedules                   SupplementalSchedule[]
   willSearch                  WillSearchRequest[]
   willFiles                   WillFile[]
+  formsPackageGeneratedAt     DateTime?
+  formsPackageUrl             String?
+  formsGenerated              String[]
 }
 
 model MatterStepProgress {
@@ -471,4 +481,123 @@ enum AuthAuditType {
   REGISTER
   LOGIN
   LOGOUT
+}
+
+// ========================================
+// PRICING FLOW MODELS
+// ========================================
+
+enum Tier {
+  basic
+  standard
+  premium
+}
+
+enum CallbackStatus {
+  scheduled
+  call_in_progress
+  call_complete
+  intake_complete
+  cancelled
+  no_show
+}
+
+enum CallbackFileType {
+  pdf
+  image
+}
+
+model TierSelection {
+  id             String             @id @default(cuid())
+  userId         String
+  selectedTier   Tier
+  tierPrice      Int
+  screeningFlags Json               @default("[]")
+  createdAt      DateTime           @default(now())
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  betaPayments   BetaPayment[]
+  callbacks      CallbackSchedule[]
+
+  @@index([userId])
+}
+
+model BetaPayment {
+  id                String        @id @default(cuid())
+  userId            String
+  tierSelectionId   String
+  cardNumberPartial String?
+  cardholderName    String?
+  billingAddress    String?
+  city              String?
+  province          String?
+  postalCode        String?
+  skipped           Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tierSelection     TierSelection @relation(fields: [tierSelectionId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tierSelectionId])
+}
+
+model CallbackSchedule {
+  id                   String              @id @default(cuid())
+  userId               String
+  tierSelectionId      String
+  scheduledDate        DateTime            @db.Date
+  scheduledTime        String
+  phoneNumber          String
+  status               CallbackStatus      @default(scheduled)
+  manualIntakeSelected Boolean             @default(false)
+  assignedWorker       String?
+  callNotes            String?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  user                 User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tierSelection        TierSelection       @relation(fields: [tierSelectionId], references: [id], onDelete: Cascade)
+  willUploads          CallbackWillUpload[]
+  retellIntake         RetellIntake?
+
+  @@index([userId])
+  @@index([tierSelectionId])
+  @@index([status])
+  @@index([scheduledDate])
+}
+
+model CallbackWillUpload {
+  id                 String           @id @default(cuid())
+  userId             String
+  callbackScheduleId String
+  filename           String
+  fileType           CallbackFileType
+  originalUrl        String
+  processedUrl       String?
+  thumbnailUrl       String?
+  qualityScore       Int?
+  qualityWarnings    Json             @default("[]")
+  fileSize           Int
+  createdAt          DateTime         @default(now())
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  callbackSchedule   CallbackSchedule @relation(fields: [callbackScheduleId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([callbackScheduleId])
+}
+
+model RetellIntake {
+  id                 String           @id @default(cuid())
+  callbackScheduleId String           @unique
+  retellCallId       String?
+  callDuration       Int?
+  recordingUrl       String?
+  transcriptUrl      String?
+  intakeData         Json
+  confidenceScore    Int?
+  flaggedFields      Json             @default("[]")
+  pushedToEstate     Boolean          @default(false)
+  estateId           String?
+  createdAt          DateTime         @default(now())
+  callbackSchedule   CallbackSchedule @relation(fields: [callbackScheduleId], references: [id], onDelete: Cascade)
+
+  @@index([callbackScheduleId])
 }

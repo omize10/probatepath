@@ -88,7 +88,7 @@ export default function GuidesPage() {
           Want someone to handle the paperwork?
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">
-          ProbatePath prepares all your BC probate forms for a fixed $2,500 fee.
+          Probate Desk prepares all your BC probate forms starting at $799, with flexible service tiers.
         </p>
         <Link
           href="/create-account"

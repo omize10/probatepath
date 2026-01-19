@@ -11,10 +11,10 @@ export function articleSchema({
     datePublished,
     dateModified,
     url,
-    author: { "@type": "Organization", name: "ProbatePath", url: "https://probatepath.ca" },
+    author: { "@type": "Organization", name: "Probate Desk", url: "https://probatepath.ca" },
     publisher: {
       "@type": "Organization",
-      name: "ProbatePath",
+      name: "Probate Desk",
       logo: { "@type": "ImageObject", url: "https://probatepath.ca/logo.png" }
     }
   };

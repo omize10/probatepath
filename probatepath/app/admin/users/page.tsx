@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { encodeCursor } from "@/lib/admin/pagination";
 import UsersFeed, { type UserItem } from "./UsersFeed";
 import { redirect } from "next/navigation";
+import type { User } from "@prisma/client";
 
 export default async function UsersPage() {
   const maybe = await requireAdminSession();
@@ -18,7 +19,7 @@ export default async function UsersPage() {
     nextCursor = encodeCursor({ id: last.id, createdAt: last.createdAt.toISOString() });
   }
 
-  const items: UserItem[] = itemsRaw.map((u) => ({ id: u.id, email: u.email, name: u.name ?? null, role: u.role, createdAt: u.createdAt.toISOString() }));
+  const items: UserItem[] = itemsRaw.map((u: User) => ({ id: u.id, email: u.email, name: u.name ?? null, role: u.role, createdAt: u.createdAt.toISOString() }));
 
   return (
     <div className="p-6">

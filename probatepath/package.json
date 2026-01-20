@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "postinstall": "node scripts/ensure-prisma-runtime.mjs",
+    "postinstall": "prisma generate && node scripts/ensure-prisma-runtime.mjs",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:status": "prisma migrate status",
     "db:backup": "bash scripts/db/backup.sh",

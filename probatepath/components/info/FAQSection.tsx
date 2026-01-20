@@ -1,6 +1,8 @@
 type FAQ = { question: string; answer: string };
 
-export function FAQSection({ faqs, title = "Frequently asked questions" }: { faqs: FAQ[]; title?: string }) {
+export function FAQSection({ faqs = [], title = "Frequently asked questions" }: { faqs?: FAQ[]; title?: string }) {
+  if (!faqs || faqs.length === 0) return null;
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",

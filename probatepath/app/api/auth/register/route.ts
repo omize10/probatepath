@@ -52,12 +52,11 @@ export async function POST(request: Request) {
       message: err.message,
       stack: err.stack,
     });
-    // Return more details in development/staging for debugging
-    const isDev = process.env.NODE_ENV !== "production";
+    // Temporarily show debug info to diagnose production issue
     return NextResponse.json({
       success: false,
       error: "Unable to create your account right now.",
-      ...(isDev ? { debug: { name: err.name, message: err.message } } : {}),
+      debug: { name: err.name, message: err.message },
     }, { status: 500 });
   }
 }

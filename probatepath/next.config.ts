@@ -9,9 +9,14 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Disable image optimization if causing issues
+  // Disable image optimization for Netlify compatibility
   images: {
-    unoptimized: process.env.NODE_ENV === "development",
+    unoptimized: true,
+  },
+  // Skip static generation entirely - use server-side rendering
+  experimental: {
+    // This prevents the /404 and /_error static generation that triggers the Html error
+    isrMemoryCacheSize: 0,
   },
 };
 

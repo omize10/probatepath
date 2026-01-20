@@ -17,6 +17,8 @@ function createPrismaClient() {
   }
   sharedPool ||= new Pool({
     connectionString: datasourceUrl,
+    // SSL required for Supabase and most cloud PostgreSQL providers
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
   });
   const adapter = new PrismaPg(sharedPool);
   return new PrismaClient({

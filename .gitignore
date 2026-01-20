@@ -1,5 +1,10 @@
 # Claude config
 .claude/
+Claude info/
+
+# Root level duplicates (main app is in probatepath/)
+/app/
+/package.json
 
 # generated
 node_modules/

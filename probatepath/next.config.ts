@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+// Build trigger: 2026-01-20
 const nextConfig: NextConfig = {
   // Skip TypeScript errors during build (verified passing locally)
   typescript: {

@@ -15,10 +15,18 @@ function createPrismaClient() {
   if (!datasourceUrl) {
     throw new Error("DATABASE_URL must be set to initialize PrismaClient.");
   }
+
+  // Determine if we need SSL (any non-localhost connection)
+  const isRemoteDb = !datasourceUrl.includes("localhost") && !datasourceUrl.includes("127.0.0.1");
+
   sharedPool ||= new Pool({
     connectionString: datasourceUrl,
     // SSL required for Supabase and most cloud PostgreSQL providers
-    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
+    ssl: isRemoteDb ? { rejectUnauthorized: false } : undefined,
+    // Connection pool settings for serverless
+    max: 5,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
   });
   const adapter = new PrismaPg(sharedPool);
   return new PrismaClient({

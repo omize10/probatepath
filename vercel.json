@@ -1,0 +1,6 @@
+{
+  "installCommand": "cd probatepath && npm install",
+  "buildCommand": "cd probatepath && npm run build",
+  "outputDirectory": "probatepath/.next",
+  "framework": "nextjs"
+}

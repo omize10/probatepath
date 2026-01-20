@@ -1,6 +1,6 @@
 [build]
   base = "probatepath"
-  command = "rm -rf .next node_modules && npm ci && NODE_ENV=production npm run build"
+  command = "rm -rf .next node_modules && npm ci --include=dev && NODE_ENV=production npm run build"
   publish = ".next"
 
 [build.environment]

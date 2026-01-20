@@ -15,8 +15,6 @@ interface WillUploadModalProps {
 type Mode = "disclaimer" | "select" | "pdf" | "photo";
 
 export function WillUploadModal({ open, onClose, onComplete }: WillUploadModalProps) {
-  // AI upload disabled; keep modal closed
-  if (!open) return null;
   const [mode, setMode] = useState<Mode>("disclaimer");
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -30,6 +28,9 @@ export function WillUploadModal({ open, onClose, onComplete }: WillUploadModalPr
       setError(null);
     }
   }, [open]);
+
+  // Early return after hooks
+  if (!open) return null;
 
   const handleAccept = async () => {
     if (accepted || submitting) return;

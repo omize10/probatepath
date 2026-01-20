@@ -6,6 +6,7 @@ ensurePrismaRuntime();
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  output: "standalone",
   turbopack: {
     // Force Next/Turbopack to treat this directory as the workspace root so
     // .env and other config files load correctly even when the repo is nested.

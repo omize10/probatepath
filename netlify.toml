@@ -1,7 +1,13 @@
 [build]
   base = "probatepath"
-  command = "rm -rf .next && npm ci && npm run build"
+  command = "rm -rf .next node_modules && npm ci && NODE_ENV=production npm run build"
   publish = ".next"
+
+[build.environment]
+  # Explicitly set NODE_ENV to production to fix Html import error
+  # See: https://github.com/vercel/next.js/issues/55804
+  NODE_ENV = "production"
+  NODE_VERSION = "22.17.0"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

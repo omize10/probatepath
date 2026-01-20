@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "Can I hire someone to speed up the process?",
-    answer: "Professional help (lawyers or services like Probate Desk) can reduce delays from paperwork errors. But court processing time is fixed - no one can make the registry work faster."
+    answer: "Professional help (lawyers or services like ProbateDesk) can reduce delays from paperwork errors. But court processing time is fixed - no one can make the registry work faster."
   },
 ];
 
@@ -43,7 +43,7 @@ const schema = articleSchema({
   description: "How long each phase of BC probate takes",
   datePublished: "2025-01-01",
   dateModified: "2025-12-13",
-  url: "https://probatepath.ca/info/guides/probate-timeline",
+  url: "https://probatedesk.ca/info/guides/probate-timeline",
 });
 
 export default function ProbateTimelinePage() {

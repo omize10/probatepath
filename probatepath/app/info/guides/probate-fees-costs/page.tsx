@@ -42,7 +42,7 @@ const schema = articleSchema({
   description: "Complete breakdown of probate costs in British Columbia",
   datePublished: "2025-01-01",
   dateModified: "2025-12-13",
-  url: "https://probatepath.ca/info/guides/probate-fees-costs",
+  url: "https://probatedesk.ca/info/guides/probate-fees-costs",
 });
 
 export default function ProbateFeesCostsPage() {
@@ -217,7 +217,7 @@ export default function ProbateFeesCostsPage() {
                 <td className="py-3">You do everything yourself</td>
               </tr>
               <tr className="border-b border-[color:var(--border-muted)]">
-                <td className="py-3 font-medium">Probate Desk</td>
+                <td className="py-3 font-medium">ProbateDesk</td>
                 <td className="py-3">$799 - $2,499</td>
                 <td className="py-3">All forms prepared, guidance throughout (tier-based)</td>
               </tr>

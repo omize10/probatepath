@@ -46,7 +46,7 @@ const schema = articleSchema({
   description: "A clear explanation of what probate means in British Columbia",
   datePublished: "2025-01-01",
   dateModified: "2025-12-13",
-  url: "https://probatepath.ca/info/guides/what-is-probate",
+  url: "https://probatedesk.ca/info/guides/what-is-probate",
 });
 
 export default function WhatIsProbatePage() {

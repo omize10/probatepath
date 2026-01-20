@@ -27,7 +27,7 @@ const toc = [
 const faqs = [
   {
     question: "Where do I get the forms?",
-    answer: "Official BC probate forms are available on the BC Government website under Court Services. They're PDF files that you fill in, print, and sign. Probate Desk generates completed forms from your intake data."
+    answer: "Official BC probate forms are available on the BC Government website under Court Services. They're PDF files that you fill in, print, and sign. ProbateDesk generates completed forms from your intake data."
   },
   {
     question: "Do I need to use the exact official forms?",
@@ -44,7 +44,7 @@ const schema = articleSchema({
   description: "Complete guide to BC probate forms P1 through P25",
   datePublished: "2025-01-01",
   dateModified: "2025-12-13",
-  url: "https://probatepath.ca/info/guides/bc-probate-forms",
+  url: "https://probatedesk.ca/info/guides/bc-probate-forms",
 });
 
 export default function BCProbateFormsPage() {

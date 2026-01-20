@@ -45,19 +45,19 @@ export function PasswordGate({ children }: { children: ReactNode }) {
       <div className="w-full max-w-md px-6">
         <div className="portal-card overflow-hidden p-12 text-center">
           {/* Logo/Brand */}
-          <div className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold tracking-tight" style={{ color: 'var(--brand)' }}>
-              Probate Desk
+          <div className="mb-8 flex flex-col items-center">
+            <h1 className="text-4xl font-bold tracking-tight" style={{ color: 'var(--brand)' }}>
+              ProbateDesk<span className="text-[#445266]">.com</span>
             </h1>
-            <p className="text-sm font-medium" style={{ color: 'var(--slate)' }}>
-              by Court Line Law
-            </p>
+            <span className="mt-1 text-sm font-semibold uppercase tracking-[0.3em] text-[#445266]">
+              Done
+            </span>
           </div>
 
           {/* Tagline */}
           <div className="mb-8">
-            <p className="text-lg italic" style={{ color: 'var(--muted-ink)' }}>
-              a better way of probate
+            <p className="text-sm font-medium" style={{ color: 'var(--slate)' }}>
+              by Court Line Law
             </p>
           </div>
 

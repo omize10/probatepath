@@ -134,7 +134,7 @@ export default function KelownaRegistryPage() {
 
         <section className="mt-12 rounded-3xl bg-[color:var(--bg-muted)] p-8 text-center">
           <h2 className="font-serif text-2xl text-[color:var(--brand)]">Filing in Kelowna?</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">Probate Desk packages your documents so the registry can accept them on the first review.</p>
+          <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">ProbateDesk packages your documents so the registry can accept them on the first review.</p>
           <Link href="/create-account" className="mt-6 inline-block rounded-full bg-[color:var(--brand)] px-6 py-3 font-semibold text-white hover:bg-[color:var(--accent-dark)]">
             Start intake
           </Link>

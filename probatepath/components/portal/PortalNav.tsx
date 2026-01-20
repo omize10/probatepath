@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -28,16 +27,16 @@ export function PortalNav({ statusLabel }: PortalNavProps) {
     <div className="border-b bg-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <div className="flex items-center gap-4">
-          <Image
-            src="/images/PPlogo.png"
-            alt="Probate Desk"
-            width={360}
-            height={90}
-            className="h-14 w-auto sm:h-16"
-            priority
-          />
+          <Link href="/" className="flex flex-col items-start leading-none">
+            <span className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: 'var(--brand)' }}>
+              ProbateDesk<span className="text-[#445266]">.com</span>
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#445266]">
+              Done
+            </span>
+          </Link>
           <div className="leading-tight">
-            <p className="text-sm font-semibold text-gray-900 sm:text-base">Probate Desk Portal</p>
+            <p className="text-sm font-semibold text-gray-900 sm:text-base">Portal</p>
             <p className="text-xs text-gray-500">Your guided probate workspace</p>
           </div>
         </div>

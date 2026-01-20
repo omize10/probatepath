@@ -10,9 +10,9 @@ export const metadata: Metadata = {
   description: "The complete guide to probate in British Columbia. Learn when you need it, what forms to file, how long it takes, what it costs, and what happens after the grant.",
   keywords: ["probate BC", "BC probate guide", "grant of probate BC", "executor BC", "probate British Columbia"],
   openGraph: {
-    title: "BC Probate Guide 2025 | Probate Desk",
+    title: "BC Probate Guide 2025 | ProbateDesk",
     description: "The complete guide to probate in British Columbia for executors.",
-    url: "https://probatepath.ca/info/guides/bc-probate-guide",
+    url: "https://probatedesk.ca/info/guides/bc-probate-guide",
     type: "article",
   },
 };
@@ -45,7 +45,7 @@ const faqs = [
   },
   {
     question: "Can I do probate without a lawyer in BC?",
-    answer: "Yes. BC allows executors to handle probate themselves. Probate Desk helps you prepare all forms starting at $799 depending on the service level you need."
+    answer: "Yes. BC allows executors to handle probate themselves. ProbateDesk helps you prepare all forms starting at $799 depending on the service level you need."
   },
   {
     question: "What's the difference between probate and grant of administration?",
@@ -58,7 +58,7 @@ const schema = articleSchema({
   description: "Everything BC executors need to know about probate",
   datePublished: "2025-01-01",
   dateModified: "2025-12-13",
-  url: "https://probatepath.ca/info/guides/bc-probate-guide",
+  url: "https://probatedesk.ca/info/guides/bc-probate-guide",
 });
 
 export default function BCProbateGuidePage() {
@@ -888,7 +888,7 @@ export default function BCProbateGuidePage() {
         <section className="mt-16 rounded-3xl bg-[color:var(--bg-muted)] p-8 text-center">
           <h2 className="font-serif text-2xl text-[color:var(--brand)]">Need help with BC probate?</h2>
           <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">
-            Probate Desk prepares all your BC probate forms with flexible service tiers starting at $799.
+            ProbateDesk prepares all your BC probate forms with flexible service tiers starting at $799.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-4">
             <Link href="/create-account" className="rounded-full bg-[color:var(--brand)] px-6 py-3 font-semibold text-white hover:bg-[color:var(--accent-dark)]">

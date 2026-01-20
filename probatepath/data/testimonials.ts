@@ -13,7 +13,7 @@ export const testimonials: Testimonial[] = [
     roleOrLocation: "First time executor, Vancouver BC",
     highlight: "Stopped feeling like I was guessing",
     quote:
-      "I had no idea where to start with probate. Probate Desk broke everything into clear steps and told me exactly what information I needed to gather. I went from a stack of random papers to a complete package that actually made sense.",
+      "I had no idea where to start with probate. ProbateDesk broke everything into clear steps and told me exactly what information I needed to gather. I went from a stack of random papers to a complete package that actually made sense.",
   },
   {
     id: "executor-northvan-01",
@@ -29,6 +29,6 @@ export const testimonials: Testimonial[] = [
     roleOrLocation: "Executor of a simple estate, Surrey BC",
     highlight: "Knew which forms I actually needed",
     quote:
-      "Before Probate Desk I kept reading government PDFs and getting lost in them. The system asked targeted questions and then told me which forms applied in my situation. I stopped worrying that I had missed some secret extra form.",
+      "Before ProbateDesk I kept reading government PDFs and getting lost in them. The system asked targeted questions and then told me which forms applied in my situation. I stopped worrying that I had missed some secret extra form.",
   },
 ];

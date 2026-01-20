@@ -11,11 +11,11 @@ export function articleSchema({
     datePublished,
     dateModified,
     url,
-    author: { "@type": "Organization", name: "Probate Desk", url: "https://probatepath.ca" },
+    author: { "@type": "Organization", name: "ProbateDesk", url: "https://probatedesk.ca" },
     publisher: {
       "@type": "Organization",
-      name: "Probate Desk",
-      logo: { "@type": "ImageObject", url: "https://probatepath.ca/logo.png" }
+      name: "ProbateDesk",
+      logo: { "@type": "ImageObject", url: "https://probatedesk.ca/logo.png" }
     }
   };
 }

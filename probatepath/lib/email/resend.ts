@@ -4,7 +4,7 @@ function getFrom() {
 	const envFrom = process.env.MAIL_FROM;
 	if (envFrom) return envFrom;
 	// fallback to onboarding sandbox for Resend
-	return "Probate Desk <onboarding@resend.dev>";
+	return "ProbateDesk <onboarding@resend.dev>";
 }
 
 async function sendRaw(payload: { from: string; to: string; subject: string; html: string }) {
@@ -42,13 +42,13 @@ export async function sendPasswordResetEmail({ to, token }: { to: string; token:
 	const from = getFrom();
 	const resetUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/reset-password?token=${encodeURIComponent(token)}`;
 	const html = renderResetEmailHtml({ url: resetUrl, email: to });
-	const subject = "Reset your Probate Desk password";
+	const subject = "Reset your ProbateDesk password";
 	return sendRaw({ from, to, subject, html });
 }
 
 export async function sendPasswordResetCodeEmail({ to, code }: { to: string; code: string }) {
 	const from = getFrom();
-	const subject = "Your Probate Desk password reset code";
+	const subject = "Your ProbateDesk password reset code";
 	const html = renderResetCodeEmailHtml({ code });
 	return sendRaw({ from, to, subject, html });
 }
@@ -71,7 +71,7 @@ function renderResetEmailHtml({ url, email }: { url: string; email: string }) {
 <html>
   <body style="font-family: system-ui, Arial, sans-serif; color: #0f172a">
     <div style="max-width: 600px; margin: 0 auto; padding: 24px">
-      <h2>Reset your Probate Desk password</h2>
+      <h2>Reset your ProbateDesk password</h2>
       <p>
         A request was made to reset the password for <strong>${safeEmail}</strong>. Click the button below to set a new
         password. The link will expire in 30 minutes.
@@ -86,7 +86,7 @@ function renderResetEmailHtml({ url, email }: { url: string; email: string }) {
       </p>
       <p>If you didn't request a password reset, you can ignore this email.</p>
       <hr />
-      <p style="font-size: 12px; color: #6b7280">Probate Desk</p>
+      <p style="font-size: 12px; color: #6b7280">ProbateDesk</p>
     </div>
   </body>
 </html>`;
@@ -98,12 +98,12 @@ function renderResetCodeEmailHtml({ code }: { code: string }) {
 <html>
   <body style="font-family: system-ui, Arial, sans-serif; color: #0f172a">
     <div style="max-width: 600px; margin: 0 auto; padding: 24px">
-      <h2>Reset your Probate Desk password</h2>
+      <h2>Reset your ProbateDesk password</h2>
       <p>Enter this code on the password reset page:</p>
       <p style="font-size: 24px; font-weight: 700; letter-spacing: 0.2em">${safeCode}</p>
       <p>This code expires in 10 minutes. If you didn't request a password reset, you can ignore this email.</p>
       <hr />
-      <p style="font-size: 12px; color: #6b7280">Probate Desk</p>
+      <p style="font-size: 12px; color: #6b7280">ProbateDesk</p>
     </div>
   </body>
 </html>`;

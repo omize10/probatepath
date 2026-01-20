@@ -135,7 +135,7 @@ export default function SurreyRegistryPage() {
 
         <section className="mt-12 rounded-3xl bg-[color:var(--bg-muted)] p-8 text-center">
           <h2 className="font-serif text-2xl text-[color:var(--brand)]">Filing in Surrey?</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">Probate Desk assembles your Surrey-ready forms and checklist.</p>
+          <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">ProbateDesk assembles your Surrey-ready forms and checklist.</p>
           <Link href="/create-account" className="mt-6 inline-block rounded-full bg-[color:var(--brand)] px-6 py-3 font-semibold text-white hover:bg-[color:var(--accent-dark)]">
             Start intake
           </Link>

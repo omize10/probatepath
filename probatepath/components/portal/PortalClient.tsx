@@ -288,8 +288,8 @@ function NeedHelp() {
           604-123-4567
         </a>{" "}
         or email{" "}
-        <a href="mailto:help@probatepath.ca" className="font-semibold text-gray-900">
-          help@probatepath.ca
+        <a href="mailto:help@probatedesk.ca" className="font-semibold text-gray-900">
+          help@probatedesk.ca
         </a>
         .
       </p>

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ScrollFade } from "@/components/scroll-fade";
 
 export const metadata: Metadata = {
-  title: "Pricing - Probate Desk",
+  title: "Pricing - ProbateDesk",
   description:
     "Clear, transparent pricing for BC probate document preparation. Choose the service level that fits your needs, from self-serve basics to premium white-glove support.",
 };

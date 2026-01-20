@@ -112,7 +112,7 @@ export function NotAFitFlow() {
         </Button>
       </div>
       <p className="text-sm text-[color:var(--ink-muted)]">
-        Prefer to come back later? <Link href="/" className="font-semibold text-[color:var(--brand)] underline-offset-4 hover:underline">Back to Probate Desk home</Link>.
+        Prefer to come back later? <Link href="/" className="font-semibold text-[color:var(--brand)] underline-offset-4 hover:underline">Back to ProbateDesk home</Link>.
       </p>
     </div>
   );

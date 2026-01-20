@@ -121,16 +121,16 @@ export function EligibilityGate({ isAuthed = false }: EligibilityGateProps) {
     <div className="mx-auto max-w-5xl space-y-10 py-12">
       <header className="space-y-5 rounded-3xl border border-[color:var(--border-muted)] bg-white p-8 text-[color:var(--ink)] shadow-[0_40px_160px_-120px_rgba(15,23,42,0.75)]">
         <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">Start here</p>
-        <h1 className="font-serif text-4xl">Is Probate Desk the right fit for you?</h1>
+        <h1 className="font-serif text-4xl">Is ProbateDesk the right fit for you?</h1>
         <p className="text-base text-[color:var(--ink-muted)]">
-          We start every file with a quick eligibility check so we can confirm Probate Desk matches your estate before you dive into intake.
+          We start every file with a quick eligibility check so we can confirm ProbateDesk matches your estate before you dive into intake.
         </p>
       </header>
 
       <section className="space-y-6 rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6">
         <QuestionCard
           title="Is this estate being probated in British Columbia?"
-          description="Probate Desk is built solely for the Supreme Court of BC."
+          description="ProbateDesk is built solely for the Supreme Court of BC."
           helpers={[
             {
               title: "Why we ask this",
@@ -178,7 +178,7 @@ export function EligibilityGate({ isAuthed = false }: EligibilityGateProps) {
           helpers={[
             {
               title: "Why we ask this",
-              body: "Probate Desk is for uncontested estates. Active disputes or suspected challenges require full legal representation.",
+              body: "ProbateDesk is for uncontested estates. Active disputes or suspected challenges require full legal representation.",
             },
             {
               title: "Examples",
@@ -261,7 +261,7 @@ function EligibilityResult({
     return (
       <section className="space-y-4 rounded-3xl border border-[color:var(--border-muted)] bg-gradient-to-br from-[#e8ebf3] to-white p-8 shadow-[0_50px_150px_-120px_rgba(15,23,42,0.65)]">
         <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[color:var(--ink-muted)]">You’re a fit</p>
-        <h2 className="font-serif text-3xl text-[color:var(--brand)]">Good news — Probate Desk looks right for this estate.</h2>
+        <h2 className="font-serif text-3xl text-[color:var(--brand)]">Good news — ProbateDesk looks right for this estate.</h2>
         <p className="text-base text-[color:var(--ink-muted)]">
           We’ll guide you through a calm, structured intake, build your Case Blueprint, and assemble the court-ready probate package.
         </p>

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ScrollFade } from "@/components/scroll-fade";
 
 export const metadata: Metadata = {
-  title: "How Probate Desk works",
+  title: "How ProbateDesk works",
   description:
     "Guided intake, optional will search support, specialist assembly, and self-filing confidence for BC probate executors.",
 };
@@ -87,7 +87,7 @@ export default function HowItWorksPage() {
         once={false}
       >
         <div className="space-y-4">
-          <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">How Probate Desk works</h1>
+          <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">How ProbateDesk works</h1>
           <p className="max-w-3xl text-base text-[color:var(--muted-ink)]">
             Guided intake → specialist assembly → you file at the registry. Clear steps, saved progress, and Canadian hosting every step
             of the way.

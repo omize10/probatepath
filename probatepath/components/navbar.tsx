@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Menu, X } from "lucide-react";
@@ -16,6 +15,19 @@ import {
   SheetHeader,
   SheetTrigger,
 } from "@/components/ui/sheet";
+
+function Logo({ className }: { className?: string }) {
+  return (
+    <div className={cn("flex flex-col items-start leading-none", className)}>
+      <span className="text-2xl font-bold tracking-tight" style={{ color: 'var(--brand)' }}>
+        ProbateDesk<span className="text-[#445266]">.com</span>
+      </span>
+      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#445266]">
+        Done
+      </span>
+    </div>
+  );
+}
 
 const NAV_LINKS = [
   { href: "/how-it-works", label: "How it works" },
@@ -63,14 +75,14 @@ export function Navbar() {
       aria-label="Primary"
     >
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center transition hover:opacity-90" aria-label="Probate Desk home">
-          <Image src="/images/PPlogo.png" alt="Probate Desk" width={440} height={110} className="h-24 w-auto" priority />
+        <Link href="/" className="flex items-center transition hover:opacity-90" aria-label="ProbateDesk home">
+          <Logo />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
           {NAV_LINKS.map(({ href, label }) => {
             const targetHref = label === "My portal" ? portalHref : href;
-            const isActive = pathname === href || pathname.startsWith(href);
+            const isActive = pathname === href || (pathname ?? "").startsWith(href);
             return (
               <Link
                 key={href}
@@ -114,8 +126,8 @@ export function Navbar() {
           </SheetTrigger>
           <SheetContent side="right" className="w-[320px] bg-[color:var(--bg-surface)]">
             <SheetHeader className="flex items-center justify-between">
-              <Link href="/" className="flex items-center" aria-label="Probate Desk home">
-                <Image src="/images/PPlogo.png" alt="Probate Desk" width={360} height={90} className="h-[84px] w-auto" priority />
+              <Link href="/" className="flex items-center" aria-label="ProbateDesk home">
+                <Logo />
               </Link>
               <SheetClose asChild>
                 <button
@@ -131,7 +143,7 @@ export function Navbar() {
             <div className="mt-6 space-y-3">
               {NAV_LINKS.map(({ href, label }) => {
                 const targetHref = label === "My portal" ? portalHref : href;
-                const isActive = pathname === href || pathname.startsWith(href);
+                const isActive = pathname === href || (pathname ?? "").startsWith(href);
                 return (
                   <SheetClose asChild key={href}>
                     <Link

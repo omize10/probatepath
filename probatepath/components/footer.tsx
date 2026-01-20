@@ -37,15 +37,22 @@ export function Footer() {
     <footer className="mt-24 border-t border-[color:var(--border-muted)] bg-[color:var(--bg-page)] py-12 text-sm text-[color:var(--muted-ink)]">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
         <div className="space-y-3">
-          <p className="text-base font-semibold text-[color:var(--brand)]">Probate Desk</p>
+          <div className="flex flex-col items-start leading-none">
+            <span className="text-xl font-bold tracking-tight" style={{ color: 'var(--brand)' }}>
+              ProbateDesk<span className="text-[#445266]">.com</span>
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#445266]">
+              Done
+            </span>
+          </div>
           <p>BC probate document preparation starting at $799 with flexible service tiers and modern intake experience.</p>
           <p>
             Email:{" "}
             <a
-              href="mailto:hello@probatepath.ca"
+              href="mailto:hello@probatedesk.ca"
               className="text-[color:var(--brand)] underline-offset-4 hover:underline"
             >
-              hello@probatepath.ca
+              hello@probatedesk.ca
             </a>
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
@@ -114,9 +121,9 @@ export function Footer() {
       </div>
 
       <div className="mx-auto mt-12 flex w-full max-w-6xl flex-col gap-2 px-6 text-xs text-[#616977] sm:flex-row sm:items-center sm:justify-between">
-        <p>&copy; {new Date().getFullYear()} Probate Desk Technologies Inc. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} ProbateDesk Technologies Inc. All rights reserved.</p>
         <div className="flex items-center gap-3">
-          <p>Probate Desk provides document preparation support and general information. We do not provide legal advice; executors remain self-represented.</p>
+          <p>ProbateDesk provides document preparation support and general information. We do not provide legal advice; executors remain self-represented.</p>
         </div>
       </div>
 

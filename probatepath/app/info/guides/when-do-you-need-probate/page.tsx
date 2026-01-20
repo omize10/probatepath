@@ -46,7 +46,7 @@ const schema = articleSchema({
   description: "Learn when probate is required in British Columbia and when you can skip it",
   datePublished: "2025-01-01",
   dateModified: "2025-12-13",
-  url: "https://probatepath.ca/info/guides/when-do-you-need-probate",
+  url: "https://probatedesk.ca/info/guides/when-do-you-need-probate",
 });
 
 export default function WhenNeedProbatePage() {
@@ -248,7 +248,7 @@ export default function WhenNeedProbatePage() {
         <section className="mt-12 rounded-3xl bg-[color:var(--bg-muted)] p-8">
           <h2 className="font-serif text-2xl text-[color:var(--brand)]">Need probate?</h2>
           <p className="mt-4 text-[color:var(--muted-ink)]">
-            Probate Desk prepares all your BC probate forms starting at $799. We handle the paperwork
+            ProbateDesk prepares all your BC probate forms starting at $799. We handle the paperwork
             so you can focus on the estate.
           </p>
           <Link

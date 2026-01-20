@@ -536,10 +536,10 @@ export default function CallbackSchedulePage() {
             <div className="rounded-xl border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] p-3 text-center text-sm text-[color:var(--muted-ink)]">
               Questions? Email us at{" "}
               <a
-                href="mailto:support@probatepath.ca"
+                href="mailto:support@probatedesk.ca"
                 className="font-medium text-[color:var(--brand)]"
               >
-                support@probatepath.ca
+                support@probatedesk.ca
               </a>
             </div>
           </div>

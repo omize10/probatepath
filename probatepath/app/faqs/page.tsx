@@ -4,17 +4,17 @@ import { FAQAccordion } from "@/components/faq-accordion";
 
 export const metadata: Metadata = {
   title: "Probate FAQs",
-  description: "Answers to the most common questions executors ask before using Probate Desk.",
+  description: "Answers to the most common questions executors ask before using ProbateDesk.",
 };
 
 const faqs = [
   {
-    question: "Who is Probate Desk built for?",
+    question: "Who is ProbateDesk built for?",
     answer:
       "Executors of straightforward BC estates with a valid will, Canadian assets, and no active disputes.",
   },
   {
-    question: "How much does Probate Desk cost?",
+    question: "How much does ProbateDesk cost?",
     answer:
       "We offer three service tiers: Basic ($799), Standard ($1,499), and Premium ($2,499). Choose based on the level of support you need. Most executors choose Standard for the peace of mind that comes with human document review and phone support.",
   },
@@ -45,7 +45,7 @@ const faqs = [
   {
     question: "What if I need legal advice?",
     answer:
-      "Probate Desk provides document preparation and general information. For legal advice, contact independent counsel.",
+      "ProbateDesk provides document preparation and general information. For legal advice, contact independent counsel.",
   },
   {
     question: "Is my data stored in Canada?",
@@ -61,7 +61,7 @@ const faqs = [
     answer: "Court filing fees, postage/courier for notices, and BC probate fees are paid separately directly to the court based on estate value. These government fees are not included in our service fees.",
   },
   {
-    question: "Can multiple executors use Probate Desk?",
+    question: "Can multiple executors use ProbateDesk?",
     answer: "V1 supports a single executor. Multi-executor support is planned.",
   },
 ];
@@ -75,7 +75,7 @@ export default function FAQsPage() {
         </Badge>
         <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">Probate questions, answered plainly</h1>
         <p className="mx-auto max-w-3xl text-base text-[#333333]">
-          If you don’t see your question below, email hello@probatepath.ca and we’ll respond within one business day.
+          If you don’t see your question below, email hello@probatedesk.ca and we’ll respond within one business day.
         </p>
       </header>
 

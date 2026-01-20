@@ -11,13 +11,13 @@ import { PasswordGate } from "@/components/password-gate";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://probatepath.ca"),
+  metadataBase: new URL("https://probatedesk.ca"),
   title: {
-    default: "Probate Desk — BC probate documents in hours",
-    template: "%s | Probate Desk",
+    default: "ProbateDesk — BC probate documents in hours",
+    template: "%s | ProbateDesk",
   },
   description:
-    "Probate Desk prepares filing-ready probate documents for British Columbia executors starting at $799 CAD, with flexible service tiers.",
+    "ProbateDesk prepares filing-ready probate documents for British Columbia executors starting at $799 CAD, with flexible service tiers.",
 };
 
 const inter = Inter({

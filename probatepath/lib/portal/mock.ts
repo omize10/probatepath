@@ -127,7 +127,7 @@ export const portalChecklistItems: PortalChecklistDefinition[] = [
     id: "assemble",
     title: "Assemble packet",
     description: "Print, tab, and stage every form before meeting the commissioner.",
-    learnMoreHref: "https://probatepath.ca/how-it-works",
+    learnMoreHref: "https://probatedesk.ca/how-it-works",
     route: "/portal/how-to-assemble",
     media: {
       image: "/portal/assemble-1.jpg",
@@ -192,7 +192,7 @@ export type PortalDocumentTemplate = {
 
 const docIntro = `<section style="font-family: 'Inter', Arial, sans-serif; color:#111827; line-height:1.6;">
   <header style="margin-bottom: 24px;">
-    <p style="font-size:12px; letter-spacing:0.3em; text-transform:uppercase; color:#475569;">Probate Desk</p>
+    <p style="font-size:12px; letter-spacing:0.3em; text-transform:uppercase; color:#475569;">ProbateDesk</p>
     <h1 style="font-size:28px; color:#0f172a;">Filing-ready package preview</h1>
     <p style="color:#475569;">Generated locally — keep this for your executor records.</p>
   </header>`;
@@ -207,7 +207,7 @@ export const portalDocuments: PortalDocumentTemplate[] = [
         <p>Supreme Court of British Columbia</p>
         <p>Probate Registry</p>
         <p>Re: Estate of ____________________</p>
-        <p>We enclose the filing-ready package prepared through Probate Desk's document preparation workflow. The executor remains self-represented and is responsible for court fees.</p>
+        <p>We enclose the filing-ready package prepared through ProbateDesk's document preparation workflow. The executor remains self-represented and is responsible for court fees.</p>
         <ul>
           <li>Forms P1, P3/P4, P9, P10/P11</li>
           <li>Section 121 notices + proof of service</li>

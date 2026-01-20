@@ -381,7 +381,7 @@ export async function POST(request: Request) {
   if (normalizedEmail) {
     await sendTemplateEmail({
       to: normalizedEmail,
-      subject: "Your Probate Desk draft",
+      subject: "Your ProbateDesk draft",
       template: "intake-submitted",
       matterId: matter.id,
       html: `<p>Your draft is saved.</p><p>Resume anytime: <a href="${resumeLink}">${resumeLink}</a></p>`,

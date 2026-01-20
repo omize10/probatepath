@@ -85,7 +85,7 @@ export default function InfoCenterPage() {
             href="/create-account"
             className="rounded-full border border-[color:var(--border-muted)] bg-white/60 px-6 py-3 font-semibold !text-[#0a0d12] hover:bg-white/80 focus-visible:outline-offset-2"
           >
-            Get started with Probate Desk
+            Get started with ProbateDesk
           </Link>
         </div>
       </header>
@@ -163,7 +163,7 @@ export default function InfoCenterPage() {
       <section className="rounded-3xl bg-[color:var(--brand)] p-8 text-center text-white sm:p-12">
         <h2 className="font-serif text-3xl text-white sm:text-4xl">Ready to get started?</h2>
         <p className="mx-auto mt-4 max-w-2xl text-white/80">
-          Probate Desk prepares all your BC probate forms starting at $799, with flexible service tiers.
+          ProbateDesk prepares all your BC probate forms starting at $799, with flexible service tiers.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link

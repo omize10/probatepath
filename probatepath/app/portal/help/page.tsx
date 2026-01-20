@@ -21,7 +21,7 @@ const sections: HelpSection[] = [
   {
     id: "portal",
     eyebrow: "Using this portal",
-    title: "What Probate Desk does (and doesn’t) cover",
+    title: "What ProbateDesk does (and doesn’t) cover",
     body: [
       "We provide document preparation and court-packet guidance only. We’re not a law firm and we don’t give legal advice. If you need bespoke representation, we can connect you with partner firms.",
       "Every answer in the intake wizard flows into the portal, documents, and steps. Update the intake once and regenerate PDFs whenever you need an updated version.",
@@ -60,7 +60,7 @@ const sections: HelpSection[] = [
     title: "Need a human?",
     body: [
       "We respond within one business day. We can clarify portal steps and connect you with partner counsel if the estate becomes contested.",
-      "Email hello@probatepath.ca or visit the Contact page for a callback request.",
+      "Email hello@probatedesk.ca or visit the Contact page for a callback request.",
     ],
   },
 ];
@@ -84,8 +84,8 @@ export default function HelpPage() {
             ))}
             {section.id === "support" ? (
               <div className="pt-2">
-                <Link href="mailto:hello@probatepath.ca" className="text-lg font-semibold text-[color:var(--brand-navy)]">
-                  hello@probatepath.ca
+                <Link href="mailto:hello@probatedesk.ca" className="text-lg font-semibold text-[color:var(--brand-navy)]">
+                  hello@probatedesk.ca
                 </Link>
               </div>
             ) : null}

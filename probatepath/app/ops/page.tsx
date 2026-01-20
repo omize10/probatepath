@@ -5,7 +5,7 @@ import { listCases } from "@/lib/cases";
 
 export const metadata: Metadata = {
   title: "Operations portal",
-  description: "Staff dashboard for managing Probate Desk cases.",
+  description: "Staff dashboard for managing ProbateDesk cases.",
 };
 
 const dateFormatter = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium" });

@@ -29,7 +29,7 @@ const VARIANT_COPY: Record<RegisterFormVariant, {
   },
   start: {
     eyebrow: "Start here",
-    title: "Create your Probate Desk account",
+    title: "Create your ProbateDesk account",
     description: "This is the first step of the start-now flow. We store credentials locally so you can come back without sending confidential information to a server.",
     passwordHint: "Minimum 12 characters.",
     buttonLabel: "Create account",

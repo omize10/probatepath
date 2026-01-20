@@ -135,7 +135,7 @@ export default function VictoriaRegistryPage() {
 
         <section className="mt-12 rounded-3xl bg-[color:var(--bg-muted)] p-8 text-center">
           <h2 className="font-serif text-2xl text-[color:var(--brand)]">Filing in Victoria?</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">Probate Desk prepares and organizes your package so you can file in one trip.</p>
+          <p className="mx-auto mt-4 max-w-2xl text-[color:var(--muted-ink)]">ProbateDesk prepares and organizes your package so you can file in one trip.</p>
           <Link href="/create-account" className="mt-6 inline-block rounded-full bg-[color:var(--brand)] px-6 py-3 font-semibold text-white hover:bg-[color:var(--accent-dark)]">
             Start intake
           </Link>

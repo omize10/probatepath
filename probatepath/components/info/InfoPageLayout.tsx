@@ -54,7 +54,7 @@ export function InfoPageLayout({
                   Need help with probate?
                 </p>
                 <p className="mb-4 text-sm text-[color:var(--muted-ink)]">
-                  Probate Desk guides you step by step starting at $799.
+                  ProbateDesk guides you step by step starting at $799.
                 </p>
                 <Link
                   href="/create-account"

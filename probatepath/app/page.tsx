@@ -19,7 +19,7 @@ import { FAQAccordion } from "@/components/faq-accordion";
 export const metadata: Metadata = {
   title: "BC probate documents in hours",
   description:
-    "Probate Desk prepares filing-ready probate documents for British Columbia executors starting at $799 CAD, with flexible service tiers, Canadian data hosting, and specialist support.",
+    "ProbateDesk prepares filing-ready probate documents for British Columbia executors starting at $799 CAD, with flexible service tiers, Canadian data hosting, and specialist support.",
 };
 
 const trustPoints = [
@@ -67,7 +67,7 @@ const scopeHighlights = [
 
 const miniFaq = [
   {
-    question: "Who is Probate Desk for?",
+    question: "Who is ProbateDesk for?",
     answer: "Executors handling straightforward BC estates with a valid will, Canadian assets, and no ongoing disputes.",
   },
   {
@@ -155,7 +155,7 @@ export default function HomePage() {
 
       <ScrollFade as="section" className="space-y-12">
         <div className="space-y-4 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">Why Probate Desk</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">Why ProbateDesk</p>
           <h2 className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">Premium support for straightforward BC estates</h2>
           <p className="mx-auto max-w-3xl text-base text-[color:var(--muted-ink)]">
             We blend technology with probate specialists so executors can move from intake to filing without second-guessing forms,

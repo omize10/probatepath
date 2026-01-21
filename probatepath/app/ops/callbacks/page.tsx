@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { CallbackStatusBadge, TierBadge } from "./components";
+import { Calendar, Clock, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Scheduled Callbacks - Operations",
@@ -9,7 +10,82 @@ export const metadata: Metadata = {
 };
 
 const dateFormatter = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium" });
-const timeFormatter = new Intl.DateTimeFormat("en-CA", { timeStyle: "short" });
+
+// Get today's availability summary
+async function getTodayAvailability() {
+  if (!prismaEnabled) return { available: 0, booked: 0 };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const [availableSlots, bookedCallbacks] = await Promise.all([
+    prisma.availabilitySlot.count({
+      where: {
+        date: {
+          gte: today,
+          lt: tomorrow,
+        },
+      },
+    }),
+    prisma.callbackSchedule.count({
+      where: {
+        scheduledDate: {
+          gte: today,
+          lt: tomorrow,
+        },
+        status: { notIn: ["cancelled", "no_show"] },
+      },
+    }),
+  ]);
+
+  return {
+    available: availableSlots - bookedCallbacks,
+    booked: bookedCallbacks,
+  };
+}
+
+// Get upcoming availability summary (next 7 days)
+async function getWeekAvailability() {
+  if (!prismaEnabled) return { totalAvailable: 0, daysWithSlots: 0 };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const weekFromNow = new Date(today);
+  weekFromNow.setDate(weekFromNow.getDate() + 7);
+
+  const [availableSlots, bookedCallbacks] = await Promise.all([
+    prisma.availabilitySlot.findMany({
+      where: {
+        date: {
+          gte: today,
+          lt: weekFromNow,
+        },
+      },
+      select: { date: true },
+    }),
+    prisma.callbackSchedule.findMany({
+      where: {
+        scheduledDate: {
+          gte: today,
+          lt: weekFromNow,
+        },
+        status: { notIn: ["cancelled", "no_show"] },
+      },
+      select: { scheduledDate: true },
+    }),
+  ]);
+
+  const bookedCount = bookedCallbacks.length;
+  const totalAvailable = availableSlots.length - bookedCount;
+  const uniqueDays = new Set(availableSlots.map(s => s.date.toISOString().split('T')[0]));
+
+  return {
+    totalAvailable: Math.max(0, totalAvailable),
+    daysWithSlots: uniqueDays.size,
+  };
+}
 
 interface CallbacksPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -62,16 +138,75 @@ async function getCallbacks(includeCompleted: boolean) {
 export default async function CallbacksPage({ searchParams }: CallbacksPageProps) {
   const params = await searchParams;
   const includeCompleted = params.completed === "true";
-  const callbacks = await getCallbacks(includeCompleted);
+
+  // Fetch all data in parallel
+  const [callbacks, todayAvail, weekAvail] = await Promise.all([
+    getCallbacks(includeCompleted),
+    getTodayAvailability(),
+    getWeekAvailability(),
+  ]);
 
   return (
     <div className="space-y-8">
-      <div className="space-y-2">
-        <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Operations</p>
-        <h1 className="font-serif text-4xl text-[color:var(--ink)]">Scheduled Callbacks</h1>
-        <p className="text-sm text-[color:var(--ink-muted)]">
-          Manage intake calls for Standard and Premium clients.
-        </p>
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Operations</p>
+          <h1 className="font-serif text-4xl text-[color:var(--ink)]">Scheduled Callbacks</h1>
+          <p className="text-sm text-[color:var(--ink-muted)]">
+            Manage intake calls for Standard and Premium clients.
+          </p>
+        </div>
+
+        {/* Availability Quick View */}
+        <div className="flex flex-col gap-3 sm:flex-row">
+          {/* Today's Availability */}
+          <div className="flex items-center gap-3 rounded-2xl border border-[color:var(--border-muted)] bg-gradient-to-br from-white to-[color:var(--bg-muted)]/50 px-4 py-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+              <Clock className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-[color:var(--ink-muted)]">Today</p>
+              <p className="text-lg font-semibold text-[color:var(--ink)]">
+                {todayAvail.available > 0 ? (
+                  <>{todayAvail.available} <span className="text-sm font-normal text-green-600">open</span></>
+                ) : (
+                  <span className="text-[color:var(--ink-muted)]">No slots</span>
+                )}
+              </p>
+              {todayAvail.booked > 0 && (
+                <p className="text-xs text-blue-600">{todayAvail.booked} booked</p>
+              )}
+            </div>
+          </div>
+
+          {/* Week Availability */}
+          <div className="flex items-center gap-3 rounded-2xl border border-[color:var(--border-muted)] bg-gradient-to-br from-white to-[color:var(--bg-muted)]/50 px-4 py-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--brand)]/10">
+              <Calendar className="h-5 w-5 text-[color:var(--brand)]" />
+            </div>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-[color:var(--ink-muted)]">Next 7 Days</p>
+              <p className="text-lg font-semibold text-[color:var(--ink)]">
+                {weekAvail.totalAvailable > 0 ? (
+                  <>{weekAvail.totalAvailable} <span className="text-sm font-normal text-[color:var(--ink-muted)]">slots</span></>
+                ) : (
+                  <span className="text-[color:var(--ink-muted)]">No slots</span>
+                )}
+              </p>
+              <p className="text-xs text-[color:var(--ink-muted)]">{weekAvail.daysWithSlots} days with availability</p>
+            </div>
+          </div>
+
+          {/* Quick Link to Calendar */}
+          <Link
+            href="/ops/calendar"
+            className="flex items-center gap-2 rounded-2xl border border-[color:var(--brand)] bg-[color:var(--brand)] px-4 py-3 text-white transition hover:bg-[color:var(--accent-dark)]"
+          >
+            <Calendar className="h-5 w-5" />
+            <span className="font-semibold">Manage Calendar</span>
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">

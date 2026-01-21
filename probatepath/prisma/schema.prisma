@@ -601,3 +601,18 @@ model RetellIntake {
 
   @@index([callbackScheduleId])
 }
+
+// ========================================
+// AVAILABILITY CALENDAR
+// ========================================
+
+model AvailabilitySlot {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  time      String   // e.g., "9:00 AM"
+  createdBy String?  // userId of staff who created
+  createdAt DateTime @default(now())
+
+  @@unique([date, time])
+  @@index([date])
+}

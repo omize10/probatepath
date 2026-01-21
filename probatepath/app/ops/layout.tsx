@@ -30,6 +30,9 @@ export default async function OpsLayout({ children }: { children: ReactNode }) {
         <Link href="/ops/callbacks" className="text-sm font-semibold text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]">
           Callbacks
         </Link>
+        <Link href="/ops/calendar" className="text-sm font-semibold text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]">
+          Calendar
+        </Link>
       </nav>
       {children}
     </div>

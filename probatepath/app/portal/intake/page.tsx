@@ -6,6 +6,16 @@ import { resolvePortalMatter } from "@/lib/portal/server";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { initializeMatterStepProgress } from "@/lib/portal/step-progress";
 
+// Helper to check if an error is a Next.js redirect (which is thrown intentionally)
+function isRedirectError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    "digest" in error &&
+    typeof (error as { digest?: string }).digest === "string" &&
+    (error as { digest: string }).digest.startsWith("NEXT_REDIRECT")
+  );
+}
+
 export default async function PortalIntakePage() {
   const session = await requirePortalAuth("/portal/intake");
   const userId = (session.user as { id?: string })?.id ?? null;
@@ -17,15 +27,17 @@ export default async function PortalIntakePage() {
     redirect("/start");
   }
 
-  try {
-    const matter = await resolvePortalMatter(userId);
-    if (matter) {
-      if (matter.rightFitStatus === "NOT_FIT") {
-        redirect(`/matters/${matter.id}/not-a-fit`);
-      }
-      redirect(`/matters/${matter.id}/intake`);
+  // First, check if user already has a matter (outside try-catch to avoid catching redirect errors)
+  const existingMatter = await resolvePortalMatter(userId);
+  if (existingMatter) {
+    if (existingMatter.rightFitStatus === "NOT_FIT") {
+      redirect(`/matters/${existingMatter.id}/not-a-fit`);
     }
+    redirect(`/matters/${existingMatter.id}/intake`);
+  }
 
+  // No existing matter - create a new one
+  try {
     const freshMatter = await prisma.matter.create({
       data: {
         userId,
@@ -38,6 +50,10 @@ export default async function PortalIntakePage() {
 
     redirect(`/matters/${freshMatter.id}/intake`);
   } catch (error) {
+    // Re-throw redirect errors - they are intentional and should not be caught
+    if (isRedirectError(error)) {
+      throw error;
+    }
     console.warn("[portal] Failed to create intake matter", { userId, error });
     redirect("/start?error=intake");
   }

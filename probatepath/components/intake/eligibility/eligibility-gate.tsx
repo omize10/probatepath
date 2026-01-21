@@ -99,7 +99,7 @@ export function EligibilityGate({ isAuthed = false }: EligibilityGateProps) {
           : { status: "not_fit", reasons: payload.decision.reasons ?? [] };
       setDecision(normalizedDecision);
       if (normalizedDecision.status === "eligible") {
-        router.push("/portal/intake");
+        router.push("/portal/pricing");
         return;
       }
       router.push(`/matters/${payload.matterId}/not-a-fit`);
@@ -276,7 +276,7 @@ function EligibilityResult({
         {isAuthed ? (
           <div className="flex flex-wrap items-center gap-4">
             <Button size="lg" asChild>
-              <Link href="/portal/intake">Open intake</Link>
+              <Link href="/portal/pricing">Continue to pricing</Link>
             </Button>
           </div>
         ) : (

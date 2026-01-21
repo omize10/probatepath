@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
 export default function StartPage() {
-  redirect("/portal/pricing");
+  // Redirect to screening first - users must pass eligibility check before pricing
+  redirect("/portal/screening");
 }

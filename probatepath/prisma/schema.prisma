@@ -81,6 +81,7 @@ model Matter {
   formsPackageGeneratedAt     DateTime?
   formsPackageUrl             String?
   formsGenerated              String[]
+  formData                    Json?
 }
 
 model MatterStepProgress {

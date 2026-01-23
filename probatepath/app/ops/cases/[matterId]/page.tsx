@@ -1015,21 +1015,18 @@ function RemindersCard({ recordId, reminders, noticeReminder }: RemindersCardPro
 
 function FormsGenerationCard({ recordId }: { recordId: string }) {
   const forms = [
-    { id: "P2", name: "Submission for Estate Grant", available: true, endpoint: "generated" },
-    { id: "P3", name: "Affidavit of Applicant (Short Form)", available: true, endpoint: "generated" },
-    { id: "P4", name: "Affidavit of Applicant (Long Form)", available: true, endpoint: "generated" },
-    { id: "P9", name: "Affidavit of Delivery", available: true, endpoint: "p9" },
-    { id: "P10", name: "Assets & Liabilities (Domiciled)", available: true, endpoint: "generated" },
-    { id: "P11", name: "Assets & Liabilities (Non-Domiciled)", available: false, endpoint: "generated" },
-    { id: "P17", name: "Affidavit of Attesting Witness", available: false, endpoint: "generated" },
-    { id: "P20", name: "Affidavit of Condition of Will", available: false, endpoint: "generated" },
+    { id: "P1", name: "Notice of Proposed Application", available: true, docx: true },
+    { id: "P2", name: "Submission for Estate Grant", available: true, docx: true },
+    { id: "P3", name: "Affidavit of Applicant (Short Form)", available: true, docx: true },
+    { id: "P4", name: "Affidavit of Applicant (Long Form)", available: true, docx: false },
+    { id: "P9", name: "Affidavit of Delivery", available: true, docx: true },
+    { id: "P10", name: "Assets & Liabilities (Domiciled)", available: true, docx: true },
+    { id: "P11", name: "Assets & Liabilities (Non-Domiciled)", available: false, docx: false },
+    { id: "P17", name: "Affidavit of Attesting Witness", available: false, docx: false },
+    { id: "P20", name: "Affidavit of Condition of Will", available: false, docx: false },
   ];
 
-  // Build the correct URL based on form type
-  const getFormUrl = (form: { id: string; endpoint: string }) => {
-    if (form.endpoint === "p9") {
-      return `/api/forms/p9/${recordId}?download=1`;
-    }
+  const getFormUrl = (form: { id: string }) => {
     return `/api/forms/generated/${form.id}/${recordId}?download=1`;
   };
 
@@ -1047,17 +1044,20 @@ function FormsGenerationCard({ recordId }: { recordId: string }) {
         {forms.map((form) => (
           <a
             key={form.id}
-            href={getFormUrl(form)}
+            href={form.available ? getFormUrl(form) : undefined}
             target="_blank"
             rel="noopener noreferrer"
             className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
               form.available
                 ? "border-[color:var(--brand)] text-[color:var(--brand)] hover:bg-[color:var(--brand)] hover:text-white"
-                : "border-[color:var(--border-muted)] text-[color:var(--ink-muted)] cursor-not-allowed opacity-50"
+                : "border-[color:var(--border-muted)] text-[color:var(--ink-muted)] cursor-not-allowed opacity-50 pointer-events-none"
             }`}
           >
             <span>{form.name}</span>
-            <span className="text-xs opacity-75">({form.id})</span>
+            <span className="flex items-center gap-1 text-xs opacity-75">
+              ({form.id})
+              {form.docx && <span className="ml-1 rounded bg-green-100 px-1 py-0.5 text-[10px] text-green-700">.docx</span>}
+            </span>
           </a>
         ))}
       </div>
@@ -1068,7 +1068,7 @@ function FormsGenerationCard({ recordId }: { recordId: string }) {
           <li>Forms are generated in real-time from case data</li>
           <li>Beneficiary lists, assets, and liabilities auto-populate</li>
           <li>No manual data entry required - everything comes from the database</li>
-          <li>PDFs are court-ready and can be printed immediately</li>
+          <li>Word documents (.docx) are court-ready and match official BC Supreme Court forms</li>
         </ul>
       </div>
     </div>

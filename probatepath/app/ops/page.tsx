@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { portalStatusLabels } from "@/lib/portal/status";
 import { listCases } from "@/lib/cases";
+import { DeleteCaseButton } from "./DeleteCaseButton";
 
 export const metadata: Metadata = {
   title: "Operations portal",
@@ -47,13 +48,14 @@ export default async function OpsPage({ searchParams }: OpsPageProps) {
       </div>
 
       <div className="overflow-hidden rounded-3xl border border-[color:var(--border-muted)] bg-white shadow-[0_25px_80px_-60px_rgba(15,23,42,0.22)]">
-        <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_auto] items-center gap-3 border-b border-[color:var(--border-muted)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-muted)] sm:px-6">
+        <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_auto_auto] items-center gap-3 border-b border-[color:var(--border-muted)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-muted)] sm:px-6">
           <span>Case</span>
           <span>Email</span>
           <span>Status</span>
           <span>Created</span>
           <span>Updated</span>
           <span className="text-right">Open</span>
+          <span></span>
         </div>
 
         {cases.length === 0 ? (
@@ -63,7 +65,7 @@ export default async function OpsPage({ searchParams }: OpsPageProps) {
         ) : (
           <div className="divide-y divide-[color:var(--border-muted)]">
             {cases.map((record) => (
-              <div key={record.id} className="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_auto] items-center gap-3 px-4 py-4 text-sm text-[color:var(--ink)] sm:px-6">
+              <div key={record.id} className="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_auto_auto] items-center gap-3 px-4 py-4 text-sm text-[color:var(--ink)] sm:px-6">
                 <div className="truncate">
                   <p className="font-semibold">{record.user?.name || "Unnamed client"}</p>
                   <p className="text-xs text-[color:var(--ink-muted)]">
@@ -81,6 +83,9 @@ export default async function OpsPage({ searchParams }: OpsPageProps) {
                   >
                     Open
                   </Link>
+                </div>
+                <div>
+                  <DeleteCaseButton matterId={record.id} clientName={record.user?.name || "this case"} />
                 </div>
               </div>
             ))}

@@ -6,6 +6,7 @@ export type PortalStepErrors = Record<string, string>;
 type Validator = (draft: IntakeDraft) => PortalStepErrors;
 
 const required = (value?: string | null) => typeof value === "string" && value.trim().length > 0;
+const validEmail = (value?: string | null) => typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 const validators: Partial<Record<PortalStepId, Validator>> = {
   "will-upload": (draft) => {
@@ -20,7 +21,11 @@ const validators: Partial<Record<PortalStepId, Validator>> = {
     const applicant = draft.estateIntake.applicant;
     if (!required(applicant.name.first)) errors["applicant.name.first"] = "Enter your first name.";
     if (!required(applicant.name.last)) errors["applicant.name.last"] = "Enter your last name.";
-    if (!required(applicant.contact.email)) errors["applicant.contact.email"] = "Enter your email.";
+    if (!required(applicant.contact.email)) {
+      errors["applicant.contact.email"] = "Enter your email.";
+    } else if (!validEmail(applicant.contact.email)) {
+      errors["applicant.contact.email"] = "Enter a valid email address.";
+    }
     if (!required(applicant.contact.phone)) errors["applicant.contact.phone"] = "Enter your phone number.";
     return errors;
   },

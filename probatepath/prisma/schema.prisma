@@ -27,6 +27,7 @@ model User {
   betaPayments        BetaPayment[]
   callbackSchedules   CallbackSchedule[]
   callbackWillUploads CallbackWillUpload[]
+  notifications       Notification[]
 }
 
 model Matter {
@@ -82,6 +83,13 @@ model Matter {
   formsPackageUrl             String?
   formsGenerated              String[]
   formData                    Json?
+  beneficiaryMailings         BeneficiaryMailing[]
+  notifications               Notification[]
+  postGrantAssets             PostGrantAsset[]
+  postGrantDebts              PostGrantDebt[]
+  distributions               Distribution[]
+  beneficiaryReleases         BeneficiaryRelease[]
+  requisitions                Requisition[]
 }
 
 model MatterStepProgress {
@@ -475,6 +483,8 @@ enum PortalStatus {
   probate_filed
   waiting_for_grant
   grant_complete
+  post_grant_active
+  estate_closeout
   done
 }
 
@@ -616,4 +626,207 @@ model AvailabilitySlot {
 
   @@unique([date, time])
   @@index([date])
+}
+
+// ========================================
+// PER-BENEFICIARY P1 MAILING TRACKING
+// ========================================
+
+model BeneficiaryMailing {
+  id              String          @id @default(cuid())
+  matterId        String
+  beneficiaryId   String
+  beneficiaryName String
+  deliveryMethod  DeliveryMethod  @default(registered_mail)
+  status          MailingStatus   @default(not_printed)
+  printedAt       DateTime?
+  mailedAt        DateTime?
+  deliveredAt     DateTime?
+  trackingNumber  String?
+  carrierName     String?
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  matter          Matter          @relation(fields: [matterId], references: [id])
+  proofs          DeliveryProof[]
+
+  @@unique([matterId, beneficiaryId])
+  @@index([matterId])
+}
+
+model DeliveryProof {
+  id                   String             @id @default(cuid())
+  beneficiaryMailingId String
+  fileUrl              String
+  fileName             String
+  fileSize             Int?
+  uploadedAt           DateTime           @default(now())
+  beneficiaryMailing   BeneficiaryMailing @relation(fields: [beneficiaryMailingId], references: [id], onDelete: Cascade)
+
+  @@index([beneficiaryMailingId])
+}
+
+enum MailingStatus {
+  not_printed
+  printed
+  mailed
+  delivered
+}
+
+enum DeliveryMethod {
+  registered_mail
+  courier
+  personal
+  electronic
+}
+
+// ========================================
+// IN-APP NOTIFICATIONS
+// ========================================
+
+model Notification {
+  id        String           @id @default(cuid())
+  matterId  String?
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+  matter    Matter?          @relation(fields: [matterId], references: [id])
+  user      User             @relation(fields: [userId], references: [id])
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+}
+
+enum NotificationType {
+  document_ready
+  countdown_milestone
+  action_required
+  status_update
+  system
+}
+
+// ========================================
+// POST-GRANT MODULE
+// ========================================
+
+model PostGrantAsset {
+  id            String      @id @default(cuid())
+  matterId      String
+  name          String
+  category      String
+  institution   String?
+  accountNumber String?
+  estimatedValue Decimal?
+  actualValue   Decimal?
+  status        AssetStatus @default(identified)
+  contactedAt   DateTime?
+  documentsSentAt DateTime?
+  fundsReceivedAt DateTime?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  matter        Matter      @relation(fields: [matterId], references: [id])
+
+  @@index([matterId])
+}
+
+model PostGrantDebt {
+  id          String     @id @default(cuid())
+  matterId    String
+  creditor    String
+  category    String?
+  amount      Decimal?
+  verifiedAmount Decimal?
+  status      DebtStatus @default(identified)
+  verifiedAt  DateTime?
+  paidAt      DateTime?
+  receiptUrl  String?
+  notes       String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  matter      Matter     @relation(fields: [matterId], references: [id])
+
+  @@index([matterId])
+}
+
+model Distribution {
+  id              String   @id @default(cuid())
+  matterId        String
+  beneficiaryId   String?
+  beneficiaryName String
+  sharePercent    Decimal?
+  shareAmount     Decimal?
+  paidAt          DateTime?
+  method          String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  matter          Matter   @relation(fields: [matterId], references: [id])
+
+  @@index([matterId])
+}
+
+model BeneficiaryRelease {
+  id              String    @id @default(cuid())
+  matterId        String
+  beneficiaryId   String?
+  beneficiaryName String
+  sentAt          DateTime?
+  signedAt        DateTime?
+  fileUrl         String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  matter          Matter    @relation(fields: [matterId], references: [id])
+
+  @@index([matterId])
+}
+
+enum AssetStatus {
+  identified
+  contacted
+  documents_sent
+  funds_received
+  closed
+}
+
+enum DebtStatus {
+  identified
+  verified
+  paid
+  disputed
+}
+
+// ========================================
+// REQUISITION HANDLER
+// ========================================
+
+model Requisition {
+  id          String            @id @default(cuid())
+  matterId    String
+  receivedAt  DateTime          @default(now())
+  dueAt       DateTime?
+  status      RequisitionStatus @default(received)
+  description String?
+  courtNotes  String?
+  responseNotes String?
+  fileUrl     String?
+  responseFileUrl String?
+  resolvedAt  DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  matter      Matter            @relation(fields: [matterId], references: [id])
+
+  @@index([matterId])
+  @@index([status])
+}
+
+enum RequisitionStatus {
+  received
+  responding
+  resolved
 }

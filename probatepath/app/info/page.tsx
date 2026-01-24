@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { InfoCard } from "@/components/info/InfoCard";
 import { RegistryCard } from "@/components/info/RegistryCard";
-import { BookOpen, HelpCircle, MapPin, FileText } from "lucide-react";
+import { BookOpen, HelpCircle, MapPin, FileText, Calculator } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Info Center | BC Probate Help for Executors",
@@ -140,6 +140,30 @@ export default function InfoCenterPage() {
               <span className="text-[color:var(--slate)]">→</span>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* Tools */}
+      <section className="space-y-8">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">Tools</p>
+          <h2 className="font-serif text-3xl text-[color:var(--brand)]">Free calculators</h2>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link
+            href="/info/calculators/probate-fees"
+            className="group flex items-start gap-4 rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6 transition hover:border-[color:var(--brand)] hover:shadow-md"
+          >
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--brand)]/10">
+              <Calculator className="h-5 w-5 text-[color:var(--brand)]" />
+            </span>
+            <div>
+              <p className="font-semibold text-[color:var(--brand)] group-hover:underline">BC Probate Fee Calculator</p>
+              <p className="mt-1 text-sm text-[color:var(--muted-ink)]">
+                Enter your estate value and instantly see the court filing fees, probate fees by bracket, and total costs.
+              </p>
+            </div>
+          </Link>
         </div>
       </section>
 

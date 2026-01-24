@@ -43,7 +43,7 @@ export default function KelownaRegistryPage() {
         eyebrow="Probate Registry"
         title="Kelowna Probate Registry"
         description="How to file probate documents in Kelowna: address, hours, parking, and a simple checklist."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="5 min"
         toc={toc}
       >

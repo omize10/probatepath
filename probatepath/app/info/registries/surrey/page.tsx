@@ -43,7 +43,7 @@ export default function SurreyRegistryPage() {
         eyebrow="Probate Registry"
         title="Surrey Probate Registry"
         description="How to file probate documents at the Surrey registry, including what to bring and where to park."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="5 min"
         toc={toc}
       >

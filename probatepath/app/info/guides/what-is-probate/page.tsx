@@ -45,7 +45,7 @@ const schema = articleSchema({
   title: "What is Probate in BC?",
   description: "A clear explanation of what probate means in British Columbia",
   datePublished: "2025-01-01",
-  dateModified: "2025-12-13",
+  dateModified: "2026-01-24",
   url: "https://probatedesk.ca/info/guides/what-is-probate",
 });
 
@@ -63,7 +63,7 @@ export default function WhatIsProbatePage() {
         eyebrow="Guide"
         title="What is Probate in BC?"
         description="Probate is the court process that confirms an executor has legal authority to deal with a deceased person's estate. Here's what that actually means."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="10 min"
         toc={toc}
       >

@@ -6,11 +6,11 @@ import { FAQSection } from "@/components/info/FAQSection";
 import { articleSchema } from "@/lib/info/schema";
 
 export const metadata: Metadata = {
-  title: "BC Probate Guide 2025 | Everything Executors Need to Know",
+  title: "BC Probate Guide 2026 | Everything Executors Need to Know",
   description: "The complete guide to probate in British Columbia. Learn when you need it, what forms to file, how long it takes, what it costs, and what happens after the grant.",
   keywords: ["probate BC", "BC probate guide", "grant of probate BC", "executor BC", "probate British Columbia"],
   openGraph: {
-    title: "BC Probate Guide 2025 | ProbateDesk",
+    title: "BC Probate Guide 2026 | ProbateDesk",
     description: "The complete guide to probate in British Columbia for executors.",
     url: "https://probatedesk.ca/info/guides/bc-probate-guide",
     type: "article",
@@ -54,10 +54,10 @@ const faqs = [
 ];
 
 const schema = articleSchema({
-  title: "The Complete BC Probate Guide 2025",
+  title: "The Complete BC Probate Guide 2026",
   description: "Everything BC executors need to know about probate",
   datePublished: "2025-01-01",
-  dateModified: "2025-12-13",
+  dateModified: "2026-01-24",
   url: "https://probatedesk.ca/info/guides/bc-probate-guide",
 });
 
@@ -75,7 +75,7 @@ export default function BCProbateGuidePage() {
         eyebrow="Comprehensive guide"
         title="The Complete BC Probate Guide"
         description="Everything you need to understand probate in British Columbia. This guide covers when probate is required, what forms you need, how long it takes, what it costs, and what to do after you receive the grant."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="25 min"
         toc={toc}
       >
@@ -469,6 +469,10 @@ export default function BCProbateGuidePage() {
         </ul>
 
         <p>
+          <Link href="/info/calculators/probate-fees" className="text-[color:var(--brand)] underline font-medium">
+            Use our free probate fee calculator →
+          </Link>
+          {" | "}
           <Link href="/info/guides/probate-fees-costs" className="text-[color:var(--brand)] underline">
             See the full breakdown of probate costs →
           </Link>

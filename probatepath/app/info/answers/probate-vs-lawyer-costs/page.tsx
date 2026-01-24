@@ -31,7 +31,7 @@ export default function ProbateVsLawyerCostsPage() {
       eyebrow="Quick Answer"
       title="Probate Costs: DIY vs. ProbateDesk vs. Lawyer"
       description="What each option costs and what you get."
-      lastUpdated="December 2025"
+      lastUpdated="January 2026"
       readingTime="4 min"
       toc={[]}
     >
@@ -77,7 +77,9 @@ export default function ProbateVsLawyerCostsPage() {
         </table>
       </div>
 
-      <p><em>Note: All options require separate payment of court filing fees ($200) and probate fees (based on estate value).</em></p>
+      <p><em>Note: All options require separate payment of court filing fees ($200) and probate fees (based on estate value).{" "}
+        <Link href="/info/calculators/probate-fees" className="text-[color:var(--brand)] underline">Calculate your court fees →</Link>
+      </em></p>
 
       <h2>When each makes sense</h2>
 

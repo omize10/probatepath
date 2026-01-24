@@ -31,7 +31,7 @@ export default function ProbateForHousePage() {
       eyebrow="Quick Answer"
       title="Do I Need Probate for a House in BC?"
       description="When probate is required for BC real estate."
-      lastUpdated="December 2025"
+      lastUpdated="January 2026"
       readingTime="3 min"
       toc={[]}
     >

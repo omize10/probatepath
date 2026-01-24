@@ -42,7 +42,7 @@ const schema = articleSchema({
   title: "BC Probate Timeline",
   description: "How long each phase of BC probate takes",
   datePublished: "2025-01-01",
-  dateModified: "2025-12-13",
+  dateModified: "2026-01-24",
   url: "https://probatedesk.ca/info/guides/probate-timeline",
 });
 
@@ -60,7 +60,7 @@ export default function ProbateTimelinePage() {
         eyebrow="Guide"
         title="BC Probate Timeline"
         description="A realistic breakdown of how long each phase of probate takes in British Columbia, from first steps to closing the estate."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="10 min"
         toc={toc}
       >

@@ -31,7 +31,7 @@ export default function HowLongProbatePage() {
       eyebrow="Quick Answer"
       title="How Long Does Probate Take in BC?"
       description="A straightforward answer with timeline breakdown."
-      lastUpdated="December 2025"
+      lastUpdated="January 2026"
       readingTime="3 min"
       toc={[]}
     >

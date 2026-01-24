@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { logAudit, logSecurityAudit } from "@/lib/audit";
 import { getServerAuth } from "@/lib/auth";
 import { sendTemplateEmail } from "@/lib/email";
+import { sendSMS } from "@/lib/sms";
 import { intakeDraftSchema } from "@/lib/intake/schema";
 import { ensureMatter } from "@/lib/matter/server";
 import { splitName } from "@/lib/name";
@@ -388,6 +389,18 @@ export async function POST(request: Request) {
     });
   } else {
     console.warn("[intake.submit] Draft email missing; skipping notification");
+  }
+
+  // Send SMS confirmation if phone is available
+  const phone = draftRecord.exPhone?.trim();
+  if (phone) {
+    const portalLink = `${process.env.APP_URL ?? "http://localhost:3000"}/portal`;
+    await sendSMS({
+      to: phone,
+      body: `ProbateDesk: Your intake is submitted. We're preparing your documents. Check your portal: ${portalLink}`,
+    }).catch((err) => {
+      console.error("[intake.submit] SMS failed", { phone, error: err });
+    });
   }
 
   const response = NextResponse.json({

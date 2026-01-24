@@ -19,7 +19,7 @@ export default function First30DaysPage() {
       eyebrow="Quick Answer"
       title="First 30 Days as Executor"
       description="A practical checklist for what to do immediately."
-      lastUpdated="December 2025"
+      lastUpdated="January 2026"
       readingTime="4 min"
       toc={[]}
     >

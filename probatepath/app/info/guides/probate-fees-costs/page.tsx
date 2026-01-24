@@ -6,13 +6,14 @@ import { FAQSection } from "@/components/info/FAQSection";
 import { articleSchema } from "@/lib/info/schema";
 
 export const metadata: Metadata = {
-  title: "BC Probate Fees and Costs 2025 | Complete Breakdown",
-  description: "BC probate costs include $200 filing fee plus 1.4% on estate value over $50,000. See the full breakdown of court fees, professional costs, and other expenses.",
-  keywords: ["BC probate fees", "probate cost BC", "estate administration tax BC", "probate fees calculator"],
+  title: "BC Probate Fees and Costs 2026 | Complete Breakdown",
+  description: "BC probate costs include $200 filing fee plus 1.4% on estate value over $50,000. Use our free calculator and see the full breakdown of court fees, professional costs, and other expenses.",
+  keywords: ["BC probate fees", "probate cost BC", "estate administration tax BC", "probate fees calculator", "BC probate fee calculator", "how much does probate cost in BC"],
 };
 
 const toc = [
   { id: "summary", title: "Cost summary", level: 2 },
+  { id: "calculator", title: "Fee calculator", level: 2 },
   { id: "court-fees", title: "Court filing fee", level: 2 },
   { id: "probate-fees", title: "Probate fees", level: 2 },
   { id: "examples", title: "Example calculations", level: 2 },
@@ -38,10 +39,10 @@ const faqs = [
 ];
 
 const schema = articleSchema({
-  title: "BC Probate Fees and Costs 2025",
-  description: "Complete breakdown of probate costs in British Columbia",
+  title: "BC Probate Fees and Costs 2026",
+  description: "Complete breakdown of probate costs in British Columbia including free calculator",
   datePublished: "2025-01-01",
-  dateModified: "2025-12-13",
+  dateModified: "2026-01-24",
   url: "https://probatedesk.ca/info/guides/probate-fees-costs",
 });
 
@@ -59,7 +60,7 @@ export default function ProbateFeesCostsPage() {
         eyebrow="Guide"
         title="BC Probate Fees and Costs"
         description="A complete breakdown of what probate costs in British Columbia, including court fees, professional help, and other common expenses."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="9 min"
         toc={toc}
       >
@@ -71,6 +72,21 @@ export default function ProbateFeesCostsPage() {
           about <strong>$6,650 in court costs</strong> alone, plus other expenses like commissioning 
           fees and professional help if used.
         </p>
+
+        <div id="calculator" className="scroll-mt-24 not-prose rounded-2xl border-2 border-[color:var(--brand)]/30 bg-gradient-to-r from-blue-50/50 to-white p-6 my-8">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex-1">
+              <p className="text-base font-bold text-[color:var(--brand)]">Try our free probate fee calculator</p>
+              <p className="text-sm text-gray-600 mt-1">Enter your estate value and instantly see your total court costs with a full bracket breakdown.</p>
+            </div>
+            <Link
+              href="/info/calculators/probate-fees"
+              className="inline-flex items-center justify-center rounded-full bg-[color:var(--brand)] px-6 py-3 text-sm font-semibold text-white hover:bg-[color:var(--accent-dark)] whitespace-nowrap"
+            >
+              Open calculator
+            </Link>
+          </div>
+        </div>
 
         <h2 id="court-fees" className="scroll-mt-24">Court filing fee</h2>
 

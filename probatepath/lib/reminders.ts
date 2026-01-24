@@ -1,13 +1,16 @@
 import { addDays } from "date-fns";
-import type { Reminder, User, Matter } from "@prisma/client";
+import type { Reminder, User, Matter, IntakeDraft } from "@prisma/client";
 import { Resend } from "resend";
 import { prisma } from "@/lib/prisma";
+import { sendSMS } from "@/lib/sms";
 
 export const WILL_SEARCH_REMINDER_TYPE = "willSearchFollowup";
 export const NOTICES_WAIT_REMINDER_TYPE = "notices21DayWait";
 export const REMINDER_EMAIL_CHANNEL = "email";
 
-export type ReminderWithRelations = Reminder & { case: { user: User | null } };
+export type ReminderWithRelations = Reminder & {
+  case: { user: User | null; draft: IntakeDraft | null };
+};
 
 export function getWillSearchReminder(reminders: Reminder[]): Reminder | undefined {
   return reminders.find((reminder) => reminder.type === WILL_SEARCH_REMINDER_TYPE);
@@ -41,17 +44,23 @@ export async function scheduleNoticeWaitReminder({ caseId, mailedAt }: { caseId:
   return upsertReminder({ caseId, type: NOTICES_WAIT_REMINDER_TYPE, dueAt: buildDueDate(mailedAt) });
 }
 
+/** Get the executor phone from a matter's intake draft */
+function getPhone(draft: IntakeDraft | null): string {
+  return draft?.exPhone?.trim() ?? "";
+}
+
 export async function sendReminder(reminder: ReminderWithRelations) {
   const resendKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM ?? "notifications@example.com";
   const email = reminder.case?.user?.email ?? "";
-  const subject = "ProbateDesk – It’s time for your next step";
-  const portalLink = `${(process.env.APP_URL ?? "https://probatedesk.ca").replace(/\/$/, "")}/portal`;
+  const phone = getPhone(reminder.case?.draft ?? null);
+  const subject = "ProbateDesk – It's time for your next step";
+  const portalLink = `${(process.env.APP_URL ?? "https://probatedesk.com").replace(/\/$/, "")}/portal`;
   const body = [
     "Hi there,",
     "",
-    "It’s time to continue your ProbateDesk steps.",
-    `Log in to review what’s next: ${portalLink}`,
+    "It's time to continue your ProbateDesk steps.",
+    `Log in to review what's next: ${portalLink}`,
     "",
     "Thanks,",
     "ProbateDesk",
@@ -69,15 +78,25 @@ export async function sendReminder(reminder: ReminderWithRelations) {
 
   const resend = new Resend(resendKey);
   await resend.emails.send({ from, to: email, subject, text: body });
+
+  // Also send SMS
+  if (phone) {
+    await sendSMS({
+      to: phone,
+      body: `ProbateDesk: It's time for your next step. Log in at ${portalLink}`,
+    });
+  }
+
   return true;
 }
 
-type CaseWithUser = Matter & { user: User | null };
+type CaseWithUser = Matter & { user: User | null; draft?: IntakeDraft | null };
 
 export async function notifyPacketReady(record: CaseWithUser) {
   const resendKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM ?? "notifications@example.com";
   const email = record.user?.email ?? "";
+  const phone = getPhone(record.draft ?? null);
   const portalLink = `${(process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "")}/portal`;
   const subject = "Your ProbateDesk packet is ready";
   const body = [
@@ -100,6 +119,14 @@ export async function notifyPacketReady(record: CaseWithUser) {
   }
   const resend = new Resend(resendKey);
   await resend.emails.send({ from, to: email, subject, text: body });
+
+  if (phone) {
+    await sendSMS({
+      to: phone,
+      body: `ProbateDesk: Your packet is ready! Log in at ${portalLink}`,
+    });
+  }
+
   return true;
 }
 
@@ -107,6 +134,7 @@ export async function notifyProbatePackageReady(record: CaseWithUser) {
   const resendKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM ?? "notifications@example.com";
   const email = record.user?.email ?? "";
+  const phone = getPhone(record.draft ?? null);
   const portalLink = `${(process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "")}/portal/probate-filing`;
   const subject = "Your probate filing package is ready";
   const body = [
@@ -129,6 +157,14 @@ export async function notifyProbatePackageReady(record: CaseWithUser) {
   }
   const resend = new Resend(resendKey);
   await resend.emails.send({ from, to: email, subject, text: body });
+
+  if (phone) {
+    await sendSMS({
+      to: phone,
+      body: `ProbateDesk: Your probate filing package is ready. Log in at ${portalLink}`,
+    });
+  }
+
   return true;
 }
 
@@ -136,14 +172,14 @@ export async function notifyProbateFilingReady(record: CaseWithUser) {
   const resendKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM ?? "notifications@example.com";
   const email = record.user?.email ?? "";
+  const phone = getPhone(record.draft ?? null);
   const portalLink = `${(process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "")}/portal/probate-filing`;
   const subject = "Your ProbateDesk filing packet is ready";
   const body = [
     "Hi there,",
     "",
-    "We’ve prepared your probate filing forms.",
-    "Log into your ProbateDesk portal and go to “My portal” → “Prepare probate filing”.",
-    "You’ll download your packet, sign and notarize where indicated, assemble your documents, and mail or file them at court.",
+    "We've prepared your probate filing forms.",
+    "Log into your ProbateDesk portal to download your packet, sign and notarize where indicated, assemble your documents, and mail or file them at court.",
     `Portal: ${portalLink}`,
     "",
     "Thanks,",
@@ -160,6 +196,14 @@ export async function notifyProbateFilingReady(record: CaseWithUser) {
   }
   const resend = new Resend(resendKey);
   await resend.emails.send({ from, to: email, subject, text: body });
+
+  if (phone) {
+    await sendSMS({
+      to: phone,
+      body: `ProbateDesk: Your filing packet is ready. Log in at ${portalLink}`,
+    });
+  }
+
   return true;
 }
 
@@ -173,7 +217,7 @@ export async function sendGrantCheckInReminders() {
       grantIssuedAt: null,
       probateFiledAt: { not: null },
     },
-    include: { user: true },
+    include: { user: true, draft: true },
   });
 
   if (!cases.length) {
@@ -182,6 +226,7 @@ export async function sendGrantCheckInReminders() {
 
   for (const record of cases) {
     const email = record.user?.email ?? "";
+    const phone = getPhone(record.draft);
     if (!email) {
       console.warn("[grant-check-in] Missing email for case", { caseId: record.id });
       continue;
@@ -192,7 +237,7 @@ export async function sendGrantCheckInReminders() {
       "",
       "Have you received your estate grant from the court yet?",
       "If yes, please reply to this message or log in and update your portal.",
-      "If not, no action needed – we’ll keep checking in.",
+      "If not, no action needed. We'll keep checking in.",
       `Portal: ${portalLink}`,
       "",
       "Thanks,",
@@ -206,6 +251,14 @@ export async function sendGrantCheckInReminders() {
 
     const resend = new Resend(resendKey);
     await resend.emails.send({ from, to: email, subject, text: body });
+
+    if (phone) {
+      await sendSMS({
+        to: phone,
+        body: `ProbateDesk: Have you received your estate grant yet? Log in at ${portalLink} or reply to this text.`,
+      });
+    }
+
     console.log(`[grant-check-in] Sent to ${email} for case ${record.id}`);
   }
 }

@@ -14,6 +14,8 @@ export const portalStatusOrder: PortalStatus[] = [
   "probate_filed",
   "waiting_for_grant",
   "grant_complete",
+  "post_grant_active",
+  "estate_closeout",
   "done",
 ];
 
@@ -31,6 +33,8 @@ export const portalStatusLabels: Record<PortalStatus, string> = {
   probate_filed: "Probate filed",
   waiting_for_grant: "Waiting for grant",
   grant_complete: "Grant complete",
+  post_grant_active: "Post-grant administration",
+  estate_closeout: "Estate closeout",
   done: "Finished",
 };
 

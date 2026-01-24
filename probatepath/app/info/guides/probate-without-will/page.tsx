@@ -40,7 +40,7 @@ const schema = articleSchema({
   title: "Probate Without a Will in BC",
   description: "How intestacy works when someone dies without a will in British Columbia",
   datePublished: "2025-01-01",
-  dateModified: "2025-12-13",
+  dateModified: "2026-01-24",
   url: "https://probatedesk.ca/info/guides/probate-without-will",
 });
 
@@ -58,7 +58,7 @@ export default function ProbateWithoutWillPage() {
         eyebrow="Guide"
         title="Probate Without a Will (Intestacy)"
         description="When someone dies without a valid will in BC, specific rules determine who inherits and who can administer the estate."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="10 min"
         toc={toc}
       >

@@ -45,7 +45,7 @@ const schema = articleSchema({
   title: "When Do You Need Probate in BC?",
   description: "Learn when probate is required in British Columbia and when you can skip it",
   datePublished: "2025-01-01",
-  dateModified: "2025-12-13",
+  dateModified: "2026-01-24",
   url: "https://probatedesk.ca/info/guides/when-do-you-need-probate",
 });
 
@@ -63,7 +63,7 @@ export default function WhenNeedProbatePage() {
         eyebrow="Guide"
         title="When Do You Need Probate in BC?"
         description="Not every estate requires probate. The key factors are what assets exist, how they're held, and what institutions require before releasing them."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="10 min"
         toc={toc}
       >

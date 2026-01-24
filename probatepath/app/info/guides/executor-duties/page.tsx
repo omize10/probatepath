@@ -42,7 +42,7 @@ const schema = articleSchema({
   title: "Executor Duties in BC",
   description: "Complete guide to executor responsibilities in British Columbia",
   datePublished: "2025-01-01",
-  dateModified: "2025-12-13",
+  dateModified: "2026-01-24",
   url: "https://probatedesk.ca/info/guides/executor-duties",
 });
 
@@ -60,7 +60,7 @@ export default function ExecutorDutiesPage() {
         eyebrow="Guide"
         title="Executor Duties in BC"
         description="Your legal responsibilities as an executor in British Columbia, from the moment of death through final distribution."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="12 min"
         toc={toc}
       >

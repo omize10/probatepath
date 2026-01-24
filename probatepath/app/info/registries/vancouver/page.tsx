@@ -43,7 +43,7 @@ export default function VancouverRegistryPage() {
         eyebrow="Probate Registry"
         title="Vancouver Probate Registry"
         description="The Vancouver Supreme Court Probate Registry handles the highest volume of probate applications in BC. Here's everything you need to know about filing here."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="5 min"
         toc={toc}
       >

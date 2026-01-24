@@ -31,7 +31,7 @@ export default function NoOriginalWillPage() {
       eyebrow="Quick Answer"
       title="What If I Can't Find the Original Will?"
       description="Options when you only have a copy."
-      lastUpdated="December 2025"
+      lastUpdated="January 2026"
       readingTime="3 min"
       toc={[]}
     >

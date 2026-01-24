@@ -40,7 +40,7 @@ const schema = articleSchema({
   title: "Grant of Probate vs Grant of Administration",
   description: "Understanding the different types of estate grants in British Columbia",
   datePublished: "2025-01-01",
-  dateModified: "2025-12-13",
+  dateModified: "2026-01-24",
   url: "https://probatedesk.ca/info/guides/grant-types",
 });
 
@@ -58,7 +58,7 @@ export default function GrantTypesPage() {
         eyebrow="Guide"
         title="Grant of Probate vs Grant of Administration"
         description="BC issues different types of grants depending on whether there's a will and who is applying. Here's which one applies to your situation."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="8 min"
         toc={toc}
       >

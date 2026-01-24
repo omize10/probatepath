@@ -43,7 +43,7 @@ export default function VictoriaRegistryPage() {
         eyebrow="Probate Registry"
         title="Victoria Probate Registry"
         description="Everything you need to file probate documents at the Victoria registry: address, hours, checklist, and parking."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="5 min"
         toc={toc}
       >

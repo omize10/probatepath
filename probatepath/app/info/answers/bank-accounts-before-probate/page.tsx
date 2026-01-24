@@ -31,7 +31,7 @@ export default function BankAccountsBeforeProbatePage() {
       eyebrow="Quick Answer"
       title="Can I Access Bank Accounts Before Probate?"
       description="What you can and can't access before the grant arrives."
-      lastUpdated="December 2025"
+      lastUpdated="January 2026"
       readingTime="3 min"
       toc={[]}
     >

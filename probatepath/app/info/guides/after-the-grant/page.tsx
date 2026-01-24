@@ -41,7 +41,7 @@ const schema = articleSchema({
   title: "After the Grant: Estate Administration in BC",
   description: "What happens after you receive the grant of probate in British Columbia",
   datePublished: "2025-01-01",
-  dateModified: "2025-12-13",
+  dateModified: "2026-01-24",
   url: "https://probatedesk.ca/info/guides/after-the-grant",
 });
 
@@ -59,7 +59,7 @@ export default function AfterTheGrantPage() {
         eyebrow="Guide"
         title="After the Grant: Estate Administration"
         description="Getting the grant of probate is just the midpoint. Here's what comes next: collecting assets, paying debts, handling taxes, and distributing to beneficiaries."
-        lastUpdated="December 2025"
+        lastUpdated="January 2026"
         readingTime="12 min"
         toc={toc}
       >

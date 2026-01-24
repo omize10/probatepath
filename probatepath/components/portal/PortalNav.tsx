@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/portal/notifications/NotificationBell";
 
 const NAV_LINKS = [
   { href: "/portal", label: "Home" },
@@ -40,7 +41,7 @@ export function PortalNav({ statusLabel }: PortalNavProps) {
             <p className="text-xs text-gray-500">Your guided probate workspace</p>
           </div>
         </div>
-        <nav className="flex items-center gap-6 text-sm font-medium">
+        <nav className="flex items-center gap-4 text-sm font-medium">
           {NAV_LINKS.map((item) => {
             const isActive =
               item.href === "/portal"
@@ -62,6 +63,7 @@ export function PortalNav({ statusLabel }: PortalNavProps) {
               </Link>
             );
           })}
+          <NotificationBell />
         </nav>
       </div>
     </div>

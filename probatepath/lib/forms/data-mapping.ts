@@ -15,45 +15,76 @@ export type MatterWithRelations = Matter & {
 };
 
 /**
- * Maps Prisma Matter data + formData JSON into the EstateData interface
- * used by all form generators.
+ * Maps Prisma Matter data + payload.estateIntake JSON into the EstateData
+ * interface used by all form generators.
  *
- * Priority: formData JSON fields override derived values from Prisma relations.
- * This allows ops team to populate formData with precise form-generation data
- * while falling back to whatever can be derived from existing intake data.
+ * Priority:
+ *  1. formData JSON (explicit overrides from ops)
+ *  2. payload.estateIntake (detailed intake form data)
+ *  3. IntakeDraft flat fields (legacy fallback)
+ *  4. Executor/Beneficiary Prisma relations (if populated)
  */
 export function mapToEstateData(matter: MatterWithRelations): EstateData {
   const formData = (matter.formData as Partial<EstateData>) || {};
   const draft = matter.draft;
   const payload = (draft?.payload as Record<string, any>) || {};
+  const intake = payload.estateIntake || {};
 
-  // Parse deceased name from IntakeDraft
-  const deceasedNameParts = splitName(draft?.decFullName || "");
+  // ===== DECEASED =====
+  const intakeDeceased = intake.deceased || {};
+  const decName = intakeDeceased.name || {};
+  const decAddress = intakeDeceased.address || {};
 
-  // Parse executor name
-  const primaryExecutor =
-    matter.executors.find((e) => e.isPrimary) || matter.executors[0];
+  const decFirstName = decName.first || splitName(draft?.decFullName || "").first || "";
+  const decMiddleName = [decName.middle1, decName.middle2, decName.middle3].filter(Boolean).join(" ") || splitName(draft?.decFullName || "").middle || "";
+  const decLastName = decName.last || splitName(draft?.decFullName || "").last || "";
 
-  // Build applicants from executors
-  const applicants: EstateData["applicants"] =
-    formData.applicants ||
-    matter.executors
-      .filter((e) => !e.isRenouncing && !e.isDeceased)
-      .map((e) => ({
-        firstName: e.givenNames || splitName(e.fullName).first,
-        middleName: splitName(e.fullName).middle || undefined,
-        lastName: e.surname || splitName(e.fullName).last,
-        address: {
-          streetName: [e.addressLine1, e.addressLine2].filter(Boolean).join(", "),
-          city: e.city || "",
-          province: e.province || "British Columbia",
-          country: e.country || "Canada",
-          postalCode: e.postalCode || "",
-        },
-        isIndividual: true,
-        namedInWill: e.isPrimary || e.isAlternate,
-        relationship: undefined,
-      }));
+  // ===== APPLICANT(S) =====
+  const intakeApplicant = intake.applicant || {};
+  const appName = intakeApplicant.name || {};
+  const appAddress = intakeApplicant.address || {};
+  const appContact = intakeApplicant.contact || {};
+
+  // Named executors from will section
+  const namedExecutors: any[] = intake.will?.namedExecutors || [];
+
+  // Build applicants list: primary applicant + co-applicants
+  const applicants: EstateData["applicants"] = formData.applicants || buildApplicants(intakeApplicant, namedExecutors, matter.executors);
+
+  // ===== WILL =====
+  const intakeWill = intake.will || {};
+  const hasWill = intakeWill.hasWill === "yes" || draft?.hadWill === true;
+
+  // ===== FAMILY =====
+  const intakeFamily = intake.family || {};
+  const intakeChildren: any[] = intakeFamily.children || [];
+
+  // ===== ASSETS =====
+  const intakeAssets = intake.assets || {};
+
+  // ===== FILING =====
+  const intakeFiling = intake.filing || {};
+  const returnAddress = intakeFiling.returnAddress || {};
+
+  // ===== BENEFICIARIES =====
+  const intakeBeneficiaries = intake.beneficiaries || {};
+  const intakePeople: any[] = intakeBeneficiaries.people || [];
+
+  // Build spouse
+  const spouse: EstateData["spouse"] = formData.spouse || buildSpouse(intakeFamily, matter.beneficiaries);
+
+  // Build children
+  const children: EstateData["children"] = formData.children || buildChildren(intakeChildren, matter.beneficiaries);
+
+  // Build beneficiaries (named in will)
+  const beneficiaries: EstateData["beneficiaries"] = formData.beneficiaries || buildBeneficiaries(intakePeople, matter.beneficiaries);
+
+  // Build assets
+  const assets = formData.assets || buildAssets(intakeAssets, matter.schedules, payload);
+
+  // Determine grant type
+  const grantType: EstateData["grantType"] =
+    formData.grantType || (hasWill ? "probate" : "admin_without_will");
 
   // Build other executors (renounced/deceased)
   const otherExecutors: EstateData["otherExecutors"] =
@@ -65,100 +96,58 @@ export function mapToEstateData(matter: MatterWithRelations): EstateData {
         reason: e.isDeceased ? "deceased" as const : "renounced" as const,
       }));
 
-  // Build children from beneficiaries
-  const childBeneficiaries = matter.beneficiaries.filter(
-    (b) => b.type === "CHILD" || b.type === "STEPCHILD"
-  );
-  const children: EstateData["children"] =
-    formData.children ||
-    childBeneficiaries.map((b) => ({
-      name: b.fullName,
-      status: b.status === "ALIVE" ? "surviving" as const : "deceased" as const,
-    }));
-
-  // Build spouse
-  const spouseBeneficiary = matter.beneficiaries.find((b) => b.type === "SPOUSE");
-  const spouse: EstateData["spouse"] = formData.spouse || {
-    status: spouseBeneficiary
-      ? spouseBeneficiary.status === "ALIVE"
-        ? "surviving"
-        : "deceased"
-      : "never_married",
-    name: spouseBeneficiary?.fullName,
-    survivingName:
-      spouseBeneficiary?.status === "ALIVE" ? spouseBeneficiary.fullName : undefined,
-  };
-
-  // Build beneficiaries (non-spouse, non-children)
-  const otherBeneficiaries = matter.beneficiaries.filter(
-    (b) => b.type !== "SPOUSE" && b.type !== "CHILD" && b.type !== "STEPCHILD"
-  );
-  const beneficiaries: EstateData["beneficiaries"] =
-    formData.beneficiaries ||
-    otherBeneficiaries.map((b) => ({
-      name: b.fullName,
-      status: b.status === "ALIVE" ? "surviving" as const : "deceased" as const,
-    }));
-
-  // Extract assets from schedules or formData
-  const assets = formData.assets || extractAssetsFromSchedules(matter.schedules, payload);
-
-  // Build delivery data
-  const deliveries = formData.deliveries || buildDeliveries(matter.beneficiaries);
-
-  // Determine grant type from payload or default
-  const grantType: EstateData["grantType"] =
-    formData.grantType ||
-    (draft?.hadWill ? "probate" : "admin_without_will");
-
-  // Build address for service
+  // Build address for service from filing data or applicant
   const addressForService: EstateData["addressForService"] = formData.addressForService || {
-    street: primaryExecutor
-      ? [primaryExecutor.addressLine1, primaryExecutor.addressLine2, primaryExecutor.city, primaryExecutor.province, primaryExecutor.postalCode]
-          .filter(Boolean)
-          .join(", ")
-      : "",
-    email: primaryExecutor?.email || draft?.email || "",
-    phone: primaryExecutor?.phone || draft?.exPhone || "",
+    street: [returnAddress.line1, returnAddress.line2, returnAddress.city, returnAddress.region, returnAddress.postalCode]
+      .filter(Boolean)
+      .join(", ") ||
+      [appAddress.line1, appAddress.line2, appAddress.city, appAddress.region, appAddress.postalCode]
+        .filter(Boolean)
+        .join(", ") || "",
+    email: appContact.email || draft?.email || "",
+    phone: appContact.phone || draft?.exPhone || "",
   };
+
+  // Build deliveries from beneficiaries + family
+  const deliveries = formData.deliveries || buildDeliveries(intakeFamily, intakePeople, matter.beneficiaries);
 
   return {
-    registry: formData.registry || matter.registryName || "Vancouver",
+    registry: formData.registry || intakeFiling.registryLocation || matter.registryName || "Vancouver",
     fileNumber: formData.fileNumber || matter.caseCode || undefined,
 
     deceased: formData.deceased || {
-      firstName: deceasedNameParts.first,
-      middleName: deceasedNameParts.middle || undefined,
-      lastName: deceasedNameParts.last,
-      aliases: payload.deceasedAliases || [],
-      dateOfDeath: formatDate(draft?.decDateOfDeath),
+      firstName: decFirstName,
+      middleName: decMiddleName || undefined,
+      lastName: decLastName,
+      aliases: intakeDeceased.aliases || [],
+      dateOfDeath: formatDate(intakeDeceased.dateOfDeath || draft?.decDateOfDeath),
       lastAddress: {
-        streetName: payload.deceasedAddress || draft?.decCityProv || "",
-        city: payload.deceasedCity || extractCity(draft?.decCityProv),
-        province: payload.deceasedProvince || "British Columbia",
-        country: "Canada",
-        postalCode: payload.deceasedPostalCode || "",
+        streetName: [decAddress.line1, decAddress.line2].filter(Boolean).join(", ") || draft?.decCityProv || "",
+        city: decAddress.city || extractCity(draft?.decCityProv),
+        province: decAddress.region || "British Columbia",
+        country: (decAddress.country || "Canada").replace(/[^a-zA-Z\s]/g, ""),
+        postalCode: decAddress.postalCode || "",
       },
-      domiciledInBC: payload.domiciledInBC !== false,
-      nisgaaCitizen: payload.nisgaaCitizen || false,
-      treatyFirstNation: payload.treatyFirstNation || undefined,
+      domiciledInBC: intakeDeceased.domiciledInBC !== false,
+      nisgaaCitizen: intakeDeceased.nisgaaCitizen || false,
+      treatyFirstNation: intakeDeceased.treatyFirstNation || undefined,
     },
 
     grantType,
 
-    will: formData.will || (draft?.hadWill
+    will: formData.will || (hasWill
       ? {
           exists: true,
-          date: payload.willDate || undefined,
-          isElectronic: payload.willIsElectronic || false,
-          originalAvailable: payload.willOriginalAvailable !== false,
-          hasCodicils: payload.hasCodicils || false,
-          codicilDates: payload.codicilDates || [],
-          hasHandwrittenChanges: payload.hasHandwrittenChanges || false,
-          hasOrdersAffecting: payload.hasOrdersAffecting || false,
-          ordersAffectingWill: payload.ordersAffectingWill || [],
-          refersToDocuments: payload.refersToDocuments || false,
-          documentsReferred: payload.documentsReferred || [],
+          date: intakeWill.dateSigned || undefined,
+          isElectronic: intakeWill.isElectronic || false,
+          originalAvailable: intakeWill.hasOriginal !== "no",
+          hasCodicils: intakeWill.hasCodicils === "yes",
+          codicilDates: intakeWill.codicils || [],
+          hasHandwrittenChanges: intakeWill.hasHandwrittenChanges || false,
+          hasOrdersAffecting: intakeWill.hasOrdersAffecting || false,
+          ordersAffectingWill: intakeWill.ordersAffectingWill || [],
+          refersToDocuments: intakeWill.refersToDocuments || false,
+          documentsReferred: intakeWill.documentsReferred || [],
         }
       : undefined),
 
@@ -179,7 +168,7 @@ export function mapToEstateData(matter: MatterWithRelations): EstateData {
 
     affidavitsOfDelivery: formData.affidavitsOfDelivery || [
       {
-        name: primaryExecutor?.fullName || draft?.exFullName || "",
+        name: buildFullName(appName) || draft?.exFullName || "",
         dateSworn: "",
       },
     ],
@@ -218,11 +207,262 @@ export function mapToEstateData(matter: MatterWithRelations): EstateData {
   };
 }
 
+// ===== Builder functions =====
+
+function buildApplicants(
+  intakeApplicant: any,
+  namedExecutors: any[],
+  dbExecutors: Executor[]
+): EstateData["applicants"] {
+  const applicants: EstateData["applicants"] = [];
+
+  // Primary applicant from intake
+  if (intakeApplicant.name && Object.keys(intakeApplicant.name).length > 0) {
+    const appName = intakeApplicant.name;
+    const appAddress = intakeApplicant.address || {};
+    applicants.push({
+      firstName: appName.first || "",
+      middleName: [appName.middle1, appName.middle2, appName.middle3].filter(Boolean).join(" ") || undefined,
+      lastName: appName.last || "",
+      address: {
+        streetName: [appAddress.line1, appAddress.line2].filter(Boolean).join(", "),
+        city: appAddress.city || "",
+        province: appAddress.region || "British Columbia",
+        country: appAddress.country || "Canada",
+        postalCode: appAddress.postalCode || "",
+      },
+      isIndividual: true,
+      namedInWill: true,
+      relationship: intakeApplicant.relationship || undefined,
+    });
+  }
+
+  // Co-applicants
+  const coApplicants: any[] = intakeApplicant.coApplicants || [];
+  for (const co of coApplicants) {
+    const coName = co.name || {};
+    const coAddress = co.address || {};
+    applicants.push({
+      firstName: coName.first || "",
+      middleName: [coName.middle1, coName.middle2, coName.middle3].filter(Boolean).join(" ") || undefined,
+      lastName: coName.last || "",
+      address: {
+        streetName: [coAddress.line1, coAddress.line2].filter(Boolean).join(", "),
+        city: coAddress.city || "",
+        province: coAddress.region || "British Columbia",
+        country: coAddress.country || "Canada",
+        postalCode: coAddress.postalCode || "",
+      },
+      isIndividual: true,
+      namedInWill: true,
+      relationship: co.relationship || undefined,
+    });
+  }
+
+  // Fallback to DB executors if no intake applicant data
+  if (applicants.length === 0 && dbExecutors.length > 0) {
+    for (const e of dbExecutors.filter((ex) => !ex.isRenouncing && !ex.isDeceased)) {
+      applicants.push({
+        firstName: e.givenNames || splitName(e.fullName).first,
+        middleName: splitName(e.fullName).middle || undefined,
+        lastName: e.surname || splitName(e.fullName).last,
+        address: {
+          streetName: [e.addressLine1, e.addressLine2].filter(Boolean).join(", "),
+          city: e.city || "",
+          province: e.province || "British Columbia",
+          country: e.country || "Canada",
+          postalCode: e.postalCode || "",
+        },
+        isIndividual: true,
+        namedInWill: e.isPrimary || e.isAlternate,
+        relationship: undefined,
+      });
+    }
+  }
+
+  return applicants;
+}
+
+function buildSpouse(intakeFamily: any, dbBeneficiaries: Beneficiary[]): EstateData["spouse"] {
+  if (intakeFamily.hasSpouse === "yes" && intakeFamily.spouse) {
+    const sp = intakeFamily.spouse;
+    const spName = sp.name || {};
+    const fullName = buildFullName(spName);
+    return {
+      status: "surviving",
+      name: fullName,
+      survivingName: fullName,
+    };
+  }
+
+  if (intakeFamily.hasSpouse === "no") {
+    return { status: "never_married" };
+  }
+
+  // Fallback to DB beneficiaries
+  const spouseBen = dbBeneficiaries.find((b) => b.type === "SPOUSE");
+  if (spouseBen) {
+    return {
+      status: spouseBen.status === "ALIVE" ? "surviving" : "deceased",
+      name: spouseBen.fullName,
+      survivingName: spouseBen.status === "ALIVE" ? spouseBen.fullName : undefined,
+    };
+  }
+
+  return { status: "never_married" };
+}
+
+function buildChildren(intakeChildren: any[], dbBeneficiaries: Beneficiary[]): EstateData["children"] {
+  if (intakeChildren.length > 0) {
+    return intakeChildren.map((c: any) => ({
+      name: buildFullName(c.name || {}),
+      status: "surviving" as const,
+    }));
+  }
+
+  // Fallback to DB
+  const childBens = dbBeneficiaries.filter((b) => b.type === "CHILD" || b.type === "STEPCHILD");
+  return childBens.map((b) => ({
+    name: b.fullName,
+    status: b.status === "ALIVE" ? "surviving" as const : "deceased" as const,
+  }));
+}
+
+function buildBeneficiaries(intakePeople: any[], dbBeneficiaries: Beneficiary[]): EstateData["beneficiaries"] {
+  if (intakePeople.length > 0) {
+    return intakePeople.map((p: any) => ({
+      name: buildFullName(p.name || {}),
+      status: "surviving" as const,
+    }));
+  }
+
+  // Fallback to DB (non-spouse, non-child)
+  const others = dbBeneficiaries.filter(
+    (b) => b.type !== "SPOUSE" && b.type !== "CHILD" && b.type !== "STEPCHILD"
+  );
+  return others.map((b) => ({
+    name: b.fullName,
+    status: b.status === "ALIVE" ? "surviving" as const : "deceased" as const,
+  }));
+}
+
+type AssetData = NonNullable<EstateData["assets"]>;
+
+function buildAssets(
+  intakeAssets: any,
+  schedules: SupplementalSchedule[],
+  payload: Record<string, any>
+): EstateData["assets"] {
+  const realPropertyBC: AssetData["realPropertyBC"] = [];
+  const tangiblePersonalPropertyBC: AssetData["tangiblePersonalPropertyBC"] = [];
+  const intangibleProperty: AssetData["intangibleProperty"] = [];
+
+  // BC real estate from intake
+  const bcProperties: any[] = intakeAssets.bcProperties || [];
+  for (const prop of bcProperties) {
+    realPropertyBC.push({
+      description: prop.description || prop.address || "",
+      owners: prop.owners,
+      marketValue: parseFloat(prop.approxValue || prop.marketValue || "0"),
+      securedDebt: prop.mortgage
+        ? { creditor: prop.mortgage.lender || "", amount: parseFloat(prop.mortgage.amount || "0") }
+        : undefined,
+    });
+  }
+
+  // Vehicles + valuable items = tangible personal property
+  const vehicles: any[] = intakeAssets.vehicles || [];
+  const valuableItems: any[] = intakeAssets.valuableItems || [];
+  for (const item of [...vehicles, ...valuableItems]) {
+    tangiblePersonalPropertyBC.push({
+      description: item.description || "",
+      value: parseFloat(item.approxValue || "0"),
+    });
+  }
+
+  // Bank/investment accounts = intangible property
+  const accounts: any[] = intakeAssets.accounts || [];
+  for (const acct of accounts) {
+    intangibleProperty.push({
+      description: acct.description || `${acct.institution || ""} ${acct.accountType || ""}`.trim(),
+      value: parseFloat(acct.approxValue || acct.balance || "0"),
+    });
+  }
+
+  return {
+    realPropertyBC,
+    tangiblePersonalPropertyBC,
+    intangibleProperty,
+  };
+}
+
+function buildDeliveries(
+  intakeFamily: any,
+  intakePeople: any[],
+  dbBeneficiaries: Beneficiary[]
+): EstateData["deliveries"] {
+  const deliveries: NonNullable<EstateData["deliveries"]> = [];
+
+  // Spouse
+  if (intakeFamily.hasSpouse === "yes" && intakeFamily.spouse) {
+    const spName = intakeFamily.spouse.name || {};
+    deliveries.push({
+      recipientName: buildFullName(spName),
+      deliveryMethod: "mail",
+      deliveryDate: "",
+      acknowledgedReceipt: false,
+    });
+  }
+
+  // Children
+  const intakeChildren: any[] = intakeFamily.children || [];
+  for (const child of intakeChildren) {
+    deliveries.push({
+      recipientName: buildFullName(child.name || {}),
+      deliveryMethod: "mail",
+      deliveryDate: "",
+      acknowledgedReceipt: false,
+    });
+  }
+
+  // Other beneficiaries
+  for (const p of intakePeople) {
+    deliveries.push({
+      recipientName: buildFullName(p.name || {}),
+      deliveryMethod: "mail",
+      deliveryDate: "",
+      acknowledgedReceipt: false,
+    });
+  }
+
+  // Fallback to DB beneficiaries
+  if (deliveries.length === 0) {
+    for (const b of dbBeneficiaries.filter((b) => b.status === "ALIVE")) {
+      deliveries.push({
+        recipientName: b.fullName,
+        deliveryMethod: "mail",
+        deliveryDate: "",
+        acknowledgedReceipt: false,
+      });
+    }
+  }
+
+  return deliveries;
+}
+
 // ===== Helper functions =====
+
+function buildFullName(name: any): string {
+  if (!name) return "";
+  const parts = [name.first, name.middle1, name.last].filter(Boolean);
+  return parts.join(" ");
+}
 
 function splitName(fullName: string): { first: string; middle: string; last: string } {
   const parts = fullName.trim().split(/\s+/);
-  if (parts.length === 1) {
+  if (parts.length === 0 || (parts.length === 1 && parts[0] === "")) {
+    return { first: "", middle: "", last: "" };
+  } else if (parts.length === 1) {
     return { first: parts[0], middle: "", last: "" };
   } else if (parts.length === 2) {
     return { first: parts[0], middle: "", last: parts[1] };
@@ -251,67 +491,6 @@ function formatDate(date: Date | string | null | undefined): string {
 
 function extractCity(cityProv?: string | null): string {
   if (!cityProv) return "";
-  // Try to extract city from "City, Province" format
   const parts = cityProv.split(",");
   return parts[0]?.trim() || cityProv;
-}
-
-type AssetData = NonNullable<EstateData["assets"]>;
-
-function extractAssetsFromSchedules(
-  schedules: SupplementalSchedule[],
-  payload: Record<string, any>
-): EstateData["assets"] {
-  const realPropertyBC: AssetData["realPropertyBC"] = [];
-  const tangiblePersonalPropertyBC: AssetData["tangiblePersonalPropertyBC"] = [];
-  const intangibleProperty: AssetData["intangibleProperty"] = [];
-
-  // Extract from payload.assets if available
-  if (payload.assets && Array.isArray(payload.assets)) {
-    for (const asset of payload.assets) {
-      const value = parseFloat(asset.value || asset.estimatedValue || "0");
-      const type = (asset.type || asset.kind || "").toLowerCase();
-
-      if (type.includes("real") || type.includes("property") || type.includes("land") || type.includes("house")) {
-        realPropertyBC.push({
-          description: asset.description || asset.title || "",
-          owners: asset.owners,
-          marketValue: value,
-          securedDebt: asset.securedDebt
-            ? { creditor: asset.securedDebt.creditor || "", amount: parseFloat(asset.securedDebt.amount || "0") }
-            : undefined,
-        });
-      } else if (type.includes("tangible") || type.includes("vehicle") || type.includes("furniture")) {
-        tangiblePersonalPropertyBC.push({
-          description: asset.description || asset.title || "",
-          value,
-          securedDebt: asset.securedDebt
-            ? { creditor: asset.securedDebt.creditor || "", amount: parseFloat(asset.securedDebt.amount || "0") }
-            : undefined,
-        });
-      } else {
-        intangibleProperty.push({
-          description: asset.description || asset.title || "",
-          value,
-        });
-      }
-    }
-  }
-
-  return {
-    realPropertyBC,
-    tangiblePersonalPropertyBC,
-    intangibleProperty,
-  };
-}
-
-function buildDeliveries(beneficiaries: Beneficiary[]): EstateData["deliveries"] {
-  return beneficiaries
-    .filter((b) => b.status === "ALIVE")
-    .map((b) => ({
-      recipientName: b.fullName,
-      deliveryMethod: "mail" as const,
-      deliveryDate: "",
-      acknowledgedReceipt: false,
-    }));
 }

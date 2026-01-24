@@ -10,19 +10,24 @@ import {
   WidthType,
   BorderStyle,
 } from "docx";
-import { p, checkbox, fullName, spacer } from "./docx-utils";
+import { p, checkbox, fullName, formatAddress, spacer } from "./docx-utils";
 import { EstateData } from "./types";
 
 export async function generateP9(data: EstateData): Promise<Buffer> {
-  const deceasedName = fullName(data.deceased).toUpperCase();
+  const deceasedName = fullName(data.deceased.firstName, data.deceased.middleName, data.deceased.lastName).toUpperCase();
   const applicant = data.applicants[0];
-  const applicantName = fullName(applicant);
-  const submissionDate = new Date(data.submissionDate);
-  const formattedSubmissionDate = submissionDate.toLocaleDateString("en-CA", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName);
+  const applicantAddress = formatAddress(applicant.address);
+  const submissionDate = data.submissionDate
+    ? new Date(data.submissionDate)
+    : new Date();
+  const formattedSubmissionDate = !isNaN(submissionDate.getTime())
+    ? submissionDate.toLocaleDateString("en-CA", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "________________________";
 
   const willDocument = data.will?.exists
     ? "a copy of the will"
@@ -40,7 +45,9 @@ export async function generateP9(data: EstateData): Promise<Buffer> {
   );
 
   const formatDeliveryDate = (dateStr: string) => {
+    if (!dateStr) return "________________________";
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "________________________";
     return date.toLocaleDateString("en-CA", {
       day: "2-digit",
       month: "short",
@@ -56,8 +63,8 @@ export async function generateP9(data: EstateData): Promise<Buffer> {
   };
 
   const fileNum = data.fileNumber || "________";
-  const registryName = data.registry || "Registry";
-  const registryCity = data.registry || "_____________";
+  const registryDisplay = (data.registry || "________") + " Registry";
+  const registryCity = applicant.address.city || data.registry || "_____________";
 
   const sections: Paragraph[] = [];
 
@@ -118,7 +125,7 @@ export async function generateP9(data: EstateData): Promise<Buffer> {
     new Paragraph({
       alignment: AlignmentType.RIGHT,
       children: [
-        new TextRun({ text: registryName, size: 24 }),
+        new TextRun({ text: registryDisplay, size: 24 }),
       ],
     })
   );
@@ -177,7 +184,7 @@ export async function generateP9(data: EstateData): Promise<Buffer> {
     new Paragraph({
       children: [
         new TextRun({
-          text: "I, " + applicantName + ", of " + applicant.address + ", AFFIRM THAT:",
+          text: "I, " + applicantName + ", of " + applicantAddress + ", AFFIRM THAT:",
           size: 24,
         }),
       ],

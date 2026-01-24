@@ -376,9 +376,9 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     children.push(boldP("(a) Spouse of the deceased:"));
     children.push(spacer(60));
     if (data.spouse.status === "surviving" && data.spouse.survivingName) {
-      children.push(p(data.spouse.survivingName, { indent: { left: 360 } }));
+      children.push(p(data.spouse.survivingName.toUpperCase() + " (surviving)", { indent: { left: 360 } }));
     } else if (data.spouse.status === "deceased" && data.spouse.name) {
-      children.push(p(data.spouse.name + " (deceased)", { indent: { left: 360 } }));
+      children.push(p(data.spouse.name.toUpperCase() + " (deceased)", { indent: { left: 360 } }));
     } else if (data.spouse.status === "never_married") {
       children.push(p("The deceased was never married / had no spouse.", { indent: { left: 360 } }));
     } else {
@@ -391,8 +391,8 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     children.push(spacer(60));
     if (data.children.length > 0) {
       data.children.forEach((child, idx) => {
-        const statusText = child.status === "deceased" ? " (deceased)" : "";
-        children.push(p((idx + 1) + ". " + child.name + statusText, { indent: { left: 360 } }));
+        const statusText = child.status === "deceased" ? " (deceased)" : " (surviving)";
+        children.push(p((idx + 1) + ". " + child.name.toUpperCase() + statusText, { indent: { left: 360 } }));
       });
     } else {
       children.push(p("None.", { indent: { left: 360 } }));
@@ -404,9 +404,9 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     children.push(spacer(60));
     if (data.beneficiaries.length > 0) {
       data.beneficiaries.forEach((b, idx) => {
-        const statusText = b.status === "deceased" ? " (deceased)" : "";
+        const statusText = b.status === "deceased" ? " (deceased)" : " (surviving)";
         children.push(
-          p((idx + 1) + ". " + b.name + " (Relationship, status)" + statusText, { indent: { left: 360 } })
+          p((idx + 1) + ". " + b.name.toUpperCase() + statusText, { indent: { left: 360 } })
         );
       });
     } else {
@@ -420,7 +420,7 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     if (data.intestateSuccessors.length > 0) {
       data.intestateSuccessors.forEach((s, idx) => {
         const display = s.name
-          ? s.name + (s.relationship ? " (" + s.relationship + ")" : "")
+          ? s.name.toUpperCase() + (s.relationship ? " (" + s.relationship + ")" : "")
           : s.relationship || "N/A";
         children.push(p((idx + 1) + ". " + display, { indent: { left: 360 } }));
       });
@@ -434,7 +434,7 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     children.push(spacer(60));
     if (data.citors.length > 0) {
       data.citors.forEach((citor, idx) => {
-        children.push(p((idx + 1) + ". " + citor, { indent: { left: 360 } }));
+        children.push(p((idx + 1) + ". " + citor.toUpperCase(), { indent: { left: 360 } }));
       });
     } else {
       children.push(p("None.", { indent: { left: 360 } }));

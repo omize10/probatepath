@@ -112,17 +112,7 @@ export async function generateP3(data: EstateData): Promise<Buffer> {
             alignment: AlignmentType.RIGHT,
             children: [
               new TextRun({
-                text: data.registry || "________________________",
-                size: 24,
-                font: "Arial",
-              }),
-            ],
-          }),
-          new Paragraph({
-            alignment: AlignmentType.RIGHT,
-            children: [
-              new TextRun({
-                text: "Registry",
+                text: (data.registry || "________________________") + " Registry",
                 size: 24,
                 font: "Arial",
               }),

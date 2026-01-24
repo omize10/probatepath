@@ -14,19 +14,19 @@ import { p, checkbox, fullName, spacer, grantTypeText } from "./docx-utils";
 import { EstateData } from "./types";
 
 export async function generateP10(data: EstateData): Promise<Buffer> {
-  const deceasedName = fullName(data.deceased).toUpperCase();
+  const deceasedName = fullName(data.deceased.firstName, data.deceased.middleName, data.deceased.lastName).toUpperCase();
   const applicant = data.applicants[0];
-  const applicantName = fullName(applicant);
+  const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName);
   const applicantAddress = [
     applicant.address.streetName,
     applicant.address.city,
     applicant.address.province,
     applicant.address.country,
     applicant.address.postalCode,
-  ].join(", ");
+  ].filter(Boolean).join(", ");
   const submissionDate = data.submissionDate || new Date().toISOString().split("T")[0];
   const fileNumber = data.fileNumber || "________";
-  const registry = data.registry || "________";
+  const registryDisplay = (data.registry || "________") + " Registry";
   const grant = grantTypeText(data.grantType);
 
   const hasPropertyOutsideBC = !!(
@@ -134,7 +134,7 @@ export async function generateP10(data: EstateData): Promise<Buffer> {
           }),
           new Paragraph({
             alignment: AlignmentType.RIGHT,
-            children: [new TextRun({ text: registry })],
+            children: [new TextRun({ text: registryDisplay })],
           }),
 
           spacer(),
@@ -226,11 +226,7 @@ export async function generateP10(data: EstateData): Promise<Buffer> {
           // Paragraph 4
           new Paragraph({
             children: [
-              new TextRun({ text: "4.\t" }),
-              ...checkbox(!hasPropertyOutsideBC),
-              new TextRun({
-                text: " The Deceased did not own any property outside of British Columbia at the date of death.",
-              }),
+              new TextRun({ text: "4.\t" + checkbox(!hasPropertyOutsideBC) + " The Deceased did not own any property outside of British Columbia at the date of death." }),
             ],
           }),
 

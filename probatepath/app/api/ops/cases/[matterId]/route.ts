@@ -30,7 +30,7 @@ export async function DELETE(
       prisma.generatedPack.deleteMany({ where: { matterId } }),
       prisma.beneficiary.deleteMany({ where: { matterId } }),
       prisma.executor.deleteMany({ where: { matterId } }),
-      prisma.reminder.deleteMany({ where: { matterId } }),
+      prisma.reminder.deleteMany({ where: { caseId: matterId } }),
       prisma.file.deleteMany({ where: { matterId } }),
       prisma.emailLog.deleteMany({ where: { matterId } }),
       prisma.resumeToken.deleteMany({ where: { matterId } }),

@@ -45,9 +45,9 @@ export async function generateP9(data: EstateData): Promise<Buffer> {
   );
 
   const formatDeliveryDate = (dateStr: string) => {
-    if (!dateStr) return "________________________";
+    if (!dateStr) return formattedSubmissionDate;
     const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return "________________________";
+    if (isNaN(date.getTime())) return formattedSubmissionDate;
     return date.toLocaleDateString("en-CA", {
       day: "2-digit",
       month: "short",

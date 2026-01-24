@@ -469,9 +469,10 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     children.push(spacer(60));
     if (data.beneficiaries.length > 0) {
       data.beneficiaries.forEach((b, idx) => {
-        const statusText = b.status === "deceased" ? " (deceased)" : " (surviving)";
+        const parts = [b.relationship, b.status === "deceased" ? "deceased" : "surviving"].filter(Boolean);
+        const suffix = " (" + parts.join(", ") + ")";
         children.push(
-          p((idx + 1) + ". " + b.name.toUpperCase() + statusText, { indent: { left: 360 } })
+          p((idx + 1) + ". " + b.name.toUpperCase() + suffix, { indent: { left: 360 } })
         );
       });
     } else {

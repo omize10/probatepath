@@ -166,6 +166,7 @@ export interface EstateData {
   // Beneficiaries
   beneficiaries: Array<{
     name: string;
+    relationship?: string;
     status: "surviving" | "deceased";
   }>;
 

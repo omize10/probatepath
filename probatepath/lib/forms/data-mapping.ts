@@ -332,6 +332,7 @@ function buildBeneficiaries(intakePeople: any[], dbBeneficiaries: Beneficiary[])
   if (intakePeople.length > 0) {
     return intakePeople.map((p: any) => ({
       name: buildFullName(p.name || {}),
+      relationship: p.relationship || undefined,
       status: "surviving" as const,
     }));
   }
@@ -342,6 +343,7 @@ function buildBeneficiaries(intakePeople: any[], dbBeneficiaries: Beneficiary[])
   );
   return others.map((b) => ({
     name: b.fullName,
+    relationship: b.type ? b.type.toLowerCase() : undefined,
     status: b.status === "ALIVE" ? "surviving" as const : "deceased" as const,
   }));
 }

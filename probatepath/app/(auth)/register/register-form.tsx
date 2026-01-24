@@ -22,7 +22,7 @@ const VARIANT_COPY: Record<RegisterFormVariant, {
     eyebrow: "Create account",
     title: "Set up your portal login",
     description: "Use a strong password you control. We never store plaintext credentials.",
-    passwordHint: "Minimum 12 characters.",
+    passwordHint: "",
     buttonLabel: "Create account",
     footerPrefix: "Already have an account?",
     footerLinkLabel: "Sign in",
@@ -31,7 +31,7 @@ const VARIANT_COPY: Record<RegisterFormVariant, {
     eyebrow: "Start here",
     title: "Create your ProbateDesk account",
     description: "This is the first step of the start-now flow. We store credentials locally so you can come back without sending confidential information to a server.",
-    passwordHint: "Minimum 12 characters.",
+    passwordHint: "",
     buttonLabel: "Create account",
     footerPrefix: "Already have an account?",
     footerLinkLabel: "Sign in",
@@ -56,8 +56,8 @@ export function RegisterForm({ next, variant = "portal" }: { next: string; varia
       setError("Fill in all required fields.");
       return;
     }
-    if (password.length < 12) {
-      setError("Use at least 12 characters for your password.");
+    if (!password) {
+      setError("Enter a password.");
       return;
     }
     if (password !== confirm) {
@@ -125,12 +125,12 @@ export function RegisterForm({ next, variant = "portal" }: { next: string; varia
         </div>
         <div className="space-y-2">
           <label htmlFor="password" className="text-sm font-semibold text-[color:var(--ink)]">Password</label>
-          <Input id="password" name="password" type="password" minLength={12} autoComplete="new-password" required />
-          <p className="text-xs text-[color:var(--ink-muted)]">{copy.passwordHint}</p>
+          <Input id="password" name="password" type="password" autoComplete="new-password" required />
+          {copy.passwordHint && <p className="text-xs text-[color:var(--ink-muted)]">{copy.passwordHint}</p>}
         </div>
         <div className="space-y-2">
           <label htmlFor="confirm" className="text-sm font-semibold text-[color:var(--ink)]">Confirm password</label>
-          <Input id="confirm" name="confirm" type="password" minLength={12} autoComplete="new-password" required />
+          <Input id="confirm" name="confirm" type="password" autoComplete="new-password" required />
         </div>
         {error ? (
           <p className="rounded-2xl border border-[rgba(161,112,62,0.4)] bg-[rgba(161,112,62,0.1)] px-4 py-2 text-sm text-[color:var(--ink)]">

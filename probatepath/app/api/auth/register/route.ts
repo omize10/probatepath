@@ -8,7 +8,7 @@ import { sendTemplateEmail } from "@/lib/email";
 const registerSchema = z.object({
   name: z.string().min(2, "Enter your full name"),
   email: z.string().email("Enter a valid email"),
-  password: z.string().min(12, "Use at least 12 characters"),
+  password: z.string().min(1, "Enter a password"),
 });
 
 export async function POST(request: Request) {

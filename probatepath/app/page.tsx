@@ -17,7 +17,7 @@ import { ScrollFade } from "@/components/scroll-fade";
 import { FAQAccordion } from "@/components/faq-accordion";
 
 export const metadata: Metadata = {
-  title: "BC probate documents in hours",
+  title: "BC probate documents in days",
   description:
     "ProbateDesk prepares filing-ready probate documents for British Columbia executors starting at $799 CAD, with flexible service tiers, Canadian data hosting, and specialist support.",
 };
@@ -72,7 +72,7 @@ const miniFaq = [
   },
   {
     question: "How quickly will documents arrive?",
-    answer: "Our target is under 24 hours after intake completion (not guaranteed depending on complexity).",
+    answer: "Our target is 3 days after intake completion. Complex estates may take longer — we prioritize accuracy over speed.",
   },
   {
     question: "Is everything stored in Canada?",
@@ -126,8 +126,8 @@ export default function HomePage() {
                   <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Flexible service tiers</p>
                 </div>
                 <div className="space-y-1 text-white">
-                  <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">&lt;24 hours</p>
-                  <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Target delivery after intake</p>
+                  <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Court Ready in 3 Days<Link href="/turnaround" className="text-sm align-super hover:underline">*</Link></p>
+                  <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">After intake completion</p>
                 </div>
               </div>
             </div>

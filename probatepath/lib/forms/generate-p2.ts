@@ -244,76 +244,143 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
   children.push(centered("Part 3: DOCUMENTS FILED WITH THIS SUBMISSION FOR ESTATE GRANT", { bold: true, size: 24 }));
   children.push(spacer(200));
 
-  // Item 1: Affidavit of applicant
-  const affidavitDesc = data.affidavit.isJoint
-    ? "Joint affidavit of applicant(s) (Form " + data.affidavit.form + ")"
-    : "Affidavit of applicant (Form " + data.affidavit.form + ")";
-  children.push(
-    p([
-      new TextRun({ text: "1. " + checkbox(true) + " ", size: 22, font: "Arial" }),
-      new TextRun({ text: affidavitDesc, size: 22, font: "Arial" }),
-    ])
-  );
+  // Section 1: Affidavit filing
+  children.push(boldP("1"));
+  children.push(spacer(60));
 
-  // Item 2: Original will
+  const isSingleApplicant = data.applicants.length === 1;
+  const affidavitForm = data.affidavit.form;
+
+  children.push(
+    checkboxP(isSingleApplicant && !data.affidavit.isJoint,
+      `There is one applicant to this submission for estate grant and a Form ${affidavitForm} affidavit is filed with this submission for estate grant.`,
+      { indent: 720 })
+  );
+  children.push(
+    checkboxP(!isSingleApplicant && data.affidavit.isJoint,
+      `There are 2 or more applicants to this submission for estate grant and a joint Form ${affidavitForm} affidavit on behalf of all applicants is filed with this submission for estate grant.`,
+      { indent: 720 })
+  );
+  children.push(
+    checkboxP(!isSingleApplicant && !data.affidavit.isJoint && data.affidavit.hasP8Affidavits,
+      `There are 2 or more applicants to this submission for estate grant and a Form ${affidavitForm} affidavit is filed with this submission for estate grant and ${data.affidavit.p8Count || "___"} affidavit(s) in Form P8 is/are filed with this submission for estate grant.`,
+      { indent: 720 })
+  );
+  children.push(spacer(120));
+
+  // Section 2: Affidavits of delivery
+  children.push(boldP("2"));
+  children.push(spacer(60));
+
+  const hasDeliveries = data.affidavitsOfDelivery.length > 0 && !data.noDeliveryRequired;
+  children.push(
+    checkboxP(hasDeliveries,
+      "Filed with this submission for estate grant is/are the following Affidavit(s) of Delivery in Form P9 that confirms/collectively confirm that the documents referred to in Rule 25-2 were delivered to all of the persons to whom, under that rule, the documents were required to be delivered:",
+      { indent: 720 })
+  );
+  if (hasDeliveries) {
+    for (const aff of data.affidavitsOfDelivery) {
+      children.push(
+        p(`Affidavit of ${aff.name} sworn ${aff.dateSworn || "________________"}`, { indent: { left: 1080 } })
+      );
+    }
+  }
+  children.push(spacer(60));
+  children.push(
+    checkboxP(data.noDeliveryRequired,
+      "No affidavit of delivery is attached. In accordance with Rule 25-2, no one, other than the applicant(s), is entitled to notice.",
+      { indent: 720 })
+  );
+  children.push(spacer(120));
+
+  // Section 3: Vital Statistics certificate
+  children.push(boldP("3"));
+  children.push(spacer(60));
+  children.push(
+    p("Filed with this submission for estate grant are 2 copies of the certificate of the chief executive officer under the Vital Statistics Act indicating the results of a search for a wills notice filed by or on behalf of the deceased.")
+  );
+  children.push(spacer(120));
+
+  // Section 4: Will / Grant type
+  children.push(boldP("4"));
+  children.push(spacer(60));
+
+  const willDate = data.will?.date || "________________";
   const willExists = hasWill(data.grantType) && data.will?.exists;
-  children.push(
-    p([
-      new TextRun({ text: "2. " + checkbox(!!willExists) + " ", size: 22, font: "Arial" }),
-      new TextRun({ text: "Original will (and codicil(s), if applicable)", size: 22, font: "Arial" }),
-    ])
-  );
+  const originalAvailable = data.will?.originalAvailable !== false;
 
-  // Item 3: P8 affidavit(s)
   children.push(
-    p([
-      new TextRun({ text: "3. " + checkbox(data.affidavit.hasP8Affidavits) + " ", size: 22, font: "Arial" }),
-      new TextRun({ text: "Affidavit(s) (Form P8) of witness(es) to the will", size: 22, font: "Arial" }),
-    ])
+    checkboxP(data.grantType === "probate" && willExists && originalAvailable,
+      `This application is for a grant of probate, or a grant of administration with will annexed, in relation to the will of the deceased dated ${willDate}, and filed with this submission for estate grant is the originally signed version of the will and 2 copies of the will.`,
+      { indent: 720 })
   );
-
-  // Item 4: P9 Affidavit(s) of delivery
-  const hasDeliveries = data.affidavitsOfDelivery.length > 0;
   children.push(
-    p([
-      new TextRun({ text: "4. " + checkbox(hasDeliveries) + " ", size: 22, font: "Arial" }),
-      new TextRun({ text: "Affidavit(s) of delivery (Form P9)", size: 22, font: "Arial" }),
-    ])
+    checkboxP(data.grantType === "probate" && willExists && !originalAvailable,
+      `This application is for a grant of probate, or a grant of administration with will annexed, in relation to the will of the deceased dated ${willDate}, and, because the originally signed version of the will is not available, filed with this submission for estate grant are 3 copies of the will.`,
+      { indent: 720 })
   );
-
-  // Item 5: P10/P11 Affidavit of assets
   children.push(
-    p([
-      new TextRun({ text: "5. " + checkbox(data.submittingAffidavitOfAssets) + " ", size: 22, font: "Arial" }),
-      new TextRun({ text: "Affidavit of assets and liabilities (Form P10 or P11)", size: 22, font: "Arial" }),
-    ])
+    checkboxP(data.grantType === "admin_without_will",
+      "This application is for a grant of administration without will annexed.",
+      { indent: 720 })
   );
+  children.push(spacer(120));
 
-  // Item 6: Translation affidavit
+  // Section 5: Assets affidavit
+  children.push(boldP("5"));
+  children.push(spacer(60));
+  children.push(
+    checkboxP(data.submittingAffidavitOfAssets,
+      "Filed with this submission for estate grant is an affidavit of assets and liabilities (Form P10 or P11).",
+      { indent: 720 })
+  );
+  children.push(spacer(120));
+
+  // Section 6: Translation
   const hasTranslation = !data.allDocumentsInEnglish && !!data.translatorAffidavit;
+  children.push(boldP("6"));
+  children.push(spacer(60));
   children.push(
-    p([
-      new TextRun({ text: "6. " + checkbox(!!hasTranslation) + " ", size: 22, font: "Arial" }),
-      new TextRun({ text: "Affidavit of translator", size: 22, font: "Arial" }),
-    ])
+    checkboxP(!!hasTranslation,
+      "Filed with this submission for estate grant is an affidavit of a translator.",
+      { indent: 720 })
   );
+  children.push(
+    checkboxP(!hasTranslation,
+      "All documents filed with this submission for estate grant are in the English language.",
+      { indent: 720 })
+  );
+  children.push(spacer(120));
 
-  // Item 7: Renunciation(s)
+  // Section 7: Renunciations
   const hasRenunciations = (data.otherExecutors || []).some((e) => e.reason === "renounced");
+  children.push(boldP("7"));
+  children.push(spacer(60));
   children.push(
-    p([
-      new TextRun({ text: "7. " + checkbox(hasRenunciations) + " ", size: 22, font: "Arial" }),
-      new TextRun({ text: "Renunciation(s)", size: 22, font: "Arial" }),
-    ])
+    checkboxP(hasRenunciations,
+      "Filed with this submission for estate grant is/are renunciation(s) of executorship.",
+      { indent: 720 })
   );
-
-  // Item 8: Foreign grant
-  const hasForeignGrant = !!data.foreignGrant;
   children.push(
-    p([
-      new TextRun({ text: "8. " + checkbox(hasForeignGrant) + " ", size: 22, font: "Arial" }),
-      new TextRun({ text: "Certified copy of the foreign grant (and will, if applicable)", size: 22, font: "Arial" }),
-    ])
+    checkboxP(!hasRenunciations,
+      "No renunciation of executorship is filed with this submission for estate grant.",
+      { indent: 720 })
+  );
+  children.push(spacer(120));
+
+  // Section 8: Foreign grant
+  const hasForeignGrant = !!data.foreignGrant;
+  children.push(boldP("8"));
+  children.push(spacer(60));
+  children.push(
+    checkboxP(hasForeignGrant,
+      "Filed with this submission for estate grant is a certified copy of the foreign grant (and will, if applicable).",
+      { indent: 720 })
+  );
+  children.push(
+    checkboxP(!hasForeignGrant,
+      "No foreign grant is applicable to this submission for estate grant.",
+      { indent: 720 })
   );
   children.push(spacer(300));
 
@@ -336,58 +403,56 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     children.push(spacer(200));
 
     // --- Section 1: Executors with reserved rights ---
-    children.push(boldP("Section 1: Executors with reserved rights"));
+    children.push(boldP("Section 1"));
     children.push(spacer(60));
 
-    if (data.executorsWithReservedRights.length > 0) {
-      children.push(
-        p("The following executor(s) have had their rights reserved (i.e. they are named as executors in the will but are not applying and have not renounced):")
-      );
-      children.push(spacer(60));
+    children.push(p("Indicate if there is any person, other than the applicant, who meets all of the following criteria and therefore is an executor whose right should be reserved on the grant.", { italic: true }));
+    children.push(spacer(60));
 
-      children.push(p("Each person listed below meets the following criteria:", { italic: true }));
-      children.push(
-        p("(a) is named as an executor in the will;", { indent: { left: 720 } })
-      );
-      children.push(
-        p("(b) is not a person to whom the estate grant is to issue;", { indent: { left: 720 } })
-      );
-      children.push(
-        p("(c) has not renounced as executor;", { indent: { left: 720 } })
-      );
-      children.push(
-        p("(d) has not been removed as executor by order of the court.", { indent: { left: 720 } })
-      );
-      children.push(spacer(60));
+    children.push(boldP("Criteria"));
+    children.push(spacer(60));
+    children.push(p("(a) the person is named in the will as executor or alternate executor;", { indent: { left: 720 } }));
+    children.push(p("(b) the person is a co-executor with the applicant(s) (i.e. has a right to make an application for an estate grant that is equal to the applicant's(s') right to make that application);", { indent: { left: 720 } }));
+    children.push(p("(c) the person has not renounced executorship;", { indent: { left: 720 } }));
+    children.push(p("(d) the person is alive at the date of this submission for estate grant;", { indent: { left: 720 } }));
+    children.push(p("(e) the person has not become incapable of managing the person's affairs.", { indent: { left: 720 } }));
+    children.push(spacer(120));
 
+    const hasReservedRights = data.executorsWithReservedRights.length > 0;
+    children.push(
+      checkboxP(!hasReservedRights, "There is no person who meets all of the foregoing criteria.")
+    );
+    children.push(
+      checkboxP(hasReservedRights, "The following person(s) meet(s) all of the foregoing criteria:")
+    );
+    if (hasReservedRights) {
+      children.push(spacer(60));
       data.executorsWithReservedRights.forEach((name, idx) => {
-        children.push(p((idx + 1) + ". " + name, { indent: { left: 360 } }));
+        children.push(p((idx + 1) + ". " + name.toUpperCase(), { indent: { left: 360 } }));
       });
-    } else {
-      children.push(p("None."));
     }
     children.push(spacer(200));
 
     // --- Section 2: Persons entitled to notice ---
-    children.push(boldP("Section 2: Persons entitled to notice"));
+    children.push(boldP("Section 2"));
     children.push(spacer(120));
 
     // (a) Spouse
-    children.push(boldP("(a) Spouse of the deceased:"));
+    children.push(p("(a) spouse, if any, of the deceased [see section 2 of the Wills, Estates and Succession Act]", { bold: true }));
     children.push(spacer(60));
     if (data.spouse.status === "surviving" && data.spouse.survivingName) {
       children.push(p(data.spouse.survivingName.toUpperCase() + " (surviving)", { indent: { left: 360 } }));
     } else if (data.spouse.status === "deceased" && data.spouse.name) {
       children.push(p(data.spouse.name.toUpperCase() + " (deceased)", { indent: { left: 360 } }));
     } else if (data.spouse.status === "never_married") {
-      children.push(p("The deceased was never married / had no spouse.", { indent: { left: 360 } }));
+      children.push(p("Never married.", { indent: { left: 360 } }));
     } else {
       children.push(p("N/A", { indent: { left: 360 } }));
     }
     children.push(spacer(120));
 
-    // (b) Children of the deceased
-    children.push(boldP("(b) Children of the deceased:"));
+    // (b) Children
+    children.push(p("(b) child(ren), if any, of the deceased", { bold: true }));
     children.push(spacer(60));
     if (data.children.length > 0) {
       data.children.forEach((child, idx) => {
@@ -399,8 +464,8 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     }
     children.push(spacer(120));
 
-    // (c) Beneficiaries named in the will
-    children.push(boldP("(c) Beneficiaries named in the will:"));
+    // (c) Beneficiaries named in will
+    children.push(p("(c) each person, if any, who is a beneficiary under the will and is not named in paragraph (a) or (b)", { bold: true }));
     children.push(spacer(60));
     if (data.beneficiaries.length > 0) {
       data.beneficiaries.forEach((b, idx) => {
@@ -415,7 +480,7 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     children.push(spacer(120));
 
     // (d) Intestate successors
-    children.push(boldP("(d) Intestate successors (if partial intestacy):"));
+    children.push(p("(d) each person, if any, who would be entitled to a share of the estate if the deceased had died without a will", { bold: true }));
     children.push(spacer(60));
     if (data.intestateSuccessors.length > 0) {
       data.intestateSuccessors.forEach((s, idx) => {
@@ -430,7 +495,7 @@ export async function generateP2(data: EstateData): Promise<Buffer> {
     children.push(spacer(120));
 
     // (e) Citors
-    children.push(boldP("(e) Citors:"));
+    children.push(p("(e) each person, if any, who has filed a citation", { bold: true }));
     children.push(spacer(60));
     if (data.citors.length > 0) {
       data.citors.forEach((citor, idx) => {

@@ -20,6 +20,37 @@ const noBorders = {
   right: { style: BorderStyle.NONE, size: 0 },
 };
 
+function buildOtherExecutorsSection(data: EstateData): Paragraph[] {
+  const otherExecs = data.otherExecutors || [];
+  const hasOthersNotApplying = otherExecs.length > 0;
+  const paragraphs: Paragraph[] = [];
+
+  if (!hasOthersNotApplying) {
+    paragraphs.push(
+      checkboxP(true, "No other persons are named in the will as executor.", { indent: 720 })
+    );
+  } else {
+    paragraphs.push(
+      checkboxP(false, "No other persons are named in the will as executor.", { indent: 720 })
+    );
+    paragraphs.push(
+      checkboxP(true, "Other persons are named in the will as executor and, of those, the following person(s) is/are not named as an applicant on the submission for estate grant for the reason shown after that person's name:", { indent: 720 })
+    );
+    for (const exec of otherExecs) {
+      const reason = exec.reason === "renounced"
+        ? "has renounced executorship"
+        : exec.reason === "deceased"
+          ? "is deceased"
+          : exec.otherReason || "other";
+      paragraphs.push(
+        p(`${exec.name} \u2014 ${reason}`, { indent: { left: 1080 } })
+      );
+    }
+  }
+
+  return paragraphs;
+}
+
 export async function generateP3(data: EstateData): Promise<Buffer> {
   const applicant = data.applicants[0];
   const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName);
@@ -190,139 +221,93 @@ export async function generateP3(data: EstateData): Promise<Buffer> {
 
           spacer(),
 
-          // Paragraph 1: Applicant reference + grant type checkbox
-          p("1.      I am an applicant for a"),
-          checkboxP(data.grantType === "probate", "Grant of Probate", { indent: 720 }),
-          checkboxP(data.grantType === "admin_with_will", "Grant of Administration with Will Annexed", { indent: 720 }),
-          new Paragraph({
-            indent: { left: 720 },
-            children: [
-              new TextRun({
-                text: `of the estate of ${deceasedNameUpper}, deceased.`,
-                size: 22,
-                font: "Arial",
-              }),
-            ],
-          }),
+          // Paragraph 1
+          p(`1.\tI am the applicant referred to in the submission for estate grant in relation to the estate of ${deceasedNameUpper} (the "deceased") and in relation to the document that is identified in section 4 of Part 3 of the submission for estate grant as the will (the "will"), and am applying for:`),
+
+          spacer(60),
+          checkboxP(data.grantType === "probate", "a grant of probate.", { indent: 720 }),
+          checkboxP(data.grantType === "admin_with_will", "a grant of administration with will annexed.", { indent: 720 }),
 
           spacer(),
 
-          // Paragraph 2: Named as executor + no other persons
-          p("2.      In the will or codicil of the deceased:"),
-          checkboxP(true, "I am named as executor.", { indent: 720 }),
-          checkboxP(true, "No other persons are named as executor who have not already renounced or predeceased the deceased.", { indent: 720 }),
+          // Paragraph 2
+          p("2.\tI am named as an executor or alternate executor in the will and my appointment has not been revoked under section 56 (2) of the Wills, Estates and Succession Act or by a codicil to the will."),
+
+          spacer(60),
+
+          ...buildOtherExecutorsSection(data),
 
           spacer(),
 
-          // Paragraph 3: Not obliged to deliver to PGT
-          p("3.      Notification to the Public Guardian and Trustee:"),
-          checkboxP(!data.attorneyGeneralNotice, "I am not obliged to deliver a notice to the Public Guardian and Trustee under section 116(2) of WESA.", { indent: 720 }),
+          // Paragraph 3
+          checkboxP(!data.attorneyGeneralNotice, "3.\tI am not obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee."),
+          checkboxP(!!data.attorneyGeneralNotice, "3.\tI am obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee."),
 
           spacer(),
 
-          // Paragraph 4: Diligent search (no checkbox)
+          // Paragraph 4
           p(
-            "4.      I have made a diligent search and inquiry for any will, codicil or other testamentary document of the deceased and I do not know of any will, codicil or other testamentary document other than the testamentary document(s) referred to above."
+            "4.\tI am satisfied that a diligent search for a testamentary document of the deceased has been made in each place that could reasonably be considered to be a place where a testamentary document may be found, including, without limitation, in all places, both physical and electronic, where the deceased usually kept important documents and that no testamentary document that is dated later than the date of the will has been found."
           ),
 
           spacer(),
 
-          // Paragraph 5: Last will belief (no checkbox)
+          // Paragraph 5
           p(
-            "5.      I believe the testamentary document(s) referred to above represent(s) the last will of the deceased."
+            "5.\tI believe that the will is the last will of the deceased that deals with property in British Columbia."
           ),
 
           spacer(),
 
-          // Paragraph 6: Will complies with WESA + sub-items
+          // Paragraph 6
           p(
-            '6.      The will of the deceased complies with section 37 of the Wills, Estates and Succession Act ("WESA") in that:'
+            "6.\tI believe that the will complies with the requirements of Division 1 of Part 4 of the Wills, Estates and Succession Act and"
           ),
-          new Paragraph({
-            indent: { left: 1080 },
-            spacing: { after: 120 },
-            children: [
-              new TextRun({
-                text: "(a) it is in writing;",
-                size: 22,
-                font: "Arial",
-              }),
-            ],
-          }),
-          new Paragraph({
-            indent: { left: 1080 },
-            spacing: { after: 120 },
-            children: [
-              new TextRun({
-                text: "(b) it is signed at its end by the will-maker or the signature at the end is acknowledged by the will-maker as his or hers;",
-                size: 22,
-                font: "Arial",
-              }),
-            ],
-          }),
-          new Paragraph({
-            indent: { left: 1080 },
-            spacing: { after: 120 },
-            children: [
-              new TextRun({
-                text: "(c) the will-maker made or acknowledged the signature in the presence of 2 or more witnesses present at the same time; and",
-                size: 22,
-                font: "Arial",
-              }),
-            ],
-          }),
-          new Paragraph({
-            indent: { left: 1080 },
-            spacing: { after: 120 },
-            children: [
-              new TextRun({
-                text: "(d) 2 or more of the witnesses subscribed the will in the presence of the will-maker.",
-                size: 22,
-                font: "Arial",
-              }),
-            ],
-          }),
+          p("(a) I am not aware of there being any issues that would call into question the validity or contents of the will,", { indent: { left: 720 } }),
+          p("(b) I am not requesting that the will be recognized as a military will executed in accordance with the requirements of section 38 of the Wills, Estates and Succession Act,", { indent: { left: 720 } }),
+          p("(c) I am not aware of there being any interlineations, erasures or obliterations in, or other alterations to, the will, and", { indent: { left: 720 } }),
+          p("(d) I am not aware of there being any issues arising from the appearance of the will.", { indent: { left: 720 } }),
 
           spacer(),
 
-          // Paragraph 7: Originally signed version filed
+          // Paragraph 7
           p(
-            `7.      The originally signed version of the will${data.will?.hasCodicils ? " and codicil(s)" : ""} has been filed with this court.`
+            "7.\tAn originally signed version of the will is being filed with the submission for estate grant."
           ),
 
           spacer(),
 
-          // Paragraph 8: Vital Statistics certificate filed
+          // Paragraph 8
           p(
-            "8.      A certificate issued by the Director of Vital Statistics or the equivalent from the relevant jurisdiction, or a certified copy of the registration of death, with respect to the deceased has been filed with this court."
+            "8.\tA certificate from the chief executive officer under the Vital Statistics Act indicating the results of a search for a wills notice filed by or on behalf of the deceased is filed with this application, and the certificate indicates that no testamentary document that is dated later than the date of the will has been found."
           ),
 
           spacer(),
 
-          // Paragraph 9: All documents referred to attached
+          // Paragraph 9
           p(
-            `9.      All documents referred to in the will${data.will?.hasCodicils ? " or codicil(s)" : ""} of the deceased${data.will?.refersToDocuments ? " are attached to this affidavit" : " \u2014 there are no documents referred to in the will"}.`
+            `9.\tAll documents referred to in the will ${data.will?.refersToDocuments ? "are attached to the will" : "\u2014 there are no documents referred to in the will"}.`
           ),
 
           spacer(),
 
-          // Paragraph 10: Read submission and believe correct
+          // Paragraph 10
           p(
-            "10.    I have read the submission filed herein and I believe its contents to be correct."
+            "10.\tI have read the submission for estate grant and the other documents referred to in that document and I believe that the information contained in that submission for estate grant and those documents is correct and complete."
           ),
 
           spacer(),
 
-          // Paragraph 11: Will administer according to law
+          // Paragraph 11
           p(
-            "11.    I will administer the estate of the deceased according to law and will render a just and true account of my administration when lawfully required."
+            "11.\tI will administer according to law all of the deceased's estate, I will prepare an accounting as to how the estate was administered and I acknowledge that, in doing this, I will be subject to the legal responsibility of a personal representative."
           ),
 
           spacer(),
 
-          // Paragraph 12: Not aware of other grant applications
+          // Paragraph 12
           p(
-            "12.    I am not aware of any application for a grant in respect of the estate of the deceased in any jurisdiction."
+            "12.\tI am not aware of there being any application for a grant of probate or administration, or any grant of probate or administration, or equivalent, having been issued, in relation to the deceased, in British Columbia or in any other jurisdiction."
           ),
 
           spacer(),

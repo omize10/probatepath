@@ -38,6 +38,12 @@ export default async function OpsPage({ searchParams }: OpsPageProps) {
           />
           <button className="rounded-full bg-[color:var(--brand)] px-4 py-2 text-sm font-semibold text-white">Search</button>
         </form>
+        <Link
+          href="/ops/new-case"
+          className="rounded-full bg-[color:var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)]"
+        >
+          + New Case
+        </Link>
       </div>
 
       <div className="overflow-hidden rounded-3xl border border-[color:var(--border-muted)] bg-white shadow-[0_25px_80px_-60px_rgba(15,23,42,0.22)]">

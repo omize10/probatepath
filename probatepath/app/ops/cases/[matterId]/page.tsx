@@ -1015,15 +1015,15 @@ function RemindersCard({ recordId, reminders, noticeReminder }: RemindersCardPro
 
 function FormsGenerationCard({ recordId }: { recordId: string }) {
   const forms = [
-    { id: "P1", name: "Notice of Proposed Application", available: true, docx: true },
-    { id: "P2", name: "Submission for Estate Grant", available: true, docx: true },
-    { id: "P3", name: "Affidavit of Applicant (Short Form)", available: true, docx: true },
-    { id: "P4", name: "Affidavit of Applicant (Long Form)", available: true, docx: false },
-    { id: "P9", name: "Affidavit of Delivery", available: true, docx: true },
-    { id: "P10", name: "Assets & Liabilities (Domiciled)", available: true, docx: true },
-    { id: "P11", name: "Assets & Liabilities (Non-Domiciled)", available: false, docx: false },
-    { id: "P17", name: "Affidavit of Attesting Witness", available: false, docx: false },
-    { id: "P20", name: "Affidavit of Condition of Will", available: false, docx: false },
+    { id: "P1", name: "Notice of Proposed Application", available: true, docx: true, updated: false },
+    { id: "P2", name: "Submission for Estate Grant", available: true, docx: true, updated: true },
+    { id: "P3", name: "Affidavit of Applicant (Short Form)", available: true, docx: true, updated: true },
+    { id: "P4", name: "Affidavit of Applicant (Long Form)", available: true, docx: false, updated: false },
+    { id: "P9", name: "Affidavit of Delivery", available: true, docx: true, updated: true },
+    { id: "P10", name: "Assets & Liabilities (Domiciled)", available: true, docx: true, updated: true },
+    { id: "P11", name: "Assets & Liabilities (Non-Domiciled)", available: false, docx: false, updated: false },
+    { id: "P17", name: "Affidavit of Attesting Witness", available: false, docx: false, updated: false },
+    { id: "P20", name: "Affidavit of Condition of Will", available: false, docx: false, updated: false },
   ];
 
   const getFormUrl = (form: { id: string }) => {
@@ -1057,6 +1057,7 @@ function FormsGenerationCard({ recordId }: { recordId: string }) {
             <span className="flex items-center gap-1 text-xs opacity-75">
               ({form.id})
               {form.docx && <span className="ml-1 rounded bg-green-100 px-1 py-0.5 text-[10px] text-green-700">.docx</span>}
+              {form.updated && <span className="ml-1 rounded bg-blue-100 px-1 py-0.5 text-[10px] font-bold text-blue-700">Updated</span>}
             </span>
           </a>
         ))}

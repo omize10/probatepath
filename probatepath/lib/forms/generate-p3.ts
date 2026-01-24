@@ -1,325 +1,636 @@
-import { Document, Packer, Paragraph, TextRun, AlignmentType } from "docx";
-import type { EstateData } from "./types";
 import {
-  p,
-  boldP,
-  centered,
-  checkbox,
-  checkboxP,
-  fieldRow,
-  formatAddress,
-  fullName,
-  grantTypeText,
-  juratBlock,
-  line,
-  spacer,
-} from "./docx-utils";
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  AlignmentType,
+  Table,
+  TableRow,
+  TableCell,
+  WidthType,
+  BorderStyle,
+} from "docx";
+import { p, checkbox, fullName, spacer, grantTypeText, checkboxP, formatAddress } from "./docx-utils";
+import type { EstateData } from "./types";
+
+const noBorders = {
+  top: { style: BorderStyle.NONE, size: 0 },
+  bottom: { style: BorderStyle.NONE, size: 0 },
+  left: { style: BorderStyle.NONE, size: 0 },
+  right: { style: BorderStyle.NONE, size: 0 },
+};
 
 export async function generateP3(data: EstateData): Promise<Buffer> {
-  const children: Paragraph[] = [];
+  const applicant = data.applicants[0];
+  const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName);
+  const deceasedName = fullName(data.deceased.firstName, data.deceased.middleName, data.deceased.lastName);
+  const deceasedNameUpper = deceasedName.toUpperCase();
+  const applicantAddress = formatAddress(applicant.address);
 
-  const primaryApplicant = data.applicants[0];
-  const applicantName = fullName(
-    primaryApplicant.firstName,
-    primaryApplicant.middleName,
-    primaryApplicant.lastName
-  );
-  const deceasedName = fullName(
-    data.deceased.firstName,
-    data.deceased.middleName,
-    data.deceased.lastName
-  );
+  const submissionDate = data.submissionDate
+    ? new Date(data.submissionDate).toLocaleDateString("en-CA", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "________________________";
 
-  // Form header
-  children.push(centered("Form P3 (Rule 25-3 (2))", { bold: true, size: 24 }));
-  children.push(spacer(80));
-  children.push(
-    centered(
-      "AFFIDAVIT OF APPLICANT FOR GRANT OF PROBATE OR GRANT OF ADMINISTRATION WITH WILL ANNEXED (SHORT FORM)",
-      { bold: true, size: 22 }
-    )
-  );
-  children.push(spacer(60));
-
-  // Affidavit numbering line
-  children.push(
-    p([
-      new TextRun({ text: "This is the 1st affidavit of ", size: 22, font: "Arial" }),
-      new TextRun({ text: applicantName, size: 22, font: "Arial", bold: true }),
-      new TextRun({ text: " in this case and was made on ", size: 22, font: "Arial" }),
-      new TextRun({ text: line(15), size: 22, font: "Arial" }),
-    ])
-  );
-  children.push(spacer(60));
-
-  // Registry info
-  children.push(fieldRow("No.", data.fileNumber || ""));
-  children.push(centered("In the Supreme Court of British Columbia", { size: 22 }));
-  children.push(spacer(60));
-  children.push(
-    p([
-      new TextRun({ text: "In the matter of the estate of ", size: 22, font: "Arial" }),
-      new TextRun({ text: deceasedName, size: 22, font: "Arial", bold: true }),
-      new TextRun({ text: ", deceased", size: 22, font: "Arial" }),
-    ])
-  );
-  children.push(spacer(120));
-
-  // Deponent intro
-  const applicantAddress = formatAddress(primaryApplicant.address);
-  children.push(
-    p([
-      new TextRun({ text: "I, ", size: 22, font: "Arial" }),
-      new TextRun({ text: applicantName, size: 22, font: "Arial", bold: true }),
-      new TextRun({ text: ", of ", size: 22, font: "Arial" }),
-      new TextRun({ text: applicantAddress, size: 22, font: "Arial" }),
-      new TextRun({ text: ", SWEAR (OR AFFIRM) THAT:", size: 22, font: "Arial" }),
-    ])
-  );
-  children.push(spacer(200));
-
-  // Paragraph 1: Applicant identification and grant type
-  children.push(
-    p([
-      new TextRun({ text: "1. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: `I am the applicant for ${grantTypeText(data.grantType)} in relation to the estate of `,
-        size: 22,
-        font: "Arial",
-      }),
-      new TextRun({ text: deceasedName, size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: `, who died on ${data.deceased.dateOfDeath}, and whose last residential address was ${formatAddress(data.deceased.lastAddress)}.`,
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(spacer(120));
-
-  // Paragraph 2: Executor status
-  children.push(boldP("2. "));
-  if (primaryApplicant.namedInWill) {
-    children.push(
-      checkboxP(
-        true,
-        "I am named as an executor or alternate executor in the will and my appointment has not been revoked under section 56 (2) of the Wills, Estates and Succession Act or by a codicil to the will.",
-        { indent: 360 }
-      )
-    );
-  } else {
-    children.push(
-      checkboxP(
-        true,
-        `I am not named as an executor in the will. I am applying in the capacity of ${primaryApplicant.relationship || line(20)}.`,
-        { indent: 360 }
-      )
-    );
-  }
-
-  // Other executors not applying
-  if (data.otherExecutors && data.otherExecutors.length > 0) {
-    children.push(spacer(60));
-    children.push(
-      p(
-        "Other persons named in the will as executor who are not named as an applicant on the submission for estate grant:",
-        { indent: { left: 360 } }
-      )
-    );
-    for (const exec of data.otherExecutors) {
-      let reasonText = "";
-      if (exec.reason === "renounced") {
-        reasonText = "has renounced executorship";
-      } else if (exec.reason === "deceased") {
-        reasonText = "is deceased";
-      } else {
-        reasonText = exec.otherReason || "other";
-      }
-      children.push(
-        p(`${exec.name} -- ${reasonText}`, { indent: { left: 720 } })
-      );
-    }
-  }
-  children.push(spacer(120));
-
-  // Paragraph 3: Public Guardian obligation
-  children.push(
-    p([
-      new TextRun({ text: "3. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({ text: checkbox(data.attorneyGeneralNotice), size: 22, font: "Arial" }),
-      new TextRun({
-        text: " I am obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee.",
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(
-    p([
-      new TextRun({ text: "   ", size: 22, font: "Arial" }),
-      new TextRun({ text: checkbox(!data.attorneyGeneralNotice), size: 22, font: "Arial" }),
-      new TextRun({
-        text: " I am not obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee.",
-        size: 22,
-        font: "Arial",
-      }),
-    ], { indent: { left: 360 } })
-  );
-  children.push(spacer(120));
-
-  // Paragraph 4: Diligent search
-  children.push(
-    p([
-      new TextRun({ text: "4. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: "I have made a diligent search and inquiry to inform myself of the testamentary documents executed by the deceased.",
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(spacer(120));
-
-  // Paragraph 5: Last will belief
-  children.push(
-    p([
-      new TextRun({ text: "5. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: `I believe the document dated ${data.will?.date || line(15)} now produced and shown to me and marked as Exhibit A to this my affidavit is the last will of the deceased.`,
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(spacer(120));
-
-  // Paragraph 6: Will validity (WESA compliance)
-  children.push(
-    p([
-      new TextRun({ text: "6. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: "I believe the will complies with the requirements of section 37 of the Wills, Estates and Succession Act, in that it appears to be:",
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(
-    p("(a) in writing,", { indent: { left: 720 } })
-  );
-  children.push(
-    p("(b) signed at its end by the testator, or the signature at the end is acknowledged by the testator as his or hers, in the presence of 2 or more witnesses present at the same time, and", { indent: { left: 720 } })
-  );
-  children.push(
-    p("(c) signed by 2 or more of the witnesses in the presence of the testator.", { indent: { left: 720 } })
-  );
-  children.push(spacer(120));
-
-  // Paragraph 7: No interlineations/alterations
-  children.push(
-    p([
-      new TextRun({ text: "7. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: "The will has no interlineations, erasures or other alterations.",
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(spacer(120));
-
-  // Paragraph 8: Original will filed
-  children.push(
-    p([
-      new TextRun({ text: "8. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: "The originally signed will, referred to in paragraph 5, is being filed with this submission for estate grant.",
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(spacer(120));
-
-  // Paragraph 9: Wills notice certificate
-  children.push(
-    p([
-      new TextRun({ text: "9. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: "The certificate filed with the submission for estate grant shows that a wills notice in relation to the deceased was not filed at the Vital Statistics Agency after the date of the will referred to in paragraph 5.",
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(spacer(120));
-
-  // Paragraph 10: Documents referred to in will
-  children.push(
-    p([
-      new TextRun({ text: "10. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({ text: checkbox(!data.will?.refersToDocuments), size: 22, font: "Arial" }),
-      new TextRun({
-        text: " The will does not refer to any document or refers only to documents that are attached to the will.",
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  if (data.will?.refersToDocuments && data.will.documentsReferred?.length) {
-    children.push(
-      p([
-        new TextRun({ text: "   ", size: 22, font: "Arial" }),
-        new TextRun({ text: checkbox(true), size: 22, font: "Arial" }),
-        new TextRun({
-          text: " The will refers to one or more documents and those documents have been filed with the submission for estate grant.",
-          size: 22,
-          font: "Arial",
-        }),
-      ], { indent: { left: 360 } })
-    );
-  }
-  children.push(spacer(120));
-
-  // Paragraph 11: Administration promise
-  children.push(
-    p([
-      new TextRun({ text: "11. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: "I will faithfully administer the estate of the deceased, according to law, and I acknowledge that I may be held personally accountable for any failure to do so.",
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(spacer(120));
-
-  // Paragraph 12: No competing applications
-  children.push(
-    p([
-      new TextRun({ text: "12. ", size: 22, font: "Arial", bold: true }),
-      new TextRun({
-        text: "To my knowledge, no application for a grant of probate, a grant of administration or a resealing has been made in relation to the estate of the deceased.",
-        size: 22,
-        font: "Arial",
-      }),
-    ])
-  );
-  children.push(spacer(240));
-
-  // Jurat
-  children.push(...juratBlock(applicantName, data.registry));
-
-  // Build document
   const doc = new Document({
     sections: [
       {
         properties: {
           page: {
-            margin: { top: 720, bottom: 720, left: 1080, right: 1080 },
+            margin: {
+              top: 1440,
+              bottom: 1440,
+              left: 1440,
+              right: 1440,
+            },
           },
         },
-        children,
+        children: [
+          // 1. Form title centered
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "Form P3 (Rule 25-3(2))",
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+
+          spacer(),
+
+          // 2. Affidavit header block (right-aligned)
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [
+              new TextRun({
+                text: "This is the 1st affidavit",
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [
+              new TextRun({
+                text: `of ${applicantName}`,
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [
+              new TextRun({
+                text: `in this case and was made on ${submissionDate}`,
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+
+          spacer(),
+
+          // 3. No. / Registry (right-aligned)
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [
+              new TextRun({
+                text: `No. ${data.fileNumber || "________"}`,
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [
+              new TextRun({
+                text: data.registry || "________________________",
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [
+              new TextRun({
+                text: "Registry",
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+
+          spacer(),
+
+          // 4. Court name centered bold caps size 28
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "IN THE SUPREME COURT OF BRITISH COLUMBIA",
+                bold: true,
+                size: 28,
+                allCaps: true,
+                font: "Arial",
+              }),
+            ],
+          }),
+
+          spacer(),
+
+          // 5. Estate of deceased
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "In the Matter of the Estate of ",
+                size: 24,
+                font: "Arial",
+              }),
+              new TextRun({
+                text: deceasedNameUpper,
+                bold: true,
+                size: 24,
+                font: "Arial",
+              }),
+              new TextRun({
+                text: ", deceased",
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+
+          spacer(),
+
+          // 6. Affidavit title centered bold
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "AFFIDAVIT OF APPLICANT FOR GRANT OF PROBATE OR GRANT OF ADMINISTRATION WITH WILL ANNEXED (SHORT FORM)",
+                bold: true,
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+
+          spacer(),
+
+          // 7. Opening statement
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `I, ${applicantName}, of ${applicantAddress}, AFFIRM THAT:`,
+                size: 24,
+                font: "Arial",
+              }),
+            ],
+          }),
+
+          spacer(),
+
+          // Paragraph 1: Applicant reference + grant type checkbox
+          p("1.      I am an applicant for a"),
+          checkboxP(data.grantType === "probate", "Grant of Probate", { indent: 720 }),
+          checkboxP(data.grantType === "admin_with_will", "Grant of Administration with Will Annexed", { indent: 720 }),
+          new Paragraph({
+            indent: { left: 720 },
+            children: [
+              new TextRun({
+                text: `of the estate of ${deceasedNameUpper}, deceased.`,
+                size: 22,
+                font: "Arial",
+              }),
+            ],
+          }),
+
+          spacer(),
+
+          // Paragraph 2: Named as executor + no other persons
+          p("2.      In the will or codicil of the deceased:"),
+          checkboxP(true, "I am named as executor.", { indent: 720 }),
+          checkboxP(true, "No other persons are named as executor who have not already renounced or predeceased the deceased.", { indent: 720 }),
+
+          spacer(),
+
+          // Paragraph 3: Not obliged to deliver to PGT
+          p("3.      Notification to the Public Guardian and Trustee:"),
+          checkboxP(!data.attorneyGeneralNotice, "I am not obliged to deliver a notice to the Public Guardian and Trustee under section 116(2) of WESA.", { indent: 720 }),
+
+          spacer(),
+
+          // Paragraph 4: Diligent search (no checkbox)
+          p(
+            "4.      I have made a diligent search and inquiry for any will, codicil or other testamentary document of the deceased and I do not know of any will, codicil or other testamentary document other than the testamentary document(s) referred to above."
+          ),
+
+          spacer(),
+
+          // Paragraph 5: Last will belief (no checkbox)
+          p(
+            "5.      I believe the testamentary document(s) referred to above represent(s) the last will of the deceased."
+          ),
+
+          spacer(),
+
+          // Paragraph 6: Will complies with WESA + sub-items
+          p(
+            '6.      The will of the deceased complies with section 37 of the Wills, Estates and Succession Act ("WESA") in that:'
+          ),
+          new Paragraph({
+            indent: { left: 1080 },
+            spacing: { after: 120 },
+            children: [
+              new TextRun({
+                text: "(a) it is in writing;",
+                size: 22,
+                font: "Arial",
+              }),
+            ],
+          }),
+          new Paragraph({
+            indent: { left: 1080 },
+            spacing: { after: 120 },
+            children: [
+              new TextRun({
+                text: "(b) it is signed at its end by the will-maker or the signature at the end is acknowledged by the will-maker as his or hers;",
+                size: 22,
+                font: "Arial",
+              }),
+            ],
+          }),
+          new Paragraph({
+            indent: { left: 1080 },
+            spacing: { after: 120 },
+            children: [
+              new TextRun({
+                text: "(c) the will-maker made or acknowledged the signature in the presence of 2 or more witnesses present at the same time; and",
+                size: 22,
+                font: "Arial",
+              }),
+            ],
+          }),
+          new Paragraph({
+            indent: { left: 1080 },
+            spacing: { after: 120 },
+            children: [
+              new TextRun({
+                text: "(d) 2 or more of the witnesses subscribed the will in the presence of the will-maker.",
+                size: 22,
+                font: "Arial",
+              }),
+            ],
+          }),
+
+          spacer(),
+
+          // Paragraph 7: Originally signed version filed
+          p(
+            `7.      The originally signed version of the will${data.will?.hasCodicils ? " and codicil(s)" : ""} has been filed with this court.`
+          ),
+
+          spacer(),
+
+          // Paragraph 8: Vital Statistics certificate filed
+          p(
+            "8.      A certificate issued by the Director of Vital Statistics or the equivalent from the relevant jurisdiction, or a certified copy of the registration of death, with respect to the deceased has been filed with this court."
+          ),
+
+          spacer(),
+
+          // Paragraph 9: All documents referred to attached
+          p(
+            `9.      All documents referred to in the will${data.will?.hasCodicils ? " or codicil(s)" : ""} of the deceased${data.will?.refersToDocuments ? " are attached to this affidavit" : " \u2014 there are no documents referred to in the will"}.`
+          ),
+
+          spacer(),
+
+          // Paragraph 10: Read submission and believe correct
+          p(
+            "10.    I have read the submission filed herein and I believe its contents to be correct."
+          ),
+
+          spacer(),
+
+          // Paragraph 11: Will administer according to law
+          p(
+            "11.    I will administer the estate of the deceased according to law and will render a just and true account of my administration when lawfully required."
+          ),
+
+          spacer(),
+
+          // Paragraph 12: Not aware of other grant applications
+          p(
+            "12.    I am not aware of any application for a grant in respect of the estate of the deceased in any jurisdiction."
+          ),
+
+          spacer(),
+          spacer(),
+
+          // 9. Jurat block
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({
+                children: [
+                  new TableCell({
+                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: "AFFIRMED before me at",
+                            size: 24,
+                            font: "Arial",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    width: { size: 5, type: WidthType.PERCENTAGE },
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({ text: ")", size: 24, font: "Arial" }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    width: { size: 45, type: WidthType.PERCENTAGE },
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({ children: [] }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `${applicant.address.city || "________________________"}, ${applicant.address.province || "British Columbia"}`,
+                            size: 24,
+                            font: "Arial",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({ text: ")", size: 24, font: "Arial" }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({ children: [] }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: `on ${submissionDate}`,
+                            size: 24,
+                            font: "Arial",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({ text: ")", size: 24, font: "Arial" }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({ children: [] }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({ children: [] }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({ text: ")", size: 24, font: "Arial" }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: "________________________________________",
+                            size: 24,
+                            font: "Arial",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({ children: [] }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({ text: ")", size: 24, font: "Arial" }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({
+                            text: applicantName,
+                            size: 24,
+                            font: "Arial",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({
+                            text: "________________________________________",
+                            size: 24,
+                            font: "Arial",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({ text: ")", size: 24, font: "Arial" }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({
+                            text: "Deponent",
+                            size: 24,
+                            font: "Arial",
+                            italics: true,
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({
+                            text: "A Commissioner for taking Affidavits",
+                            size: 24,
+                            font: "Arial",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({ children: [] }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({ children: [] }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          new TextRun({
+                            text: "for British Columbia",
+                            size: 24,
+                            font: "Arial",
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({ children: [] }),
+                    ],
+                  }),
+                  new TableCell({
+                    borders: noBorders,
+                    children: [
+                      new Paragraph({ children: [] }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
       },
     ],
   });

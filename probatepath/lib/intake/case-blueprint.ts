@@ -102,7 +102,42 @@ export type LiabilityEntry = {
   approxBalance: string;
 };
 
+// Intestate relationship priority (WESA order)
+export type IntestateRelationshipType =
+  | "spouse"
+  | "child"
+  | "grandchild"
+  | "parent"
+  | "sibling"
+  | "niece_nephew"
+  | "other_relative";
+
+// Person who needs to renounce priority
+export type RenunciationPerson = {
+  id: string;
+  name: PersonName;
+  relationship: IntestateRelationshipType;
+  status: "pending" | "received" | "refused";
+};
+
+// Intestate heir for distribution calculation
+export type IntestateHeirEntry = {
+  id: string;
+  name: PersonName;
+  relationship: IntestateRelationshipType;
+  isApplicant: boolean;
+  sharePercent: number;
+  address: Address;
+  isDeceased: boolean;
+  deceasedDate: string;
+};
+
 export type EstateIntake = {
+  // Prerequisites - gates that must be passed before proceeding
+  prerequisites: {
+    hasDeathCertificate: "yes" | "no" | null;
+    deathCertificateConfirmedAt: string;
+  };
   applicant: {
     name: PersonName;
     contact: ApplicantContact;
@@ -148,6 +183,27 @@ export type EstateIntake = {
   willUpload: {
     hasFiles: boolean;
     lastUploadedAt: string;
+  };
+  // Administration path (intestate - no will)
+  administration: {
+    applicantRelationship: IntestateRelationshipType | "";
+    // Spouse priority check
+    spouseExists: "yes" | "no" | "deceased" | null;
+    spouseDeathDate: string;
+    spouseConsents: "yes" | "no" | "applying" | null;
+    spouseName: PersonName;
+    // Children priority check (if applicant is not spouse/child)
+    childrenExist: "yes" | "no" | null;
+    childrenConsent: "yes" | "no" | null;
+    // Renunciations needed from higher-priority people
+    renunciationsNeeded: RenunciationPerson[];
+    // Co-applicants for administration
+    coApplicants: CoApplicant[];
+    // Calculated intestate heirs (for P1 notices and distribution)
+    intestateHeirs: IntestateHeirEntry[];
+    // Confirmation checkboxes
+    understandsAdministratorRole: boolean;
+    confirmedHeirCalculation: boolean;
   };
   family: {
     hasSpouse: "yes" | "no" | null;
@@ -208,6 +264,10 @@ const emptyName: PersonName = {
 };
 
 export const emptyEstateIntake: EstateIntake = {
+  prerequisites: {
+    hasDeathCertificate: null,
+    deathCertificateConfirmedAt: "",
+  },
   applicant: {
     name: emptyName,
     contact: { email: "", phone: "" },
@@ -237,6 +297,20 @@ export const emptyEstateIntake: EstateIntake = {
   willUpload: {
     hasFiles: false,
     lastUploadedAt: "",
+  },
+  administration: {
+    applicantRelationship: "",
+    spouseExists: null,
+    spouseDeathDate: "",
+    spouseConsents: null,
+    spouseName: emptyName,
+    childrenExist: null,
+    childrenConsent: null,
+    renunciationsNeeded: [],
+    coApplicants: [],
+    intestateHeirs: [],
+    understandsAdministratorRole: false,
+    confirmedHeirCalculation: false,
   },
   family: {
     hasSpouse: null,

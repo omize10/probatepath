@@ -28,6 +28,7 @@ model User {
   callbackSchedules   CallbackSchedule[]
   callbackWillUploads CallbackWillUpload[]
   notifications       Notification[]
+  matterNotes         MatterNote[]
 }
 
 model Matter {
@@ -65,6 +66,13 @@ model Matter {
   p1PacketPdfUrl              String?
   registryAddress             String?
   registryName                String?
+  // Path type: probate (with will) or administration (no will)
+  pathType                    String                 @default("probate")
+  // Will search certificate tracking
+  willSearchCertificateUrl         String?
+  willSearchCertificateUploadedAt  DateTime?
+  willSearchCertificateVerified    Boolean            @default(false)
+  // Relations
   audits                      AuditLog[]
   beneficiaries               Beneficiary[]
   emails                      EmailLog[]
@@ -90,6 +98,9 @@ model Matter {
   distributions               Distribution[]
   beneficiaryReleases         BeneficiaryRelease[]
   requisitions                Requisition[]
+  notes                       MatterNote[]
+  flags                       MatterFlag[]
+  intestateHeirs              IntestateHeir[]
 }
 
 model MatterStepProgress {
@@ -633,22 +644,28 @@ model AvailabilitySlot {
 // ========================================
 
 model BeneficiaryMailing {
-  id              String          @id @default(cuid())
-  matterId        String
-  beneficiaryId   String
-  beneficiaryName String
-  deliveryMethod  DeliveryMethod  @default(registered_mail)
-  status          MailingStatus   @default(not_printed)
-  printedAt       DateTime?
-  mailedAt        DateTime?
-  deliveredAt     DateTime?
-  trackingNumber  String?
-  carrierName     String?
-  notes           String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  matter          Matter          @relation(fields: [matterId], references: [id])
-  proofs          DeliveryProof[]
+  id                   String          @id @default(cuid())
+  matterId             String
+  beneficiaryId        String
+  beneficiaryName      String
+  beneficiaryAddress   String?
+  deliveryMethod       DeliveryMethod  @default(registered_mail)
+  status               MailingStatus   @default(not_printed)
+  printedAt            DateTime?
+  mailedAt             DateTime?
+  deliveredAt          DateTime?
+  trackingNumber       String?
+  carrierName          String?
+  notes                String?
+  // Confirmation checkboxes for mailing
+  confirmedMailedViaRegistered Boolean @default(false)
+  confirmedCorrectAddress      Boolean @default(false)
+  confirmedUnderstand21Days    Boolean @default(false)
+  confirmationsCompletedAt     DateTime?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  matter               Matter          @relation(fields: [matterId], references: [id])
+  proofs               DeliveryProof[]
 
   @@unique([matterId, beneficiaryId])
   @@index([matterId])
@@ -829,4 +846,117 @@ enum RequisitionStatus {
   received
   responding
   resolved
+}
+
+// ========================================
+// OPS NOTES & FLAGS
+// ========================================
+
+model MatterNote {
+  id        String   @id @default(cuid())
+  matterId  String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  matter    Matter   @relation(fields: [matterId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([matterId])
+  @@index([createdAt])
+}
+
+model MatterFlag {
+  id          String       @id @default(cuid())
+  matterId    String
+  flagType    FlagType
+  severity    FlagSeverity @default(MEDIUM)
+  description String?
+  status      FlagStatus   @default(OPEN)
+  createdAt   DateTime     @default(now())
+  resolvedAt  DateTime?
+  resolvedBy  String?
+  matter      Matter       @relation(fields: [matterId], references: [id], onDelete: Cascade)
+
+  @@index([matterId])
+  @@index([status])
+  @@index([flagType])
+}
+
+enum FlagType {
+  NO_ORIGINAL_WILL
+  DIFFERENT_WILL_FOUND
+  MINOR_BENEFICIARY
+  DISABLED_BENEFICIARY
+  FOREIGN_ASSETS
+  BUSINESS_INTERESTS
+  EXPECTED_DISPUTE
+  POSSIBLY_INSOLVENT
+  PRIORITY_CONFLICT
+  COMPLEX_FAMILY
+  INTESTATE_CASE
+  OTHER
+}
+
+enum FlagSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum FlagStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  DISMISSED
+}
+
+// ========================================
+// INTESTATE (ADMINISTRATION) PATH
+// ========================================
+
+model IntestateHeir {
+  id                    String                @id @default(cuid())
+  matterId              String
+  fullName              String
+  relationship          IntestateRelationship
+  isApplicant           Boolean               @default(false)
+  hasPriority           Boolean               @default(false)
+  renunciationStatus    RenunciationStatus    @default(NOT_NEEDED)
+  renunciationReceivedAt DateTime?
+  sharePercent          Decimal?              @db.Decimal(5, 2)
+  addressLine1          String?
+  addressLine2          String?
+  city                  String?
+  province              String?
+  postalCode            String?
+  country               String?
+  email                 String?
+  phone                 String?
+  isDeceased            Boolean               @default(false)
+  deceasedAt            DateTime?
+  notes                 String?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @default(now()) @updatedAt
+  matter                Matter                @relation(fields: [matterId], references: [id], onDelete: Cascade)
+
+  @@index([matterId])
+  @@index([relationship])
+}
+
+enum IntestateRelationship {
+  SPOUSE
+  CHILD
+  GRANDCHILD
+  PARENT
+  SIBLING
+  NIECE_NEPHEW
+  OTHER_RELATIVE
+}
+
+enum RenunciationStatus {
+  NOT_NEEDED
+  PENDING
+  RECEIVED
+  REFUSED
 }

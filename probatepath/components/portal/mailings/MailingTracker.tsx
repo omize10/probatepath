@@ -10,6 +10,7 @@ type Mailing = {
   id: string;
   beneficiaryId: string;
   beneficiaryName: string;
+  beneficiaryAddress: string | null;
   deliveryMethod: string;
   status: string;
   printedAt: string | null;
@@ -19,6 +20,11 @@ type Mailing = {
   carrierName: string | null;
   notes: string | null;
   proofs: Proof[];
+  // Confirmation fields
+  confirmedMailedViaRegistered: boolean;
+  confirmedCorrectAddress: boolean;
+  confirmedUnderstand21Days: boolean;
+  confirmationsCompletedAt: string | null;
 };
 
 type Beneficiary = {
@@ -206,10 +212,32 @@ function MailingCard({
   onUploadProof: (id: string, file: File) => Promise<void>;
 }) {
   const [saving, setSaving] = useState(false);
+  // Local state for checkboxes (synced with mailing data)
+  const [checkbox1, setCheckbox1] = useState(mailing.confirmedMailedViaRegistered);
+  const [checkbox2, setCheckbox2] = useState(mailing.confirmedCorrectAddress);
+  const [checkbox3, setCheckbox3] = useState(mailing.confirmedUnderstand21Days);
 
   const daysRemaining = mailing.mailedAt
     ? Math.max(0, differenceInDays(addDays(new Date(mailing.mailedAt), 21), new Date()))
     : null;
+
+  // All confirmations required before marking as mailed
+  const allConfirmationsChecked = checkbox1 && checkbox2 && checkbox3;
+  const hasProofUploaded = mailing.proofs.length > 0;
+  const canMarkAsMailed = allConfirmationsChecked && hasProofUploaded;
+
+  const handleCheckboxChange = async (
+    field: "confirmedMailedViaRegistered" | "confirmedCorrectAddress" | "confirmedUnderstand21Days",
+    value: boolean
+  ) => {
+    // Update local state immediately
+    if (field === "confirmedMailedViaRegistered") setCheckbox1(value);
+    if (field === "confirmedCorrectAddress") setCheckbox2(value);
+    if (field === "confirmedUnderstand21Days") setCheckbox3(value);
+
+    // Save to backend
+    await onUpdate(mailing.id, { [field]: value });
+  };
 
   const handleStatusAdvance = async () => {
     setSaving(true);
@@ -219,7 +247,8 @@ function MailingCard({
     if (mailing.status === "not_printed") {
       updates = { status: "printed", printedAt: now };
     } else if (mailing.status === "printed") {
-      updates = { status: "mailed", mailedAt: now };
+      // When marking as mailed, also save confirmationsCompletedAt
+      updates = { status: "mailed", mailedAt: now, confirmationsCompletedAt: now };
     } else if (mailing.status === "mailed") {
       updates = { status: "delivered", deliveredAt: now };
     }
@@ -339,7 +368,11 @@ function MailingCard({
 
           {/* Proof uploads */}
           <div>
-            <p className="text-xs font-medium text-gray-500 mb-2">Delivery proof</p>
+            <p className="text-xs font-medium text-gray-500 mb-2">
+              Delivery proof {mailing.status === "printed" && !hasProofUploaded && (
+                <span className="text-red-500 font-normal">(required before marking as mailed)</span>
+              )}
+            </p>
             {mailing.proofs.length > 0 && (
               <ul className="space-y-1 mb-2">
                 {mailing.proofs.map((proof) => (
@@ -368,15 +401,72 @@ function MailingCard({
             </label>
           </div>
 
+          {/* Confirmation checkboxes - shown when status is "printed" */}
+          {mailing.status === "printed" && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-3">
+              <p className="text-sm font-semibold text-amber-800">
+                Before marking as mailed, confirm the following:
+              </p>
+              <div className="space-y-2">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={checkbox1}
+                    onChange={(e) => handleCheckboxChange("confirmedMailedViaRegistered", e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[color:var(--brand)] focus:ring-[color:var(--brand)]"
+                  />
+                  <span className="text-sm text-gray-700">
+                    I confirm I mailed Form P1 to <strong>{mailing.beneficiaryName}</strong> via registered mail
+                  </span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={checkbox2}
+                    onChange={(e) => handleCheckboxChange("confirmedCorrectAddress", e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[color:var(--brand)] focus:ring-[color:var(--brand)]"
+                  />
+                  <span className="text-sm text-gray-700">
+                    I confirm I mailed to this address:{" "}
+                    <strong>{mailing.beneficiaryAddress || "Address not provided"}</strong>
+                  </span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={checkbox3}
+                    onChange={(e) => handleCheckboxChange("confirmedUnderstand21Days", e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[color:var(--brand)] focus:ring-[color:var(--brand)]"
+                  />
+                  <span className="text-sm text-gray-700">
+                    I understand I cannot file the probate application until 21 days after this mailing date
+                  </span>
+                </label>
+              </div>
+              {!hasProofUploaded && (
+                <p className="text-xs text-amber-700">
+                  You must also upload your registered mail receipt above.
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Action button */}
           {nextAction && (
-            <button
-              onClick={handleStatusAdvance}
-              disabled={saving}
-              className="inline-flex items-center rounded-full bg-[color:var(--brand)] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-50"
-            >
-              {saving ? "Saving..." : nextAction}
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={handleStatusAdvance}
+                disabled={saving || (mailing.status === "printed" && !canMarkAsMailed)}
+                className="inline-flex items-center rounded-full bg-[color:var(--brand)] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-50"
+              >
+                {saving ? "Saving..." : nextAction}
+              </button>
+              {mailing.status === "printed" && !canMarkAsMailed && (
+                <p className="text-xs text-gray-500">
+                  Complete all confirmations and upload receipt to enable this button.
+                </p>
+              )}
+            </div>
           )}
         </div>
       )}

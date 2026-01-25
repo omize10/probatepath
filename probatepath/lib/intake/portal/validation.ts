@@ -9,6 +9,13 @@ const required = (value?: string | null) => typeof value === "string" && value.t
 const validEmail = (value?: string | null) => typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 const validators: Partial<Record<PortalStepId, Validator>> = {
+  "death-certificate": (draft) => {
+    const errors: PortalStepErrors = {};
+    if (draft.estateIntake.prerequisites.hasDeathCertificate !== "yes") {
+      errors["prerequisites.hasDeathCertificate"] = "You must confirm you have the death certificate to continue.";
+    }
+    return errors;
+  },
   "will-upload": (draft) => {
     const errors: PortalStepErrors = {};
     if (!draft.estateIntake.willUpload.hasFiles) {

@@ -17,9 +17,15 @@ import { portalSteps, type PortalStepId, getPortalStepIndex, getPortalNextStep, 
 import { getPortalStepInfo } from "@/lib/intake/portal/info";
 import { saveMatterDraft } from "@/lib/intake/api";
 import { validatePortalStep, type PortalStepErrors } from "@/lib/intake/portal/validation";
-import type { Relationship } from "@/lib/intake/case-blueprint";
+import type { Relationship, PersonName, EstateIntake } from "@/lib/intake/case-blueprint";
 import { submitIntake } from "@/lib/intake/api";
 import { WillUploadStep } from "@/components/intake/will-upload-step";
+import { DeathCertificateStep } from "@/components/intake/steps/death-certificate-step";
+import { WillOriginalStep } from "@/components/intake/steps/will-original-step";
+import { AdminApplicantsStep } from "@/components/intake/steps/admin-applicants-step";
+import { AdminConsentStep } from "@/components/intake/steps/admin-consent-step";
+import { BC_REGISTRIES, suggestRegistry, getRegistryById, type Registry } from "@/lib/registries";
+import { calculateProbateFee, calculateEstateValue, formatCurrency } from "@/lib/probate-fees";
 
 interface MatterIntakeWizardProps {
   matterId: string;
@@ -216,6 +222,19 @@ interface RenderContext {
 
 function renderStep(stepId: PortalStepId, context: RenderContext) {
   switch (stepId) {
+    case "death-certificate":
+      return (
+        <DeathCertificateStep
+          estate={context.draft.estateIntake}
+          updatePrerequisites={(updates) =>
+            context.updateEstate((estate) => ({
+              ...estate,
+              prerequisites: { ...estate.prerequisites, ...updates },
+            }))
+          }
+          errors={{ hasDeathCertificate: context.errors["prerequisites.hasDeathCertificate"] }}
+        />
+      );
     case "will-upload":
       return (
         <WillUploadStep
@@ -245,11 +264,59 @@ function renderStep(stepId: PortalStepId, context: RenderContext) {
     case "will-details":
       return <WillDetails {...context} />;
     case "will-original":
-      return <WillOriginal {...context} />;
+      return (
+        <WillOriginalStep
+          matterId={context.matterId}
+          estate={context.draft.estateIntake}
+          updateWill={(updates) =>
+            context.updateEstate((estate) => ({
+              ...estate,
+              will: { ...estate.will, ...updates },
+            }))
+          }
+          errors={{
+            hasOriginal: context.errors["will.hasOriginal"],
+            storageLocation: context.errors["will.storageLocation"],
+          }}
+        />
+      );
     case "will-executors":
       return <WillExecutors {...context} />;
     case "will-codicils":
       return <WillCodicils {...context} />;
+    case "admin-applicants":
+      return (
+        <AdminApplicantsStep
+          estate={context.draft.estateIntake}
+          updateAdministration={(updates) =>
+            context.updateEstate((estate) => ({
+              ...estate,
+              administration: { ...estate.administration, ...updates },
+            }))
+          }
+          updateName={(section, field, value) =>
+            context.updateEstate((estate) => ({
+              ...estate,
+              administration: {
+                ...estate.administration,
+                [section]: { ...estate.administration[section], [field]: value },
+              },
+            }))
+          }
+        />
+      );
+    case "admin-consent":
+      return (
+        <AdminConsentStep
+          estate={context.draft.estateIntake}
+          updateAdministration={(updates) =>
+            context.updateEstate((estate) => ({
+              ...estate,
+              administration: { ...estate.administration, ...updates },
+            }))
+          }
+        />
+      );
     case "family-spouse":
       return <FamilySpouse {...context} />;
     case "family-children":
@@ -266,6 +333,8 @@ function renderStep(stepId: PortalStepId, context: RenderContext) {
       return <AssetsAccounts {...context} />;
     case "assets-property":
       return <AssetsProperty {...context} />;
+    case "assets-summary":
+      return <AssetsSummary {...context} />;
     case "debts-liabilities":
       return <DebtsLiabilities {...context} />;
     case "special-prior":
@@ -1708,6 +1777,110 @@ function AssetsProperty({ draft, updateEstate }: RenderContext) {
   );
 }
 
+function AssetsSummary({ draft }: RenderContext) {
+  const assets = draft.estateIntake.assets;
+
+  // Calculate estate value breakdown
+  const valueBreakdown = calculateEstateValue({
+    bcProperties: assets.bcProperties,
+    accounts: assets.accounts,
+    vehicles: assets.vehicles,
+    valuableItems: assets.valuableItems,
+  });
+
+  // Calculate probate fee based on gross value
+  const feeBreakdown = calculateProbateFee(valueBreakdown.totalGross);
+
+  return (
+    <div className="space-y-6">
+      <QuestionCard
+        title="Estate value summary"
+        description="Here's a breakdown of the estate assets you've entered."
+        why="The probate filing fee is based on the gross value of the estate."
+        where="These values come from what you entered in the previous steps."
+      >
+        <div className="space-y-4">
+          {/* Value breakdown */}
+          <div className="rounded-xl border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] p-4 space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-[color:var(--ink-muted)]">Real estate (BC)</span>
+              <span className="font-semibold">{formatCurrency(valueBreakdown.realEstate)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-[color:var(--ink-muted)]">Bank & investment accounts</span>
+              <span className="font-semibold">{formatCurrency(valueBreakdown.accounts)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-[color:var(--ink-muted)]">Vehicles</span>
+              <span className="font-semibold">{formatCurrency(valueBreakdown.vehicles)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-[color:var(--ink-muted)]">Valuable items</span>
+              <span className="font-semibold">{formatCurrency(valueBreakdown.valuables)}</span>
+            </div>
+            <div className="border-t border-[color:var(--border-muted)] pt-3 flex justify-between">
+              <span className="font-semibold text-[color:var(--ink)]">Estimated gross estate value</span>
+              <span className="font-bold text-lg text-[color:var(--brand)]">{formatCurrency(valueBreakdown.totalGross)}</span>
+            </div>
+          </div>
+
+          {/* Probate fee estimate */}
+          <div className="rounded-xl border-2 border-[color:var(--brand)] bg-[color:var(--brand-light,#f0f7ff)] p-4 space-y-2">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="font-semibold text-[color:var(--ink)]">Estimated probate filing fee</p>
+                <p className="text-xs text-[color:var(--ink-muted)]">{feeBreakdown.tierDescription}</p>
+              </div>
+              <span className="text-2xl font-bold text-[color:var(--brand)]">{formatCurrency(feeBreakdown.fee)}</span>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
+            <strong>Note:</strong> This is an estimate based on BC probate fee schedules. The actual fee may vary.
+            Joint assets with right of survivorship, life insurance with named beneficiaries, and RRSPs/TFSAs
+            with named beneficiaries may not be subject to probate. The registry will confirm the exact fee when you file.
+          </div>
+        </div>
+      </QuestionCard>
+
+      <QuestionCard
+        title="BC Probate Fee Schedule"
+        description="For reference, here is how BC probate fees are calculated."
+      >
+        <div className="rounded-xl border border-[color:var(--border-muted)] bg-white overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-[color:var(--bg-muted)]">
+              <tr>
+                <th className="px-4 py-2 text-left font-semibold text-[color:var(--ink)]">Estate Value</th>
+                <th className="px-4 py-2 text-left font-semibold text-[color:var(--ink)]">Probate Fee</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[color:var(--border-muted)]">
+              <tr>
+                <td className="px-4 py-2 text-[color:var(--ink-muted)]">$0 - $25,000</td>
+                <td className="px-4 py-2 font-semibold">No fee</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-[color:var(--ink-muted)]">$25,001 - $50,000</td>
+                <td className="px-4 py-2 font-semibold">$208</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-[color:var(--ink-muted)]">$50,001 - $300,000</td>
+                <td className="px-4 py-2 font-semibold">$208 + $6 per $1,000 over $50,000</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-[color:var(--ink-muted)]">Over $300,000</td>
+                <td className="px-4 py-2 font-semibold">$1,708 + $14 per $1,000 over $300,000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </QuestionCard>
+    </div>
+  );
+}
+
 function DebtsLiabilities({ draft, updateEstate, errors }: RenderContext) {
   const debts = draft.estateIntake.debts;
   const addLiability = () => {
@@ -1841,6 +2014,34 @@ function SpecialIssues({ draft, updateEstate, errors }: RenderContext) {
 
 function FilingDetails({ draft, updateEstate, errors }: RenderContext) {
   const filing = draft.estateIntake.filing;
+  const deceased = draft.estateIntake.deceased;
+
+  // Get suggested registry based on deceased's city
+  const suggestedRegistry = suggestRegistry(deceased.address.city);
+
+  // Find current selected registry or use suggested
+  const currentRegistryId = filing.registryLocation
+    ? BC_REGISTRIES.find((r: Registry) =>
+        filing.registryLocation.toLowerCase().includes(r.name.toLowerCase()) ||
+        filing.registryLocation.toLowerCase().includes(r.fullName.toLowerCase())
+      )?.id || suggestedRegistry.id
+    : suggestedRegistry.id;
+
+  const selectedRegistry = getRegistryById(currentRegistryId) || suggestedRegistry;
+
+  const handleRegistryChange = (registryId: string) => {
+    const registry = getRegistryById(registryId);
+    if (registry) {
+      updateEstate((estate) => ({
+        ...estate,
+        filing: {
+          ...estate.filing,
+          registryLocation: registry.fullName,
+        },
+      }));
+    }
+  };
+
   const handleAddressChange = (value: AddressValue) => {
     updateEstate((estate) => ({
       ...estate,
@@ -1850,16 +2051,56 @@ function FilingDetails({ draft, updateEstate, errors }: RenderContext) {
       },
     }));
   };
+
+  // Auto-set registry if not set and we have a suggestion
+  useEffect(() => {
+    if (!filing.registryLocation && suggestedRegistry) {
+      updateEstate((estate) => ({
+        ...estate,
+        filing: {
+          ...estate.filing,
+          registryLocation: suggestedRegistry.fullName,
+        },
+      }));
+    }
+  }, [deceased.address.city, filing.registryLocation, suggestedRegistry, updateEstate]);
+
   return (
     <div className="space-y-6">
       <QuestionCard
         title="Which BC probate registry should this go to?"
         why="The application must be filed in a specific Supreme Court registry."
-        where="Usually the registry closest to the deceased’s home."
+        where="Usually the registry closest to the deceased's home."
       >
+        {deceased.address.city && currentRegistryId === suggestedRegistry.id && (
+          <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+            Based on the deceased&apos;s address in <strong>{deceased.address.city}</strong>, we suggest the <strong>{suggestedRegistry.name}</strong> registry.
+          </div>
+        )}
         <Field label="Registry location" required error={errors["filing.registryLocation"]}>
-          <Input value={filing.registryLocation} onChange={(event) => updateEstate((estate) => ({ ...estate, filing: { ...estate.filing, registryLocation: event.target.value } }))} placeholder="e.g., Vancouver Supreme Court Registry" />
+          <select
+            value={currentRegistryId}
+            onChange={(e) => handleRegistryChange(e.target.value)}
+            className="w-full rounded-xl border border-[color:var(--border-muted)] bg-white px-4 py-3 text-sm transition focus:border-[color:var(--brand)] focus:outline-none"
+          >
+            {BC_REGISTRIES.map((registry: Registry) => (
+              <option key={registry.id} value={registry.id}>
+                {registry.name} Supreme Court Registry
+              </option>
+            ))}
+          </select>
         </Field>
+
+        {/* Registry details */}
+        <div className="mt-4 rounded-xl border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] p-4 space-y-2">
+          <p className="text-sm font-semibold text-[color:var(--ink)]">{selectedRegistry.fullName}</p>
+          <p className="text-sm text-[color:var(--ink-muted)]">{selectedRegistry.address}</p>
+          <p className="text-sm text-[color:var(--ink-muted)]">{selectedRegistry.city}, BC {selectedRegistry.postalCode}</p>
+          <div className="flex flex-wrap gap-4 pt-2 text-xs text-[color:var(--ink-muted)]">
+            <span>Phone: {selectedRegistry.phone}</span>
+            <span>Hours: {selectedRegistry.hours}</span>
+          </div>
+        </div>
       </QuestionCard>
       <QuestionCard
         title="Where should court documents be mailed back?"

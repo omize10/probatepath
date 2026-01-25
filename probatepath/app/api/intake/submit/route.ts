@@ -311,10 +311,18 @@ export async function POST(request: Request) {
   const normalizedEmail = draftEmail && draftEmail.includes("@") ? draftEmail : null;
   const resumeTokenEmail = normalizedEmail ?? `${matter.clientKey}@no-email.probatepath.local`;
 
+  // Determine pathType based on will existence
+  const hasWill = draft.data.estateIntake?.will?.hasWill;
+  const pathType = hasWill === "no" ? "administration" : "probate";
+
   const result = await prisma.$transaction(async (tx) => {
     const updatedMatter = await tx.matter.update({
       where: { id: matter.id },
-      data: { status: "REVIEW", userId: matter.userId ?? sessionUserId ?? null },
+      data: {
+        status: "REVIEW",
+        userId: matter.userId ?? sessionUserId ?? null,
+        pathType, // Persist the path type based on will existence
+      },
     });
 
     await tx.generatedPack.upsert({

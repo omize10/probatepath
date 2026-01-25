@@ -13,6 +13,15 @@ const defaultBlock: InfoBlock = {
 };
 
 export const portalStepInfo: Record<PortalStepId, InfoBlock> = {
+  "death-certificate": {
+    title: "Essential document",
+    body: "The death certificate is required by BC courts to prove the person has died. Without it, you cannot proceed with probate or administration.",
+    tips: [
+      "Funeral homes typically provide 2 copies as part of their service.",
+      "Order additional copies at ecos.vs.gov.bc.ca ($27 standard, $60 rush).",
+      "Keep the original safe—banks and registries will need to see it.",
+    ],
+  },
   "will-upload": {
     title: "Upload first",
     body: "A clear PDF or set of photos lets us tailor every later question and keeps your answers in sync with the actual document.",

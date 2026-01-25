@@ -27,6 +27,7 @@ export interface PortalMatterVM {
   caseCode?: string | null;
   statusLabel: string;
   portalStatus: string;
+  pathType: "probate" | "administration";
   willSearchPackageReady: boolean;
   p1NoticesReady: boolean;
   standardProbatePackageReady: boolean;
@@ -50,6 +51,8 @@ export interface PortalMatterVM {
   daysRemaining: number | null;
   noticesMailedAtDisplay: string | null;
   willSearchMailedAtDisplay?: string | null;
+  // Will search certificate tracking
+  willSearchCertificateUploaded: boolean;
 }
 
 export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM; empty?: boolean }) {
@@ -57,7 +60,17 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
   const daysRemaining = matter.daysRemaining;
 
   const portalStatus = matter.portalStatus;
-  const waitFinished = hasNoticesSent && daysRemaining !== null && daysRemaining <= 0;
+  // Both conditions must be met to unlock filing
+  const waitingPeriodComplete = hasNoticesSent && daysRemaining !== null && daysRemaining <= 0;
+  const certificateUploaded = matter.willSearchCertificateUploaded;
+  const waitFinished = waitingPeriodComplete && certificateUploaded;
+
+  // Path-specific language
+  const isAdministration = matter.pathType === "administration";
+  const grantName = isAdministration ? "Grant of Administration" : "Grant of Probate";
+  const grantedLabel = isAdministration ? "Administration granted" : "Probate granted";
+  const filingLabel = isAdministration ? "court filing" : "probate filing";
+  const applicationLabel = isAdministration ? "administration application" : "probate application";
 
   let displayStatus = matter.statusLabel;
   let nextUnlock = "Preparing documents";
@@ -82,9 +95,14 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
           displayStatus = `Waiting ${daysRemaining} day(s) after notices`;
           nextUnlock = `Wait ${daysRemaining} day(s) after notices`;
           primaryCta = { href: "/portal/p1-notices", label: "View notices status" };
+        } else if (!certificateUploaded) {
+          // 21 days passed but certificate not uploaded
+          displayStatus = "21-day wait complete – certificate needed";
+          nextUnlock = "Upload will search certificate";
+          primaryCta = { href: "/portal/will-search", label: "Upload certificate" };
         } else {
           displayStatus = "Waiting period complete";
-          nextUnlock = "Prepare probate filing";
+          nextUnlock = `Prepare ${filingLabel}`;
           primaryCta = null; // show the CTA in the notices card to avoid duplicates
         }
       }
@@ -93,13 +111,13 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
     case "probate_package_ready":
     case "probate_filing_ready":
       displayStatus = portalStatusLabels[portalStatus] ?? displayStatus;
-      nextUnlock = "File your probate package";
-      primaryCta = { href: "/portal/probate-filing?step=1", label: "Prepare probate filing" };
+      nextUnlock = `File your ${filingLabel} package`;
+      primaryCta = { href: "/portal/probate-filing?step=1", label: `Prepare ${filingLabel}` };
       break;
     case "probate_filing_in_progress":
       displayStatus = portalStatusLabels[portalStatus] ?? displayStatus;
-      nextUnlock = "File your probate package";
-      primaryCta = { href: "/portal/probate-filing?step=1", label: "Continue probate filing" };
+      nextUnlock = `File your ${filingLabel} package`;
+      primaryCta = { href: "/portal/probate-filing?step=1", label: `Continue ${filingLabel}` };
       break;
     case "probate_filed":
       displayStatus = "Application filed – waiting for grant";
@@ -108,11 +126,11 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
       break;
     case "waiting_for_grant":
       displayStatus = "Waiting for grant";
-      nextUnlock = "Waiting for grant of probate";
+      nextUnlock = `Waiting for ${grantName}`;
       break;
     case "grant_complete":
     case "post_grant_active":
-      displayStatus = "Probate granted";
+      displayStatus = grantedLabel;
       nextUnlock = "Administer the estate";
       primaryCta = { href: "/portal/post-grant", label: "Start estate administration" };
       break;
@@ -126,8 +144,8 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
   }
 
   if (matter.grantIssuedAt) {
-    displayStatus = "Grant received – probate complete";
-    nextUnlock = "Probate granted";
+    displayStatus = isAdministration ? "Grant received – administration complete" : "Grant received – probate complete";
+    nextUnlock = grantedLabel;
     primaryCta = null;
   }
 
@@ -258,21 +276,48 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
               status={waitFinished ? "ready" : "waiting"}
               label={waitFinished ? "Waiting period complete" : "21-day waiting period"}
               sublabel={waitFinished
-                ? "You're ready to file your probate application."
+                ? `You're ready to file your ${applicationLabel}.`
                 : `Notices sent on ${matter.noticesMailedAtDisplay ?? "—"}. ${daysRemaining ?? 0} day(s) remaining.`}
             />
             <div className="rounded-2xl bg-white px-6 py-4 shadow-sm space-y-3">
+              {/* Waiting period status */}
               {daysRemaining !== null && daysRemaining > 0 ? (
-                <p className="text-sm text-gray-700">You must wait {daysRemaining} day(s) from that date before filing. No action needed right now.</p>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-700">
+                    You must wait {daysRemaining} day(s) from that date before filing.
+                  </p>
+                  {!certificateUploaded && (
+                    <p className="text-sm text-amber-700">
+                      You also need to upload your will search certificate from Vital Statistics.
+                    </p>
+                  )}
+                </div>
               ) : (
-                <p className="text-sm text-gray-700">Your 21-day waiting period is complete.</p>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-700">Your 21-day waiting period is complete.</p>
+                  {!certificateUploaded && (
+                    <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-2">
+                      <p className="text-sm font-semibold text-amber-800">Certificate required</p>
+                      <p className="text-sm text-amber-700">
+                        Before you can file your {applicationLabel}, you must upload your will search certificate from Vital Statistics.
+                      </p>
+                      <Link
+                        href="/portal/will-search"
+                        className="inline-flex items-center rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-700"
+                      >
+                        Upload certificate
+                      </Link>
+                    </div>
+                  )}
+                </div>
               )}
+              {/* Only show filing CTA when both conditions are met */}
               {waitFinished && (
                 <Link
                   href="/portal/probate-filing?step=1"
                   className="inline-flex items-center rounded-full bg-[color:var(--brand)] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)]"
                 >
-                  Continue to probate filing
+                  Continue to {filingLabel}
                 </Link>
               )}
             </div>
@@ -281,7 +326,7 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
         ) : portalStatus === "probate_package_ready" ? (
           <section className="space-y-4 rounded-2xl bg-white px-6 py-6 shadow-sm">
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-gray-900">Probate filing package is ready.</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{isAdministration ? "Court filing package is ready." : "Probate filing package is ready."}</h2>
               <p className="text-sm text-gray-700">Download, get your affidavits notarized, and file with the registry.</p>
             </div>
             <NeedHelp />
@@ -291,14 +336,14 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
             <div className="space-y-2">
               <h2 className="text-lg font-semibold text-gray-900">Application filed</h2>
               <p className="text-sm text-gray-700">
-                Your probate package has been filed. The court is reviewing your application. This can take several weeks. We’ll contact you if anything else is needed.
+                Your {isAdministration ? "court" : "probate"} package has been filed. The court is reviewing your application. This can take several weeks. We'll contact you if anything else is needed.
               </p>
             </div>
             <NeedHelp />
           </section>
         ) : portalStatus === "grant_complete" || portalStatus === "post_grant_active" || portalStatus === "estate_closeout" ? (
           <section className="space-y-4">
-            <AnimatedStatus status="complete" label="Probate granted" sublabel="You can now begin administering the estate." />
+            <AnimatedStatus status="complete" label={grantedLabel} sublabel="You can now begin administering the estate." />
             <div className="grid gap-3 sm:grid-cols-2">
               <Link href="/portal/post-grant" className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4 hover:border-[color:var(--brand)] transition block">
                 <p className="text-sm font-semibold text-gray-900">Estate administration</p>
@@ -375,14 +420,16 @@ function Accordion() {
   );
 }
 
-const JOURNEY_STEPS = [
-  { id: "intake", label: "Intake submitted" },
-  { id: "will-search", label: "Will search sent" },
-  { id: "notices", label: "P1 notices mailed" },
-  { id: "waiting", label: "21-day waiting period" },
-  { id: "filing", label: "Probate filed at court" },
-  { id: "grant", label: "Grant received" },
-];
+function getJourneySteps(isAdministration: boolean) {
+  return [
+    { id: "intake", label: "Intake submitted" },
+    { id: "will-search", label: "Will search sent" },
+    { id: "notices", label: "P1 notices mailed" },
+    { id: "waiting", label: "21-day waiting period" },
+    { id: "filing", label: isAdministration ? "Application filed at court" : "Probate filed at court" },
+    { id: "grant", label: "Grant received" },
+  ];
+}
 
 const STATUS_TO_STEP: Record<string, number> = {
   intake_complete: 0,
@@ -405,7 +452,9 @@ const STATUS_TO_STEP: Record<string, number> = {
 
 function buildJourneySteps(portalStatus: string, matter: PortalMatterVM) {
   const activeStep = STATUS_TO_STEP[portalStatus] ?? 0;
-  return JOURNEY_STEPS.map((step, i) => ({
+  const isAdministration = matter.pathType === "administration";
+  const journeySteps = getJourneySteps(isAdministration);
+  return journeySteps.map((step, i) => ({
     id: step.id,
     label: step.label,
     status: i < activeStep ? ("done" as const) :

@@ -95,6 +95,10 @@ export async function POST(
       "printedAt",
       "mailedAt",
       "deliveredAt",
+      "confirmedMailedViaRegistered",
+      "confirmedCorrectAddress",
+      "confirmedUnderstand21Days",
+      "confirmationsCompletedAt",
     ];
     const data: Record<string, unknown> = {};
     for (const key of allowedFields) {

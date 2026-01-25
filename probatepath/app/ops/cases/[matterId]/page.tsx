@@ -12,6 +12,7 @@ import { updatePortalState, markNoticesMailed, markProbateFiled, markWillSearchM
 import { downloadAndStorePdf, savePdfToUploads } from "@/lib/uploads";
 import { notifyPacketReady, notifyProbatePackageReady, notifyProbateFilingReady } from "@/lib/reminders";
 import { PdfUploadControl } from "@/components/ops/PdfUploadControl";
+import { NotesAndFlags } from "@/components/ops/NotesAndFlags";
 import { getWillFilesForMatter } from "@/lib/will-files";
 
 const dateFormatter = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium" });
@@ -346,6 +347,11 @@ export default async function CaseDetailPage({ params, searchParams }: CaseDetai
       draft: true,
       willSearch: true,
       reminders: { orderBy: { dueAt: "asc" } },
+      notes: {
+        include: { user: { select: { name: true, email: true } } },
+        orderBy: { createdAt: "desc" },
+      },
+      flags: { orderBy: [{ status: "asc" }, { severity: "desc" }, { createdAt: "desc" }] },
     },
   });
 
@@ -416,6 +422,24 @@ export default async function CaseDetailPage({ params, searchParams }: CaseDetai
           />
           <FormsGenerationCard recordId={record.id} />
           <RemindersCard recordId={record.id} reminders={record.reminders} noticeReminder={noticeReminder} noticeMailDate={record.noticesMailedAt} />
+          <NotesAndFlags
+            matterId={record.id}
+            notes={record.notes.map((n) => ({
+              id: n.id,
+              content: n.content,
+              createdAt: n.createdAt.toISOString(),
+              user: { name: n.user.name, email: n.user.email },
+            }))}
+            flags={record.flags.map((f) => ({
+              id: f.id,
+              flagType: f.flagType as any,
+              severity: f.severity as any,
+              status: f.status as any,
+              description: f.description,
+              createdAt: f.createdAt.toISOString(),
+              resolvedAt: f.resolvedAt?.toISOString() ?? null,
+            }))}
+          />
         </div>
       </div>
     </div>
@@ -1015,15 +1039,22 @@ function RemindersCard({ recordId, reminders, noticeReminder }: RemindersCardPro
 
 function FormsGenerationCard({ recordId }: { recordId: string }) {
   const forms = [
-    { id: "P1", name: "Notice of Proposed Application", available: true, docx: true, updated: false },
-    { id: "P2", name: "Submission for Estate Grant", available: true, docx: true, updated: true },
-    { id: "P3", name: "Affidavit of Applicant (Short Form)", available: true, docx: true, updated: true },
-    { id: "P4", name: "Affidavit of Applicant (Long Form)", available: true, docx: false, updated: false },
-    { id: "P9", name: "Affidavit of Delivery", available: true, docx: true, updated: true },
-    { id: "P10", name: "Assets & Liabilities (Domiciled)", available: true, docx: true, updated: true },
-    { id: "P11", name: "Assets & Liabilities (Non-Domiciled)", available: false, docx: false, updated: false },
-    { id: "P17", name: "Affidavit of Attesting Witness", available: false, docx: false, updated: false },
-    { id: "P20", name: "Affidavit of Condition of Will", available: false, docx: false, updated: false },
+    // Core probate forms
+    { id: "P1", name: "Notice of Proposed Application", available: true, docx: true, updated: false, comingSoon: false },
+    { id: "P2", name: "Submission for Estate Grant", available: true, docx: true, updated: true, comingSoon: false },
+    { id: "P3", name: "Affidavit of Applicant (Short Form)", available: true, docx: true, updated: true, comingSoon: false },
+    { id: "P5", name: "Administration Affidavit (Intestate)", available: true, docx: true, updated: true, comingSoon: false },
+    { id: "P9", name: "Affidavit of Delivery", available: true, docx: true, updated: true, comingSoon: false },
+    { id: "P10", name: "Assets & Liabilities (Domiciled)", available: true, docx: true, updated: true, comingSoon: false },
+    // Cover letters
+    { id: "NOTARY-COVER", name: "Notary Cover Letter", available: true, docx: true, updated: true, comingSoon: false },
+    { id: "COURT-COVER", name: "Court Cover Letter", available: true, docx: true, updated: true, comingSoon: false },
+    { id: "FILING-CHECKLIST", name: "Filing Checklist", available: true, docx: true, updated: true, comingSoon: false },
+    // Coming soon forms
+    { id: "P4", name: "Affidavit of Applicant (Long Form)", available: false, docx: false, updated: false, comingSoon: true },
+    { id: "P11", name: "Assets & Liabilities (Non-Domiciled)", available: false, docx: false, updated: false, comingSoon: true },
+    { id: "P17", name: "Renunciation / Consent", available: false, docx: false, updated: false, comingSoon: true },
+    { id: "P20", name: "Affidavit of Condition of Will", available: false, docx: false, updated: false, comingSoon: true },
   ];
 
   const getFormUrl = (form: { id: string }) => {
@@ -1050,7 +1081,7 @@ function FormsGenerationCard({ recordId }: { recordId: string }) {
             className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
               form.available
                 ? "border-[color:var(--brand)] text-[color:var(--brand)] hover:bg-[color:var(--brand)] hover:text-white"
-                : "border-[color:var(--border-muted)] text-[color:var(--ink-muted)] cursor-not-allowed opacity-50 pointer-events-none"
+                : "border-[color:var(--border-muted)] text-[color:var(--ink-muted)] cursor-not-allowed opacity-60"
             }`}
           >
             <span>{form.name}</span>
@@ -1058,6 +1089,7 @@ function FormsGenerationCard({ recordId }: { recordId: string }) {
               ({form.id})
               {form.docx && <span className="ml-1 rounded bg-green-100 px-1 py-0.5 text-[10px] text-green-700">.docx</span>}
               {form.updated && <span className="ml-1 rounded bg-blue-100 px-1 py-0.5 text-[10px] font-bold text-blue-700">Updated</span>}
+              {form.comingSoon && <span className="ml-1 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">Coming Soon</span>}
             </span>
           </a>
         ))}

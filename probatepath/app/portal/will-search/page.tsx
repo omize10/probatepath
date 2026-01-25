@@ -7,6 +7,7 @@ import { portalStatusLabels, hasReachedStatus } from "@/lib/portal/status";
 import { markWillSearchMailed } from "@/lib/cases";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { WillSearchWizard } from "@/components/portal/WillSearchWizard";
+import { WillSearchCertificateUpload } from "@/components/portal/WillSearchCertificateUpload";
 
 function formatDate(value?: Date | null) {
   return value ? format(value, "MMM d, yyyy") : "date not recorded";
@@ -77,22 +78,38 @@ export default async function WillSearchPage() {
 
       <div className="mt-8">
         {mailedAt ? (
-          <div className="space-y-3 rounded-2xl bg-white px-6 py-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900">Will search sent</h2>
-            <p className="text-sm text-gray-700">You told us you mailed your will search on {formatDate(mailedAt)}.</p>
-            <p className="text-sm text-gray-700">
-              Vital Statistics usually takes a few weeks to respond. Keep the result with your probate documents. You can continue with notices next.
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Link
-                href="/portal/p1-notices"
-                className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black"
-              >
-                Continue to P1 notices
-              </Link>
-              {waitingUntil ? (
-                <p className="text-xs text-gray-600">Earliest next step: {formatDate(waitingUntil)} (21-day wait after notices will start there).</p>
-              ) : null}
+          <div className="space-y-4">
+            <div className="space-y-3 rounded-2xl bg-white px-6 py-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-900">Will search sent</h2>
+              <p className="text-sm text-gray-700">You told us you mailed your will search on {formatDate(mailedAt)}.</p>
+              <p className="text-sm text-gray-700">
+                Vital Statistics usually takes a few weeks to respond. Keep the result with your probate documents. You can continue with notices next.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Link
+                  href="/portal/p1-notices"
+                  className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black"
+                >
+                  Continue to P1 notices
+                </Link>
+                {waitingUntil ? (
+                  <p className="text-xs text-gray-600">Earliest next step: {formatDate(waitingUntil)} (21-day wait after notices will start there).</p>
+                ) : null}
+              </div>
+            </div>
+
+            {/* Certificate upload section */}
+            <div className="rounded-2xl bg-white px-6 py-6 shadow-sm space-y-3">
+              <h3 className="text-lg font-semibold text-gray-900">Will search certificate</h3>
+              <p className="text-sm text-gray-700">
+                When your certificate arrives from Vital Statistics, upload it here. This certificate is required for your court filing.
+              </p>
+              <WillSearchCertificateUpload
+                matterId={matter.id}
+                existingCertificateUrl={matter.willSearchCertificateUrl}
+                certificateUploadedAt={matter.willSearchCertificateUploadedAt?.toISOString()}
+                certificateVerified={matter.willSearchCertificateVerified}
+              />
             </div>
           </div>
         ) : (

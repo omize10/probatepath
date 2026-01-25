@@ -1,6 +1,7 @@
 import type { IntakeDraft } from "@/lib/intake/types";
 
 export type PortalStepId =
+  | "death-certificate"
   | "will-upload"
   | "applicant-name-contact"
   | "applicant-address-relationship"
@@ -41,6 +42,7 @@ export interface PortalStepDefinition {
 }
 
 export const portalSteps: PortalStepDefinition[] = [
+  { id: "death-certificate", title: "Death certificate", description: "Confirm you have this essential document.", section: "Step 0 · Prerequisites" },
   { id: "will-upload", title: "Upload the will", description: "Start by adding a PDF or clear photos.", section: "Step 0 · Upload" },
   { id: "applicant-name-contact", title: "Your legal name", description: "Tell us who is applying.", section: "Step 1 · About you" },
   { id: "applicant-address-relationship", title: "Address & relationship", description: "How to reach you and how you’re connected.", section: "Step 1 · About you" },
@@ -106,20 +108,35 @@ export function getPortalNextStep(stepId: PortalStepId, draft?: IntakeDraft): Po
 }
 
 const skipConditions: Partial<Record<PortalStepId, (draft?: IntakeDraft) => boolean>> = {
+  // Co-applicant list only shows if user said they're not the only applicant
   "applicant-coapp-list": (draft) => draft?.estateIntake.applicant.isOnlyApplicant !== "no",
+
+  // Administration steps (intestate path) - SHOW when hasWill is "no"
+  // Skip admin-applicants if there IS a will (probate path)
   "admin-applicants": (draft) => {
-    const estateWill = draft?.estateIntake.will;
-    const hasWill = estateWill?.hasWill === "yes";
-    const executorApplying = estateWill?.namedExecutors?.some((ex) => ex.isApplicant === "yes") ?? false;
-    return hasWill && executorApplying;
+    const hasWill = draft?.estateIntake.will.hasWill;
+    // Skip if hasWill is "yes" or "unknown" (only show for explicit "no")
+    return hasWill !== "no";
   },
+  // Skip admin-consent if there IS a will (probate path)
   "admin-consent": (draft) => {
-    const estate = draft?.estateIntake;
-    const hasWill = estate?.will.hasWill === "yes";
-    const onlyApplicant = estate?.applicant.isOnlyApplicant === "yes";
-    return hasWill || onlyApplicant;
+    const hasWill = draft?.estateIntake.will.hasWill;
+    return hasWill !== "no";
   },
+
+  // Will-related steps - SKIP when hasWill is "no" (intestate path)
+  "will-upload": (draft) => draft?.estateIntake.will.hasWill === "no",
+  "will-details": (draft) => draft?.estateIntake.will.hasWill !== "yes",
+  "will-original": (draft) => draft?.estateIntake.will.hasWill !== "yes",
+  "will-executors": (draft) => draft?.estateIntake.will.hasWill !== "yes",
+  "will-codicils": (draft) => draft?.estateIntake.will.hasWill !== "yes",
   "will-issues": (draft) => draft?.estateIntake.will.hasWill !== "yes",
+
+  // Beneficiaries steps - SKIP for intestate (heirs are determined by law, not will)
+  "beneficiaries-people": (draft) => draft?.estateIntake.will.hasWill === "no",
+  "beneficiaries-organizations": (draft) => draft?.estateIntake.will.hasWill === "no",
+
+  // Minor/incapable notice step
   "notice-minors": (draft) => {
     const children = draft?.estateIntake.family.children ?? [];
     const people = draft?.estateIntake.beneficiaries.people ?? [];

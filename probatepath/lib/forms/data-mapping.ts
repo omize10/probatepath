@@ -192,7 +192,7 @@ export function mapToEstateData(matter: MatterWithRelations): EstateData {
     children,
     beneficiaries,
 
-    intestateSuccessors: formData.intestateSuccessors || [],
+    intestateSuccessors: formData.intestateSuccessors || buildIntestateSuccessors(intake),
     creditors: formData.creditors,
     citors: formData.citors || [],
     attorneyGeneralNotice: formData.attorneyGeneralNotice || false,
@@ -495,4 +495,66 @@ function extractCity(cityProv?: string | null): string {
   if (!cityProv) return "";
   const parts = cityProv.split(",");
   return parts[0]?.trim() || cityProv;
+}
+
+function buildIntestateSuccessors(intake: any): EstateData["intestateSuccessors"] {
+  const successors: EstateData["intestateSuccessors"] = [];
+
+  // Get heirs from administration section (for intestate estates)
+  const administration = intake.administration || {};
+  const intestateHeirs: any[] = administration.intestateHeirs || [];
+
+  for (const heir of intestateHeirs) {
+    const heirName = heir.name || {};
+    const fullName = [heirName.first, heirName.middle1, heirName.last].filter(Boolean).join(" ");
+    if (fullName) {
+      successors.push({
+        name: fullName,
+        relationship: formatRelationshipLabel(heir.relationship),
+      });
+    }
+  }
+
+  // Fallback: if no heirs but we have family data and it's an intestate case
+  if (successors.length === 0) {
+    const family = intake.family || {};
+    const hasWill = intake.will?.hasWill;
+
+    // Only build from family if this is an intestate case (no will)
+    if (hasWill === "no") {
+      // Add spouse if exists
+      if (family.hasSpouse === "yes" && family.spouse) {
+        const spName = family.spouse.name || {};
+        const spouseName = [spName.first, spName.middle1, spName.last].filter(Boolean).join(" ");
+        if (spouseName) {
+          successors.push({ name: spouseName, relationship: "Spouse" });
+        }
+      }
+
+      // Add children
+      const children: any[] = family.children || [];
+      for (const child of children) {
+        const childName = child.name || {};
+        const cName = [childName.first, childName.middle1, childName.last].filter(Boolean).join(" ");
+        if (cName) {
+          successors.push({ name: cName, relationship: "Child" });
+        }
+      }
+    }
+  }
+
+  return successors;
+}
+
+function formatRelationshipLabel(relationship?: string): string {
+  const labels: Record<string, string> = {
+    spouse: "Spouse",
+    child: "Child",
+    grandchild: "Grandchild",
+    parent: "Parent",
+    sibling: "Sibling",
+    niece_nephew: "Niece/Nephew",
+    other_relative: "Other Relative",
+  };
+  return labels[relationship || ""] || relationship || "Unknown";
 }

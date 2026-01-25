@@ -16,6 +16,7 @@ export default async function PortalPage() {
         matter={{
           id: "",
           portalStatus: "intake_complete",
+          pathType: "probate",
           statusLabel: "Intake not started",
           willSearchPackageReady: false,
           p1NoticesReady: false,
@@ -40,6 +41,7 @@ export default async function PortalPage() {
           daysRemaining: null,
           noticesMailedAtDisplay: null,
           willSearchMailedAtDisplay: null,
+          willSearchCertificateUploaded: false,
         }}
         empty
       />
@@ -58,10 +60,18 @@ export default async function PortalPage() {
       ? Math.max(0, 21 - Math.floor((now - matter.noticesMailedAt.getTime()) / (1000 * 60 * 60 * 24)))
       : null;
 
+  // Determine pathType from matter or intake draft
+  const intakePayload = (matter.draft?.payload as Record<string, any>) ?? {};
+  const hasWill = intakePayload.estateIntake?.will?.hasWill;
+  const pathType: "probate" | "administration" =
+    (matter.pathType as "probate" | "administration") ??
+    (hasWill === "no" ? "administration" : "probate");
+
   const serialized: PortalMatterVM = {
     id: matter.id,
     caseCode: matter.caseCode ?? null,
     portalStatus: matter.portalStatus,
+    pathType,
     statusLabel: portalStatusLabels[matter.portalStatus] ?? matter.portalStatus,
     willSearchPackageReady: matter.willSearchPackageReady,
     p1NoticesReady: matter.p1NoticesReady,
@@ -95,6 +105,8 @@ export default async function PortalPage() {
     daysRemaining,
     noticesMailedAtDisplay: matter.noticesMailedAt ? matter.noticesMailedAt.toLocaleDateString() : null,
     willSearchMailedAtDisplay: matter.willSearchMailedAt ? matter.willSearchMailedAt.toLocaleDateString() : null,
+    // Will search certificate tracking - required for filing
+    willSearchCertificateUploaded: Boolean(matter.willSearchCertificateUrl),
   };
 
   return <PortalClient matter={serialized} />;

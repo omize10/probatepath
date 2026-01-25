@@ -5,18 +5,9 @@ import { prisma, prismaEnabled } from '@/lib/prisma';
  * DEBUG ENDPOINT - Shows all recent AI calls in database
  * Use this to diagnose Issue #2 (button not enabling)
  * 
- * Only works in development or if you know the secret
+ * No auth required - dev endpoint
  */
 export async function GET(req: NextRequest) {
-  const secret = req.nextUrl.searchParams.get('secret');
-  
-  // Simple auth - check against env var or allow localhost
-  const debugSecret = process.env.DEBUG_SECRET;
-  const isLocalhost = req.headers.get('host')?.includes('localhost');
-  
-  if (!isLocalhost && secret !== debugSecret) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
 
   if (!prismaEnabled) {
     return NextResponse.json({ error: 'Database not enabled' }, { status: 503 });

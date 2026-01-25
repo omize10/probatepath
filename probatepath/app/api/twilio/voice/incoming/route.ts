@@ -3,8 +3,11 @@ import twilio from "twilio";
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
-// Twilio's free hold music - calm piano track
-const HOLD_MUSIC_URL = "http://com.twilio.sounds.music.s3.amazonaws.com/MARKOVICHAMP-B4_Trehds.mp3";
+// Twilio's free hold music - use HTTPS and a known working track
+// Multiple options for reliability:
+// - Twilio's built-in piano track: https://api.twilio.com/Cowbell.mp3
+// - Alternative: https://api.twilio.com/MusicLoop.mp3
+const HOLD_MUSIC_URL = "https://api.twilio.com/Cowbell.mp3";
 
 // Phone numbers from environment
 const RETELL_PHONE_NUMBER = process.env.RETELL_PHONE_NUMBER || "+16046703534";
@@ -23,6 +26,9 @@ const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER || "+16043321466";
 export async function POST(request: NextRequest) {
   const twiml = new VoiceResponse();
 
+  // Log incoming call for debugging
+  console.log("[twilio.voice.incoming] New call received, generating IVR flow");
+
   // Welcome message
   twiml.say(
     {
@@ -34,28 +40,37 @@ export async function POST(request: NextRequest) {
     "Your call is important to us."
   );
 
-  // Brief pause after greeting
-  twiml.pause({ length: 2 });
+  // Slight pause to let message sink in
+  twiml.pause({ length: 1 });
 
-  // Hold music - loop 4 times for approximately 30-40 seconds total
-  twiml.play({ loop: 4 }, HOLD_MUSIC_URL);
+  // Play hold music multiple times to create a longer hold
+  // Each loop lasts ~10 seconds, so 5 loops = ~50 seconds
+  for (let i = 0; i < 5; i++) {
+    twiml.play(HOLD_MUSIC_URL);
+  }
 
-  // Connection message
+  // Connection message before dialing
   twiml.say(
     {
       voice: "Polly.Joanna",
     },
-    "Thank you for your patience. Connecting you now."
+    "Thank you for your patience. Connecting you to our team now."
   );
 
-  // Connect to Retell AI agent
+  // Pause briefly before connecting
+  twiml.pause({ length: 1 });
+
+  // Connect to Retell AI agent with longer timeout
   const dial = twiml.dial({
     callerId: TWILIO_PHONE_NUMBER,
-    timeout: 30,
+    timeout: 45, // Increased from 30 to 45 seconds to give Retell time to answer
     // If Retell doesn't answer, route to voicemail handler
     action: "/api/twilio/voice/dial-status",
+    record: "record-from-answer", // Record the call for quality/compliance
   });
   dial.number(RETELL_PHONE_NUMBER);
+
+  console.log("[twilio.voice.incoming] TwiML generated, routing to Retell agent");
 
   return new NextResponse(twiml.toString(), {
     headers: {

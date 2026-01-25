@@ -21,6 +21,8 @@ export default async function OpsLayout({ children }: { children: ReactNode }) {
     );
   }
 
+  const isDev = process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_DEV_MODE === "true";
+
   return (
     <div className="space-y-6 pb-16">
       <nav className="flex gap-4 border-b border-[color:var(--border-muted)] pb-4">
@@ -33,6 +35,11 @@ export default async function OpsLayout({ children }: { children: ReactNode }) {
         <Link href="/ops/calendar" className="text-sm font-semibold text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]">
           Calendar
         </Link>
+        {isDev && (
+          <Link href="/ops/dev" className="text-sm font-semibold text-purple-600 hover:text-purple-800">
+            Dev Tools
+          </Link>
+        )}
       </nav>
       {children}
     </div>

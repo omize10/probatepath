@@ -45,7 +45,7 @@ export default function OnboardCallPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phone: state.phone,
+          phone_number: state.phone,
           name: state.name,
           email: state.email,
         }),

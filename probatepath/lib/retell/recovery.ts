@@ -2,8 +2,7 @@
  * Recovery sequences for abandoned AI calls
  */
 import { prisma } from "@/lib/prisma";
-import { sendSMS } from "@/lib/sms";
-import { sendTemplateEmail } from "@/lib/email";
+import { sendMessage } from "@/lib/messaging/service";
 import type { Prisma } from "@prisma/client";
 
 const APP_URL = process.env.APP_URL || process.env.NEXTAUTH_URL || "http://localhost:3000";
@@ -113,44 +112,38 @@ async function sendAbandonedCallReminder(reminder: RecoveryReminder) {
 
   const paymentUrl = `${APP_URL}/pay?token=${paymentToken}`;
 
-  // Send based on reminder type
+  // Send based on reminder type using the unified messaging service
   switch (reminder.type) {
     case ABANDONED_CALL_1H:
-      // 1-hour SMS
+      // 1-hour SMS only
       if (phone) {
-        await sendSMS({
-          to: phone,
-          body: `Hey ${name}, we noticed you didn't finish your ProbateDesk call. Ready to continue? ${paymentUrl}`,
-        });
-      }
-      break;
-
-    case ABANDONED_CALL_24H:
-      // 24-hour email
-      if (email) {
-        await sendTemplateEmail({
-          to: email,
-          subject: "Your probate questions",
-          html: `
-            <p>Hi ${name},</p>
-            <p>We wanted to follow up on your call about ${deceasedName}'s estate.</p>
-            <p>You can continue where you left off anytime:</p>
-            <p><a href="${paymentUrl}" style="display:inline-block;padding:12px 24px;background:#0f172a;color:white;text-decoration:none;border-radius:8px;">Continue Your Intake</a></p>
-            <p>Questions? Just reply to this email or call us at (604) 670-3534.</p>
-            <p>The ProbateDesk Team</p>
-          `,
-          template: "abandoned-call-24h",
+        await sendMessage({
+          templateKey: "abandoned_call_1h",
+          to: { phone },
+          variables: { name, paymentUrl },
           meta: { aiCallId: aiCall.id },
         });
       }
       break;
 
+    case ABANDONED_CALL_24H:
+      // 24-hour email + SMS
+      await sendMessage({
+        templateKey: "abandoned_call_24h",
+        to: { email, phone: phone || undefined },
+        variables: { name, deceasedName, paymentUrl },
+        meta: { aiCallId: aiCall.id },
+      });
+      break;
+
     case ABANDONED_CALL_3D:
-      // 3-day final SMS
+      // 3-day final SMS only
       if (phone) {
-        await sendSMS({
-          to: phone,
-          body: `Last reminder: Your ProbateDesk intake is still saved. Finish in minutes: ${paymentUrl}`,
+        await sendMessage({
+          templateKey: "abandoned_call_3d",
+          to: { phone },
+          variables: { paymentUrl },
+          meta: { aiCallId: aiCall.id },
         });
       }
       break;

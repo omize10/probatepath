@@ -3,7 +3,7 @@ import { z } from "zod";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { sendPasswordResetCodeEmail } from "@/lib/email/resend";
+import { sendMessage } from "@/lib/messaging/service";
 import { canSend } from "@/lib/email/throttle";
 import { logEmail } from "@/lib/email";
 import { logSecurityAudit } from "@/lib/audit";
@@ -57,10 +57,18 @@ export async function POST(request: Request) {
     const expiresAt = new Date(Date.now() + CODE_TTL_MS);
     const codeHash = await bcrypt.hash(`${code}:${secret}`, CODE_COST);
 
-    const sendResult = await sendPasswordResetCodeEmail({ to: user.email, code });
-    if (process.env.NODE_ENV !== "production" && (sendResult as any)?.simulated) {
+    await sendMessage({
+      templateKey: "password_reset_code",
+      to: { email: user.email },
+      variables: { code },
+    });
+
+    // In dev mode without RESEND_API_KEY, return the code for testing
+    if (process.env.NODE_ENV !== "production" && !process.env.RESEND_API_KEY) {
       devCode = code;
     }
+
+    // Log email meta for password reset verification
     await logEmail({
       to: user.email,
       subject: "Your ProbateDesk password reset code",

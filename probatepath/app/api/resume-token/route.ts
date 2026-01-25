@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { sendTemplateEmail } from "@/lib/email";
+import { sendMessage } from "@/lib/messaging/service";
 
 const BodySchema = z.object({
   matterId: z.string(),
@@ -43,12 +43,11 @@ export async function POST(request: Request) {
   });
 
   const link = `${process.env.APP_URL ?? 'http://localhost:3000'}/resume/${token}`;
-  await sendTemplateEmail({
-    to: input.data.email,
-    subject: "Resume your ProbateDesk draft",
-    template: "resume-token",
+  await sendMessage({
+    templateKey: "resume_token",
+    to: { email: input.data.email },
+    variables: { link, resumeLink: link },
     matterId: matter.id,
-    html: `<p>Resume your draft: <a href="${link}">${link}</a></p>`,
   });
 
   return NextResponse.json({ ok: true });

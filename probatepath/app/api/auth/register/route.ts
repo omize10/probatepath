@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAuthEvent } from "@/lib/auth/log-auth-event";
-import { sendTemplateEmail } from "@/lib/email";
+import { sendMessage } from "@/lib/messaging/service";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Enter your full name"),
@@ -45,19 +45,11 @@ export async function POST(request: Request) {
       req: request,
     });
 
-    const portalUrl = `${process.env.APP_URL ?? "http://localhost:3000"}/portal`;
-    await sendTemplateEmail({
-      to: user.email,
-      subject: "Welcome to ProbateDesk",
-      template: "welcome",
-      html: [
-        `<p>Hi ${user.name ?? "there"},</p>`,
-        `<p>Your ProbateDesk account is ready.</p>`,
-        `<p>When you're ready to begin, log in and start your intake. We'll walk you through every step of the BC probate process.</p>`,
-        `<p><a href="${portalUrl}">Go to your portal</a></p>`,
-        `<p>If you have questions, reply to this email or call 604-123-4567.</p>`,
-        `<p>Thanks,<br/>ProbateDesk</p>`,
-      ].join(""),
+    const portalLink = `${process.env.APP_URL ?? "http://localhost:3000"}/portal`;
+    await sendMessage({
+      templateKey: "welcome",
+      to: { email: user.email },
+      variables: { name: user.name ?? "there", portalLink },
     }).catch((err) => {
       console.error("[auth] Welcome email failed", { email: user.email, error: err });
     });

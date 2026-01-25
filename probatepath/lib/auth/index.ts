@@ -5,29 +5,20 @@ import bcrypt from "bcrypt";
 import { NextAuthOptions, getServerSession, type Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
-import { Resend } from "resend";
 import { prisma } from "@/lib/prisma";
-import { logEmail } from "@/lib/email";
+import { sendMessage } from "@/lib/messaging/service";
 import { logAuthEvent } from "@/lib/auth/log-auth-event";
 import { logSecurityAudit } from "@/lib/audit";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const fromEmail = process.env.RESEND_FROM ?? "notifications@example.com";
 
 async function sendMagicLinkEmail(params: { identifier: string; url: string }) {
   const { identifier, url } = params;
-  if (!resend) {
-    console.warn("RESEND_API_KEY not configured; logging magic-link email only");
-    await logEmail({ to: identifier, subject: "Magic link", template: "magic-link", meta: { url } });
-    return;
-  }
-  await resend.emails.send({
-    from: fromEmail,
-    to: identifier,
-    subject: "Your ProbateDesk sign-in link",
-    html: `<p>Hello,</p><p>Click <a href="${url}">here</a> to access your ProbateDesk portal.</p><p>This link expires in 10 minutes.</p>`,
+  await sendMessage({
+    templateKey: "magic_link",
+    to: { email: identifier },
+    variables: { url },
   });
-  await logEmail({ to: identifier, subject: "Magic link", template: "magic-link" });
 }
 
 export const authOptions: NextAuthOptions = {

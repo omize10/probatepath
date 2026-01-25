@@ -4,8 +4,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logAudit, logSecurityAudit } from "@/lib/audit";
 import { getServerAuth } from "@/lib/auth";
-import { sendTemplateEmail } from "@/lib/email";
-import { sendSMS } from "@/lib/sms";
+import { sendMessage } from "@/lib/messaging/service";
 import { intakeDraftSchema } from "@/lib/intake/schema";
 import { ensureMatter } from "@/lib/matter/server";
 import { splitName } from "@/lib/name";
@@ -386,29 +385,20 @@ export async function POST(request: Request) {
   });
 
   const resumeLink = `${process.env.APP_URL ?? "http://localhost:3000"}/resume/${result.resumeToken.token}`;
+  const portalLink = `${process.env.APP_URL ?? "http://localhost:3000"}/portal`;
+  const phone = draftRecord.exPhone?.trim();
 
-  if (normalizedEmail) {
-    await sendTemplateEmail({
-      to: normalizedEmail,
-      subject: "Your ProbateDesk draft",
-      template: "intake-submitted",
+  if (normalizedEmail || phone) {
+    await sendMessage({
+      templateKey: "intake_submitted",
+      to: { email: normalizedEmail || undefined, phone: phone || undefined },
+      variables: { resumeLink, portalLink },
       matterId: matter.id,
-      html: `<p>Your draft is saved.</p><p>Resume anytime: <a href="${resumeLink}">${resumeLink}</a></p>`,
+    }).catch((err) => {
+      console.error("[intake.submit] Message send failed", { email: normalizedEmail, phone, error: err });
     });
   } else {
-    console.warn("[intake.submit] Draft email missing; skipping notification");
-  }
-
-  // Send SMS confirmation if phone is available
-  const phone = draftRecord.exPhone?.trim();
-  if (phone) {
-    const portalLink = `${process.env.APP_URL ?? "http://localhost:3000"}/portal`;
-    await sendSMS({
-      to: phone,
-      body: `ProbateDesk: Your intake is submitted. We're preparing your documents. Check your portal: ${portalLink}`,
-    }).catch((err) => {
-      console.error("[intake.submit] SMS failed", { phone, error: err });
-    });
+    console.warn("[intake.submit] No contact info; skipping notification");
   }
 
   const response = NextResponse.json({

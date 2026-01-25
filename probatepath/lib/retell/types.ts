@@ -70,12 +70,25 @@ export const TIER_PRICES: Record<Tier, number> = {
 
 export const AI_CALL_STATUS = {
   INITIATED: "initiated",
+  RINGING: "ringing",
   CONNECTED: "connected",
   IN_PROGRESS: "in_progress",
   COMPLETED: "completed",
   FAILED: "failed",
+  NO_ANSWER: "no_answer",
+  VOICEMAIL: "voicemail",
   ABANDONED: "abandoned",
 } as const;
+
+// End reasons from Retell that indicate user didn't answer
+export const NO_ANSWER_REASONS = [
+  "no_answer",
+  "machine_detected",
+  "voicemail_detected",
+  "voicemail",
+  "busy",
+  "timeout",
+] as const;
 
 // Field mapping from Retell collected fields to IntakeDraft/Matter fields
 export const FIELD_MAPPING: Record<string, { table: "intake" | "matter"; field: string }> = {

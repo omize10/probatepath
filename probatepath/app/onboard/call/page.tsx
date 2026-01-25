@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Phone, PhoneCall, Check, AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
+import { Phone, PhoneCall, PhoneOff, PhoneMissed, Check, AlertCircle, Loader2, ArrowLeft, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getOnboardState, saveOnboardState } from '@/lib/onboard/state';
 
-type CallStatus = 'initiating' | 'ringing' | 'in_progress' | 'completed' | 'failed';
+type CallStatus = 'initiating' | 'ringing' | 'in_progress' | 'completed' | 'no_answer' | 'failed';
 
 export default function OnboardCallPage() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function OnboardCallPage() {
   const [callStatus, setCallStatus] = useState<CallStatus>('initiating');
   const [callId, setCallId] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [retryCount, setRetryCount] = useState(0);
 
   // Load state on mount
   useEffect(() => {
@@ -29,65 +30,114 @@ export default function OnboardCallPage() {
     });
   }, [router]);
 
-  // Trigger outbound call when state is ready
-  useEffect(() => {
-    if (!state.phone || callId) return;
+  // Initiate call function
+  const initiateCall = useCallback(async () => {
+    if (!state.phone) return;
 
-    async function initiateCall() {
-      try {
-        const res = await fetch('/api/retell/outbound-call', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            phone_number: state.phone,
-            name: state.name,
-            email: state.email,
-          }),
-        });
-        const data = await res.json();
+    setCallStatus('initiating');
+    setError('');
+    setCallId(null);
 
-        if (data.success && data.call_id) {
-          setCallId(data.call_id);
-          setCallStatus('ringing');
-          saveOnboardState({ aiCallId: data.call_id });
-        } else {
-          setError(data.error || 'Failed to initiate call');
-          setCallStatus('failed');
-        }
-      } catch (err) {
-        console.error('[onboard/call] Error:', err);
-        setError('Failed to connect. Please try again.');
+    try {
+      const res = await fetch('/api/retell/outbound-call', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone_number: state.phone,
+          name: state.name,
+          email: state.email,
+        }),
+      });
+      const data = await res.json();
+
+      if (data.success && (data.call_id || data.ai_call_id)) {
+        const id = data.call_id || data.ai_call_id;
+        setCallId(id);
+        setCallStatus('ringing');
+        saveOnboardState({ aiCallId: id });
+      } else {
+        setError(data.error || 'Failed to initiate call');
         setCallStatus('failed');
       }
+    } catch (err) {
+      console.error('[onboard/call] Error:', err);
+      setError('Failed to connect. Please try again.');
+      setCallStatus('failed');
     }
+  }, [state.phone, state.name, state.email]);
 
-    initiateCall();
-  }, [state.phone, state.name, state.email, callId]);
-
-  // Poll for call completion
+  // Trigger outbound call when state is ready
   useEffect(() => {
-    if (!callId || callStatus === 'completed' || callStatus === 'failed') return;
+    if (!state.phone || callId || retryCount > 0) return;
+    initiateCall();
+  }, [state.phone, callId, retryCount, initiateCall]);
 
-    const interval = setInterval(async () => {
+  // Poll for call completion - faster polling (1 second)
+  useEffect(() => {
+    if (!callId) return;
+
+    // Don't poll if already in terminal state
+    const terminalStates: CallStatus[] = ['completed', 'no_answer', 'failed'];
+    if (terminalStates.includes(callStatus)) return;
+
+    const poll = async () => {
       try {
         const res = await fetch(`/api/retell/call-status?call_id=${callId}`);
         const data = await res.json();
 
-        if (data.status === 'completed' || data.status === 'ended') {
-          setCallStatus('completed');
-          clearInterval(interval);
-        } else if (data.status === 'in_progress' || data.status === 'connected') {
-          setCallStatus('in_progress');
+        console.log('[call-status] Response:', data);
+
+        // Map backend status to frontend status
+        switch (data.status) {
+          case 'completed':
+          case 'ended':
+            setCallStatus('completed');
+            break;
+          case 'in_progress':
+          case 'connected':
+            setCallStatus('in_progress');
+            break;
+          case 'no_answer':
+          case 'voicemail':
+          case 'abandoned':
+            setCallStatus('no_answer');
+            break;
+          case 'failed':
+            setCallStatus('failed');
+            setError('Call could not be completed');
+            break;
+          case 'initiated':
+          case 'ringing':
+            setCallStatus('ringing');
+            break;
+          // Keep current status for unknown
+        }
+
+        // Also check the ended flag
+        if (data.ended && callStatus === 'ringing') {
+          // Call ended while still showing ringing - probably no answer
+          if (data.status === 'no_answer' || data.status === 'voicemail') {
+            setCallStatus('no_answer');
+          } else if (data.status === 'completed') {
+            setCallStatus('completed');
+          }
         }
       } catch (err) {
-        // Keep polling on error
+        console.error('[call-status] Poll error:', err);
       }
-    }, 3000);
+    };
 
-    // Stop polling after 10 minutes
+    // Poll immediately, then every 1 second for fast updates
+    poll();
+    const interval = setInterval(poll, 1000);
+
+    // Stop polling after 5 minutes
     const timeout = setTimeout(() => {
       clearInterval(interval);
-    }, 10 * 60 * 1000);
+      if (callStatus === 'ringing' || callStatus === 'in_progress') {
+        setCallStatus('no_answer');
+      }
+    }, 5 * 60 * 1000);
 
     return () => {
       clearInterval(interval);
@@ -99,6 +149,12 @@ export default function OnboardCallPage() {
 
   const handleContinue = () => {
     router.push('/onboard/screening');
+  };
+
+  const handleRetry = () => {
+    setRetryCount((c) => c + 1);
+    setCallId(null);
+    initiateCall();
   };
 
   const handleCantTalk = () => {
@@ -116,53 +172,81 @@ export default function OnboardCallPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8">
-
       {/* Phone animation area */}
       <div className="flex flex-col items-center">
+        {/* Initiating - Spinning loader */}
         {callStatus === 'initiating' && (
           <>
             <div className="rounded-full bg-[color:var(--bg-muted)] p-8 mb-4">
               <Loader2 className="h-16 w-16 text-[color:var(--brand)] animate-spin" />
             </div>
             <p className="text-xl font-medium text-[color:var(--brand)]">Connecting...</p>
+            <p className="text-sm text-[color:var(--muted-ink)] mt-1">Setting up your call</p>
           </>
         )}
 
+        {/* Ringing - Animated bouncing phone with pulse ring */}
         {callStatus === 'ringing' && (
           <>
-            <div className="rounded-full bg-green-100 p-8 mb-4 animate-pulse">
-              <Phone className="h-16 w-16 text-green-600 animate-bounce" />
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-25" style={{ animationDuration: '1.5s' }} />
+              <div className="absolute inset-0 rounded-full bg-green-300 animate-pulse opacity-40" />
+              <div className="relative rounded-full bg-green-100 p-8 mb-4">
+                <Phone className="h-16 w-16 text-green-600 animate-bounce" style={{ animationDuration: '0.6s' }} />
+              </div>
             </div>
-            <p className="text-xl font-medium text-[color:var(--brand)]">Calling you now</p>
-            <p className="text-[color:var(--muted-ink)] mt-1">{formatPhone(state.phone || '')}</p>
-            <p className="text-sm text-green-600 mt-2">Pick up your phone!</p>
+            <p className="text-xl font-medium text-green-700 mt-4">Calling you now!</p>
+            <p className="text-lg text-[color:var(--brand)] mt-1">{formatPhone(state.phone || '')}</p>
+            <p className="text-sm text-green-600 mt-3 font-medium animate-pulse">Pick up your phone!</p>
           </>
         )}
 
+        {/* In Progress - Glowing active call icon */}
         {callStatus === 'in_progress' && (
           <>
-            <div className="rounded-full bg-green-100 p-8 mb-4">
-              <PhoneCall className="h-16 w-16 text-green-600" />
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-green-400 opacity-20 animate-pulse" />
+              <div className="rounded-full bg-green-100 p-8 mb-4 ring-4 ring-green-300 ring-opacity-50">
+                <PhoneCall className="h-16 w-16 text-green-600" />
+              </div>
             </div>
-            <p className="text-xl font-medium text-[color:var(--brand)]">Call in progress</p>
-            <p className="text-sm text-[color:var(--muted-ink)] mt-1">Take your time</p>
+            <p className="text-xl font-medium text-green-700 mt-4">Call in progress</p>
+            <p className="text-sm text-[color:var(--muted-ink)] mt-1">Take your time, we're here to help</p>
+            <div className="flex items-center gap-1 mt-3">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+            </div>
           </>
         )}
 
+        {/* Completed - Success checkmark */}
         {callStatus === 'completed' && (
           <>
-            <div className="rounded-full bg-green-100 p-8 mb-4">
+            <div className="rounded-full bg-green-100 p-8 mb-4 ring-4 ring-green-200">
               <Check className="h-16 w-16 text-green-600" />
             </div>
-            <p className="text-xl font-medium text-[color:var(--brand)]">Call complete</p>
-            <p className="text-sm text-[color:var(--muted-ink)] mt-1">Thanks for chatting with us!</p>
+            <p className="text-xl font-medium text-green-700">Call complete!</p>
+            <p className="text-sm text-[color:var(--muted-ink)] mt-1">Thanks for chatting with us</p>
           </>
         )}
 
+        {/* No Answer - Phone with missed indicator */}
+        {callStatus === 'no_answer' && (
+          <>
+            <div className="rounded-full bg-amber-100 p-8 mb-4 ring-4 ring-amber-200">
+              <PhoneMissed className="h-16 w-16 text-amber-600" />
+            </div>
+            <p className="text-xl font-medium text-amber-700">Looks like you missed our call</p>
+            <p className="text-sm text-[color:var(--muted-ink)] mt-1">No worries! Let's try again</p>
+          </>
+        )}
+
+        {/* Failed - Error state */}
         {callStatus === 'failed' && (
           <>
-            <div className="rounded-full bg-red-100 p-8 mb-4">
-              <AlertCircle className="h-16 w-16 text-red-600" />
+            <div className="rounded-full bg-red-100 p-8 mb-4 ring-4 ring-red-200">
+              <PhoneOff className="h-16 w-16 text-red-600" />
             </div>
             <p className="text-xl font-medium text-red-700">Couldn't connect</p>
             {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
@@ -170,35 +254,46 @@ export default function OnboardCallPage() {
         )}
       </div>
 
-      {/* Continue button */}
+      {/* Action buttons */}
       <div className="w-full max-w-sm space-y-3">
-        <Button
-          onClick={handleContinue}
-          disabled={!canContinue}
-          size="lg"
-          className={`w-full h-14 text-lg ${
-            canContinue
-              ? ''
-              : 'bg-gray-200 text-gray-400 cursor-not-allowed hover:bg-gray-200'
-          }`}
-        >
-          Continue
-        </Button>
+        {/* Continue button - only for completed */}
+        {callStatus === 'completed' && (
+          <Button onClick={handleContinue} size="lg" className="w-full h-14 text-lg">
+            Continue
+          </Button>
+        )}
 
-        {/* Helper text when button disabled */}
-        {!canContinue && callStatus !== 'failed' && (
-          <p className="text-sm text-center text-[color:var(--muted-ink)]">
-            Please speak with our team to continue
-          </p>
+        {/* Retry button - for no_answer or failed */}
+        {(callStatus === 'no_answer' || callStatus === 'failed') && (
+          <Button onClick={handleRetry} size="lg" className="w-full h-14 text-lg">
+            <RotateCcw className="mr-2 h-5 w-5" />
+            Try calling again
+          </Button>
+        )}
+
+        {/* Disabled continue for active states */}
+        {(callStatus === 'initiating' || callStatus === 'ringing' || callStatus === 'in_progress') && (
+          <>
+            <Button
+              disabled
+              size="lg"
+              className="w-full h-14 text-lg bg-gray-200 text-gray-400 cursor-not-allowed hover:bg-gray-200"
+            >
+              Continue
+            </Button>
+            <p className="text-sm text-center text-[color:var(--muted-ink)]">
+              Please speak with our team to continue
+            </p>
+          </>
         )}
       </div>
 
-      {/* Didn't get call */}
-      {(callStatus === 'ringing' || callStatus === 'failed') && (
+      {/* Didn't get call - show for ringing, no_answer, failed */}
+      {(callStatus === 'ringing' || callStatus === 'no_answer' || callStatus === 'failed') && (
         <p className="text-sm text-[color:var(--muted-ink)]">
-          Didn't get a call?{' '}
-          <a href="tel:+16046703534" className="underline text-[color:var(--brand)] hover:no-underline">
-            Call us: (604) 670-3534
+          Prefer to call us?{' '}
+          <a href="tel:+16046703534" className="underline text-[color:var(--brand)] hover:no-underline font-medium">
+            (604) 670-3534
           </a>
         </p>
       )}

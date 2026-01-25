@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { verifyRetellSignature } from "@/lib/retell/verify";
-import { RetellWebhookEvent, AI_CALL_STATUS } from "@/lib/retell/types";
+import { RetellWebhookEvent, AI_CALL_STATUS, NO_ANSWER_REASONS } from "@/lib/retell/types";
 
 /**
  * Main Retell webhook router
@@ -79,8 +79,17 @@ async function handleCallStarted(event: RetellWebhookEvent) {
 async function handleCallEnded(event: RetellWebhookEvent) {
   const { call_id, duration_seconds, recording_url, transcript, end_reason } = event;
 
-  // Mark as completed unless there was an error
-  const status = end_reason === "error" ? AI_CALL_STATUS.FAILED : AI_CALL_STATUS.COMPLETED;
+  // Determine the appropriate status based on end_reason
+  let status: string;
+  if (end_reason === "error") {
+    status = AI_CALL_STATUS.FAILED;
+  } else if (NO_ANSWER_REASONS.includes(end_reason as typeof NO_ANSWER_REASONS[number])) {
+    // User didn't pick up (no_answer, busy, voicemail, timeout, machine_detected)
+    status = AI_CALL_STATUS.NO_ANSWER;
+  } else {
+    // Normal completion (user_hangup, agent_hangup, or undefined)
+    status = AI_CALL_STATUS.COMPLETED;
+  }
 
   // Update AI call record
   try {
@@ -94,12 +103,41 @@ async function handleCallEnded(event: RetellWebhookEvent) {
         endedAt: new Date(),
       },
     });
+    console.log("[retell/webhook] Call ended - updated:", { call_id, status, duration_seconds, end_reason });
   } catch (e) {
-    // If no record with retellCallId, try to find by checking recent calls
-    console.warn("[retell/webhook] Could not find call by retellCallId, checking metadata", call_id);
+    // If no record with retellCallId, try to find by internal ID in metadata
+    console.warn("[retell/webhook] Could not find call by retellCallId:", call_id, e);
+
+    // Try to find by looking at recent initiated calls
+    const recentCall = await prisma.aiCall.findFirst({
+      where: {
+        status: { in: [AI_CALL_STATUS.INITIATED, AI_CALL_STATUS.RINGING, AI_CALL_STATUS.CONNECTED] },
+        createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) }, // Last hour
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (recentCall) {
+      await prisma.aiCall.update({
+        where: { id: recentCall.id },
+        data: {
+          retellCallId: call_id,
+          status,
+          durationSeconds: duration_seconds,
+          recordingUrl: recording_url,
+          transcript,
+          endedAt: new Date(),
+        },
+      });
+      console.log("[retell/webhook] Call ended - found and updated recent call:", {
+        internalId: recentCall.id,
+        call_id,
+        status,
+        end_reason
+      });
+    }
   }
 
-  console.log("[retell/webhook] Call ended:", { call_id, status, duration_seconds, end_reason });
   return NextResponse.json({ success: true });
 }
 

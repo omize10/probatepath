@@ -83,7 +83,8 @@ function calculateTierRecommendation(
   qualificationFlags: Record<string, unknown>
 ): TierRecommendation {
   const reasoning: string[] = [];
-  let tier: "basic" | "standard" | "premium" = "basic";
+  // Use new tier names: essentials, guided, full_service
+  let tier: "essentials" | "guided" | "full_service" = "essentials";
 
   // Parse estate value
   const estateValue = parseEstateValue(collectedData.estate_value || collectedData.estate_value_range);
@@ -93,44 +94,44 @@ function calculateTierRecommendation(
 
   // Estate value thresholds
   if (estateValue > 500000) {
-    tier = "premium";
-    reasoning.push("Estate value over $500,000 - premium support recommended");
+    tier = "full_service";
+    reasoning.push("Estate value over $500,000 - full service recommended");
   } else if (estateValue > 100000) {
-    tier = "standard";
+    tier = "guided";
     reasoning.push("Estate value between $100,000 and $500,000");
   } else {
-    reasoning.push("Estate value under $100,000 - basic package suitable");
+    reasoning.push("Estate value under $100,000 - essentials package suitable");
   }
 
   // Complexity factors that bump up tier
-  if (hasRealProperty && tier === "basic") {
-    tier = "standard";
+  if (hasRealProperty && tier === "essentials") {
+    tier = "guided";
     reasoning.push("Real property in BC increases complexity");
   }
 
-  if (hasMultipleBeneficiaries && tier === "basic") {
-    tier = "standard";
+  if (hasMultipleBeneficiaries && tier === "essentials") {
+    tier = "guided";
     reasoning.push("Multiple beneficiaries require additional documentation");
   }
 
-  if (isAdministration && tier === "basic") {
-    tier = "standard";
+  if (isAdministration && tier === "essentials") {
+    tier = "guided";
     reasoning.push("Administration (no will) cases require additional forms");
   }
 
   // Yellow flags from qualification
   if (qualificationFlags.minorBeneficiaries) {
-    if (tier !== "premium") tier = "standard";
+    if (tier !== "full_service") tier = "guided";
     reasoning.push("Minor beneficiaries require additional care");
   }
 
   if (qualificationFlags.businessOwnership) {
-    tier = "premium";
-    reasoning.push("Business interests require premium support");
+    tier = "full_service";
+    reasoning.push("Business interests require full service support");
   }
 
   if (qualificationFlags.noOriginalWill) {
-    if (tier === "basic") tier = "standard";
+    if (tier === "essentials") tier = "guided";
     reasoning.push("Missing original will requires extra documentation");
   }
 

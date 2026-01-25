@@ -1,6 +1,27 @@
 // Pricing flow type definitions
 
-export type Tier = 'basic' | 'standard' | 'premium';
+// Legacy tier names (for backwards compatibility)
+export type LegacyTier = 'basic' | 'standard' | 'premium';
+
+// New tier names
+export type NewTier = 'essentials' | 'guided' | 'full_service';
+
+// Combined tier type (supports both)
+export type Tier = LegacyTier | NewTier;
+
+// Map new names to legacy for API compatibility
+export const TIER_NAME_MAP: Record<NewTier, LegacyTier> = {
+  essentials: 'basic',
+  guided: 'standard',
+  full_service: 'premium',
+};
+
+// Map legacy to new names for display
+export const LEGACY_TO_NEW_MAP: Record<LegacyTier, NewTier> = {
+  basic: 'essentials',
+  standard: 'guided',
+  premium: 'full_service',
+};
 
 export type CallbackStatus =
   | 'scheduled'
@@ -163,22 +184,36 @@ export interface TierConfig {
 }
 
 export const TIER_PRICES: Record<Tier, number> = {
+  // Legacy names
   basic: 799,
   standard: 1499,
   premium: 2499,
+  // New names (same prices)
+  essentials: 799,
+  guided: 1499,
+  full_service: 2499,
+};
+
+export const TIER_DISPLAY_NAMES: Record<Tier, string> = {
+  basic: 'Essentials',
+  standard: 'Guided',
+  premium: 'Full Service',
+  essentials: 'Essentials',
+  guided: 'Guided',
+  full_service: 'Full Service',
 };
 
 export const TIER_CONFIGS: TierConfig[] = [
   {
-    name: 'Basic',
+    name: 'Essentials',
     price: 799,
-    description: 'For tech-savvy executors with simple estates',
+    description: 'You file, we guide',
     recommended: false,
     features: [
-      { name: 'Online intake questionnaire', included: true },
-      { name: 'Automated probate form generation', included: true },
-      { name: 'PDF filing instructions', included: true },
-      { name: 'Email support (48-hour response)', included: true },
+      { name: 'All court forms prepared', included: true },
+      { name: 'Step-by-step instructions', included: true },
+      { name: 'You review and file yourself', included: true },
+      { name: 'Email support for questions', included: true },
       { name: 'Human document review', included: false },
       { name: 'Phone/video support', included: false },
       { name: 'Requisition assistance', included: false },
@@ -187,12 +222,12 @@ export const TIER_CONFIGS: TierConfig[] = [
     cta: 'Get Started',
   },
   {
-    name: 'Standard',
+    name: 'Guided',
     price: 1499,
-    description: 'Most executors choose this for peace of mind',
+    description: 'We check, you file',
     recommended: true,
     features: [
-      { name: 'Everything in Basic', included: true },
+      { name: 'Everything in Essentials', included: true },
       { name: 'Human review of all documents', included: true },
       { name: 'Phone/video support (scheduled calls)', included: true },
       { name: 'Free notarization in Vancouver', included: true, note: 'or $50 credit elsewhere' },
@@ -204,19 +239,19 @@ export const TIER_CONFIGS: TierConfig[] = [
     cta: 'Get Started',
   },
   {
-    name: 'Premium',
+    name: 'Full Service',
     price: 2499,
-    description: 'White-glove service for complex estates',
+    description: 'We handle everything',
     recommended: false,
     features: [
-      { name: 'Everything in Standard', included: true },
-      { name: 'Priority support (same-day response)', included: true },
+      { name: 'Everything in Guided', included: true },
+      { name: 'One 30-min call with our lawyer', included: true },
       { name: 'Dedicated case coordinator', included: true },
       { name: 'Unlimited requisition assistance', included: true },
+      { name: 'We handle all filing', included: true },
       { name: 'Post-grant administration guidance', included: true },
-      { name: 'Tax filing reminders and CRA clearance guidance', included: true },
+      { name: 'Tax filing reminders and CRA guidance', included: true },
       { name: 'Distribution templates and calculations', included: true },
-      { name: 'Comparable to lawyer at discounted price', included: true },
     ],
     cta: 'Get Started',
   },

@@ -6,8 +6,6 @@ import {
   CheckCircle2,
   ClipboardCheck,
   FileText,
-  MessageCircle,
-  Phone,
   ShieldCheck,
   Sparkles,
   Timer,
@@ -111,7 +109,10 @@ export default function HomePage() {
               </div>
               <div className="mt-10 flex w-full flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
                 <Button asChild size="lg" className="w-full !bg-white/15 text-white hover:!bg-white/25 sm:w-auto">
-                  <Link href="/create-account">Start intake</Link>
+                  <Link href="/onboard/name">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
                 </Button>
                 <Button
                   asChild
@@ -155,69 +156,51 @@ export default function HomePage() {
         ))}
       </ScrollFade>
 
-      {/* Three Ways to Start Section */}
+      {/* Simple Get Started Section */}
       <ScrollFade as="section" className="space-y-8">
         <div className="space-y-4 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">Get Started</p>
-          <h2 className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">Three ways to begin</h2>
+          <h2 className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">Simple 5-minute setup</h2>
           <p className="mx-auto max-w-2xl text-base text-[color:var(--muted-ink)]">
-            Not sure if you need probate? Talk to us or take our quick quiz. Already know what you need? Start the online intake.
+            Tell us about your situation and we'll match you with the right service level. Takes about 5 minutes.
           </p>
         </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          {/* Talk to Us Card */}
-          <ScrollFade delay={0} className="h-full">
-            <Card className="h-full border-[color:var(--border-muted)] shadow-[0_25px_60px_-50px_rgba(15,23,42,0.18)] transition hover:-translate-y-1 hover:shadow-[0_35px_80px_-50px_rgba(15,23,42,0.25)]">
-              <CardHeader className="space-y-4">
+        <div className="mx-auto max-w-xl">
+          <Card className="border-[color:var(--border-muted)] shadow-[0_25px_60px_-50px_rgba(15,23,42,0.18)]">
+            <CardHeader className="space-y-6 p-8">
+              <div className="flex items-center gap-4">
                 <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e8f4ff] text-[#2563eb]">
-                  <Phone className="h-6 w-6" aria-hidden />
+                  <Sparkles className="h-6 w-6" aria-hidden />
                 </span>
-                <CardTitle className="text-xl text-[color:var(--brand)]">Talk to Us</CardTitle>
-                <CardDescription className="text-sm text-[color:var(--muted-ink)]">
-                  Speak with our AI assistant for 5 minutes. Get instant answers about your situation and next steps.
-                </CardDescription>
-                <Button asChild className="w-full mt-2">
-                  <Link href="/call">Start Call</Link>
-                </Button>
-              </CardHeader>
-            </Card>
-          </ScrollFade>
-
-          {/* Quick Quiz Card */}
-          <ScrollFade delay={0.1} className="h-full">
-            <Card className="h-full border-[color:var(--border-muted)] shadow-[0_25px_60px_-50px_rgba(15,23,42,0.18)] transition hover:-translate-y-1 hover:shadow-[0_35px_80px_-50px_rgba(15,23,42,0.25)]">
-              <CardHeader className="space-y-4">
-                <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f0fdf4] text-[#16a34a]">
-                  <MessageCircle className="h-6 w-6" aria-hidden />
-                </span>
-                <CardTitle className="text-xl text-[color:var(--brand)]">Quick Quiz</CardTitle>
-                <CardDescription className="text-sm text-[color:var(--muted-ink)]">
-                  Answer 4 questions in 2 minutes. Find out if you need probate and which service tier fits your estate.
-                </CardDescription>
-                <Button asChild variant="outline" className="w-full mt-2">
-                  <Link href="/quiz">Take Quiz</Link>
-                </Button>
-              </CardHeader>
-            </Card>
-          </ScrollFade>
-
-          {/* Online Intake Card */}
-          <ScrollFade delay={0.2} className="h-full">
-            <Card className="h-full border-[color:var(--border-muted)] shadow-[0_25px_60px_-50px_rgba(15,23,42,0.18)] transition hover:-translate-y-1 hover:shadow-[0_35px_80px_-50px_rgba(15,23,42,0.25)]">
-              <CardHeader className="space-y-4">
-                <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fef3c7] text-[#d97706]">
-                  <FileText className="h-6 w-6" aria-hidden />
-                </span>
-                <CardTitle className="text-xl text-[color:var(--brand)]">Online Intake</CardTitle>
-                <CardDescription className="text-sm text-[color:var(--muted-ink)]">
-                  Ready to get started? Complete our guided intake form online. Save anytime and finish at your own pace.
-                </CardDescription>
-                <Button asChild variant="secondary" className="w-full mt-2">
-                  <Link href="/create-account">Start Intake</Link>
-                </Button>
-              </CardHeader>
-            </Card>
-          </ScrollFade>
+                <div>
+                  <CardTitle className="text-xl text-[color:var(--brand)]">Start Your Journey</CardTitle>
+                  <CardDescription className="text-sm text-[color:var(--muted-ink)]">
+                    We'll guide you through a few quick questions
+                  </CardDescription>
+                </div>
+              </div>
+              <ul className="space-y-3 text-sm text-[color:var(--muted-ink)]">
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span>Quick screening to check if we're a fit</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span>Personalized tier recommendation</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <span>No commitment required</span>
+                </li>
+              </ul>
+              <Button asChild size="lg" className="w-full">
+                <Link href="/onboard/name">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardHeader>
+          </Card>
         </div>
       </ScrollFade>
 
@@ -312,7 +295,10 @@ export default function HomePage() {
           </ul>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">
-              <Link href="/create-account">Start intake</Link>
+              <Link href="/onboard/name">
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link href="tel:+16046703534">Call +1 (604) 670-3534</Link>

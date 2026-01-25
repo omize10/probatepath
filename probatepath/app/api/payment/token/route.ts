@@ -6,7 +6,8 @@ import { z } from "zod";
 const CreateTokenSchema = z.object({
   ai_call_id: z.string().optional(),
   prefill_data: z.object({
-    tier: z.enum(["basic", "standard", "premium"]).optional(),
+    // Accept both legacy and new tier names
+    tier: z.enum(["basic", "standard", "premium", "essentials", "guided", "full_service"]).optional(),
     name: z.string().optional(),
     email: z.string().email().optional(),
     phone: z.string().optional(),

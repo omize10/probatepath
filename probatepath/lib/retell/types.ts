@@ -42,17 +42,31 @@ export interface QualificationResult {
   recommendedAction: string;
 }
 
+// Legacy tier names (for backwards compatibility)
+export type LegacyTier = "basic" | "standard" | "premium";
+
+// New tier names
+export type NewTier = "essentials" | "guided" | "full_service";
+
+// Combined tier type
+export type Tier = LegacyTier | NewTier;
+
 export interface TierRecommendation {
-  tier: "basic" | "standard" | "premium";
+  tier: Tier;
   price: number;
   reasoning: string[];
 }
 
-export const TIER_PRICES = {
+export const TIER_PRICES: Record<Tier, number> = {
+  // Legacy names
   basic: 799,
   standard: 1499,
   premium: 2499,
-} as const;
+  // New names
+  essentials: 799,
+  guided: 1499,
+  full_service: 2499,
+};
 
 export const AI_CALL_STATUS = {
   INITIATED: "initiated",

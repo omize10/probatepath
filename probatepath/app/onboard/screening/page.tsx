@@ -66,23 +66,29 @@ export default function OnboardScreeningPage() {
   };
 
   const advanceQuestion = (currentKey: keyof ScreeningAnswers, value: boolean | string) => {
+    // Validate that we actually got an answer before advancing
+    if (value === undefined || value === null) {
+      return;
+    }
+
     switch (question) {
       case "will":
         if (value === true) {
           setQuestion("original");
-        } else {
+        } else if (value === false) {
           // No will - skip original question
           setQuestion("dispute");
         }
         break;
       case "original":
+        // Always advance to dispute
         setQuestion("dispute");
         break;
       case "dispute":
         if (value === true) {
           // Red flag - go to result immediately
           finishScreening({ ...answers, expectsDispute: true });
-        } else {
+        } else if (value === false) {
           setQuestion("foreign");
         }
         break;
@@ -90,11 +96,12 @@ export default function OnboardScreeningPage() {
         if (value === true) {
           // Red flag - go to result immediately
           finishScreening({ ...answers, foreignAssets: true });
-        } else {
+        } else if (value === false) {
           setQuestion("value");
         }
         break;
       case "value":
+        // Any value here completes screening
         finishScreening(answers);
         break;
     }

@@ -156,7 +156,9 @@ export default function OnboardCallPage() {
     };
   }, [callId, callStatus]);
 
-  const canContinue = callStatus === 'completed';
+  // Allow continuing after call ends (any terminal state)
+  const terminalStates: CallStatus[] = ['completed', 'no_answer', 'failed'];
+  const canContinue = terminalStates.includes(callStatus);
 
   const handleContinue = () => {
     router.push('/onboard/screening');
@@ -338,16 +340,16 @@ export default function OnboardCallPage() {
 
       {/* Action buttons */}
       <div className="w-full max-w-sm space-y-3">
-        {/* Continue button - only for completed */}
-        {callStatus === 'completed' && (
+        {/* Continue button - for all terminal states (completed, no_answer, failed) */}
+        {canContinue && (
           <Button onClick={handleContinue} size="lg" className="w-full h-14 text-lg">
             Continue
           </Button>
         )}
 
-        {/* Retry button - for no_answer or failed */}
-        {(callStatus === 'no_answer' || callStatus === 'failed') && (
-          <Button onClick={handleRetry} size="lg" className="w-full h-14 text-lg">
+        {/* Skip retry after multiple failed attempts - show continue option instead */}
+        {(callStatus === 'no_answer' || callStatus === 'failed') && retryCount < 2 && (
+          <Button onClick={handleRetry} size="lg" variant="outline" className="w-full h-14 text-lg">
             <RotateCcw className="mr-2 h-5 w-5" />
             Try calling again
           </Button>

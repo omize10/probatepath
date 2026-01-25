@@ -20,13 +20,33 @@ export async function sendTemplateEmail({
   template: string;
   matterId?: string;
   meta?: Prisma.InputJsonValue | null;
-}) {
+}): Promise<{ success: boolean; error?: string }> {
+  console.log(`[email] Attempting to send email:`, {
+    to,
+    subject,
+    template,
+    matterId,
+    from,
+    hasResendKey: Boolean(resend),
+  });
+
   if (!resend) {
-    console.warn("RESEND_API_KEY not configured; logging email only");
-  } else {
-    await resend.emails.send({ from, to, subject, html });
+    console.warn("[email] RESEND_API_KEY not configured; logging email only (dry-run mode)");
+    await logEmail({ to, subject, template, matterId, meta, sent: false });
+    return { success: false, error: "RESEND_API_KEY not configured" };
   }
-  await logEmail({ to, subject, template, matterId, meta });
+
+  try {
+    const result = await resend.emails.send({ from, to, subject, html });
+    console.log(`[email] Successfully sent email to ${to}:`, { template, resendId: result.data?.id });
+    await logEmail({ to, subject, template, matterId, meta, sent: true });
+    return { success: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error(`[email] Failed to send email to ${to}:`, { template, error: errorMessage });
+    await logEmail({ to, subject, template, matterId, meta, sent: false });
+    return { success: false, error: errorMessage };
+  }
 }
 
 export async function logEmail({
@@ -35,20 +55,23 @@ export async function logEmail({
   template,
   matterId,
   meta,
+  sent = true,
 }: {
   to: string;
   subject: string;
   template: string;
   matterId?: string;
   meta?: Prisma.InputJsonValue | null;
+  sent?: boolean;
 }) {
+  console.log(`[email] Logging email to database:`, { to, template, sent, matterId });
   await prisma.emailLog.create({
     data: {
       to,
       subject,
       template,
       matterId,
-      meta: meta ?? Prisma.JsonNull,
+      meta: meta ? { ...meta as object, sent } : { sent },
     },
   });
 }

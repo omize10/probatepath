@@ -383,6 +383,30 @@ export function WillUploadStep({ matterId, files, uploadStatus, onFilesChange, e
               </button>
             ) : null}
           </div>
+
+          {/* Dev mode skip button */}
+          {process.env.NEXT_PUBLIC_DEV_MODE === "true" && !uploadStatus.hasFiles && (
+            <button
+              type="button"
+              onClick={() => {
+                console.log("[DEV] Skipping will upload step");
+                onFilesChange([{
+                  id: "dev-skip-placeholder",
+                  matterId,
+                  fileUrl: "/dev-placeholder.pdf",
+                  fileType: "pdf",
+                  originalFilename: "dev-placeholder-will.pdf",
+                  pageIndex: null,
+                  uploadedBy: null,
+                  createdAt: new Date().toISOString(),
+                }]);
+                setSuccess("Will upload skipped (DEV MODE)");
+              }}
+              className="w-full rounded-full border-2 border-dashed border-purple-400 bg-purple-50 px-6 py-3 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+            >
+              [DEV] Skip will upload for testing
+            </button>
+          )}
         </div>
       </div>
 

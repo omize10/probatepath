@@ -169,6 +169,32 @@ export function WillSearchCertificateUpload({
       {error && (
         <p className="text-sm text-red-600">{error}</p>
       )}
+
+      {/* Dev mode skip button */}
+      {process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
+        <button
+          type="button"
+          onClick={async () => {
+            console.log("[DEV] Skipping will search certificate upload");
+            try {
+              const response = await fetch(`/api/matters/${matterId}/will-search-certificate`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ devSkip: true }),
+              });
+              if (response.ok) {
+                setUploadedUrl("/dev-placeholder-certificate.pdf");
+                onUploaded?.();
+              }
+            } catch (err) {
+              console.error("[DEV] Skip failed:", err);
+            }
+          }}
+          className="w-full rounded-full border-2 border-dashed border-purple-400 bg-purple-50 px-6 py-3 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+        >
+          [DEV] Skip certificate upload for testing
+        </button>
+      )}
     </div>
   );
 }

@@ -720,23 +720,82 @@ function DeceasedMarital({ draft, updateEstate, errors }: RenderContext) {
 
 function WillPresence({ draft, updateEstate, errors }: RenderContext) {
   const value = draft.estateIntake.will.hasWill;
+  const [showAdminInfo, setShowAdminInfo] = useState(false);
+
+  const handleWillChange = (answer: string) => {
+    if (answer === "no") {
+      setShowAdminInfo(true);
+    } else {
+      setShowAdminInfo(false);
+    }
+    updateEstate((estate) => ({ ...estate, will: { ...estate.will, hasWill: answer as "yes" | "no" | "unknown" } }));
+  };
+
   return (
-    <QuestionCard
-      title="Is there a will?"
-      why="The process differs depending on whether a will exists."
-      where="Check with family, law firms, or safety deposit boxes."
-    >
-      <YesNoButtons
-        value={value}
-        onChange={(answer) => updateEstate((estate) => ({ ...estate, will: { ...estate.will, hasWill: answer as "yes" | "no" | "unknown" } }))}
-        options={[
-          { label: "Yes", value: "yes" },
-          { label: "No", value: "no" },
-          { label: "Not sure", value: "unknown" },
-        ]}
-      />
-      {errors["will.hasWill"] ? <ErrorText>{errors["will.hasWill"]}</ErrorText> : null}
-    </QuestionCard>
+    <div className="space-y-6">
+      <QuestionCard
+        title="Is there a will?"
+        why="The process differs depending on whether a will exists."
+        where="Check with family, law firms, or safety deposit boxes."
+      >
+        <YesNoButtons
+          value={value}
+          onChange={handleWillChange}
+          options={[
+            { label: "Yes", value: "yes" },
+            { label: "No", value: "no" },
+            { label: "Not sure", value: "unknown" },
+          ]}
+        />
+        {errors["will.hasWill"] ? <ErrorText>{errors["will.hasWill"]}</ErrorText> : null}
+      </QuestionCard>
+
+      {/* Admin path transition screen */}
+      {value === "no" && (
+        <div className="rounded-2xl border-2 border-blue-200 bg-blue-50 p-6 space-y-4">
+          <div className="flex items-start gap-3">
+            <svg className="h-6 w-6 text-blue-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-blue-900">
+                You need a Grant of Administration, not a Grant of Probate
+              </h3>
+              <p className="text-sm text-blue-800">
+                Based on your answer, we'll guide you through the <strong>administration</strong> process instead.
+              </p>
+            </div>
+          </div>
+
+          <div className="border-t border-blue-200 pt-4 space-y-3">
+            <h4 className="font-semibold text-blue-900">What's the difference?</h4>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl bg-white p-4 border border-blue-200">
+                <p className="font-semibold text-blue-900">Grant of Probate</p>
+                <p className="text-sm text-blue-700 mt-1">
+                  When there <strong>is a will</strong> naming an executor. The executor applies to carry out the will's instructions.
+                </p>
+              </div>
+              <div className="rounded-xl bg-white p-4 border border-blue-200">
+                <p className="font-semibold text-blue-900">Grant of Administration</p>
+                <p className="text-sm text-blue-700 mt-1">
+                  When there is <strong>no will</strong>. A family member applies to become the administrator under BC's intestacy rules.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-blue-200 pt-4">
+            <div className="flex items-center gap-2 text-sm text-blue-800">
+              <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span><strong>Don't worry</strong> — the process is very similar. We'll guide you through it.</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -618,10 +618,10 @@ function PortalStatusCard({ record, timestamps }: PortalStatusCardProps) {
     <div className="space-y-4 rounded-3xl border border-[color:var(--border-muted)] bg-white p-6 shadow-[0_25px_80px_-60px_rgba(15,23,42,0.22)]">
       <header className="space-y-1">
         <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Portal status</p>
-        <h3 className="font-serif text-xl text-[color:var(--ink)]">Client-facing progress</h3>
+        <h3 className="font-serif text-xl text-[color:var(--ink)]">Portal Status Control</h3>
         <p className="text-sm text-[color:var(--ink-muted)]">
-          Adjust the portal status and key timestamps. Tip: you can also use the testing countdown control in the Documents card to fast-forward the
-          21-day timer.
+          Adjust the portal status and key timestamps for this case. Use the testing countdown control in the Documents card to fast-forward the
+          21-day waiting period.
         </p>
         <div className="flex flex-wrap gap-2 text-sm">
           <Pill>{portalStatusLabels[record.portalStatus]}</Pill>

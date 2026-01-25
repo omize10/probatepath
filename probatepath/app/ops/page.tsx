@@ -48,9 +48,10 @@ export default async function OpsPage({ searchParams }: OpsPageProps) {
       </div>
 
       <div className="overflow-hidden rounded-3xl border border-[color:var(--border-muted)] bg-white shadow-[0_25px_80px_-60px_rgba(15,23,42,0.22)]">
-        <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_auto_auto] items-center gap-3 border-b border-[color:var(--border-muted)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-muted)] sm:px-6">
+        <div className="grid grid-cols-[2fr_2fr_auto_1fr_1fr_1fr_auto_auto] items-center gap-3 border-b border-[color:var(--border-muted)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--ink-muted)] sm:px-6">
           <span>Case</span>
           <span>Email</span>
+          <span>Type</span>
           <span>Status</span>
           <span>Created</span>
           <span>Updated</span>
@@ -65,7 +66,7 @@ export default async function OpsPage({ searchParams }: OpsPageProps) {
         ) : (
           <div className="divide-y divide-[color:var(--border-muted)]">
             {cases.map((record) => (
-              <div key={record.id} className="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_auto_auto] items-center gap-3 px-4 py-4 text-sm text-[color:var(--ink)] sm:px-6">
+              <div key={record.id} className="grid grid-cols-[2fr_2fr_auto_1fr_1fr_1fr_auto_auto] items-center gap-3 px-4 py-4 text-sm text-[color:var(--ink)] sm:px-6">
                 <div className="truncate">
                   <p className="font-semibold">{record.user?.name || "Unnamed client"}</p>
                   <p className="text-xs text-[color:var(--ink-muted)]">
@@ -73,6 +74,17 @@ export default async function OpsPage({ searchParams }: OpsPageProps) {
                   </p>
                 </div>
                 <div className="truncate text-[color:var(--ink-muted)]">{record.user?.email ?? "No email"}</div>
+                <div>
+                  {record.pathType === "administration" ? (
+                    <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
+                      ADMIN
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800">
+                      PROBATE
+                    </span>
+                  )}
+                </div>
                 <div className="text-sm font-medium text-[color:var(--brand-navy)]">{portalStatusLabels[record.portalStatus]}</div>
                 <div className="text-xs text-[color:var(--ink-muted)]">{dateFormatter.format(record.createdAt)}</div>
                 <div className="text-xs text-[color:var(--ink-muted)]">{dateFormatter.format(record.updatedAt)}</div>

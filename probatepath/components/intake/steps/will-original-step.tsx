@@ -113,7 +113,7 @@ export function WillOriginalStep({
             </p>
           </div>
 
-          <div className="flex gap-3 ml-9">
+          <div className="flex flex-wrap gap-3 ml-9">
             <button
               type="button"
               onClick={() => handleOriginalChange("yes")}
@@ -128,6 +128,19 @@ export function WillOriginalStep({
             >
               I understand — continue anyway
             </button>
+            {/* Dev mode skip button */}
+            {process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
+              <button
+                type="button"
+                onClick={() => {
+                  console.log("[DEV] Skipping original will requirement");
+                  handleOriginalChange("yes");
+                }}
+                className="rounded-full border-2 border-dashed border-purple-400 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 hover:bg-purple-100 transition"
+              >
+                [DEV] Skip — pretend I have original
+              </button>
+            )}
           </div>
         </div>
       )}

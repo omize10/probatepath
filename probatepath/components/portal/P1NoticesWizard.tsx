@@ -145,6 +145,16 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
         }
       >
         {current.body}
+        {/* Dev mode skip button */}
+        {process.env.NEXT_PUBLIC_DEV_MODE === "true" && step < totalSteps - 1 && (
+          <button
+            type="button"
+            onClick={() => setStep(totalSteps - 1)}
+            className="mt-4 w-full rounded-full border-2 border-dashed border-purple-400 bg-purple-50 px-6 py-3 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+          >
+            [DEV] Skip to final step
+          </button>
+        )}
       </PortalWizardShell>
     </div>
   );

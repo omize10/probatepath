@@ -72,6 +72,10 @@ model Matter {
   willSearchCertificateUrl         String?
   willSearchCertificateUploadedAt  DateTime?
   willSearchCertificateVerified    Boolean            @default(false)
+  // Court filing tracking
+  courtFileNumber                  String?
+  grantDocumentUrl                 String?
+  grantUploadedAt                  DateTime?
   // Relations
   audits                      AuditLog[]
   beneficiaries               Beneficiary[]

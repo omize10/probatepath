@@ -6,6 +6,9 @@ import { requirePortalAuth } from "@/lib/auth";
 import { resolvePortalMatter } from "@/lib/portal/server";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { markProbateFiled, updatePortalState } from "@/lib/cases";
+import { CourtFileNumberForm } from "./CourtFileNumberForm";
+import { GrantUploadForm } from "./GrantUploadForm";
+import { markGrantReceivedAction } from "./actions";
 
 const MAX_STEP = 8;
 
@@ -77,18 +80,21 @@ function StepShell({
   step,
   title,
   description,
+  pathType,
   children,
 }: {
   step: number;
   title: string;
   description: string;
+  pathType: string;
   children: React.ReactNode;
 }) {
+  const filingLabel = pathType === "administration" ? "Administration filing" : "Probate filing";
   return (
     <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
       <div className="flex flex-col gap-2 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">Step 3: Probate filing</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--ink-muted)]">Step 3: {filingLabel}</p>
           <p className="text-xs text-[color:var(--ink-muted)]">
             Step {step} of {MAX_STEP}
           </p>
@@ -132,17 +138,110 @@ function StepForm({
   );
 }
 
-function WaitingStep() {
+interface WaitingStepProps {
+  caseId: string;
+  portalStatus: PortalStatus;
+  courtFileNumber: string | null;
+  grantIssuedAt: Date | null;
+  grantDocumentUrl: string | null;
+  pathType: string;
+}
+
+function WaitingStep({ caseId, portalStatus, courtFileNumber, grantIssuedAt, grantDocumentUrl, pathType }: WaitingStepProps) {
+  const grantLabel = pathType === "administration" ? "Grant of Administration" : "Grant of Probate";
+  const applicationLabel = pathType === "administration" ? "administration application" : "probate application";
+
+  // Grant has been received
+  if (portalStatus === "grant_complete" || grantIssuedAt) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+          <div className="flex items-center gap-2">
+            <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="font-medium text-green-800">{grantLabel} received!</p>
+          </div>
+          {grantIssuedAt && (
+            <p className="mt-1 text-sm text-green-700">
+              Issued on {new Date(grantIssuedAt).toLocaleDateString("en-CA", { dateStyle: "long" })}
+            </p>
+          )}
+          {courtFileNumber && (
+            <p className="mt-1 text-sm text-green-700">
+              Court file number: <span className="font-mono">{courtFileNumber}</span>
+            </p>
+          )}
+        </div>
+        <p className="text-sm text-gray-700">
+          Congratulations! You can now begin administering the estate. Visit your portal to see the next steps.
+        </p>
+        <Link
+          href="/portal"
+          className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black"
+        >
+          Continue to portal
+        </Link>
+      </div>
+    );
+  }
+
+  // Waiting for grant (court file number entered)
+  if (portalStatus === "waiting_for_grant" || courtFileNumber) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+          <p className="font-medium text-blue-900">Waiting for your {grantLabel}</p>
+          {courtFileNumber && (
+            <p className="mt-1 text-sm text-blue-700">
+              Court file number: <span className="font-mono">{courtFileNumber}</span>
+            </p>
+          )}
+        </div>
+        <p className="text-sm text-gray-700">
+          Your {applicationLabel} is with the court. Review times vary, but you should receive your {grantLabel.toLowerCase()} within a few weeks. We'll check in periodically.
+        </p>
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+          <p className="font-medium text-gray-900">Received your {grantLabel.toLowerCase()}?</p>
+          <p className="text-sm text-gray-700">When the court issues your grant, let us know so we can update your file and show you the next steps.</p>
+          <form action={markGrantReceivedAction}>
+            <input type="hidden" name="caseId" value={caseId} />
+            <button
+              type="submit"
+              className="inline-flex items-center rounded-full bg-green-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-green-700"
+            >
+              I've received my {grantLabel.toLowerCase()}
+            </button>
+          </form>
+          <GrantUploadForm caseId={caseId} existingUrl={grantDocumentUrl} />
+        </div>
+        <Link
+          href="/portal"
+          className="inline-flex items-center rounded-full border border-[color:var(--border-muted)] px-5 py-2 text-sm font-semibold text-[color:var(--ink)] transition hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]"
+        >
+          Back to portal
+        </Link>
+      </div>
+    );
+  }
+
+  // Just filed - needs court file number
   return (
-    <div className="space-y-3">
-      <p className="text-sm text-gray-700">Your probate application has been filed.</p>
+    <div className="space-y-4">
+      <p className="text-sm text-gray-700">Your {applicationLabel} has been filed.</p>
       <p className="text-sm text-gray-700">
-        The court will review your materials and issue a grant if everything is in order. This can take several weeks or longer depending on court workload. We’ll keep
-        checking in.
+        The court will review your materials and issue a {grantLabel.toLowerCase()} if everything is in order. This can take several weeks or longer depending on court workload.
       </p>
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-3">
+        <p className="font-medium text-amber-900">Do you have your court file number?</p>
+        <p className="text-sm text-amber-800">
+          If you filed in person or received a confirmation, enter your court file number here. This helps us track your case.
+        </p>
+        <CourtFileNumberForm caseId={caseId} existingFileNumber={courtFileNumber} />
+      </div>
       <Link
         href="/portal"
-        className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black"
+        className="inline-flex items-center rounded-full border border-[color:var(--border-muted)] px-5 py-2 text-sm font-semibold text-[color:var(--ink)] transition hover:border-[color:var(--brand)] hover:text-[color:var(--brand)]"
       >
         Back to portal
       </Link>
@@ -151,16 +250,27 @@ function WaitingStep() {
 }
 
 // Checklist step: uses native required checkboxes to gate submission (no client hook needed)
-function ChecklistStep({ caseId, nextStep }: { caseId: string; nextStep: number }) {
-  const items = [
-    "Signed and notarized P2, P3, and P9 forms",
-    "The original will (and any codicils)",
-    "The original death certificate",
-    "A copy of each P1 notice you sent",
-    "The will search result from Vital Statistics",
-    "Any additional documents listed on the first page of your packet",
-    "Photocopies of everything for your records",
-  ];
+function ChecklistStep({ caseId, nextStep, pathType }: { caseId: string; nextStep: number; pathType: string }) {
+  const isAdmin = pathType === "administration";
+  const items = isAdmin
+    ? [
+        "Signed and notarized P2, P5, and P9 forms",
+        "The original death certificate",
+        "A copy of each P1 notice you sent",
+        "The will search result from Vital Statistics (showing no will registered)",
+        "Consent forms from higher-priority heirs (if applicable)",
+        "Any additional documents listed on the first page of your packet",
+        "Photocopies of everything for your records",
+      ]
+    : [
+        "Signed and notarized P2, P3, and P9 forms",
+        "The original will (and any codicils)",
+        "The original death certificate",
+        "A copy of each P1 notice you sent",
+        "The will search result from Vital Statistics",
+        "Any additional documents listed on the first page of your packet",
+        "Photocopies of everything for your records",
+      ];
 
   return (
     <form action={advanceProbateStepAction} className="mt-6 flex flex-col gap-3">
@@ -239,10 +349,14 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
   }
 
   const decedentName = matter.draft?.decFullName ?? "the deceased";
+  const isAdmin = matter.pathType === "administration";
+  const pathLabel = isAdmin ? "administration" : "probate";
+  const grantLabel = isAdmin ? "Grant of Administration" : "Grant of Probate";
+  const applicantRole = isAdmin ? "administrator" : "executor";
 
   const steps = [
     {
-      title: "Download your probate filing packet",
+      title: `Download your ${pathLabel} filing packet`,
       description: "Print one complete copy of this packet. You will sign, notarize, and mail or file this package at court.",
       content: matter.probatePackagePdfUrl ? (
         <a
@@ -250,14 +364,14 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
           target="_blank"
           className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black"
         >
-          Download probate filing packet
+          Download {pathLabel} filing packet
         </a>
       ) : (
         <button disabled className="inline-flex items-center rounded-full border border-red-300 bg-red-50 px-5 py-2 text-sm font-semibold text-red-700">
           PDF not found (please contact support)
         </button>
       ),
-      cta: "I’ve downloaded my filing packet",
+      cta: "I've downloaded my filing packet",
     },
     {
       title: "Find the P2 form in your packet",
@@ -290,10 +404,10 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
           <div className="rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] px-4 py-3">
             <p className="text-sm font-semibold text-gray-900">Share this with the notary/lawyer:</p>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-800">
-              <li>I’m applying for probate for {decedentName}.</li>
-              <li>This packet includes P2, P3 (Affidavit of applicant), and P9 (Affidavit of delivery).</li>
-              <li>I’ve already signed the applicant’s section on P2 at home, as allowed.</li>
-              <li>I need you to witness and complete the notary sections on the forms that require it, including P3 and P9, and any other spots marked for a notary or lawyer.</li>
+              <li>I'm applying for {isAdmin ? "administration" : "probate"} for {decedentName}.</li>
+              <li>This packet includes P2, {isAdmin ? "P5" : "P3"} (Affidavit of applicant), and P9 (Affidavit of delivery).</li>
+              <li>I've already signed the applicant's section on P2 at home, as allowed.</li>
+              <li>I need you to witness and complete the notary sections on the forms that require it, including {isAdmin ? "P5" : "P3"} and P9, and any other spots marked for a notary or lawyer.</li>
             </ul>
           </div>
         </div>
@@ -315,16 +429,16 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
     {
       title: "Prepare your package",
       description: "Assemble everything the court needs in one envelope.",
-      content: <ChecklistStep caseId={matter.id} nextStep={6 + 1} />,
+      content: <ChecklistStep caseId={matter.id} nextStep={6 + 1} pathType={matter.pathType ?? "probate"} />,
       cta: null,
     },
     {
       title: "Mail or file at court",
-      description: "Send your package to the Supreme Court registry that handles probate in your area.",
+      description: "Send your package to the Supreme Court registry that handles your application.",
       content: (
         <div className="space-y-2 text-sm text-gray-700">
           <ul className="list-disc space-y-1 pl-5">
-            <li>You can mail or bring this package to the Supreme Court registry that handles probate in your area.</li>
+            <li>You can mail or bring this package to the Supreme Court registry that handles your {pathLabel} application.</li>
             <li>Use the address shown on your filing packet or on the court website.</li>
             <li>
               Write your CASE ID <span className="font-mono">{matter.caseCode ?? matter.id}</span> on the outside of the envelope.
@@ -333,12 +447,21 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
           </ul>
         </div>
       ),
-      cta: "I’ve mailed or filed my probate package",
+      cta: `I've mailed or filed my ${pathLabel} package`,
     },
     {
-      title: "Waiting for your grant",
-      description: "Your probate application has been filed.",
-      content: <WaitingStep />,
+      title: `Waiting for your ${matter.pathType === "administration" ? "Grant of Administration" : "Grant of Probate"}`,
+      description: `Your ${matter.pathType === "administration" ? "administration" : "probate"} application has been filed.`,
+      content: (
+        <WaitingStep
+          caseId={matter.id}
+          portalStatus={currentStatus}
+          courtFileNumber={(matter as any).courtFileNumber ?? null}
+          grantIssuedAt={matter.grantIssuedAt}
+          grantDocumentUrl={(matter as any).grantDocumentUrl ?? null}
+          pathType={matter.pathType ?? "probate"}
+        />
+      ),
       cta: null,
     },
   ];
@@ -359,7 +482,7 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
         </Link>
       }
     >
-      <StepShell step={step} title={currentStep.title} description={currentStep.description}>
+      <StepShell step={step} title={currentStep.title} description={currentStep.description} pathType={matter.pathType ?? "probate"}>
         {currentStep.content}
         {currentStep.cta ? (
           <StepForm caseId={matter.id} nextStep={Math.min(step + 1, MAX_STEP)} cta={currentStep.cta} />

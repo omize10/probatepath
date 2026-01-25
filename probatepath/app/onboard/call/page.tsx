@@ -94,12 +94,34 @@ export default function OnboardCallPage() {
     const poll = async () => {
       try {
         const res = await fetch(`/api/retell/call-status?call_id=${callId}`);
+        if (!res.ok) {
+          console.error('[call-status] API returned', res.status);
+          return;
+        }
         const data = await res.json();
 
-        console.log('[call-status] Response:', data);
+        console.log('[call-status] Response:', { status: data.status, ended: data.ended, callStatus });
 
-        // Map backend status to frontend status
-        switch (data.status) {
+        // If call has ended in backend, immediately set to appropriate terminal state
+        if (data.ended) {
+          console.log('[call-status] Call ended, status:', data.status);
+          // Map any ended call to a terminal state
+          if (data.status === 'completed') {
+            setCallStatus('completed');
+          } else if (data.status === 'no_answer' || data.status === 'voicemail' || data.status === 'abandoned') {
+            setCallStatus('no_answer');
+          } else if (data.status === 'failed') {
+            setCallStatus('failed');
+            setError('Call could not be completed');
+          } else {
+            // Any other ended state -> complete
+            setCallStatus('completed');
+          }
+          return;
+        }
+
+        // Map backend status to frontend status for in-progress calls
+        switch (data.status?.toLowerCase()) {
           case 'completed':
           case 'ended':
             setCallStatus('completed');
@@ -121,17 +143,9 @@ export default function OnboardCallPage() {
           case 'ringing':
             setCallStatus('ringing');
             break;
-          // Keep current status for unknown
-        }
-
-        // Also check the ended flag
-        if (data.ended && callStatus === 'ringing') {
-          // Call ended while still showing ringing - probably no answer
-          if (data.status === 'no_answer' || data.status === 'voicemail') {
-            setCallStatus('no_answer');
-          } else if (data.status === 'completed') {
-            setCallStatus('completed');
-          }
+          default:
+            console.log('[call-status] Unknown status:', data.status);
+            // Keep current status for unknown
         }
       } catch (err) {
         console.error('[call-status] Poll error:', err);

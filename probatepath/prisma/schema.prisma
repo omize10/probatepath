@@ -18,6 +18,8 @@ model User {
   selectedTier        Tier?
   intakeMethod        String?
   isPremium           Boolean              @default(false)
+  phone               String?
+  createdVia          String?              @map("created_via")
   accounts            Account[]
   audits              AuditLog[]
   authLogs            AuthAuditLog[]
@@ -29,6 +31,9 @@ model User {
   callbackWillUploads CallbackWillUpload[]
   notifications       Notification[]
   matterNotes         MatterNote[]
+  aiCalls             AiCall[]
+  paymentTokens       PaymentToken[]
+  leadSources         LeadSource[]
 }
 
 model Matter {
@@ -68,6 +73,10 @@ model Matter {
   registryName                String?
   // Path type: probate (with will) or administration (no will)
   pathType                    String                 @default("probate")
+  // AI intake tracking
+  intakeSource                String?                @map("intake_source")
+  aiCallId                    String?                @map("ai_call_id")
+  aiCall                      AiCall?                @relation(fields: [aiCallId], references: [id])
   // Will search certificate tracking
   willSearchCertificateUrl         String?
   willSearchCertificateUploadedAt  DateTime?
@@ -963,4 +972,79 @@ enum RenunciationStatus {
   PENDING
   RECEIVED
   REFUSED
+}
+
+// ========================================
+// RETELL AI INTAKE
+// ========================================
+
+model AiCall {
+  id                  String         @id @default(cuid())
+  retellCallId        String?        @unique @map("retell_call_id")
+  userId              String?        @map("user_id")
+  matterId            String?        @map("matter_id")
+  phoneNumber         String?        @map("phone_number")
+  status              String         @default("in_progress")
+  durationSeconds     Int?           @map("duration_seconds")
+  recordingUrl        String?        @map("recording_url")
+  transcript          String?
+  collectedData       Json           @default("{}") @map("collected_data")
+  recommendedTier     String?        @map("recommended_tier")
+  grantType           String?        @map("grant_type")
+  qualificationResult String?        @map("qualification_result")
+  qualificationFlags  Json           @default("[]") @map("qualification_flags")
+  createdAt           DateTime       @default(now()) @map("created_at")
+  endedAt             DateTime?      @map("ended_at")
+  user                User?          @relation(fields: [userId], references: [id])
+  matters             Matter[]
+  paymentTokens       PaymentToken[]
+  leadSources         LeadSource[]
+
+  @@index([userId])
+  @@index([retellCallId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("ai_calls")
+}
+
+model PaymentToken {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  userId      String?   @map("user_id")
+  aiCallId    String?   @map("ai_call_id")
+  prefillData Json      @default("{}") @map("prefill_data")
+  expiresAt   DateTime  @map("expires_at")
+  usedAt      DateTime? @map("used_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiCall      AiCall?   @relation(fields: [aiCallId], references: [id])
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("payment_tokens")
+}
+
+model LeadSource {
+  id          String    @id @default(cuid())
+  userId      String?   @map("user_id")
+  matterId    String?   @map("matter_id")
+  aiCallId    String?   @map("ai_call_id")
+  source      String
+  channel     String?
+  utmSource   String?   @map("utm_source")
+  utmMedium   String?   @map("utm_medium")
+  utmCampaign String?   @map("utm_campaign")
+  utmContent  String?   @map("utm_content")
+  referrerUrl String?   @map("referrer_url")
+  landingPage String?   @map("landing_page")
+  converted   Boolean   @default(false)
+  convertedAt DateTime? @map("converted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  user        User?     @relation(fields: [userId], references: [id])
+  aiCall      AiCall?   @relation(fields: [aiCallId], references: [id])
+
+  @@index([userId])
+  @@index([source])
+  @@index([createdAt])
+  @@map("lead_sources")
 }

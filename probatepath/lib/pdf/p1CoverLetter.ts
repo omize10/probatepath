@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { formatIntakeDraftRecord } from "@/lib/intake/format";
 import type { IntakeDraft } from "@/lib/intake/types";
 import type { Matter } from "@prisma/client";
+import { addPdfLetterhead, addPdfFooter } from "@/lib/letterhead";
 
 export type CaseForCoverLetter = {
   matter: Matter & { draft?: { payload: IntakeDraft["estateIntake"] | any } | null };
@@ -22,13 +23,14 @@ export async function generateP1CoverLetterPdf(caseData: CaseForCoverLetter): Pr
 
   const doc = await PDFDocument.create();
   const page = doc.addPage([612, 792]); // US Letter
-  const { width } = page.getSize();
 
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
 
-  let y = 742;
   const margin = 72;
+
+  // Add letterhead and get starting Y position
+  let y = await addPdfLetterhead(doc, page, { showTagline: true });
 
   const addText = (text: string, opts?: { size?: number; font?: typeof font; lineHeight?: number }) => {
     const size = opts?.size ?? 12;
@@ -41,13 +43,20 @@ export async function generateP1CoverLetterPdf(caseData: CaseForCoverLetter): Pr
     });
   };
 
+  // Date
+  addText(format(new Date(), "MMMM d, yyyy"));
+  addText(" ");
+
+  // Sender info
   addText(applicantName || "Applicant name", { font: bold });
   addText("[Your address]");
   addText(" ");
-  addText(format(new Date(), "MMMM d, yyyy"));
-  addText(" ");
+
+  // Salutation
   addText("To whom it may concern,", { font: bold });
   addText(" ");
+
+  // Body
   addText(
     [
       "I am applying for probate of the will of " + (decedentName || "the deceased"),
@@ -61,9 +70,14 @@ export async function generateP1CoverLetterPdf(caseData: CaseForCoverLetter): Pr
   addText(" ");
   addText("If you have any questions or require additional information, please contact me.");
   addText(" ");
+
+  // Closing
   addText("Sincerely,");
   addText(" ");
   addText(applicantName || "Applicant", { font: bold });
+
+  // Add footer
+  await addPdfFooter(doc, page);
 
   return await doc.save();
 }

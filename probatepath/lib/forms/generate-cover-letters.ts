@@ -9,6 +9,7 @@ import {
   spacer,
   underline,
 } from "./docx-utils";
+import { createDocxLetterhead, createDocxFooter } from "../letterhead";
 
 /**
  * Generate Notary Cover Letter
@@ -17,6 +18,10 @@ import {
  */
 export async function generateNotaryCoverLetter(data: EstateData): Promise<Buffer> {
   const children: Paragraph[] = [];
+
+  // Add letterhead
+  const letterhead = await createDocxLetterhead({ showTagline: true });
+  children.push(...letterhead);
 
   // Header
   children.push(centered("NOTARY COVER LETTER", { bold: true, size: 28 }));
@@ -136,6 +141,10 @@ export async function generateNotaryCoverLetter(data: EstateData): Promise<Buffe
   );
   children.push(p(applicantNames));
 
+  // Add footer
+  const footer = createDocxFooter();
+  children.push(...footer);
+
   const doc = new Document({
     sections: [{ properties: {}, children }],
   });
@@ -151,6 +160,10 @@ export async function generateNotaryCoverLetter(data: EstateData): Promise<Buffe
  */
 export async function generateCourtCoverLetter(data: EstateData): Promise<Buffer> {
   const children: Paragraph[] = [];
+
+  // Add letterhead
+  const letterhead = await createDocxLetterhead({ showTagline: true });
+  children.push(...letterhead);
 
   // Header
   children.push(centered("COURT FILING COVER LETTER", { bold: true, size: 28 }));
@@ -349,6 +362,10 @@ export async function generateCourtCoverLetter(data: EstateData): Promise<Buffer
   );
   children.push(p(applicantNames));
 
+  // Add footer
+  const footer = createDocxFooter();
+  children.push(...footer);
+
   const doc = new Document({
     sections: [{ properties: {}, children }],
   });
@@ -364,6 +381,10 @@ export async function generateCourtCoverLetter(data: EstateData): Promise<Buffer
  */
 export async function generateFilingChecklist(data: EstateData): Promise<Buffer> {
   const children: Paragraph[] = [];
+
+  // Add letterhead
+  const letterhead = await createDocxLetterhead({ showTagline: true });
+  children.push(...letterhead);
 
   // Header
   children.push(centered("PROBATE FILING CHECKLIST", { bold: true, size: 28 }));
@@ -503,6 +524,10 @@ export async function generateFilingChecklist(data: EstateData): Promise<Buffer>
       alignment: AlignmentType.CENTER,
     })
   );
+
+  // Add footer
+  const footer = createDocxFooter();
+  children.push(...footer);
 
   const doc = new Document({
     sections: [{ properties: {}, children }],

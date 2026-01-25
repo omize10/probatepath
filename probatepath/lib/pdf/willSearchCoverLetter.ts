@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { formatIntakeDraftRecord } from "@/lib/intake/format";
 import type { IntakeDraft } from "@/lib/intake/types";
 import type { Matter, IntakeDraft as IntakeDraftModel } from "@prisma/client";
+import { addPdfLetterhead, addPdfFooter } from "@/lib/letterhead";
 
 export type CaseForWillSearchCover = {
   matter: Matter & { draft?: { payload: IntakeDraft["estateIntake"] | unknown } | null };
@@ -35,9 +36,11 @@ export async function generateWillSearchCoverLetterPdf(caseData: CaseForWillSear
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
 
-  let y = 742;
   const margin = 72;
   const maxWidth = 612 - margin * 2;
+
+  // Add letterhead and get starting Y position
+  let y = await addPdfLetterhead(doc, page, { showTagline: true });
 
   const addText = (text: string, opts?: { size?: number; font?: typeof font; lineHeight?: number }) => {
     const size = opts?.size ?? 11;
@@ -66,12 +69,14 @@ export async function generateWillSearchCoverLetterPdf(caseData: CaseForWillSear
 
   const addBlank = () => { y -= 12; };
 
+  // Date
+  addText(format(new Date(), "MMMM d, yyyy"));
+  addBlank();
+
   // Sender info
   addText(applicantName, { font: bold, size: 12 });
   addText(applicantAddress);
   addText(applicantPhone);
-  addBlank();
-  addText(format(new Date(), "MMMM d, yyyy"));
   addBlank();
 
   // Recipient
@@ -110,6 +115,9 @@ export async function generateWillSearchCoverLetterPdf(caseData: CaseForWillSear
   addBlank();
   addText(applicantName, { font: bold });
   addText(`Executor of the Estate of ${decedentName}`);
+
+  // Add footer
+  await addPdfFooter(doc, page);
 
   return await doc.save();
 }

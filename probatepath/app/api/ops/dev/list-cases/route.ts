@@ -2,12 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
-  // Only allow in dev mode
-  const isDev = process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_DEV_MODE === "true";
-  if (!isDev) {
-    return NextResponse.json({ error: "Dev mode only" }, { status: 403 });
-  }
-
   try {
     const cases = await prisma.matter.findMany({
       select: {

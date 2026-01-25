@@ -3,12 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth/password";
 
 export async function POST(request: Request) {
-  // Only allow in dev mode
-  const isDev = process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_DEV_MODE === "true";
-  if (!isDev) {
-    return NextResponse.json({ error: "Dev mode only" }, { status: 403 });
-  }
-
   try {
     const { email, newPassword } = await request.json();
 

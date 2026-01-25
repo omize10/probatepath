@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  // Only allow in dev mode
-  const isDev = process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_DEV_MODE === "true";
-  if (!isDev) {
-    return NextResponse.json({ error: "Dev mode only" }, { status: 403 });
-  }
-
   const checks = {
     // Email (Resend)
     RESEND_API_KEY: {
@@ -77,7 +71,7 @@ export async function GET() {
       emailReady: checks.RESEND_API_KEY.set,
       smsReady: checks.TWILIO_ACCOUNT_SID.set && checks.TWILIO_AUTH_TOKEN.set && checks.TWILIO_PHONE_NUMBER.set,
       cronSecretValid: checks.CRON_SECRET.set && !checks.CRON_SECRET.isPlaceholder,
-      devMode: isDev,
+      nodeEnv: process.env.NODE_ENV,
     },
   });
 }

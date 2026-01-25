@@ -62,11 +62,11 @@ export default function OnboardScreeningPage() {
 
     // Auto-advance to next question
     setTimeout(() => {
-      advanceQuestion(key, value);
+      advanceQuestion(key, value, updated);
     }, 300);
   };
 
-  const advanceQuestion = (currentKey: keyof ScreeningAnswers, value: boolean | string) => {
+  const advanceQuestion = (currentKey: keyof ScreeningAnswers, value: boolean | string, updatedAnswers: ScreeningAnswers) => {
     // Validate that we actually got an answer before advancing
     if (value === undefined || value === null) {
       console.log('[screening] No valid answer, not advancing');
@@ -91,7 +91,8 @@ export default function OnboardScreeningPage() {
       case "dispute":
         if (value === true) {
           // Red flag - go to result immediately
-          finishScreening({ ...answers, expectsDispute: true });
+          console.log('[screening] Dispute detected, finishing screening early');
+          finishScreening({ ...updatedAnswers, expectsDispute: true });
         } else if (value === false) {
           setQuestion("foreign");
         }
@@ -99,15 +100,16 @@ export default function OnboardScreeningPage() {
       case "foreign":
         if (value === true) {
           // Red flag - go to result immediately
-          finishScreening({ ...answers, foreignAssets: true });
+          console.log('[screening] Foreign assets detected, finishing screening early');
+          finishScreening({ ...updatedAnswers, foreignAssets: true });
         } else if (value === false) {
           setQuestion("value");
         }
         break;
       case "value":
         // Any value here completes screening - THIS IS THE FINAL STEP
-        console.log('[screening] Final question answered, finishing screening');
-        finishScreening(answers);
+        console.log('[screening] Final question answered, finishing screening with complete answers:', updatedAnswers);
+        finishScreening(updatedAnswers);
         break;
     }
   };

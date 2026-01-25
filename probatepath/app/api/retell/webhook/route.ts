@@ -79,6 +79,8 @@ async function handleCallStarted(event: RetellWebhookEvent) {
 async function handleCallEnded(event: RetellWebhookEvent) {
   const { call_id, duration_seconds, recording_url, transcript, end_reason } = event;
 
+  console.log("[retell/webhook] handleCallEnded called:", { call_id, end_reason, duration_seconds });
+
   // Determine the appropriate status based on end_reason
   let status: string;
   if (end_reason === "error") {
@@ -91,9 +93,11 @@ async function handleCallEnded(event: RetellWebhookEvent) {
     status = AI_CALL_STATUS.COMPLETED;
   }
 
+  console.log("[retell/webhook] Call status determined:", { call_id, status });
+
   // Update AI call record
   try {
-    await prisma.aiCall.update({
+    const updated = await prisma.aiCall.update({
       where: { retellCallId: call_id },
       data: {
         status,
@@ -103,10 +107,10 @@ async function handleCallEnded(event: RetellWebhookEvent) {
         endedAt: new Date(),
       },
     });
-    console.log("[retell/webhook] Call ended - updated:", { call_id, status, duration_seconds, end_reason });
+    console.log("[retell/webhook] ✅ SUCCESS - Call ended - updated by retellCallId:", { call_id, status, duration_seconds, end_reason, recordId: updated.id });
   } catch (e) {
     // If no record with retellCallId, try to find by internal ID in metadata
-    console.warn("[retell/webhook] Could not find call by retellCallId:", call_id, e);
+    console.warn("[retell/webhook] ⚠️ Could not find call by retellCallId:", call_id, "error:", e);
 
     // Try to find by looking at recent initiated calls
     const recentCall = await prisma.aiCall.findFirst({
@@ -118,7 +122,7 @@ async function handleCallEnded(event: RetellWebhookEvent) {
     });
 
     if (recentCall) {
-      await prisma.aiCall.update({
+      const updated = await prisma.aiCall.update({
         where: { id: recentCall.id },
         data: {
           retellCallId: call_id,
@@ -129,12 +133,14 @@ async function handleCallEnded(event: RetellWebhookEvent) {
           endedAt: new Date(),
         },
       });
-      console.log("[retell/webhook] Call ended - found and updated recent call:", {
+      console.log("[retell/webhook] ✅ SUCCESS - Call ended - found and updated recent call:", {
         internalId: recentCall.id,
         call_id,
         status,
         end_reason
       });
+    } else {
+      console.error("[retell/webhook] ❌ FAILED - No recent call found to update. Call may not have been initialized.", { call_id, end_reason });
     }
   }
 

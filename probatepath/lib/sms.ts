@@ -15,24 +15,24 @@ console.log("[sms] Twilio configuration:", {
   clientInitialized: Boolean(client),
 });
 
-export async function sendSMS({ to, body }: { to: string; body: string }): Promise<boolean> {
+export async function sendSMS({ to, body }: { to: string; body: string }): Promise<{ success: boolean; error?: string; sid?: string }> {
   console.log("[sms] Attempting to send SMS:", { to, bodyLength: body.length });
 
   if (!to || !to.trim()) {
     console.warn("[sms] No phone number provided, skipping");
-    return false;
+    return { success: false, error: "No phone number provided" };
   }
 
   // Normalize Canadian phone numbers
   const normalized = normalizePhone(to);
   if (!normalized) {
     console.warn("[sms] Invalid phone number format", { to, reason: "normalization failed" });
-    return false;
+    return { success: false, error: "Invalid phone number format" };
   }
 
   if (!client || !fromNumber) {
     console.log(`[sms] (dry-run) Twilio not configured - would send to=${normalized}:`, body.substring(0, 100));
-    return true;
+    return { success: true, error: "dry-run (Twilio not configured)" };
   }
 
   try {
@@ -42,11 +42,11 @@ export async function sendSMS({ to, body }: { to: string; body: string }): Promi
       to: normalized,
     });
     console.log(`[sms] Successfully sent to ${normalized}:`, { sid: message.sid, status: message.status });
-    return true;
+    return { success: true, sid: message.sid };
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
     console.error("[sms] Failed to send:", { to: normalized, error: errorMessage });
-    return false;
+    return { success: false, error: errorMessage };
   }
 }
 

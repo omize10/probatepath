@@ -45,6 +45,14 @@ export default async function OpsPage({ searchParams }: OpsPageProps) {
         >
           + New Case
         </Link>
+        {(process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_DEV_MODE === "true") && (
+          <Link
+            href="/ops/dev"
+            className="rounded-full border-2 border-dashed border-purple-400 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-100"
+          >
+            Dev Tools
+          </Link>
+        )}
       </div>
 
       <div className="overflow-hidden rounded-3xl border border-[color:var(--border-muted)] bg-white shadow-[0_25px_80px_-60px_rgba(15,23,42,0.22)]">

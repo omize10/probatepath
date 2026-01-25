@@ -33,6 +33,9 @@ export default async function OpsLayout({ children }: { children: ReactNode }) {
         <Link href="/ops/calendar" className="text-sm font-semibold text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]">
           Calendar
         </Link>
+        <Link href="/ops/messages" className="text-sm font-semibold text-[color:var(--brand)] hover:text-[color:var(--accent-dark)]">
+          Messages
+        </Link>
         <Link href="/ops/dev" className="text-sm font-semibold text-purple-600 hover:text-purple-800">
           Dev Tools
         </Link>

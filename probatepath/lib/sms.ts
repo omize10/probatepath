@@ -1,5 +1,7 @@
 import "server-only";
 import twilio from "twilio";
+import { Prisma } from "@prisma/client";
+import { prisma, prismaEnabled } from "@/lib/prisma";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -68,4 +70,50 @@ function normalizePhone(raw: string): string | null {
   }
 
   return null;
+}
+
+/**
+ * Log an SMS to the database for tracking and auditing
+ */
+export async function logSms({
+  to,
+  body,
+  templateKey,
+  matterId,
+  status,
+  twilioSid,
+  errorMessage,
+  meta,
+}: {
+  to: string;
+  body: string;
+  templateKey?: string;
+  matterId?: string;
+  status: "sent" | "failed" | "dry_run";
+  twilioSid?: string;
+  errorMessage?: string;
+  meta?: Record<string, unknown>;
+}): Promise<void> {
+  if (!prismaEnabled) {
+    console.log("[sms] Database not enabled, skipping log:", { to, templateKey, status });
+    return;
+  }
+
+  try {
+    await prisma.smsLog.create({
+      data: {
+        to,
+        body,
+        templateKey,
+        matterId,
+        status,
+        twilioSid,
+        errorMessage,
+        meta: meta as Prisma.InputJsonValue,
+      },
+    });
+    console.log("[sms] Logged SMS to database:", { to, templateKey, status });
+  } catch (error) {
+    console.error("[sms] Failed to log SMS:", error);
+  }
 }

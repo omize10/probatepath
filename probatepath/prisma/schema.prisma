@@ -114,6 +114,7 @@ model Matter {
   notes                       MatterNote[]
   flags                       MatterFlag[]
   intestateHeirs              IntestateHeir[]
+  smsLogs                     SmsLog[]
 }
 
 model MatterStepProgress {
@@ -1047,4 +1048,48 @@ model LeadSource {
   @@index([source])
   @@index([createdAt])
   @@map("lead_sources")
+}
+
+// ========================================
+// EMAIL & SMS MANAGEMENT
+// ========================================
+
+model MessageTemplate {
+  id                   String   @id @default(cuid())
+  key                  String   @unique
+  name                 String
+  description          String?
+  category             String   @default("transactional")
+  emailSubject         String
+  emailHtml            String   @db.Text
+  emailPlainText       String?  @db.Text
+  smsBody              String?
+  smsEnabled           Boolean  @default(false)
+  availableVariables   Json     @default("[]")
+  variableDescriptions Json     @default("{}")
+  active               Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([key])
+  @@index([category])
+  @@map("MessageTemplate")
+}
+
+model SmsLog {
+  id           String   @id @default(cuid())
+  matterId     String?
+  to           String
+  body         String
+  templateKey  String?
+  status       String   @default("sent")
+  twilioSid    String?
+  errorMessage String?
+  meta         Json?
+  createdAt    DateTime @default(now())
+  matter       Matter?  @relation(fields: [matterId], references: [id], onDelete: SetNull)
+
+  @@index([matterId])
+  @@index([createdAt])
+  @@map("SmsLog")
 }

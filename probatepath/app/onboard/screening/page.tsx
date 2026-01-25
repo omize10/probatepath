@@ -41,6 +41,7 @@ export default function OnboardScreeningPage() {
   const [question, setQuestion] = useState<Question>("will");
   const [answers, setAnswers] = useState<ScreeningAnswers>({});
   const [showHelp, setShowHelp] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const state = getOnboardState();
@@ -68,8 +69,11 @@ export default function OnboardScreeningPage() {
   const advanceQuestion = (currentKey: keyof ScreeningAnswers, value: boolean | string) => {
     // Validate that we actually got an answer before advancing
     if (value === undefined || value === null) {
+      console.log('[screening] No valid answer, not advancing');
       return;
     }
+
+    console.log('[screening] Advancing from', question, 'with value', value);
 
     switch (question) {
       case "will":
@@ -101,21 +105,40 @@ export default function OnboardScreeningPage() {
         }
         break;
       case "value":
-        // Any value here completes screening
+        // Any value here completes screening - THIS IS THE FINAL STEP
+        console.log('[screening] Final question answered, finishing screening');
         finishScreening(answers);
         break;
     }
   };
 
   const finishScreening = (finalAnswers: ScreeningAnswers) => {
-    const result = calculateResult(finalAnswers);
-    saveOnboardState({
-      screening: finalAnswers,
-      grantType: result.grantType,
-      recommendedTier: result.recommendedTier,
-      redFlags: result.redFlags,
-    });
-    router.push("/onboard/result");
+    // GUARD: Prevent double submission
+    if (isSubmitting) {
+      console.log('[screening] Already submitting, preventing double submission');
+      return;
+    }
+    
+    console.log('[screening] finishScreening called with answers:', finalAnswers);
+    setIsSubmitting(true);
+
+    try {
+      const result = calculateResult(finalAnswers);
+      console.log('[screening] Calculated result:', result);
+      
+      saveOnboardState({
+        screening: finalAnswers,
+        grantType: result.grantType,
+        recommendedTier: result.recommendedTier,
+        redFlags: result.redFlags,
+      });
+
+      console.log('[screening] State saved, pushing to /onboard/result');
+      router.push("/onboard/result");
+    } catch (error) {
+      console.error('[screening] Error in finishScreening:', error);
+      setIsSubmitting(false);
+    }
   };
 
   const goBack = () => {

@@ -100,21 +100,25 @@ export default function OnboardCallPage() {
         }
         const data = await res.json();
 
-        console.log('[call-status] Response:', { status: data.status, ended: data.ended, callStatus });
+        console.log('[call-status] Response:', { status: data.status, ended: data.ended, callStatus, callId });
 
         // If call has ended in backend, immediately set to appropriate terminal state
         if (data.ended) {
-          console.log('[call-status] Call ended, status:', data.status);
+          console.log('[call-status] CALL ENDED detected, status:', data.status);
           // Map any ended call to a terminal state
           if (data.status === 'completed') {
+            console.log('[call-status] Setting to completed');
             setCallStatus('completed');
           } else if (data.status === 'no_answer' || data.status === 'voicemail' || data.status === 'abandoned') {
+            console.log('[call-status] Setting to no_answer');
             setCallStatus('no_answer');
           } else if (data.status === 'failed') {
+            console.log('[call-status] Setting to failed');
             setCallStatus('failed');
             setError('Call could not be completed');
           } else {
             // Any other ended state -> complete
+            console.log('[call-status] Setting to completed (other ended state)');
             setCallStatus('completed');
           }
           return;
@@ -156,10 +160,19 @@ export default function OnboardCallPage() {
     poll();
     const interval = setInterval(poll, 1000);
 
+    // AGGRESSIVE FALLBACK: If still ringing after 60 seconds, mark as no_answer
+    const fallbackTimeout = setTimeout(() => {
+      if (callStatus === 'ringing' || callStatus === 'initiating') {
+        console.log('[call-status] Fallback timeout: marking call as no_answer after 60s');
+        setCallStatus('no_answer');
+      }
+    }, 60 * 1000);
+
     // Stop polling after 5 minutes
     const timeout = setTimeout(() => {
       clearInterval(interval);
       if (callStatus === 'ringing' || callStatus === 'in_progress') {
+        console.log('[call-status] Hard timeout: marking call as no_answer after 5 mins');
         setCallStatus('no_answer');
       }
     }, 5 * 60 * 1000);
@@ -167,6 +180,7 @@ export default function OnboardCallPage() {
     return () => {
       clearInterval(interval);
       clearTimeout(timeout);
+      clearTimeout(fallbackTimeout);
     };
   }, [callId, callStatus]);
 

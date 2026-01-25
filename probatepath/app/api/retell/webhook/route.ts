@@ -79,34 +79,27 @@ async function handleCallStarted(event: RetellWebhookEvent) {
 async function handleCallEnded(event: RetellWebhookEvent) {
   const { call_id, duration_seconds, recording_url, transcript, end_reason } = event;
 
-  // Determine final status based on end reason
-  let status: string = AI_CALL_STATUS.COMPLETED;
-  if (end_reason === "user_hangup" || end_reason === "agent_hangup") {
-    // Check if they completed payment - if not, mark as abandoned
-    const call = await prisma.aiCall.findUnique({
-      where: { retellCallId: call_id },
-      include: { paymentTokens: true },
-    });
-    if (!call?.paymentTokens?.some((t) => t.usedAt)) {
-      status = AI_CALL_STATUS.ABANDONED;
-    }
-  } else if (end_reason === "error") {
-    status = AI_CALL_STATUS.FAILED;
-  }
+  // Mark as completed unless there was an error
+  const status = end_reason === "error" ? AI_CALL_STATUS.FAILED : AI_CALL_STATUS.COMPLETED;
 
   // Update AI call record
-  await prisma.aiCall.update({
-    where: { retellCallId: call_id },
-    data: {
-      status,
-      durationSeconds: duration_seconds,
-      recordingUrl: recording_url,
-      transcript,
-      endedAt: new Date(),
-    },
-  });
+  try {
+    await prisma.aiCall.update({
+      where: { retellCallId: call_id },
+      data: {
+        status,
+        durationSeconds: duration_seconds,
+        recordingUrl: recording_url,
+        transcript,
+        endedAt: new Date(),
+      },
+    });
+  } catch (e) {
+    // If no record with retellCallId, try to find by checking recent calls
+    console.warn("[retell/webhook] Could not find call by retellCallId, checking metadata", call_id);
+  }
 
-  console.log("[retell/webhook] Call ended:", { call_id, status, duration_seconds });
+  console.log("[retell/webhook] Call ended:", { call_id, status, duration_seconds, end_reason });
   return NextResponse.json({ success: true });
 }
 

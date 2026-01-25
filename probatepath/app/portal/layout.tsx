@@ -10,6 +10,7 @@ export default async function PortalLayout({ children }: { children: ReactNode }
   const session = await requirePortalAuth("/portal");
   const userId = (session!.user as { id?: string }).id;
   let navStatus = "Start intake";
+  let pathType: "probate" | "administration" = "probate";
 
   if (userId && prismaEnabled) {
     await logSecurityAudit({ userId, action: "portal.view" });
@@ -17,6 +18,7 @@ export default async function PortalLayout({ children }: { children: ReactNode }
       const matter = await resolvePortalMatter(userId);
       if (matter) {
         navStatus = portalStatusLabels[matter.portalStatus] ?? "Active case";
+        pathType = (matter.pathType as "probate" | "administration") || "probate";
       }
     } catch (error) {
       console.warn("[portal] Layout failed to resolve matter", { userId, error });
@@ -25,7 +27,7 @@ export default async function PortalLayout({ children }: { children: ReactNode }
 
   return (
     <div className="space-y-8 pb-16">
-      <PortalNav statusLabel={navStatus} />
+      <PortalNav statusLabel={navStatus} pathType={pathType} />
       <main className="mx-auto max-w-6xl space-y-10 px-6">{children}</main>
     </div>
   );

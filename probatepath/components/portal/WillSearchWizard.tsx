@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { PortalWizardShell } from "@/components/portal/PortalWizardShell";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { WarningCallout } from "@/components/ui/warning-callout";
 
 interface WillSearchWizardProps {
   caseId: string;
@@ -12,6 +14,9 @@ interface WillSearchWizardProps {
 
 export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchWizardProps) {
   const [step, setStep] = useState(0);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const totalSteps = 5;
 
   const primaryLabel =
@@ -82,7 +87,15 @@ export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchW
     {
       title: "Mail it to Vital Statistics",
       subtitle: "Send the envelope.",
-      body: <p className="text-sm text-gray-700">Mail the envelope to the address printed on the form.</p>,
+      body: (
+        <div className="space-y-4">
+          <p className="text-sm text-gray-700">Mail the envelope to the address printed on the form.</p>
+          <WarningCallout severity="warning" title="Before you confirm">
+            Only click the button below after you have actually mailed the envelope.
+            This starts your case timeline and cannot be undone.
+          </WarningCallout>
+        </div>
+      ),
     },
   ];
 
@@ -106,12 +119,21 @@ export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchW
       backHref={step === 0 ? "/portal" : undefined}
       primaryButtonOverride={
         step === totalSteps - 1 ? (
-          <form action={onSubmitAction}>
-            <input type="hidden" name="caseId" value={caseId} />
-            <button className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black">
-              {primaryLabel}
+          <>
+            {/* Hidden form for actual submission */}
+            <form ref={formRef} action={onSubmitAction} className="hidden">
+              <input type="hidden" name="caseId" value={caseId} />
+            </form>
+            {/* Button that opens confirmation dialog */}
+            <button
+              type="button"
+              onClick={() => setShowConfirm(true)}
+              disabled={isSubmitting}
+              className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black disabled:opacity-50"
+            >
+              {isSubmitting ? "Submitting..." : primaryLabel}
             </button>
-          </form>
+          </>
         ) : undefined
       }
     >
@@ -126,6 +148,30 @@ export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchW
           [DEV] Skip to final step
         </button>
       )}
+
+      {/* Confirmation dialog for will search mailed */}
+      <ConfirmDialog
+        open={showConfirm}
+        onOpenChange={setShowConfirm}
+        title="Confirm will search mailed"
+        severity="warning"
+        confirmMode="type"
+        confirmWord="MAILED"
+        description={`Once you confirm, this starts your case timeline.
+
+Make sure you have:
+• Actually mailed the envelope
+• Included the signed will search form
+• Included a copy of the death certificate
+
+Type MAILED to confirm.`}
+        confirmLabel="Confirm mailed"
+        loading={isSubmitting}
+        onConfirm={() => {
+          setIsSubmitting(true);
+          formRef.current?.requestSubmit();
+        }}
+      />
     </PortalWizardShell>
   );
 }

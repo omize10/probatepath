@@ -4,17 +4,23 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Phone, PhoneCall, PhoneOff, PhoneMissed, Check, AlertCircle, Loader2, ArrowLeft, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { getOnboardState, saveOnboardState } from '@/lib/onboard/state';
 
-type CallStatus = 'initiating' | 'ringing' | 'in_progress' | 'completed' | 'no_answer' | 'failed';
+type CallStatus = 'ready_check' | 'initiating' | 'ringing' | 'in_progress' | 'completed' | 'no_answer' | 'failed';
 
 export default function OnboardCallPage() {
   const router = useRouter();
   const [state, setState] = useState<{ name?: string; phone?: string; email?: string }>({});
-  const [callStatus, setCallStatus] = useState<CallStatus>('initiating');
+  const [callStatus, setCallStatus] = useState<CallStatus>('ready_check');
   const [callId, setCallId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [retryCount, setRetryCount] = useState(0);
+  const [readyChecks, setReadyChecks] = useState({
+    phoneNearby: false,
+    canTalk: false,
+    willAnswer: false,
+  });
 
   // Load state on mount
   useEffect(() => {
@@ -66,11 +72,16 @@ export default function OnboardCallPage() {
     }
   }, [state.phone, state.name, state.email]);
 
-  // Trigger outbound call when state is ready
-  useEffect(() => {
-    if (!state.phone || callId || retryCount > 0) return;
-    initiateCall();
-  }, [state.phone, callId, retryCount, initiateCall]);
+  // allReadyChecksComplete helper
+  const allReadyChecksComplete = readyChecks.phoneNearby && readyChecks.canTalk && readyChecks.willAnswer;
+
+  // Start the call when user confirms they're ready
+  const handleStartCall = () => {
+    if (allReadyChecksComplete) {
+      setCallStatus('initiating');
+      initiateCall();
+    }
+  };
 
   // Poll for call completion - faster polling (1 second)
   useEffect(() => {
@@ -172,6 +183,77 @@ export default function OnboardCallPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8">
+      {/* Ready Check - Pre-call confirmation */}
+      {callStatus === 'ready_check' && (
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center space-y-2">
+            <div className="rounded-full bg-blue-100 p-6 w-20 h-20 mx-auto flex items-center justify-center mb-4">
+              <Phone className="h-10 w-10 text-blue-600" />
+            </div>
+            <h2 className="font-serif text-2xl font-semibold text-[color:var(--brand)]">
+              Ready for your call?
+            </h2>
+            <p className="text-[color:var(--muted-ink)]">
+              We're about to call {formatPhone(state.phone || '')}
+            </p>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+            <p className="font-medium text-blue-900">Please confirm:</p>
+
+            <label className="flex items-start gap-3 cursor-pointer">
+              <Checkbox
+                checked={readyChecks.phoneNearby}
+                onCheckedChange={(checked) =>
+                  setReadyChecks(prev => ({ ...prev, phoneNearby: checked === true }))
+                }
+                className="mt-0.5"
+              />
+              <span className="text-sm text-blue-800">My phone is nearby and charged</span>
+            </label>
+
+            <label className="flex items-start gap-3 cursor-pointer">
+              <Checkbox
+                checked={readyChecks.canTalk}
+                onCheckedChange={(checked) =>
+                  setReadyChecks(prev => ({ ...prev, canTalk: checked === true }))
+                }
+                className="mt-0.5"
+              />
+              <span className="text-sm text-blue-800">I can talk for 5-10 minutes without interruption</span>
+            </label>
+
+            <label className="flex items-start gap-3 cursor-pointer">
+              <Checkbox
+                checked={readyChecks.willAnswer}
+                onCheckedChange={(checked) =>
+                  setReadyChecks(prev => ({ ...prev, willAnswer: checked === true }))
+                }
+                className="mt-0.5"
+              />
+              <span className="text-sm text-blue-800">I'll answer calls from unknown numbers</span>
+            </label>
+          </div>
+
+          <Button
+            onClick={handleStartCall}
+            disabled={!allReadyChecksComplete}
+            size="lg"
+            className="w-full h-14 text-lg"
+          >
+            <Phone className="mr-2 h-5 w-5" />
+            I'm ready, call me now
+          </Button>
+
+          <button
+            onClick={handleCantTalk}
+            className="w-full text-sm text-[color:var(--muted-ink)] underline hover:no-underline"
+          >
+            Can't talk right now? Continue without a call
+          </button>
+        </div>
+      )}
+
       {/* Phone animation area */}
       <div className="flex flex-col items-center">
         {/* Initiating - Spinning loader */}

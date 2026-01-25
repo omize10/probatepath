@@ -9,6 +9,7 @@ import { markProbateFiled, updatePortalState } from "@/lib/cases";
 import { CourtFileNumberForm } from "./CourtFileNumberForm";
 import { GrantUploadForm } from "./GrantUploadForm";
 import { markGrantReceivedAction } from "./actions";
+import { ProbateFilingConfirm } from "./ProbateFilingConfirm";
 
 const MAX_STEP = 8;
 
@@ -436,18 +437,14 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
       title: "Mail or file at court",
       description: "Send your package to the Supreme Court registry that handles your application.",
       content: (
-        <div className="space-y-2 text-sm text-gray-700">
-          <ul className="list-disc space-y-1 pl-5">
-            <li>You can mail or bring this package to the Supreme Court registry that handles your {pathLabel} application.</li>
-            <li>Use the address shown on your filing packet or on the court website.</li>
-            <li>
-              Write your CASE ID <span className="font-mono">{matter.caseCode ?? matter.id}</span> on the outside of the envelope.
-            </li>
-            <li>Processing can take several weeks or longer. This is normal.</li>
-          </ul>
-        </div>
+        <ProbateFilingConfirm
+          caseId={matter.id}
+          caseCode={matter.caseCode ?? matter.id}
+          pathType={matter.pathType ?? "probate"}
+          onSubmitAction={advanceProbateStepAction}
+        />
       ),
-      cta: `I've mailed or filed my ${pathLabel} package`,
+      cta: null, // The ProbateFilingConfirm component handles its own submission
     },
     {
       title: `Waiting for your ${matter.pathType === "administration" ? "Grant of Administration" : "Grant of Probate"}`,

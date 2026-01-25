@@ -3,6 +3,7 @@ import type {
   IntakeDraft,
   Executor,
   Beneficiary,
+  IntestateHeir,
   SupplementalSchedule,
 } from "@prisma/client";
 import type { EstateData } from "./types";
@@ -11,6 +12,7 @@ export type MatterWithRelations = Matter & {
   draft: IntakeDraft | null;
   executors: Executor[];
   beneficiaries: Beneficiary[];
+  intestateHeirs?: IntestateHeir[];
   schedules: SupplementalSchedule[];
 };
 
@@ -192,7 +194,7 @@ export function mapToEstateData(matter: MatterWithRelations): EstateData {
     children,
     beneficiaries,
 
-    intestateSuccessors: formData.intestateSuccessors || buildIntestateSuccessors(intake),
+    intestateSuccessors: formData.intestateSuccessors || buildIntestateSuccessors(intake, matter.intestateHeirs || []),
     creditors: formData.creditors,
     citors: formData.citors || [],
     attorneyGeneralNotice: formData.attorneyGeneralNotice || false,
@@ -497,7 +499,7 @@ function extractCity(cityProv?: string | null): string {
   return parts[0]?.trim() || cityProv;
 }
 
-function buildIntestateSuccessors(intake: any): EstateData["intestateSuccessors"] {
+function buildIntestateSuccessors(intake: any, dbIntestateHeirs: IntestateHeir[]): EstateData["intestateSuccessors"] {
   const successors: EstateData["intestateSuccessors"] = [];
 
   // Get heirs from administration section (for intestate estates)
@@ -515,7 +517,19 @@ function buildIntestateSuccessors(intake: any): EstateData["intestateSuccessors"
     }
   }
 
-  // Fallback: if no heirs but we have family data and it's an intestate case
+  // Fallback: use DB IntestateHeir records if no intake data
+  if (successors.length === 0 && dbIntestateHeirs.length > 0) {
+    for (const heir of dbIntestateHeirs) {
+      if (heir.fullName) {
+        successors.push({
+          name: heir.fullName,
+          relationship: formatRelationshipLabel(heir.relationship.toLowerCase()),
+        });
+      }
+    }
+  }
+
+  // Second fallback: if no heirs but we have family data and it's an intestate case
   if (successors.length === 0) {
     const family = intake.family || {};
     const hasWill = intake.will?.hasWill;

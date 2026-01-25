@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { PortalWizardShell } from "@/components/portal/PortalWizardShell";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { WarningCallout } from "@/components/ui/warning-callout";
 
 interface P1NoticesWizardProps {
   caseId: string;
@@ -9,12 +11,26 @@ interface P1NoticesWizardProps {
   packetUrl?: string | null;
   recipientCount: number | null;
   showWillSearchWarning: boolean;
+  pathType?: "probate" | "administration";
   onSubmitAction: (formData: FormData) => void | Promise<void>;
 }
 
-export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, showWillSearchWarning, onSubmitAction }: P1NoticesWizardProps) {
+export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, showWillSearchWarning, pathType = "probate", onSubmitAction }: P1NoticesWizardProps) {
   const [step, setStep] = useState(0);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const totalSteps = 5;
+
+  // Generate checklist items based on recipient count
+  const checklistItems = [
+    ...(recipientCount && recipientCount > 0
+      ? [`I have sent notices to all ${recipientCount} recipient(s)`]
+      : ["I have sent notices to all required recipients"]),
+    "I kept copies of all notices I sent",
+    "I understand the 21-day waiting period starts TODAY",
+    "I understand I cannot file until the 21 days have passed",
+  ];
 
   const primaryLabel =
     step === 0
@@ -29,10 +45,12 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
       ? "I’ve sent all notices"
       : "Next";
 
+  const applicationLabel = pathType === "administration" ? "administration application" : "probate application";
+
   const bodies = [
     {
       title: "Step 2: P1 notices",
-      subtitle: "Now we send notice of your probate application to the people who must be told.",
+      subtitle: `Now we send notice of your ${applicationLabel} to the people who must be told.`,
       body: (
         <p className="text-sm text-gray-700">
           You’ll download the P1 notice, sign it, and send it to everyone entitled to notice. We’ll walk you through printing, signing, and mailing/emailing copies.
@@ -97,13 +115,16 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
     },
     {
       title: "21-day waiting period",
-      subtitle: "Confirm you’ve sent every notice.",
+      subtitle: "Confirm you've sent every notice.",
       body: (
-        <div className="space-y-2">
+        <div className="space-y-4">
           <p className="text-sm text-gray-700">
-            After you send your notices, you must wait 21 days before you file your probate application. The court needs to give recipients time to respond.
+            After you send your notices, you must wait 21 days before you file your {applicationLabel}. The court needs to give recipients time to respond.
           </p>
-          <p className="text-sm text-gray-700">Tap the button below once you’re sure you’ve sent every notice.</p>
+          <WarningCallout severity="danger" title="This starts your 21-day countdown">
+            <p>Missing a recipient can invalidate your entire application.</p>
+            <p className="mt-2">Double-check that you've sent a notice to every person who is entitled to receive one before confirming.</p>
+          </WarningCallout>
         </div>
       ),
     },
@@ -135,12 +156,21 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
         backHref={step === 0 ? "/portal" : undefined}
         primaryButtonOverride={
           step === totalSteps - 1 ? (
-            <form action={onSubmitAction}>
-              <input type="hidden" name="caseId" value={caseId} />
-              <button className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black">
-                {primaryLabel}
+            <>
+              {/* Hidden form for actual submission */}
+              <form ref={formRef} action={onSubmitAction} className="hidden">
+                <input type="hidden" name="caseId" value={caseId} />
+              </form>
+              {/* Button that opens confirmation dialog */}
+              <button
+                type="button"
+                onClick={() => setShowConfirm(true)}
+                disabled={isSubmitting}
+                className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black disabled:opacity-50"
+              >
+                {isSubmitting ? "Submitting..." : primaryLabel}
               </button>
-            </form>
+            </>
           ) : undefined
         }
       >
@@ -155,6 +185,23 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
             [DEV] Skip to final step
           </button>
         )}
+
+        {/* Confirmation dialog for P1 notices sent */}
+        <ConfirmDialog
+          open={showConfirm}
+          onOpenChange={setShowConfirm}
+          title="Confirm all P1 notices sent"
+          severity="danger"
+          confirmMode="checklist"
+          checklistItems={checklistItems}
+          description="Please confirm each item below. Missing a recipient can invalidate your entire application."
+          confirmLabel="Confirm all notices sent"
+          loading={isSubmitting}
+          onConfirm={() => {
+            setIsSubmitting(true);
+            formRef.current?.requestSubmit();
+          }}
+        />
       </PortalWizardShell>
     </div>
   );

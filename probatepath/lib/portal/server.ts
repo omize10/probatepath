@@ -12,6 +12,9 @@ const portalMatterInclude = {
   beneficiaries: {
     orderBy: { createdAt: "asc" },
   },
+  intestateHeirs: {
+    orderBy: { createdAt: "asc" },
+  },
   willSearch: true,
   schedules: {
     orderBy: { sortOrder: "asc" },

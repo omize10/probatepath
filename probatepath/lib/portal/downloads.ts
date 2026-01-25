@@ -15,3 +15,7 @@ export function getPhase1PacketUrl(matterId: string) {
 export function getSchedulePdfUrl(matterId: string, scheduleId: string, opts?: { download?: boolean }) {
   return buildUrl(`/api/matter/${matterId}/schedules/${scheduleId}/pdf`, opts?.download);
 }
+
+export function getFilingPackageUrl(matterId: string) {
+  return `/api/matter/${matterId}/package/filing/pdf`;
+}

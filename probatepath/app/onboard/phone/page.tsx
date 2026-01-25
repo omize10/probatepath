@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { WarningCallout } from "@/components/ui/warning-callout";
 import { getOnboardState, saveOnboardState } from "@/lib/onboard/state";
 
 export default function OnboardPhonePage() {
@@ -85,6 +86,15 @@ export default function OnboardPhonePage() {
       </div>
 
       <div className="space-y-4">
+        <WarningCallout severity="info" title="We'll call you right away">
+          <p>After you click Continue, we'll call this number within seconds.</p>
+          <ul className="mt-2 space-y-1 text-sm list-disc list-inside">
+            <li>Keep your phone nearby</li>
+            <li>Be ready to answer an unknown number</li>
+            <li>The call takes about 5-10 minutes</li>
+          </ul>
+        </WarningCallout>
+
         <div className="space-y-2">
           <label htmlFor="phone" className="text-sm font-medium text-[color:var(--brand)]">
             What's the best number to reach you?

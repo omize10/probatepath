@@ -83,6 +83,7 @@ export async function GET(
         draft: true,
         executors: { orderBy: { orderIndex: "asc" } },
         beneficiaries: true,
+        intestateHeirs: true,
         schedules: { orderBy: { sortOrder: "asc" } },
       },
     });

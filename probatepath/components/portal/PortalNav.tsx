@@ -13,11 +13,13 @@ const NAV_LINKS = [
 
 type PortalNavProps = {
   statusLabel: string;
+  pathType?: "probate" | "administration";
 };
 
-export function PortalNav({ statusLabel }: PortalNavProps) {
+export function PortalNav({ statusLabel, pathType = "probate" }: PortalNavProps) {
   const pathname = usePathname();
   void statusLabel; // status handled elsewhere; keep prop for compatibility
+  const workspaceLabel = pathType === "administration" ? "Your guided court workspace" : "Your guided probate workspace";
   const normalizedPath = pathname ?? "";
 
   const isDocuments = normalizedPath === "/portal/documents" || normalizedPath.startsWith("/portal/documents/");
@@ -38,7 +40,7 @@ export function PortalNav({ statusLabel }: PortalNavProps) {
           </Link>
           <div className="leading-tight">
             <p className="text-sm font-semibold text-gray-900 sm:text-base">Portal</p>
-            <p className="text-xs text-gray-500">Your guided probate workspace</p>
+            <p className="text-xs text-gray-500">{workspaceLabel}</p>
           </div>
         </div>
         <nav className="flex items-center gap-4 text-sm font-medium">

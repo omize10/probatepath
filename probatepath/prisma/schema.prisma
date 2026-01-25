@@ -115,6 +115,7 @@ model Matter {
   flags                       MatterFlag[]
   intestateHeirs              IntestateHeir[]
   smsLogs                     SmsLog[]
+  milestoneConfirmations      MilestoneConfirmation[]
 }
 
 model MatterStepProgress {
@@ -1092,4 +1093,49 @@ model SmsLog {
   @@index([matterId])
   @@index([createdAt])
   @@map("SmsLog")
+}
+
+// ========================================
+// MILESTONE CONFIRMATIONS (User Error Prevention)
+// ========================================
+
+model MilestoneConfirmation {
+  id               String   @id @default(cuid())
+  matterId         String
+  milestoneType    String   // WILL_SEARCH_MAILED, P1_NOTICES_SENT, PROBATE_FILED, GRANT_RECEIVED
+  confirmationType String   // BUTTON, TYPE_TO_CONFIRM, CHECKLIST
+  confirmationData Json?    // { typedWord: "MAILED", checkedItems: [...] }
+  confirmedAt      DateTime @default(now())
+  ipAddress        String?
+  userAgent        String?
+  matter           Matter   @relation(fields: [matterId], references: [id], onDelete: Cascade)
+
+  @@index([matterId])
+  @@map("MilestoneConfirmation")
+}
+
+// ========================================
+// VOICEMAIL (Incoming Call Fallback)
+// ========================================
+
+model Voicemail {
+  id                  String    @id @default(cuid())
+  callSid             String    @map("call_sid")
+  callerPhone         String    @map("caller_phone")
+  recordingUrl        String?   @map("recording_url")
+  recordingSid        String?   @map("recording_sid")
+  durationSeconds     Int?      @map("duration_seconds")
+  transcription       String?   @db.Text
+  transcriptionStatus String?   @map("transcription_status")
+  reviewed            Boolean   @default(false)
+  reviewedAt          DateTime? @map("reviewed_at")
+  reviewedBy          String?   @map("reviewed_by")
+  notes               String?   @db.Text
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  @@index([callSid])
+  @@index([callerPhone])
+  @@index([createdAt])
+  @@index([reviewed])
+  @@map("voicemails")
 }

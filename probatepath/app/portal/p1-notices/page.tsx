@@ -52,7 +52,11 @@ export default async function P1NoticesPage() {
       : mailedAt
         ? "Wait 21 days after notices"
         : "Send P1 notices";
-  const recipientCount = matter.beneficiaries?.length ?? null;
+  // For administration (intestate) cases, use intestateHeirs; for probate, use beneficiaries
+  const recipientCount =
+    matter.pathType === "administration"
+      ? matter.intestateHeirs?.length ?? null
+      : matter.beneficiaries?.length ?? null;
   const percent =
     mailedAt && daysRemaining !== null ? Math.min(100, Math.max(0, Math.round(((21 - daysRemaining) / 21) * 100))) : 0;
 
@@ -135,6 +139,7 @@ export default async function P1NoticesPage() {
             packetUrl={packetUrl}
             recipientCount={recipientCount}
             showWillSearchWarning={!willSearchSent}
+            pathType={matter.pathType ?? "probate"}
             onSubmitAction={markNoticesSentAction}
           />
         )}

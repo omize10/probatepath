@@ -245,7 +245,7 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
             <div className="space-y-2">
               <h2 className="text-lg font-semibold text-gray-900">Hooray – your packet is ready.</h2>
               <p className="text-sm text-gray-700">
-                We’ve prepared your probate document packet based on your intake. Your next step is to start your will search and notices.
+                We've prepared your document packet based on your intake. Your next step is to start your will search and notices.
               </p>
             </div>
             <NeedHelp />
@@ -401,7 +401,7 @@ function Accordion() {
     },
     {
       title: "What are you doing behind the scenes?",
-      body: "We're reviewing your intake, assembling the right BC probate forms, and organizing them into a ready-to-sign packet.",
+      body: "We're reviewing your intake, assembling the right BC court forms, and organizing them into a ready-to-sign packet.",
     },
     {
       title: "Do I need to do anything now?",

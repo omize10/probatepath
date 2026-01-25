@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { Prisma } from "@prisma/client";
+import { Prisma, IntestateRelationship, RenunciationStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logAudit, logSecurityAudit } from "@/lib/audit";
 import { getServerAuth } from "@/lib/auth";
@@ -9,6 +9,7 @@ import { intakeDraftSchema } from "@/lib/intake/schema";
 import { ensureMatter } from "@/lib/matter/server";
 import { splitName } from "@/lib/name";
 import type { IntakeDraft } from "@/lib/intake/types";
+import type { IntestateHeirEntry, IntestateRelationshipType } from "@/lib/intake/case-blueprint";
 
 const SubmitSchema = z.object({
   clientKey: z.string().optional(),
@@ -69,6 +70,27 @@ function safeDate(value?: string): Date {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return new Date();
   return parsed;
+}
+
+function safeDateOrNull(value?: string): Date | null {
+  if (!value || value.trim() === "") return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed;
+}
+
+// Map intake relationship type to Prisma enum
+function mapIntestateRelationship(relationship: IntestateRelationshipType): IntestateRelationship {
+  const mapping: Record<IntestateRelationshipType, IntestateRelationship> = {
+    spouse: IntestateRelationship.SPOUSE,
+    child: IntestateRelationship.CHILD,
+    grandchild: IntestateRelationship.GRANDCHILD,
+    parent: IntestateRelationship.PARENT,
+    sibling: IntestateRelationship.SIBLING,
+    niece_nephew: IntestateRelationship.NIECE_NEPHEW,
+    other_relative: IntestateRelationship.OTHER_RELATIVE,
+  };
+  return mapping[relationship] || IntestateRelationship.OTHER_RELATIVE;
 }
 
 function normalizeDraft(raw: IntakeDraft): IntakeDraft {
@@ -360,6 +382,41 @@ export async function POST(request: Request) {
           hasWill: draftRecord.hadWill ?? null,
         },
       });
+    }
+
+    // For administration (intestate) cases, persist IntestateHeir records
+    if (pathType === "administration") {
+      const intestateHeirs = draft.data.estateIntake?.administration?.intestateHeirs || [];
+
+      // Delete existing heirs for this matter (in case of re-submission)
+      await tx.intestateHeir.deleteMany({ where: { matterId: matter.id } });
+
+      // Create new heir records
+      for (const heir of intestateHeirs as IntestateHeirEntry[]) {
+        const fullName = [heir.name.first, heir.name.last].filter(Boolean).join(" ") || "Unknown";
+
+        await tx.intestateHeir.create({
+          data: {
+            matterId: matter.id,
+            fullName,
+            relationship: mapIntestateRelationship(heir.relationship),
+            isApplicant: heir.isApplicant || false,
+            hasPriority: heir.isApplicant || false, // Applicant has priority by default
+            renunciationStatus: heir.isApplicant ? RenunciationStatus.NOT_NEEDED : RenunciationStatus.PENDING,
+            sharePercent: heir.sharePercent ? new Prisma.Decimal(heir.sharePercent) : null,
+            addressLine1: heir.address?.line1 || null,
+            addressLine2: heir.address?.line2 || null,
+            city: heir.address?.city || null,
+            province: heir.address?.region || null,
+            postalCode: heir.address?.postalCode || null,
+            country: heir.address?.country || "Canada",
+            isDeceased: heir.isDeceased || false,
+            deceasedAt: safeDateOrNull(heir.deceasedDate),
+          },
+        });
+      }
+
+      console.log(`[intake.submit] Created ${intestateHeirs.length} IntestateHeir records for matter ${matter.id}`);
     }
 
     await tx.intakeDraft.update({

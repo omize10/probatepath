@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
 import { ReceiptComparison } from "@/components/marketing/ReceiptComparison";
 import { CinematicTimeline } from "@/components/marketing/CinematicTimeline";
-import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { ScrollFade } from "@/components/scroll-fade";
 import { FAQAccordion } from "@/components/faq-accordion";
 
@@ -123,11 +122,9 @@ export default function HomePage() {
         <ReceiptComparison />
       </section>
 
-      {/* How It Works - Cinematic Timeline */}
+      {/* How It Works - Timeline */}
       <section id="how-it-works" className="relative left-1/2 w-screen -translate-x-1/2">
-        <SmoothScrollProvider>
-          <CinematicTimeline />
-        </SmoothScrollProvider>
+        <CinematicTimeline />
       </section>
 
       {/* Testimonials */}

@@ -378,11 +378,21 @@ export function ReceiptComparison() {
       ref={sectionRef}
       className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#111111] py-24 md:py-32"
     >
-      {/* Top fade from white */}
-      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent pointer-events-none" />
+      {/* Top fade from white - long and gradual */}
+      <div
+        className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, white 0%, rgba(255,255,255,0.8) 30%, rgba(255,255,255,0.3) 60%, transparent 100%)'
+        }}
+      />
 
-      {/* Bottom fade to white */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+      {/* Bottom fade to white - long and gradual */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to top, white 0%, rgba(255,255,255,0.8) 30%, rgba(255,255,255,0.3) 60%, transparent 100%)'
+        }}
+      />
 
       <div className="mx-auto max-w-6xl px-6 relative z-10">
         {/* Header */}

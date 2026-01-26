@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Check, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -222,6 +222,14 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
 
 // ProbateDesk Receipt Component
 function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
+  const currentDate = new Date().toLocaleDateString("en-CA", {
+    month: "long",
+    year: "numeric",
+  });
+
+  // Generate a pseudo-receipt number based on current date
+  const receiptNumber = `PD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000).padStart(5, '0')}`;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 100, scale: 0.9 }}
@@ -232,45 +240,88 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
       }
       transition={{ duration: 0.6, delay: 2.8, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -8, scale: 1.02 }}
-      className="relative w-full max-w-sm cursor-pointer"
+      className="relative w-full max-w-sm cursor-default"
     >
-      {/* Glow effect */}
-      <div className="absolute -inset-2 bg-emerald-500/20 rounded-lg blur-xl opacity-60" />
+      {/* Ambient pulsing glow - continuous animation */}
+      <motion.div
+        className="absolute -inset-3 rounded-xl pointer-events-none"
+        animate={{
+          boxShadow: [
+            "0 0 30px 8px rgba(13, 23, 38, 0.15), 0 0 60px 20px rgba(201, 162, 39, 0.08)",
+            "0 0 40px 12px rgba(13, 23, 38, 0.25), 0 0 80px 30px rgba(201, 162, 39, 0.15)",
+            "0 0 30px 8px rgba(13, 23, 38, 0.15), 0 0 60px 20px rgba(201, 162, 39, 0.08)",
+          ],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
 
-      {/* Paper */}
+      {/* Premium paper card */}
       <div
-        className="relative rounded-sm bg-white p-6 border border-gray-100"
+        className="relative rounded-lg overflow-hidden"
         style={{
+          background: "linear-gradient(to bottom, #ffffff 0%, #faf9f6 100%)",
           boxShadow:
-            "0 25px 50px -12px rgba(16, 185, 129, 0.25), 0 0 0 1px rgba(16, 185, 129, 0.1)",
+            "0 25px 50px -12px rgba(13, 23, 38, 0.25), 0 0 0 1px rgba(13, 23, 38, 0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
         }}
       >
+        {/* Subtle paper texture overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.025] pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          }}
+        />
+
+        {/* Corner flourish - top right */}
+        <div className="absolute top-0 right-0 w-16 h-16 opacity-[0.04] pointer-events-none">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M64 0C64 35.3 35.3 64 0 64" stroke="#0d1726" strokeWidth="1"/>
+            <path d="M64 16C64 42.5 42.5 64 16 64" stroke="#0d1726" strokeWidth="1"/>
+            <path d="M64 32C64 49.7 49.7 64 32 64" stroke="#0d1726" strokeWidth="1"/>
+          </svg>
+        </div>
+
         {/* Receipt content */}
-        <div className="relative space-y-5 text-gray-900">
-          {/* Logo/Header */}
+        <div className="relative p-6 space-y-5 text-gray-900">
+          {/* Logo/Header - ProbateDesk.com */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
             transition={{ delay: 3.0 }}
-            className="text-center pb-4 border-b border-gray-200"
+            className="text-center pb-4 border-b border-[#d6d0c6]"
           >
-            <div className="inline-block px-4 py-2 bg-[#111111] rounded-lg mb-2">
-              <span className="text-white font-semibold text-lg">
+            <div className="inline-block px-5 py-2.5 bg-[#0d1726] rounded-lg shadow-md">
+              <span className="text-white font-semibold text-lg tracking-tight">
                 ProbateDesk
               </span>
-              <span className="text-emerald-400">.com</span>
+              <span className="text-[#c9a227] font-semibold text-lg">.com</span>
             </div>
           </motion.div>
 
-          {/* Receipt label */}
-          <motion.p
+          {/* Receipt metadata */}
+          <motion.div
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 3.1 }}
-            className="text-xs font-semibold text-gray-500 tracking-widest uppercase"
+            className="flex justify-between items-baseline"
           >
-            Receipt
-          </motion.p>
+            <div>
+              <p className="text-[10px] font-semibold text-[#445266] tracking-[0.25em] uppercase">
+                Official Receipt
+              </p>
+              <p className="text-[10px] text-[#6b7280] mt-0.5 font-mono">
+                {receiptNumber}
+              </p>
+            </div>
+            <p className="text-[11px] text-[#6b7280]">{currentDate}</p>
+          </motion.div>
+
+          {/* Divider */}
+          <div className="border-t border-[#d6d0c6] border-dashed" />
 
           {/* Main item */}
           <motion.div
@@ -279,89 +330,113 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             transition={{ delay: 3.2 }}
             className="space-y-3"
           >
-            <h4 className="text-lg font-semibold text-gray-900">
+            <h4 className="text-lg font-semibold text-[#0d1726]">
               BC Probate Document Package
             </h4>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-500" />
+            <ul className="space-y-2.5 text-sm text-[#374151]">
+              <li className="flex items-center gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#0d1726]" />
                 Court-ready P1, P2, P3 forms
               </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-500" />
+              <li className="flex items-center gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#0d1726]" />
                 Specialist review
               </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-500" />
+              <li className="flex items-center gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#0d1726]" />
                 Filing guidance included
               </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-500" />
+              <li className="flex items-center gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#0d1726]" />
                 Support when you need it
               </li>
             </ul>
           </motion.div>
 
-          {/* Price */}
+          {/* Divider */}
+          <div className="border-t border-[#d6d0c6]" />
+
+          {/* Total - single display */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ delay: 3.4 }}
-            className="text-right"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+            transition={{ delay: 3.4, type: "spring", stiffness: 200 }}
+            className="text-center py-2"
           >
-            <span className="text-3xl font-bold text-gray-900">$799.00</span>
+            <p className="text-[10px] text-[#6b7280] uppercase tracking-[0.2em] mb-1">Total</p>
+            <p className="text-3xl font-bold text-[#0d1726]">$799.00</p>
+            <p className="text-[10px] text-[#9ca3af] mt-1">CAD + applicable taxes</p>
           </motion.div>
 
           {/* Divider */}
-          <div className="border-t border-gray-200" />
+          <div className="border-t border-[#d6d0c6]" />
 
-          {/* Total */}
+          {/* Embossed PAID seal - softer edges with depth */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ delay: 3.5 }}
-            className="flex justify-between items-center text-lg font-bold"
-          >
-            <span>TOTAL:</span>
-            <span className="text-emerald-600">$799.00</span>
-          </motion.div>
-
-          {/* Divider */}
-          <div className="border-t border-gray-200" />
-
-          {/* Paid stamp */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0, rotate: -15 }}
+            initial={{ opacity: 0, scale: 1.3, y: -30 }}
             animate={
               isInView
-                ? { opacity: 1, scale: 1, rotate: 0 }
-                : { opacity: 0, scale: 0, rotate: -15 }
+                ? { opacity: 1, scale: 1, y: 0 }
+                : { opacity: 0, scale: 1.3, y: -30 }
             }
             transition={{
               delay: 3.7,
               type: "spring",
-              stiffness: 300,
-              damping: 15,
+              stiffness: 400,
+              damping: 20,
             }}
-            className="flex items-center justify-center gap-2 py-2"
+            className="flex items-center justify-center py-3"
           >
-            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full border-2 border-emerald-500 border-dashed">
-              <Check className="w-5 h-5 text-emerald-600" />
-              <span className="font-bold text-emerald-600 tracking-wide">
-                PAID
-              </span>
+            {/* Outer ring for depth */}
+            <div
+              className="relative p-1 rounded-full"
+              style={{
+                background: "linear-gradient(145deg, rgba(13,23,38,0.1) 0%, rgba(201,162,39,0.15) 100%)",
+              }}
+            >
+              {/* Main seal with softer edges */}
+              <motion.div
+                className="w-20 h-20 rounded-full flex items-center justify-center"
+                style={{
+                  background: "linear-gradient(145deg, #1c2434 0%, #0d1726 40%, #0a1220 100%)",
+                  boxShadow: "inset 0 3px 6px rgba(255,255,255,0.12), inset 0 -3px 6px rgba(0,0,0,0.25), 0 6px 20px rgba(13,23,38,0.5), 0 2px 8px rgba(201,162,39,0.2)",
+                }}
+                animate={{
+                  boxShadow: [
+                    "inset 0 3px 6px rgba(255,255,255,0.12), inset 0 -3px 6px rgba(0,0,0,0.25), 0 6px 20px rgba(13,23,38,0.5), 0 2px 8px rgba(201,162,39,0.15)",
+                    "inset 0 3px 6px rgba(255,255,255,0.15), inset 0 -3px 6px rgba(0,0,0,0.25), 0 8px 25px rgba(13,23,38,0.6), 0 4px 12px rgba(201,162,39,0.25)",
+                    "inset 0 3px 6px rgba(255,255,255,0.12), inset 0 -3px 6px rgba(0,0,0,0.25), 0 6px 20px rgba(13,23,38,0.5), 0 2px 8px rgba(201,162,39,0.15)",
+                  ],
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 4,
+                }}
+              >
+                <div className="text-center">
+                  <div className="text-sm font-bold tracking-[0.25em] text-white/95">PAID</div>
+                  <div className="text-[8px] tracking-[0.15em] text-[#c9a227]/70 mt-0.5">IN FULL</div>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
 
-          {/* Thank you */}
-          <motion.p
+          {/* Thank you / Footer */}
+          <motion.div
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 3.9 }}
-            className="text-center text-sm text-gray-500"
+            className="text-center space-y-1 pt-2 border-t border-[#d6d0c6]"
           >
-            Thank you for choosing ProbateDesk.
-          </motion.p>
+            <p className="text-sm text-[#6b7280]">
+              Thank you for choosing ProbateDesk.
+            </p>
+            <p className="text-[10px] text-[#9ca3af]">
+              Questions? hello@probatedesk.ca
+            </p>
+          </motion.div>
         </div>
       </div>
     </motion.div>

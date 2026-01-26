@@ -292,7 +292,7 @@ function MailingCard({
             </span>
           )}
           <svg
-            className={`h-4 w-4 text-gray-400 transition ${expanded ? "rotate-180" : ""}`}
+            className={`h-4 w-4 text-gray-500 transition ${expanded ? "rotate-180" : ""}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

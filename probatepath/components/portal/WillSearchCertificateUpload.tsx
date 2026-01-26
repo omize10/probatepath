@@ -141,7 +141,7 @@ export function WillSearchCertificateUpload({
           <span
             className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
               uploading
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                ? "bg-gray-200 text-gray-600 cursor-not-allowed"
                 : "bg-amber-600 text-white hover:bg-amber-700"
             }`}
           >

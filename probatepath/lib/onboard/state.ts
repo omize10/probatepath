@@ -268,9 +268,8 @@ export function getNextStep(state: OnboardState): string {
   // Step 4: Phone
   if (!state.phone) return "/onboard/phone";
 
-  // Step 5: Call choice
+  // Step 5: Call choice (calls happen instantly via Retell API, no scheduling)
   if (state.scheduledCall === undefined) return "/onboard/call-choice";
-  if (state.scheduledCall && !state.callDatetime) return "/onboard/schedule";
 
   // Fit questions
   if (!state.fitAnswers || !isFitComplete(state.fitAnswers)) return "/onboard/screening";

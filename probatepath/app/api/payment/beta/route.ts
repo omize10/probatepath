@@ -43,12 +43,10 @@ export async function POST(request: NextRequest) {
     let selectedTier = "basic";
 
     if (prismaEnabled) {
-      // Verify tier selection exists (with or without userId check for beta)
+      // Verify tier selection exists
       const tierSelection = await prisma.tierSelection.findFirst({
         where: {
           id: tierSelectionId,
-          // BETA: Only check userId if it's not a mock ID
-          ...(userId.startsWith("beta-test-user") ? {} : { userId }),
         },
       });
 
@@ -57,7 +55,12 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Tier selection not found" }, { status: 404 });
       }
 
+      // BETA: Use the userId from the tier selection (the user was created there)
+      // This ensures we use the same user that was created during tier selection
+      const actualUserId = tierSelection.userId;
       selectedTier = tierSelection.selectedTier;
+
+      console.log("[payment/beta] Using userId from tierSelection:", actualUserId);
 
       // Store partial card number (last 4 digits only) for reference
       const cardNumberPartial = cardNumber ? `****${cardNumber.slice(-4)}` : null;
@@ -65,7 +68,7 @@ export async function POST(request: NextRequest) {
       // Create beta payment record
       await prisma.betaPayment.create({
         data: {
-          userId,
+          userId: actualUserId,
           tierSelectionId,
           cardNumberPartial,
           cardholderName: cardholderName || null,
@@ -78,9 +81,9 @@ export async function POST(request: NextRequest) {
       });
 
       // Update user's intake method based on tier (skip for mock beta users)
-      if (!userId.startsWith("beta-test-user")) {
+      if (!actualUserId.startsWith("beta-test-user")) {
         await prisma.user.update({
-          where: { id: userId },
+          where: { id: actualUserId },
           data: {
             intakeMethod: selectedTier === "basic" ? "manual" : "callback",
           },

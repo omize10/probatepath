@@ -57,6 +57,21 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // BETA: Create temporary user if using mock ID (foreign key requires user to exist)
+    if (userId.startsWith("beta-test-user")) {
+      await prisma.user.upsert({
+        where: { id: userId },
+        update: {}, // Do nothing if exists
+        create: {
+          id: userId,
+          email: `${userId}@beta.probatedesk.com`,
+          name: "Beta Test User",
+          created_via: "beta_flow",
+        },
+      });
+      console.log("[tier/select] BETA: Created temporary user:", userId);
+    }
+
     // Create tier selection record (store as legacy tier name)
     const tierSelection = await prisma.tierSelection.create({
       data: {

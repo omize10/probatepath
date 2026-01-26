@@ -31,12 +31,12 @@ function Logo({ className }: { className?: string }) {
 
 const NAV_LINKS = [
   { href: "/how-it-works", label: "How it works" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/pricing", label: "Pricing Tiers" },
   { href: "/info", label: "About probate" },
   { href: "/faqs", label: "FAQs" },
   { href: "/legal", label: "Legal" },
   { href: "/contact", label: "Contact" },
-  { href: "/portal", label: "My portal" },
+  { href: "/portal", label: "My Desk" },
 ];
 
 function useScrolled(threshold = 12) {
@@ -62,7 +62,7 @@ export function Navbar() {
   const pathname = usePathname();
   const scrolled = useScrolled();
   const portalHref = isAuthed ? "/portal" : `/login?next=${encodeURIComponent("/portal")}`;
-  const actionLabel = isAuthed ? "My portal" : "Sign in";
+  const actionLabel = isAuthed ? "My Desk" : "Sign in";
 
   return (
     <header
@@ -81,7 +81,7 @@ export function Navbar() {
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
           {NAV_LINKS.map(({ href, label }) => {
-            const targetHref = label === "My portal" ? portalHref : href;
+            const targetHref = label === "My Desk" ? portalHref : href;
             const isActive = pathname === href || (pathname ?? "").startsWith(href);
             return (
               <Link
@@ -142,7 +142,7 @@ export function Navbar() {
 
             <div className="mt-6 space-y-3">
               {NAV_LINKS.map(({ href, label }) => {
-                const targetHref = label === "My portal" ? portalHref : href;
+                const targetHref = label === "My Desk" ? portalHref : href;
                 const isActive = pathname === href || (pathname ?? "").startsWith(href);
                 return (
                   <SheetClose asChild key={href}>

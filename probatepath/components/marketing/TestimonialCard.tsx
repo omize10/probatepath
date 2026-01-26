@@ -12,7 +12,10 @@ export function TestimonialCard({ testimonial, className }: TestimonialCardProps
   return (
     <article
       className={cn(
-        "flex h-full flex-col justify-between rounded-2xl border border-[color:var(--border-muted)] bg-white/90 p-6 text-left shadow-[0_30px_80px_-70px_rgba(15,26,42,0.45)] transition hover:-translate-y-1 hover:shadow-[0_25px_70px_-65px_rgba(15,26,42,0.5)]",
+        "flex h-full flex-col justify-between rounded-2xl border border-[color:var(--border-muted)] bg-white p-6 text-left",
+        "shadow-[0_20px_50px_-20px_rgba(15,26,42,0.25)]",
+        "transition-all duration-300 ease-out",
+        "hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_30px_60px_-15px_rgba(15,26,42,0.3)]",
         className,
       )}
       aria-label={`Testimonial from ${name}`}

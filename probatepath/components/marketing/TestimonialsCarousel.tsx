@@ -48,7 +48,7 @@ export function TestimonialsCarousel({
       lastTime = timestamp;
 
       if (!isHovered) {
-        const pixelsPerMs = 0.05; // tuned for smooth, readable speed
+        const pixelsPerMs = 0.08; // faster, more engaging speed
         const increment = delta * pixelsPerMs;
         container.scrollLeft += increment;
 
@@ -104,7 +104,7 @@ export function TestimonialsCarousel({
       <div
         ref={containerRef}
         className={cn(
-          "group flex gap-4 overflow-x-auto rounded-3xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)]/90 p-4 shadow-[0_36px_120px_-90px_rgba(14,26,42,0.55)] md:p-6",
+          "group flex gap-5 overflow-x-auto px-6 py-4 md:px-8",
           "snap-x snap-mandatory md:snap-none",
           "scroll-smooth",
         )}

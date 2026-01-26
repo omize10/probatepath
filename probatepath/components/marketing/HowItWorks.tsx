@@ -148,7 +148,13 @@ export function HowItWorks() {
   return (
     <section className="space-y-10">
       {/* Header */}
-      <div className="space-y-4 text-center">
+      <motion.div
+        className="space-y-4 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">
           How It Works
         </p>
@@ -158,33 +164,42 @@ export function HowItWorks() {
         <p className="mx-auto max-w-2xl text-base text-[color:var(--muted-ink)]">
           Every tier gets the same court-ready documents. Pick the service level that fits your needs.
         </p>
-      </div>
+      </motion.div>
 
       {/* Tier Tabs */}
-      <div className="flex justify-center">
+      <motion.div
+        className="flex justify-center"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         <div className="inline-flex rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-1.5 shadow-sm">
           {tierOrder.map((tierKey) => {
             const tier = tiers[tierKey];
             const isActive = activeTier === tierKey;
             return (
-              <button
+              <motion.button
                 key={tierKey}
                 onClick={() => setActiveTier(tierKey)}
-                className={`relative rounded-xl px-5 py-3 text-center transition-all duration-300 ${
+                className={`relative rounded-xl px-5 py-3 text-center transition-colors duration-300 ${
                   isActive
                     ? "bg-[color:var(--brand)] text-white shadow-md"
                     : "text-[color:var(--muted-ink)] hover:text-[color:var(--brand)]"
                 }`}
+                whileHover={{ scale: isActive ? 1 : 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
                 <span className="block text-sm font-semibold">{tier.name}</span>
                 <span className={`block text-xs ${isActive ? "text-white/80" : "text-[color:var(--muted-ink)]"}`}>
                   {tier.price}
                 </span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
-      </div>
+      </motion.div>
 
       {/* Tier Tagline */}
       <AnimatePresence mode="wait">
@@ -203,10 +218,24 @@ export function HowItWorks() {
       {/* Timeline */}
       <div className="relative mx-auto max-w-4xl">
         {/* Desktop Timeline Line */}
-        <div className="absolute left-8 top-0 hidden h-full w-0.5 bg-gradient-to-b from-[color:var(--brand)] via-[color:var(--accent)] to-[color:var(--brand)] md:left-1/2 md:-translate-x-1/2 md:block" />
+        <motion.div
+          className="absolute left-8 top-0 hidden h-full w-0.5 bg-gradient-to-b from-[color:var(--brand)] via-[color:var(--accent)] to-[color:var(--brand)] md:left-1/2 md:-translate-x-1/2 md:block"
+          initial={{ scaleY: 0 }}
+          whileInView={{ scaleY: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          style={{ originY: 0 }}
+        />
 
         {/* Mobile Timeline Line */}
-        <div className="absolute left-8 top-0 block h-full w-0.5 bg-gradient-to-b from-[color:var(--brand)] via-[color:var(--accent)] to-[color:var(--brand)] md:hidden" />
+        <motion.div
+          className="absolute left-8 top-0 block h-full w-0.5 bg-gradient-to-b from-[color:var(--brand)] via-[color:var(--accent)] to-[color:var(--brand)] md:hidden"
+          initial={{ scaleY: 0 }}
+          whileInView={{ scaleY: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          style={{ originY: 0 }}
+        />
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -228,15 +257,35 @@ export function HowItWorks() {
                 }`}
               >
                 {/* Step Number Circle */}
-                <div className="relative z-10 flex h-16 w-16 flex-none items-center justify-center rounded-full border-4 border-white bg-[color:var(--brand)] text-white shadow-lg md:absolute md:left-1/2 md:-translate-x-1/2">
+                <motion.div
+                  className="relative z-10 flex h-16 w-16 flex-none items-center justify-center rounded-full border-4 border-white bg-[color:var(--brand)] text-white shadow-lg md:absolute md:left-1/2 md:-translate-x-1/2"
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{
+                    delay: index * 0.1 + 0.2,
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20
+                  }}
+                  whileHover={{
+                    scale: 1.1,
+                    boxShadow: "0 0 20px rgba(var(--brand-rgb), 0.4)"
+                  }}
+                >
                   <span className="text-lg font-bold">{step.step}</span>
-                </div>
+                </motion.div>
 
                 {/* Content Card */}
-                <div
-                  className={`flex-1 rounded-2xl border border-[color:var(--border-muted)] bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md md:max-w-[calc(50%-4rem)] ${
+                <motion.div
+                  className={`flex-1 rounded-2xl border border-[color:var(--border-muted)] bg-white p-5 shadow-sm md:max-w-[calc(50%-4rem)] ${
                     index % 2 === 0 ? "md:mr-auto md:text-right" : "md:ml-auto md:text-left"
                   }`}
+                  whileHover={{
+                    scale: 1.02,
+                    y: -4,
+                    boxShadow: "0 20px 40px -15px rgba(14, 26, 42, 0.15)"
+                  }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <h3 className="text-base font-semibold text-[color:var(--brand)]">
                     {step.title}
@@ -244,7 +293,7 @@ export function HowItWorks() {
                   <p className="mt-1 text-sm text-[color:var(--muted-ink)]">
                     {step.description}
                   </p>
-                </div>
+                </motion.div>
 
                 {/* Spacer for desktop layout */}
                 <div className="hidden flex-1 md:block" />
@@ -262,34 +311,55 @@ export function HowItWorks() {
         viewport={{ once: true }}
         transition={{ delay: 0.6, duration: 0.4 }}
       >
-        <Button asChild size="lg" className="shadow-lg">
-          <Link href="/onboard/name">
-            {currentTier.cta}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Button asChild size="lg" className="shadow-lg">
+            <Link href="/onboard/name">
+              {currentTier.cta}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </motion.div>
         <p className="text-xs text-[color:var(--muted-ink)]">
           *Court probate fees are set by BC government and paid separately
         </p>
       </motion.div>
 
       {/* Feature Comparison */}
-      <div className="mx-auto max-w-3xl rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6">
+      <motion.div
+        className="mx-auto max-w-3xl rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-6"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
         <h3 className="mb-4 text-center text-sm font-semibold uppercase tracking-wide text-[color:var(--slate)]">
           What&apos;s Included
         </h3>
         <div className="grid gap-4 text-sm md:grid-cols-3">
-          {tierOrder.map((tierKey) => {
+          {tierOrder.map((tierKey, idx) => {
             const tier = tiers[tierKey];
             const isActive = activeTier === tierKey;
             return (
-              <div
+              <motion.div
                 key={tierKey}
-                className={`rounded-xl p-4 transition-all duration-300 ${
+                className={`cursor-pointer rounded-xl p-4 transition-colors duration-300 ${
                   isActive
                     ? "bg-[color:var(--brand)] text-white"
                     : "bg-white text-[color:var(--muted-ink)]"
                 }`}
+                onClick={() => setActiveTier(tierKey)}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1, duration: 0.4 }}
+                whileHover={{
+                  scale: 1.03,
+                  boxShadow: isActive ? "0 10px 30px -10px rgba(var(--brand-rgb), 0.3)" : "0 10px 30px -10px rgba(14, 26, 42, 0.1)"
+                }}
+                whileTap={{ scale: 0.98 }}
               >
                 <p className={`font-semibold ${isActive ? "text-white" : "text-[color:var(--brand)]"}`}>
                   {tier.name}
@@ -302,18 +372,25 @@ export function HowItWorks() {
                     "Filing checklist",
                     tierKey === "essentials" ? "Email support" : "Phone support",
                     tierKey === "concierge" ? "We file for you" : "Filing guide included",
-                  ].map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
+                  ].map((feature, featureIdx) => (
+                    <motion.li
+                      key={featureIdx}
+                      className="flex items-start gap-2"
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1 + featureIdx * 0.05, duration: 0.3 }}
+                    >
                       <Check className={`mt-0.5 h-3.5 w-3.5 flex-none ${isActive ? "text-white" : "text-green-600"}`} />
                       <span className="text-xs">{feature}</span>
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             );
           })}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

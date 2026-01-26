@@ -90,8 +90,7 @@ export default function HomePage() {
                   <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Flexible service tiers</p>
                 </div>
                 <div className="space-y-1 text-white">
-                  <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Court Ready in 3 Days<Link href="/turnaround" className="text-sm align-super hover:underline">*</Link></p>
-                  <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">After intake completion</p>
+                  <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Court Ready in 3 Days<Link href="/turnaround" className="text-[0.6rem] align-super hover:underline">*</Link></p>
                 </div>
               </div>
             </div>

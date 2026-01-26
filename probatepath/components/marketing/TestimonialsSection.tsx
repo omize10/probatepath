@@ -13,24 +13,26 @@ export function TestimonialsSection({ className }: TestimonialsSectionProps) {
     <section
       id="testimonials"
       className={cn(
-        "relative overflow-hidden rounded-[32px] border border-[color:var(--border-muted)] bg-gradient-to-b from-white via-white to-[#f5f7fb]",
-        "p-8 shadow-[0_42px_120px_-80px_rgba(14,26,42,0.35)] sm:p-12",
+        "relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-gradient-to-b from-white via-white to-[#f5f7fb]",
+        "py-16 sm:py-20",
         className,
       )}
       aria-labelledby="testimonials-heading"
     >
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 text-center">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 text-center">
         <div className="space-y-3">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">
+            Testimonials
+          </p>
           <h2
             id="testimonials-heading"
             className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl"
           >
             What past BC executors say
           </h2>
-          <p className="text-base leading-relaxed text-[color:var(--muted-ink)]">
-            These are typical comments from people who used ProbateDesk to go from “I have no idea how probate works”
-            to having a complete court filing ready to review. Names and details are anonymized. This feedback is
-            general information only and is not legal advice.
+          <p className="mx-auto max-w-3xl text-base leading-relaxed text-[color:var(--muted-ink)]">
+            These are typical comments from people who used ProbateDesk to go from &quot;I have no idea how probate works&quot;
+            to having a complete court filing ready to review. Names and details are anonymized.
           </p>
         </div>
       </div>
@@ -38,8 +40,8 @@ export function TestimonialsSection({ className }: TestimonialsSectionProps) {
       <div className="mt-10 space-y-6">
         <TestimonialsCarousel testimonials={testimonials} motionEnabled />
 
-        <p className="text-center text-xs text-[color:var(--slate)]">
-          ProbateDesk is not a law firm. We do not give legal advice. If you are unsure about your situation, you should speak with a BC lawyer.
+        <p className="mx-auto max-w-4xl px-6 text-center text-xs text-[color:var(--slate)]">
+          ProbateDesk is a technology service that understands BC probate. We partner with lawyers but do not provide legal advice. For complex matters, we recommend speaking with a licensed BC lawyer.
         </p>
       </div>
     </section>

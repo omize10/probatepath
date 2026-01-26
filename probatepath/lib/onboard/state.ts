@@ -14,8 +14,12 @@ export interface ScreeningAnswers {
 export type GrantType = "probate" | "administration";
 export type Tier = "essentials" | "guided" | "full_service";
 
+export type ReferralSource = "funeral_home" | "google" | "friend" | "other" | null;
+
 export interface OnboardState {
   name?: string;
+  referralSource?: ReferralSource;
+  referralFuneralHome?: string;
   email?: string;
   phone?: string;
   screening?: ScreeningAnswers;
@@ -182,6 +186,7 @@ export const TIER_INFO = {
  */
 export function getNextStep(state: OnboardState): string {
   if (!state.name) return "/onboard/name";
+  if (state.referralSource === undefined) return "/onboard/referral";
   if (!state.email) return "/onboard/email";
   if (!state.phone) return "/onboard/phone";
   if (!state.aiCallId) return "/onboard/call";
@@ -197,6 +202,7 @@ export function getNextStep(state: OnboardState): string {
 export function getProgress(currentStep: string): number {
   const steps = [
     "/onboard/name",
+    "/onboard/referral",
     "/onboard/email",
     "/onboard/phone",
     "/onboard/call",

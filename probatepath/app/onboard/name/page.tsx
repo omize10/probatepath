@@ -24,7 +24,7 @@ export default function OnboardNamePage() {
 
     setIsLoading(true);
     saveOnboardState({ name: name.trim() });
-    router.push("/onboard/email");
+    router.push("/onboard/referral");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

@@ -322,7 +322,7 @@ body::after {
 }
 
 .cinematic-scroll::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #111111;
 }
 
 .cinematic-scroll::-webkit-scrollbar-thumb {

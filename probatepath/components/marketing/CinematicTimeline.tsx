@@ -147,7 +147,7 @@ const tiers: Record<TierKey, TierData> = {
 
 const tierOrder: TierKey[] = ["essentials", "guided", "concierge"];
 
-// Progress Bar Component - Subtle slate colors
+// Progress Bar Component - Pure gray colors (no blue)
 function ProgressBar({
   containerRef,
   totalSteps,
@@ -167,9 +167,9 @@ function ProgressBar({
   });
 
   return (
-    <div className="fixed top-[72px] left-0 right-0 z-40 h-0.5 bg-slate-800/50 backdrop-blur-sm">
+    <div className="fixed top-[72px] left-0 right-0 z-40 h-0.5 bg-[#1A1A1A]/50 backdrop-blur-sm">
       <motion.div
-        className="h-full bg-slate-500 origin-left"
+        className="h-full bg-[#6B7280] origin-left"
         style={{ scaleX }}
       />
       {/* Step dots */}
@@ -177,12 +177,12 @@ function ProgressBar({
         {Array.from({ length: totalSteps }).map((_, i) => (
           <motion.div
             key={i}
-            className="w-1.5 h-1.5 rounded-full bg-slate-700 transition-colors duration-300"
+            className="w-1.5 h-1.5 rounded-full bg-[#374151] transition-colors duration-300"
             style={{
               backgroundColor: useTransform(
                 scrollYProgress,
                 [i / totalSteps, (i + 0.5) / totalSteps],
-                ["#334155", "#64748b"]
+                ["#374151", "#6B7280"]
               ),
             }}
           />
@@ -192,7 +192,7 @@ function ProgressBar({
   );
 }
 
-// Full Screen Step Component - Professional, muted design
+// Full Screen Step Component - Professional, pure gray design
 function FullScreenStep({
   step,
   index,
@@ -234,7 +234,7 @@ function FullScreenStep({
   return (
     <section
       ref={ref}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-900"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#111111]"
     >
       {/* Subtle grid background */}
       <div
@@ -257,14 +257,14 @@ function FullScreenStep({
       >
         {/* The card - clean, professional */}
         <motion.div
-          className="relative bg-slate-800/80 backdrop-blur-sm rounded-2xl p-10 md:p-16 border border-slate-700/50"
+          className="relative bg-[#1A1A1A]/80 backdrop-blur-sm rounded-2xl p-10 md:p-16 border border-[#374151]/50"
           style={{
             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)",
           }}
           whileHover={{ y: -4 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
         >
-          {/* Step number - Dark slate circle, NOT bright teal */}
+          {/* Step number - Dark gray circle, NO blue */}
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={
@@ -280,7 +280,7 @@ function FullScreenStep({
             }}
             className="absolute -top-8 -left-8 md:-top-10 md:-left-10"
           >
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-slate-700 border-2 border-slate-600 flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#374151] border-2 border-[#4B5563] flex items-center justify-center shadow-lg">
               <span className="text-2xl md:text-3xl font-bold text-white">
                 {step.number}
               </span>
@@ -318,7 +318,7 @@ function FullScreenStep({
               damping: 18,
               delay: 0.3,
             }}
-            className="text-lg text-slate-300 text-center max-w-xl mx-auto"
+            className="text-lg text-gray-300 text-center max-w-xl mx-auto"
           >
             {step.description}
           </motion.p>
@@ -328,7 +328,7 @@ function FullScreenStep({
             initial={{ scaleX: 0 }}
             animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-10 h-px bg-slate-600/50 rounded-full origin-center max-w-xs mx-auto"
+            className="mt-10 h-px bg-[#4B5563]/50 rounded-full origin-center max-w-xs mx-auto"
           />
 
           {/* Step indicator */}
@@ -336,7 +336,7 @@ function FullScreenStep({
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-center text-slate-500 mt-4 text-sm"
+            className="text-center text-gray-500 mt-4 text-sm"
           >
             Step {step.number} of {totalSteps}
           </motion.p>
@@ -377,7 +377,7 @@ function FullScreenStep({
             repeatType: "reverse",
             duration: 1.5,
           }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-slate-500 flex flex-col items-center gap-2"
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-500 flex flex-col items-center gap-2"
         >
           <span className="text-sm">Scroll to continue</span>
           <svg
@@ -406,16 +406,16 @@ export function CinematicTimeline() {
   const currentTier = tiers[activeTier];
 
   return (
-    <div className="relative bg-slate-900">
+    <div className="relative bg-[#111111]">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 py-6">
+      <div className="sticky top-0 z-50 bg-[#111111]/95 backdrop-blur-xl border-b border-[#1A1A1A] py-6">
         <div className="mx-auto max-w-6xl px-6">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-6"
           >
-            <p className="text-xs font-semibold tracking-[4px] text-slate-400 uppercase mb-2">
+            <p className="text-xs font-semibold tracking-[4px] text-gray-400 uppercase mb-2">
               How It Works
             </p>
             <h2 className="text-2xl md:text-3xl font-semibold text-white">
@@ -423,9 +423,9 @@ export function CinematicTimeline() {
             </h2>
           </motion.div>
 
-          {/* Tier Tabs - Professional, muted */}
+          {/* Tier Tabs - Professional, pure gray */}
           <div className="flex justify-center">
-            <div className="relative inline-flex rounded-xl border border-slate-700 bg-slate-800/50 p-1">
+            <div className="relative inline-flex rounded-xl border border-[#374151] bg-[#1A1A1A]/50 p-1">
               {/* Sliding indicator */}
               <motion.div
                 className="absolute top-1 bottom-1 rounded-lg bg-emerald-600"
@@ -447,14 +447,14 @@ export function CinematicTimeline() {
                   >
                     <span
                       className={`block text-sm font-medium ${
-                        isActive ? "text-white" : "text-slate-400"
+                        isActive ? "text-white" : "text-gray-400"
                       }`}
                     >
                       {tier.name}
                     </span>
                     <span
                       className={`block text-xs ${
-                        isActive ? "text-white/80" : "text-slate-500"
+                        isActive ? "text-white/80" : "text-gray-500"
                       }`}
                     >
                       {tier.price}
@@ -470,7 +470,7 @@ export function CinematicTimeline() {
             key={activeTier}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center text-sm text-slate-400 mt-4"
+            className="text-center text-sm text-gray-400 mt-4"
           >
             {currentTier.tagline}
           </motion.p>
@@ -498,8 +498,8 @@ export function CinematicTimeline() {
       </div>
 
       {/* Footer Note */}
-      <div className="bg-slate-900 py-8 text-center border-t border-slate-800">
-        <p className="text-xs text-slate-500">
+      <div className="bg-[#111111] py-8 text-center border-t border-[#1A1A1A]">
+        <p className="text-xs text-gray-500">
           *Court probate fees are set by BC government and paid separately
         </p>
       </div>

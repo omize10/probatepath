@@ -254,7 +254,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             transition={{ delay: 3.0 }}
             className="text-center pb-4 border-b border-gray-200"
           >
-            <div className="inline-block px-4 py-2 bg-slate-900 rounded-lg mb-2">
+            <div className="inline-block px-4 py-2 bg-[#111111] rounded-lg mb-2">
               <span className="text-white font-semibold text-lg">
                 ProbateDesk
               </span>
@@ -376,7 +376,7 @@ export function ReceiptComparison() {
   return (
     <section
       ref={sectionRef}
-      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 py-24 md:py-32"
+      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-gradient-to-b from-[#111111] via-[#111111] to-[#0A0A0A] py-24 md:py-32"
     >
       <div className="mx-auto max-w-6xl px-6">
         {/* Header */}
@@ -386,13 +386,13 @@ export function ReceiptComparison() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-xs font-semibold uppercase tracking-[4px] text-slate-400 mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[4px] text-gray-400 mb-4">
             The Real Cost
           </p>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Where does your money actually go?
           </h2>
-          <p className="text-lg text-slate-400 max-w-xl mx-auto">
+          <p className="text-lg text-gray-400 max-w-xl mx-auto">
             The same court forms. Very different bills.
           </p>
         </motion.div>
@@ -427,7 +427,7 @@ export function ReceiptComparison() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 4.4 }}
-          className="text-center text-xs text-slate-500 mt-8 max-w-xl mx-auto"
+          className="text-center text-xs text-gray-500 mt-8 max-w-xl mx-auto"
         >
           *Lawyer fees based on industry surveys of BC probate services. Actual
           costs vary. ProbateDesk pricing is fixed with no hidden fees.

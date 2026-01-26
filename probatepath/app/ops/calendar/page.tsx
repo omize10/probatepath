@@ -515,7 +515,7 @@ export default function OpsCalendarPage() {
                         ) : available ? (
                           <Check className="h-4 w-4" />
                         ) : (
-                          <X className="h-4 w-4 opacity-30" />
+                          <X className="h-4 w-4 opacity-50" />
                         )}
                       </button>
                     );

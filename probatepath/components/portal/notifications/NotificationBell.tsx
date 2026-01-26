@@ -181,7 +181,7 @@ function NotificationItem({
   const content = (
     <div className={`flex items-start gap-3 px-4 py-3 transition ${isUnread ? "bg-blue-50/50" : "hover:bg-gray-50"}`}>
       <div className="shrink-0 mt-0.5">
-        <svg className={`h-4 w-4 ${isUnread ? "text-[color:var(--brand)]" : "text-gray-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className={`h-4 w-4 ${isUnread ? "text-[color:var(--brand)]" : "text-gray-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={iconPath} />
         </svg>
       </div>
@@ -190,7 +190,7 @@ function NotificationItem({
           {notification.title}
         </p>
         <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{notification.body}</p>
-        <p className="text-[10px] text-gray-400 mt-1">{timeAgo(notification.createdAt)}</p>
+        <p className="text-[10px] text-gray-600 mt-1">{timeAgo(notification.createdAt)}</p>
       </div>
       {isUnread && <div className="h-2 w-2 rounded-full bg-[color:var(--brand)] shrink-0 mt-1.5" />}
     </div>

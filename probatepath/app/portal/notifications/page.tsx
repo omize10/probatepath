@@ -89,10 +89,10 @@ export default function NotificationsPage() {
       }
     >
       {loading ? (
-        <div className="text-center py-12 text-sm text-gray-400">Loading notifications...</div>
+        <div className="text-center py-12 text-sm text-gray-600">Loading notifications...</div>
       ) : notifications.length === 0 ? (
         <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white p-8 text-center">
-          <svg className="mx-auto h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="mx-auto h-10 w-10 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
           <p className="mt-3 text-sm text-gray-500">No notifications yet. We'll notify you when something needs your attention.</p>
@@ -116,7 +116,7 @@ export default function NotificationsPage() {
                       <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${TYPE_COLORS[n.type] ?? TYPE_COLORS.system}`}>
                         {TYPE_LABELS[n.type] ?? "Update"}
                       </span>
-                      <span className="text-[10px] text-gray-400">
+                      <span className="text-[10px] text-gray-600">
                         {new Date(n.createdAt).toLocaleDateString("en-CA", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                       </span>
                       {isUnread && <span className="h-2 w-2 rounded-full bg-[color:var(--brand)]" />}

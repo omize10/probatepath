@@ -109,7 +109,7 @@ export function AnimatedStatus({ status, label, sublabel }: AnimatedStatusProps)
         <p className="text-xs text-gray-500 transition-opacity duration-500">
           {config.messages[messageIndex]}
         </p>
-        {sublabel && <p className="text-xs text-gray-400 mt-0.5">{sublabel}</p>}
+        {sublabel && <p className="text-xs text-gray-600 mt-0.5">{sublabel}</p>}
       </div>
     </div>
   );

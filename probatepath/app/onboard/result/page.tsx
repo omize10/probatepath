@@ -527,7 +527,7 @@ export default function OnboardResultPage() {
         </div>
 
         {/* Disclaimer */}
-        <p className="text-center text-xs text-gray-400">
+        <p className="text-center text-xs text-gray-600">
           *Lawyer fees based on industry surveys of BC probate services. Actual
           costs vary. ProbateDesk pricing is fixed with no hidden fees.
         </p>
@@ -569,7 +569,7 @@ export default function OnboardResultPage() {
           >
             <button
               onClick={dismissPopup}
-              className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+              className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
             >
               <X className="h-4 w-4" />
             </button>

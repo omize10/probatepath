@@ -208,7 +208,7 @@ export default function MessagesPage() {
                   {template.smsEnabled ? (
                     <MessageSquare className="mx-auto h-5 w-5 text-green-600" />
                   ) : (
-                    <XCircle className="mx-auto h-5 w-5 text-gray-300" />
+                    <XCircle className="mx-auto h-5 w-5 text-gray-500" />
                   )}
                 </td>
                 <td className="px-4 py-3 text-right">

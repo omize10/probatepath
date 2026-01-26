@@ -160,7 +160,7 @@ export function RequisitionManager({ data }: { data: RequisitionData }) {
               <h3 className="text-sm font-semibold text-gray-900">Common requisition types and how to respond</h3>
               <p className="text-xs text-gray-500 mt-0.5">Click to expand guidance for each type.</p>
             </div>
-            <svg className={`h-4 w-4 text-gray-400 transition ${showGuide ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className={`h-4 w-4 text-gray-500 transition ${showGuide ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>

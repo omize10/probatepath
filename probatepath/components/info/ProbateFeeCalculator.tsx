@@ -70,7 +70,7 @@ export function ProbateFeeCalculator() {
           Gross estate value (assets that pass through probate)
         </label>
         <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-semibold text-gray-400">$</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-semibold text-gray-500">$</span>
           <input
             type="text"
             inputMode="numeric"
@@ -123,7 +123,7 @@ export function ProbateFeeCalculator() {
               <div key={i} className="flex items-center justify-between py-1">
                 <div>
                   <p className="text-sm text-gray-700">{item.label}</p>
-                  <p className="text-xs text-gray-400">{item.detail}</p>
+                  <p className="text-xs text-gray-600">{item.detail}</p>
                 </div>
                 <p className={`text-sm font-semibold ${item.amount === 0 ? "text-green-600" : "text-gray-900"}`}>
                   {item.amount === 0 ? "Free" : `$${item.amount.toLocaleString()}`}

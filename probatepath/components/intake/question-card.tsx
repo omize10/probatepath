@@ -32,7 +32,7 @@ export function QuestionCard({ title, description, children, className, note, wh
         {description ? <p className="mt-1 text-sm text-[color:var(--ink-muted)]">{description}</p> : null}
       </div>
       <div className="space-y-4">{children}</div>
-      {note ? <p className="rounded-2xl bg-[color:var(--bg-muted)]/60 p-3 text-xs text-[color:var(--ink-muted)]">{note}</p> : null}
+      {note ? <p className="rounded-2xl bg-[color:var(--bg-muted)] p-3 text-xs text-[color:var(--ink)]">{note}</p> : null}
       {mergedHelpers.length ? (
         <div className="divide-y divide-[color:var(--border-muted)] border-t border-[color:var(--border-muted)] pt-4">
           {mergedHelpers.map((helper) => (

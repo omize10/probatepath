@@ -82,12 +82,12 @@ export function JourneyTimeline({ steps }: JourneyTimelineProps) {
                 <p className={`text-sm ${
                   step.status === "active" ? "font-semibold text-gray-900" :
                   step.status === "done" ? "font-medium text-gray-700" :
-                  "text-gray-400"
+                  "text-gray-500"
                 }`}>
                   {step.label}
                 </p>
                 {step.date && (
-                  <p className="text-xs text-gray-400 mt-0.5">{step.date}</p>
+                  <p className="text-xs text-gray-600 mt-0.5">{step.date}</p>
                 )}
               </div>
             </div>

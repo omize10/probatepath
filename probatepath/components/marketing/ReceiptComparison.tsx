@@ -102,7 +102,7 @@ function ReceiptLine({
       <span className="flex-1 overflow-hidden">
         {description}
         {!isTotal && (
-          <span className="text-gray-400">
+          <span className="text-gray-500">
             {"".padEnd(30 - description.length, ".")}
           </span>
         )}
@@ -241,7 +241,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 2.5 }}
-            className="pt-2 font-mono text-[10px] text-gray-400 space-y-0.5"
+            className="pt-2 font-mono text-[10px] text-gray-500 space-y-0.5"
           >
             <p>* Final amount may vary</p>
             <p>* Additional fees may apply</p>
@@ -335,11 +335,11 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
               <p className="text-[10px] font-semibold text-gray-500 tracking-[0.2em] uppercase">
                 Receipt
               </p>
-              <p className="text-[10px] text-gray-400 mt-0.5 font-mono">
+              <p className="text-[10px] text-gray-500 mt-0.5 font-mono">
                 {receiptNumber}
               </p>
             </div>
-            <p className="text-[11px] text-gray-400">{currentDate}</p>
+            <p className="text-[11px] text-gray-500">{currentDate}</p>
           </motion.div>
 
           {/* Divider */}
@@ -412,7 +412,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 3.8 }}
-            className="text-center text-xs text-gray-400 pt-2"
+            className="text-center text-xs text-gray-500 pt-2"
           >
             Thank you for choosing ProbateDesk.
           </motion.p>

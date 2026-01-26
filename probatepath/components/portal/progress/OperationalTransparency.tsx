@@ -59,13 +59,13 @@ export function OperationalTransparency({
                 </div>
               ) : (
                 <div className="h-4 w-4 shrink-0 flex items-center justify-center">
-                  <div className="h-1.5 w-1.5 rounded-full bg-gray-300" />
+                  <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
                 </div>
               )}
               <span className={`text-xs ${
                 step.done ? "text-gray-500" :
                 isActive ? "text-gray-900 font-medium" :
-                "text-gray-300"
+                "text-gray-500"
               }`}>
                 {step.label}
               </span>

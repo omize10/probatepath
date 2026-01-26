@@ -86,7 +86,7 @@ export function InteractiveChecklist({
               className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[color:var(--brand)] focus:ring-[color:var(--brand)]"
             />
             <div className="flex-1">
-              <span className={`text-sm ${checked.has(item.id) ? "text-gray-400 line-through" : "text-gray-900"} ${item.critical ? "font-medium" : ""}`}>
+              <span className={`text-sm ${checked.has(item.id) ? "text-gray-600 line-through" : "text-gray-900"} ${item.critical ? "font-medium" : ""}`}>
                 {item.label}
               </span>
               {item.description && (

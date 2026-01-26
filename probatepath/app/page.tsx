@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
+import { NotLawFirmSection } from "@/components/marketing/NotLawFirmSection";
 import { ReceiptComparison } from "@/components/marketing/ReceiptComparison";
 import { CinematicTimeline } from "@/components/marketing/CinematicTimeline";
 import { ScrollFade } from "@/components/scroll-fade";
@@ -131,6 +132,9 @@ export default function HomePage() {
       <ScrollFade>
         <TestimonialsSection />
       </ScrollFade>
+
+      {/* Not a Law Firm - Feature CTA */}
+      <NotLawFirmSection />
 
       {/* FAQ */}
       <ScrollFade as="section" className="space-y-6">

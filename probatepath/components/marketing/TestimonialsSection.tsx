@@ -37,12 +37,8 @@ export function TestimonialsSection({ className }: TestimonialsSectionProps) {
         </div>
       </div>
 
-      <div className="mt-10 space-y-6">
+      <div className="mt-10">
         <TestimonialsCarousel testimonials={testimonials} />
-
-        <p className="mx-auto max-w-4xl px-6 text-center text-xs text-[color:var(--slate)]">
-          ProbateDesk is a technology service that understands BC probate. We partner with lawyers but do not provide legal advice. For complex matters, we recommend speaking with a licensed BC lawyer.
-        </p>
       </div>
     </section>
   );

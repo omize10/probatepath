@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -33,6 +33,48 @@ const formatCurrency = (amount: number) => {
     maximumFractionDigits: 2,
   });
 };
+
+// Floating background particles - always-on animation
+function FloatingParticles() {
+  const particles = [
+    { size: 4, x: "10%", duration: 20, delay: 0 },
+    { size: 3, x: "25%", duration: 25, delay: 2 },
+    { size: 5, x: "40%", duration: 18, delay: 4 },
+    { size: 3, x: "55%", duration: 22, delay: 1 },
+    { size: 4, x: "70%", duration: 24, delay: 3 },
+    { size: 3, x: "85%", duration: 19, delay: 5 },
+    { size: 2, x: "15%", duration: 26, delay: 6 },
+    { size: 4, x: "60%", duration: 21, delay: 7 },
+    { size: 3, x: "80%", duration: 23, delay: 2 },
+    { size: 2, x: "35%", duration: 27, delay: 4 },
+  ];
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((particle, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white/[0.03]"
+          style={{
+            width: particle.size,
+            height: particle.size,
+            left: particle.x,
+          }}
+          animate={{
+            y: ["100vh", "-10vh"],
+            opacity: [0, 0.5, 0.5, 0],
+          }}
+          transition={{
+            duration: particle.duration,
+            delay: particle.delay,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 // Animated line item component
 function ReceiptLine({
@@ -227,7 +269,6 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
     year: "numeric",
   });
 
-  // Generate a pseudo-receipt number based on current date
   const receiptNumber = `PD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000).padStart(5, '0')}`;
 
   return (
@@ -242,63 +283,44 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
       whileHover={{ y: -8, scale: 1.02 }}
       className="relative w-full max-w-sm cursor-default"
     >
-      {/* Ambient pulsing glow - continuous animation */}
+      {/* Breathing glow effect - always on */}
       <motion.div
-        className="absolute -inset-3 rounded-xl pointer-events-none"
+        className="absolute -inset-4 rounded-2xl pointer-events-none"
         animate={{
-          boxShadow: [
-            "0 0 30px 8px rgba(13, 23, 38, 0.15), 0 0 60px 20px rgba(201, 162, 39, 0.08)",
-            "0 0 40px 12px rgba(13, 23, 38, 0.25), 0 0 80px 30px rgba(201, 162, 39, 0.15)",
-            "0 0 30px 8px rgba(13, 23, 38, 0.15), 0 0 60px 20px rgba(201, 162, 39, 0.08)",
-          ],
+          opacity: [0.4, 0.7, 0.4],
+          scale: [1, 1.02, 1],
         }}
         transition={{
-          duration: 3,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
         }}
+        style={{
+          background: "radial-gradient(ellipse at center, rgba(16,185,129,0.15) 0%, transparent 70%)",
+        }}
       />
 
-      {/* Premium paper card */}
+      {/* Card */}
       <div
-        className="relative rounded-lg overflow-hidden"
+        className="relative rounded-xl overflow-hidden bg-white"
         style={{
-          background: "linear-gradient(to bottom, #ffffff 0%, #faf9f6 100%)",
-          boxShadow:
-            "0 25px 50px -12px rgba(13, 23, 38, 0.25), 0 0 0 1px rgba(13, 23, 38, 0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0,0,0,0.05)",
         }}
       >
-        {/* Subtle paper texture overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.025] pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          }}
-        />
-
-        {/* Corner flourish - top right */}
-        <div className="absolute top-0 right-0 w-16 h-16 opacity-[0.04] pointer-events-none">
-          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M64 0C64 35.3 35.3 64 0 64" stroke="#0d1726" strokeWidth="1"/>
-            <path d="M64 16C64 42.5 42.5 64 16 64" stroke="#0d1726" strokeWidth="1"/>
-            <path d="M64 32C64 49.7 49.7 64 32 64" stroke="#0d1726" strokeWidth="1"/>
-          </svg>
-        </div>
-
         {/* Receipt content */}
-        <div className="relative p-6 space-y-5 text-gray-900">
+        <div className="relative p-6 space-y-5">
           {/* Logo/Header - ProbateDesk.com */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
             transition={{ delay: 3.0 }}
-            className="text-center pb-4 border-b border-[#d6d0c6]"
+            className="text-center pb-4 border-b border-gray-200"
           >
-            <div className="inline-block px-5 py-2.5 bg-[#0d1726] rounded-lg shadow-md">
+            <div className="inline-block px-5 py-2.5 bg-[#0d1726] rounded-lg">
               <span className="text-white font-semibold text-lg tracking-tight">
                 ProbateDesk
               </span>
-              <span className="text-[#c9a227] font-semibold text-lg">.com</span>
+              <span className="text-emerald-400 font-semibold text-lg">.com</span>
             </div>
           </motion.div>
 
@@ -310,18 +332,18 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             className="flex justify-between items-baseline"
           >
             <div>
-              <p className="text-[10px] font-semibold text-[#445266] tracking-[0.25em] uppercase">
-                Official Receipt
+              <p className="text-[10px] font-semibold text-gray-500 tracking-[0.2em] uppercase">
+                Receipt
               </p>
-              <p className="text-[10px] text-[#6b7280] mt-0.5 font-mono">
+              <p className="text-[10px] text-gray-400 mt-0.5 font-mono">
                 {receiptNumber}
               </p>
             </div>
-            <p className="text-[11px] text-[#6b7280]">{currentDate}</p>
+            <p className="text-[11px] text-gray-400">{currentDate}</p>
           </motion.div>
 
           {/* Divider */}
-          <div className="border-t border-[#d6d0c6] border-dashed" />
+          <div className="border-t border-gray-100" />
 
           {/* Main item */}
           <motion.div
@@ -330,113 +352,70 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             transition={{ delay: 3.2 }}
             className="space-y-3"
           >
-            <h4 className="text-lg font-semibold text-[#0d1726]">
+            <h4 className="text-lg font-semibold text-gray-900">
               BC Probate Document Package
             </h4>
-            <ul className="space-y-2.5 text-sm text-[#374151]">
-              <li className="flex items-center gap-2.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#0d1726]" />
-                Court-ready P1, P2, P3 forms
+            <ul className="space-y-2 text-sm text-gray-600">
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                Court-ready probate application
               </li>
-              <li className="flex items-center gap-2.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#0d1726]" />
-                Specialist review
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                Specialist document review
               </li>
-              <li className="flex items-center gap-2.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#0d1726]" />
-                Filing guidance included
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                Step-by-step filing guidance
               </li>
-              <li className="flex items-center gap-2.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#0d1726]" />
-                Support when you need it
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                Dedicated support included
               </li>
             </ul>
           </motion.div>
 
           {/* Divider */}
-          <div className="border-t border-[#d6d0c6]" />
+          <div className="border-t border-gray-100" />
 
-          {/* Total - single display */}
+          {/* Total */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
             transition={{ delay: 3.4, type: "spring", stiffness: 200 }}
-            className="text-center py-2"
+            className="flex justify-between items-center py-2"
           >
-            <p className="text-[10px] text-[#6b7280] uppercase tracking-[0.2em] mb-1">Total</p>
-            <p className="text-3xl font-bold text-[#0d1726]">$799.00</p>
-            <p className="text-[10px] text-[#9ca3af] mt-1">CAD + applicable taxes</p>
+            <span className="text-sm font-medium text-gray-500">TOTAL</span>
+            <span className="text-3xl font-bold text-gray-900">$799.00</span>
           </motion.div>
 
-          {/* Divider */}
-          <div className="border-t border-[#d6d0c6]" />
-
-          {/* Embossed PAID seal - softer edges with depth */}
+          {/* Paid indicator - simple checkmark style */}
           <motion.div
-            initial={{ opacity: 0, scale: 1.3, y: -30 }}
-            animate={
-              isInView
-                ? { opacity: 1, scale: 1, y: 0 }
-                : { opacity: 0, scale: 1.3, y: -30 }
-            }
-            transition={{
-              delay: 3.7,
-              type: "spring",
-              stiffness: 400,
-              damping: 20,
-            }}
-            className="flex items-center justify-center py-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ delay: 3.6 }}
+            className="flex items-center justify-center gap-2 py-3 bg-emerald-50 rounded-lg border border-emerald-100"
           >
-            {/* Outer ring for depth */}
-            <div
-              className="relative p-1 rounded-full"
-              style={{
-                background: "linear-gradient(145deg, rgba(13,23,38,0.1) 0%, rgba(201,162,39,0.15) 100%)",
-              }}
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-              {/* Main seal with softer edges */}
-              <motion.div
-                className="w-20 h-20 rounded-full flex items-center justify-center"
-                style={{
-                  background: "linear-gradient(145deg, #1c2434 0%, #0d1726 40%, #0a1220 100%)",
-                  boxShadow: "inset 0 3px 6px rgba(255,255,255,0.12), inset 0 -3px 6px rgba(0,0,0,0.25), 0 6px 20px rgba(13,23,38,0.5), 0 2px 8px rgba(201,162,39,0.2)",
-                }}
-                animate={{
-                  boxShadow: [
-                    "inset 0 3px 6px rgba(255,255,255,0.12), inset 0 -3px 6px rgba(0,0,0,0.25), 0 6px 20px rgba(13,23,38,0.5), 0 2px 8px rgba(201,162,39,0.15)",
-                    "inset 0 3px 6px rgba(255,255,255,0.15), inset 0 -3px 6px rgba(0,0,0,0.25), 0 8px 25px rgba(13,23,38,0.6), 0 4px 12px rgba(201,162,39,0.25)",
-                    "inset 0 3px 6px rgba(255,255,255,0.12), inset 0 -3px 6px rgba(0,0,0,0.25), 0 6px 20px rgba(13,23,38,0.5), 0 2px 8px rgba(201,162,39,0.15)",
-                  ],
-                }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 4,
-                }}
-              >
-                <div className="text-center">
-                  <div className="text-sm font-bold tracking-[0.25em] text-white/95">PAID</div>
-                  <div className="text-[8px] tracking-[0.15em] text-[#c9a227]/70 mt-0.5">IN FULL</div>
-                </div>
-              </motion.div>
-            </div>
+              <Check className="w-5 h-5 text-emerald-600" />
+            </motion.div>
+            <span className="font-semibold text-emerald-700 tracking-wide">
+              PAID
+            </span>
           </motion.div>
 
-          {/* Thank you / Footer */}
-          <motion.div
+          {/* Footer */}
+          <motion.p
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ delay: 3.9 }}
-            className="text-center space-y-1 pt-2 border-t border-[#d6d0c6]"
+            transition={{ delay: 3.8 }}
+            className="text-center text-xs text-gray-400 pt-2"
           >
-            <p className="text-sm text-[#6b7280]">
-              Thank you for choosing ProbateDesk.
-            </p>
-            <p className="text-[10px] text-[#9ca3af]">
-              Questions? hello@probatedesk.ca
-            </p>
-          </motion.div>
+            Thank you for choosing ProbateDesk.
+          </motion.p>
         </div>
       </div>
     </motion.div>
@@ -451,25 +430,62 @@ export function ReceiptComparison() {
   return (
     <section
       ref={sectionRef}
-      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#111111] py-24 md:py-32"
+      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#0a0a0a] py-24 md:py-32"
     >
-      {/* Top fade from white - long and gradual */}
-      <div
-        className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
+      {/* Floating particles - always-on background animation */}
+      <FloatingParticles />
+
+      {/* Gradient orbs - slow moving background */}
+      <motion.div
+        className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none"
         style={{
-          background: 'linear-gradient(to bottom, white 0%, rgba(255,255,255,0.8) 30%, rgba(255,255,255,0.3) 60%, transparent 100%)'
+          background: "radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+        animate={{
+          x: [0, 50, 0],
+          y: [0, 30, 0],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+        animate={{
+          x: [0, -40, 0],
+          y: [0, -40, 0],
+        }}
+        transition={{
+          duration: 18,
+          repeat: Infinity,
+          ease: "easeInOut",
         }}
       />
 
-      {/* Bottom fade to white - long and gradual */}
+      {/* Top fade from white */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+        className="absolute top-0 left-0 right-0 h-32 pointer-events-none z-10"
         style={{
-          background: 'linear-gradient(to top, white 0%, rgba(255,255,255,0.8) 30%, rgba(255,255,255,0.3) 60%, transparent 100%)'
+          background: 'linear-gradient(to bottom, white 0%, transparent 100%)'
         }}
       />
 
-      <div className="mx-auto max-w-6xl px-6 relative z-10">
+      {/* Bottom fade to white */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none z-10"
+        style={{
+          background: 'linear-gradient(to top, white 0%, transparent 100%)'
+        }}
+      />
+
+      <div className="mx-auto max-w-6xl px-6 relative z-20">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -477,13 +493,13 @@ export function ReceiptComparison() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-xs font-semibold uppercase tracking-[4px] text-gray-300 mb-4">
+          <p className="text-sm font-semibold uppercase tracking-[4px] text-white/60 mb-4">
             The Real Cost
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#ffffff' }}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
             Where does your money actually go?
           </h2>
-          <p className="text-lg text-gray-300 max-w-xl mx-auto">
+          <p className="text-lg text-white/70 max-w-xl mx-auto">
             The same court forms. Very different bills.
           </p>
         </motion.div>
@@ -518,7 +534,7 @@ export function ReceiptComparison() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 4.4 }}
-          className="text-center text-xs text-gray-500 mt-8 max-w-xl mx-auto"
+          className="text-center text-xs text-white/40 mt-8 max-w-xl mx-auto"
         >
           *Lawyer fees based on industry surveys of BC probate services. Actual
           costs vary. ProbateDesk pricing is fixed with no hidden fees.

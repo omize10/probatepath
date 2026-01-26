@@ -3,11 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  BadgeCheck,
+  Building2,
   CheckCircle2,
   ClipboardCheck,
   FileText,
+  Scale,
   ShieldCheck,
   Timer,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -153,6 +157,116 @@ export default function HomePage() {
             <span className="font-medium">{point.label}</span>
           </ScrollFade>
         ))}
+      </ScrollFade>
+
+      {/* What is Probate + Why You Need Help */}
+      <ScrollFade as="section" className="space-y-12">
+        <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
+          {/* Left: What is Probate */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">Understanding Probate</p>
+              <h2 className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">
+                What is probate, exactly?
+              </h2>
+            </div>
+            <div className="space-y-4 text-base text-[color:var(--muted-ink)]">
+              <p>
+                When someone passes away, their assets don&apos;t automatically transfer to beneficiaries.
+                <strong className="text-[color:var(--brand)]"> Probate is the legal process</strong> that proves the will is valid
+                and gives the executor authority to distribute the estate.
+              </p>
+              <p>
+                In British Columbia, this means filing specific forms with the Supreme Court, notifying beneficiaries,
+                and following strict timelines. Get it wrong, and the court rejects your application — costing you weeks and additional fees.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex items-start gap-3 rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-4">
+                <Scale className="mt-0.5 h-5 w-5 flex-none text-[color:var(--brand)]" />
+                <div>
+                  <p className="text-sm font-medium text-[color:var(--brand)]">Court Authority</p>
+                  <p className="text-xs text-[color:var(--muted-ink)]">Legal power to act on behalf of the estate</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-4">
+                <Users className="mt-0.5 h-5 w-5 flex-none text-[color:var(--brand)]" />
+                <div>
+                  <p className="text-sm font-medium text-[color:var(--brand)]">Beneficiary Protection</p>
+                  <p className="text-xs text-[color:var(--muted-ink)]">Ensures assets go to the right people</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: The Problem */}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">The Challenge</p>
+              <h2 className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">
+                Why most executors feel stuck
+              </h2>
+            </div>
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-red-200 bg-red-50/50 p-5">
+                <p className="text-sm font-medium text-red-900">Option A: Hire a lawyer</p>
+                <p className="mt-1 text-sm text-red-700">
+                  Average cost: <strong>$3,000–$8,000+</strong> for a straightforward BC estate.
+                  Most of that pays for form preparation you could do yourself — if you knew how.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-5">
+                <p className="text-sm font-medium text-amber-900">Option B: DIY with court forms</p>
+                <p className="mt-1 text-sm text-amber-700">
+                  Free, but the 47-page P1 form alone has <strong>200+ fields</strong>.
+                  One mistake means rejection, delays, and starting over.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-green-200 bg-green-50/50 p-5">
+                <p className="text-sm font-medium text-green-900">Option C: ProbateDesk</p>
+                <p className="mt-1 text-sm text-green-700">
+                  <strong>$799–$2,499</strong> for court-ready documents prepared by BC probate specialists.
+                  You answer questions; we handle the forms.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust Bar */}
+        <div className="rounded-2xl border border-[color:var(--border-muted)] bg-gradient-to-r from-[#f8fafc] to-[#f0f4f8] p-6">
+          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">
+                <Building2 className="h-6 w-6 text-[color:var(--brand)]" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[color:var(--brand)]">Operated by Court Line Law</p>
+                <p className="text-xs text-[color:var(--muted-ink)]">BC-registered legal services provider</p>
+              </div>
+            </div>
+            <div className="hidden h-8 w-px bg-[color:var(--border-muted)] md:block" />
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">
+                <ShieldCheck className="h-6 w-6 text-[color:var(--brand)]" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[color:var(--brand)]">100% Canadian Infrastructure</p>
+                <p className="text-xs text-[color:var(--muted-ink)]">Your data never leaves the country</p>
+              </div>
+            </div>
+            <div className="hidden h-8 w-px bg-[color:var(--border-muted)] md:block" />
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm">
+                <BadgeCheck className="h-6 w-6 text-[color:var(--brand)]" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[color:var(--brand)]">Specialist Reviewed</p>
+                <p className="text-xs text-[color:var(--muted-ink)]">Every document checked before delivery</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </ScrollFade>
 
       <ScrollFade as="section" className="space-y-12">

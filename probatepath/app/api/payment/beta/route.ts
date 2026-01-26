@@ -43,15 +43,17 @@ export async function POST(request: NextRequest) {
     let selectedTier = "basic";
 
     if (prismaEnabled) {
-      // Verify tier selection exists and belongs to user
+      // Verify tier selection exists (with or without userId check for beta)
       const tierSelection = await prisma.tierSelection.findFirst({
         where: {
           id: tierSelectionId,
-          userId,
+          // BETA: Only check userId if it's not a mock ID
+          ...(userId.startsWith("beta-test-user") ? {} : { userId }),
         },
       });
 
       if (!tierSelection) {
+        console.error("[payment/beta] Tier selection not found:", tierSelectionId);
         return NextResponse.json({ error: "Tier selection not found" }, { status: 404 });
       }
 

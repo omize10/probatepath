@@ -7,7 +7,6 @@ import {
   ClipboardCheck,
   FileText,
   ShieldCheck,
-  Sparkles,
   Timer,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -154,54 +153,6 @@ export default function HomePage() {
             <span className="font-medium">{point.label}</span>
           </ScrollFade>
         ))}
-      </ScrollFade>
-
-      {/* Simple Get Started Section */}
-      <ScrollFade as="section" className="space-y-8">
-        <div className="space-y-4 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">Get Started</p>
-          <h2 className="font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">Simple 5-minute setup</h2>
-          <p className="mx-auto max-w-2xl text-base text-[color:var(--muted-ink)]">
-            Tell us about your situation and we'll match you with the right service level. Takes about 5 minutes.
-          </p>
-        </div>
-        <div className="mx-auto max-w-xl">
-          <Card className="border-[color:var(--border-muted)] shadow-[0_25px_60px_-50px_rgba(15,23,42,0.18)]">
-            <CardHeader className="space-y-6 p-8">
-              <div className="flex items-center gap-4">
-                <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e8f4ff] text-[#2563eb]">
-                  <Sparkles className="h-6 w-6" aria-hidden />
-                </span>
-                <div>
-                  <CardTitle className="text-xl text-[color:var(--brand)]">Start Your Journey</CardTitle>
-                  <CardDescription className="text-sm text-[color:var(--muted-ink)]">
-                    We'll guide you through a few quick questions
-                  </CardDescription>
-                </div>
-              </div>
-              <ul className="space-y-3 text-sm text-[color:var(--muted-ink)]">
-                <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span>Quick screening to check if we're a fit</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span>Personalized tier recommendation</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span>No commitment required</span>
-                </li>
-              </ul>
-              <Button asChild size="lg" className="w-full">
-                <Link href="/onboard/name">
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardHeader>
-          </Card>
-        </div>
       </ScrollFade>
 
       <ScrollFade as="section" className="space-y-12">

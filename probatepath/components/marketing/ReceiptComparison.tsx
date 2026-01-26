@@ -6,18 +6,19 @@ import { Check, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-// Lawyer receipt line items
+// Lawyer receipt line items - totals to ~$9,000
 const lawyerLineItems = [
-  { description: "Initial consultation", amount: 500 },
-  { description: "Document review", amount: 850 },
-  { description: "Phone conferences (6)", amount: 720 },
-  { description: "Email correspondence", amount: 340 },
-  { description: "Form preparation", amount: 1400 },
-  { description: "Court filing service", amount: 450 },
-  { description: "Administrative fees", amount: 380 },
-  { description: "Photocopies & courier", amount: 165 },
-  { description: "File management", amount: 275 },
-  { description: "Miscellaneous", amount: 620 },
+  { description: "Initial consultation", amount: 750 },
+  { description: "Document review", amount: 1200 },
+  { description: "Phone conferences (8)", amount: 960 },
+  { description: "Email correspondence", amount: 480 },
+  { description: "Form preparation", amount: 1800 },
+  { description: "Court filing service", amount: 600 },
+  { description: "Administrative fees", amount: 450 },
+  { description: "Photocopies & courier", amount: 185 },
+  { description: "File management", amount: 350 },
+  { description: "Research & due diligence", amount: 425 },
+  { description: "Miscellaneous", amount: 800 },
 ];
 
 const subtotal = lawyerLineItems.reduce((sum, item) => sum + item.amount, 0);
@@ -257,7 +258,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
               <span className="text-white font-semibold text-lg">
                 ProbateDesk
               </span>
-              <span className="text-emerald-400">.ca</span>
+              <span className="text-emerald-400">.com</span>
             </div>
           </motion.div>
 

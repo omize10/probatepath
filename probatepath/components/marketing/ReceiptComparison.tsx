@@ -493,13 +493,13 @@ export function ReceiptComparison() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-sm font-semibold uppercase tracking-[4px] text-white mb-4">
+          <p className="text-sm font-semibold uppercase tracking-[4px] mb-4" style={{ color: 'white' }}>
             The Real Cost
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'white' }}>
             Where does your money actually go?
           </h2>
-          <p className="text-lg text-white max-w-xl mx-auto">
+          <p className="text-lg max-w-xl mx-auto" style={{ color: 'white' }}>
             The same court forms. Very different bills.
           </p>
         </motion.div>
@@ -534,7 +534,8 @@ export function ReceiptComparison() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 4.4 }}
-          className="text-center text-xs text-white mt-8 max-w-xl mx-auto"
+          className="text-center text-xs mt-8 max-w-xl mx-auto"
+          style={{ color: 'rgba(255,255,255,0.7)' }}
         >
           *Lawyer fees based on industry surveys of BC probate services. Actual
           costs vary. ProbateDesk pricing is fixed with no hidden fees.

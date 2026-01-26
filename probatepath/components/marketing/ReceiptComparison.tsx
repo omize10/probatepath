@@ -376,9 +376,15 @@ export function ReceiptComparison() {
   return (
     <section
       ref={sectionRef}
-      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-gradient-to-b from-[#111111] via-[#111111] to-[#0A0A0A] py-24 md:py-32"
+      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#111111] py-24 md:py-32"
     >
-      <div className="mx-auto max-w-6xl px-6">
+      {/* Top fade from white */}
+      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent pointer-events-none" />
+
+      {/* Bottom fade to white */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+
+      <div className="mx-auto max-w-6xl px-6 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -386,13 +392,13 @@ export function ReceiptComparison() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <p className="text-xs font-semibold uppercase tracking-[4px] text-gray-400 mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[4px] text-gray-300 mb-4">
             The Real Cost
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#ffffff' }}>
             Where does your money actually go?
           </h2>
-          <p className="text-lg text-gray-400 max-w-xl mx-auto">
+          <p className="text-lg text-gray-300 max-w-xl mx-auto">
             The same court forms. Very different bills.
           </p>
         </motion.div>

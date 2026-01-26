@@ -3,31 +3,74 @@
  * Stores progress in localStorage with URL param backup
  */
 
-export interface ScreeningAnswers {
-  hasWill?: boolean;
-  hasOriginal?: boolean;
-  expectsDispute?: boolean;
-  foreignAssets?: boolean;
-  estateValue?: string;
+// Relationship to deceased options
+export type RelationshipType =
+  | 'parent'
+  | 'spouse'
+  | 'child'
+  | 'sibling'
+  | 'grandparent'
+  | 'aunt'
+  | 'uncle'
+  | 'friend'
+  | 'other';
+
+// Communication preference
+export type CommunicationPreference = 'text' | 'email' | 'either';
+
+// Fit question answers
+export interface FitAnswers {
+  hasWill?: 'yes' | 'no' | 'not_sure';
+  willProperlyWitnessed?: 'yes' | 'no' | 'not_sure';
+  willPreparedInBC?: 'yes' | 'no' | 'not_sure';
+  hasOriginalWill?: boolean;
+  beneficiariesAware?: 'yes' | 'no' | 'partial';
+  potentialDisputes?: 'yes' | 'no' | 'not_sure';
+  assetsOutsideBC?: 'none' | 'other_provinces' | 'international';
 }
 
 export type GrantType = "probate" | "administration";
 export type Tier = "essentials" | "guided" | "full_service";
 
+// Referral source (moved to payment, but keep for backwards compatibility)
 export type ReferralSource = "funeral_home" | "google" | "friend" | "other" | null;
 
 export interface OnboardState {
-  name?: string;
-  referralSource?: ReferralSource;
-  referralFuneralHome?: string;
+  // Step 1: Executor check
+  isExecutor?: boolean;
+
+  // Step 2: Relationship to deceased
+  relationshipToDeceased?: RelationshipType;
+
+  // Step 3: Email
   email?: string;
+
+  // Step 4: Phone + communication preference
   phone?: string;
-  screening?: ScreeningAnswers;
+  communicationPreference?: CommunicationPreference;
+
+  // Step 5: Call scheduling
+  scheduledCall?: boolean;
+  callDatetime?: string;
+
+  // Fit questions (replaces old screening)
+  fitAnswers?: FitAnswers;
+
+  // Calculated results
   grantType?: GrantType;
   recommendedTier?: Tier;
   selectedTier?: Tier;
-  aiCallId?: string;
   redFlags?: string[];
+  redirectedToSpecialist?: boolean;
+  fitCheckPassed?: boolean;
+
+  // Legacy fields (for backwards compatibility during transition)
+  name?: string;
+  referralSource?: ReferralSource;
+  referralFuneralHome?: string;
+  aiCallId?: string;
+
+  // Tracking
   createdAt?: string;
   updatedAt?: string;
 }
@@ -92,48 +135,75 @@ export function clearOnboardState(): void {
 }
 
 /**
- * Calculate grant type and tier from screening answers
+ * Check if user should be redirected to specialist
  */
-export function calculateResult(screening: ScreeningAnswers): {
+export function shouldRedirectToSpecialist(fitAnswers: FitAnswers): boolean {
+  // Disputes = YES is a red flag
+  if (fitAnswers.potentialDisputes === 'yes') {
+    return true;
+  }
+  // International assets is a red flag
+  if (fitAnswers.assetsOutsideBC === 'international') {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Calculate grant type and tier from fit answers
+ */
+export function calculateResult(fitAnswers: FitAnswers): {
   grantType: GrantType;
   recommendedTier: Tier;
   redFlags: string[];
+  fitCheckPassed: boolean;
 } {
   const redFlags: string[] = [];
 
-  // Check for red flags (route to Open Door Law)
-  if (screening.expectsDispute) {
+  // Check for red flags (route to specialist)
+  if (fitAnswers.potentialDisputes === 'yes') {
     redFlags.push("dispute");
   }
-  if (screening.foreignAssets) {
-    redFlags.push("foreign_assets");
+  if (fitAnswers.assetsOutsideBC === 'international') {
+    redFlags.push("international_assets");
   }
 
-  // Determine grant type
-  const grantType: GrantType = screening.hasWill ? "probate" : "administration";
+  // If there are red flags, they shouldn't proceed
+  const fitCheckPassed = redFlags.length === 0;
 
-  // Calculate recommended tier based on value and complexity
+  // Determine grant type based on will
+  const hasWill = fitAnswers.hasWill === 'yes';
+  const grantType: GrantType = hasWill ? "probate" : "administration";
+
+  // Calculate recommended tier based on complexity
   let recommendedTier: Tier = "essentials";
 
-  // Estate value thresholds
-  const value = screening.estateValue;
-  if (value === "over_500k") {
-    recommendedTier = "full_service";
-  } else if (value === "150k_500k" || value === "50k_150k") {
+  // Administration (no will) is more complex - recommend guided
+  if (grantType === "administration") {
     recommendedTier = "guided";
   }
 
-  // Administration is more complex - bump tier
-  if (grantType === "administration" && recommendedTier === "essentials") {
+  // No original will - recommend guided for the extra support
+  if (hasWill && !fitAnswers.hasOriginalWill) {
     recommendedTier = "guided";
   }
 
-  // No original will - bump tier
-  if (screening.hasWill && !screening.hasOriginal && recommendedTier === "essentials") {
+  // Will issues (not properly witnessed or not BC) - recommend guided
+  if (hasWill) {
+    if (fitAnswers.willProperlyWitnessed === 'no' || fitAnswers.willProperlyWitnessed === 'not_sure') {
+      recommendedTier = "guided";
+    }
+    if (fitAnswers.willPreparedInBC === 'no') {
+      recommendedTier = "guided";
+    }
+  }
+
+  // Assets in other provinces adds complexity
+  if (fitAnswers.assetsOutsideBC === 'other_provinces') {
     recommendedTier = "guided";
   }
 
-  return { grantType, recommendedTier, redFlags };
+  return { grantType, recommendedTier, redFlags, fitCheckPassed };
 }
 
 /**
@@ -185,15 +255,54 @@ export const TIER_INFO = {
  * Get the next step in onboarding based on current state
  */
 export function getNextStep(state: OnboardState): string {
-  if (!state.name) return "/onboard/name";
-  if (state.referralSource === undefined) return "/onboard/referral";
+  // Step 1: Executor check
+  if (state.isExecutor === undefined) return "/onboard/executor";
+  if (state.isExecutor === false) return "/onboard/non-executor";
+
+  // Step 2: Relationship
+  if (!state.relationshipToDeceased) return "/onboard/relationship";
+
+  // Step 3: Email
   if (!state.email) return "/onboard/email";
+
+  // Step 4: Phone
   if (!state.phone) return "/onboard/phone";
-  if (!state.aiCallId) return "/onboard/call";
-  if (!state.screening?.estateValue) return "/onboard/screening";
+
+  // Step 5: Call choice
+  if (state.scheduledCall === undefined) return "/onboard/call-choice";
+  if (state.scheduledCall && !state.callDatetime) return "/onboard/schedule";
+
+  // Fit questions
+  if (!state.fitAnswers || !isFitComplete(state.fitAnswers)) return "/onboard/screening";
+
+  // Check if redirected to specialist
+  if (state.redirectedToSpecialist) return "/onboard/specialist";
+
+  // Results
   if (!state.recommendedTier) return "/onboard/result";
   if (!state.selectedTier) return "/onboard/pricing";
+
   return "/pay";
+}
+
+/**
+ * Check if fit questions are complete
+ */
+function isFitComplete(fitAnswers: FitAnswers): boolean {
+  // Required questions for all
+  if (fitAnswers.hasWill === undefined) return false;
+  if (fitAnswers.hasOriginalWill === undefined) return false;
+  if (fitAnswers.beneficiariesAware === undefined) return false;
+  if (fitAnswers.potentialDisputes === undefined) return false;
+  if (fitAnswers.assetsOutsideBC === undefined) return false;
+
+  // Conditional questions (only if hasWill = yes)
+  if (fitAnswers.hasWill === 'yes') {
+    if (fitAnswers.willProperlyWitnessed === undefined) return false;
+    if (fitAnswers.willPreparedInBC === undefined) return false;
+  }
+
+  return true;
 }
 
 /**
@@ -201,11 +310,11 @@ export function getNextStep(state: OnboardState): string {
  */
 export function getProgress(currentStep: string): number {
   const steps = [
-    "/onboard/name",
-    "/onboard/referral",
+    "/onboard/executor",
+    "/onboard/relationship",
     "/onboard/email",
     "/onboard/phone",
-    "/onboard/call",
+    "/onboard/call-choice",
     "/onboard/screening",
     "/onboard/result",
     "/onboard/pricing",
@@ -217,3 +326,18 @@ export function getProgress(currentStep: string): number {
 
   return Math.round(((index + 1) / steps.length) * 100);
 }
+
+/**
+ * Relationship labels for display
+ */
+export const RELATIONSHIP_LABELS: Record<RelationshipType, string> = {
+  parent: "Parent",
+  spouse: "Spouse",
+  child: "Child",
+  sibling: "Sibling",
+  grandparent: "Grandparent",
+  aunt: "Aunt",
+  uncle: "Uncle",
+  friend: "Friend",
+  other: "Other",
+};

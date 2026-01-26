@@ -1,187 +1,618 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, AlertTriangle, ArrowRight, Loader2, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import {
+  CheckCircle2,
+  X,
+  ChevronDown,
+  ChevronUp,
+  ArrowRight,
+  Star,
+  MessageCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getOnboardState, TIER_INFO, type GrantType, type Tier } from "@/lib/onboard/state";
+import {
+  getOnboardState,
+  saveOnboardState,
+  TIER_INFO,
+  type GrantType,
+  type Tier,
+} from "@/lib/onboard/state";
+
+// Animation variants (using as const for proper typing)
+const headerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" as const },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 60 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 300, damping: 24, delay: 0.3 },
+  },
+};
+
+const badgeVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { delay: 0.5, duration: 0.3 },
+  },
+};
+
+const featureVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { delay: 0.7 + i * 0.1, duration: 0.3 },
+  }),
+};
+
+const checkVariants = {
+  hidden: { scale: 0 },
+  visible: (i: number) => ({
+    scale: 1,
+    transition: {
+      delay: 0.7 + i * 0.1,
+      type: "spring" as const,
+      stiffness: 500,
+      damping: 15,
+    },
+  }),
+};
+
+const otherOptionsVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { delay: 1.4, duration: 0.4 } },
+};
+
+const comparisonRowVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.4 },
+  }),
+};
+
+const popupVariants = {
+  hidden: { opacity: 0, y: 50, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring" as const, stiffness: 300, damping: 25 },
+  },
+  exit: {
+    opacity: 0,
+    y: 20,
+    scale: 0.95,
+    transition: { duration: 0.2 },
+  },
+};
+
+// Comparison data
+const lawyerDownsides = [
+  "Hourly billing adds up",
+  "Weeks of back-and-forth",
+  "You're just another file",
+  "Complex legal jargon",
+  "No control over timeline",
+];
+
+const probateDeskBenefits = [
+  "Know your cost upfront",
+  "Documents ready in days",
+  "Dedicated attention",
+  "Plain English guidance",
+  "You control the pace",
+];
 
 export default function OnboardResultPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [hasRedFlags, setHasRedFlags] = useState(false);
-  const [redFlags, setRedFlags] = useState<string[]>([]);
   const [grantType, setGrantType] = useState<GrantType>("probate");
   const [recommendedTier, setRecommendedTier] = useState<Tier>("guided");
-  const [showMatch, setShowMatch] = useState(false);
+  const [selectedTier, setSelectedTier] = useState<Tier>("guided");
+  const [showOtherOptions, setShowOtherOptions] = useState(false);
+  const [showInactivityPopup, setShowInactivityPopup] = useState(false);
+  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const comparisonRef = useRef<HTMLDivElement>(null);
+  const comparisonInView = useInView(comparisonRef, { once: true, amount: 0.3 });
 
+  // Initialize state from localStorage
   useEffect(() => {
     const state = getOnboardState();
-    if (!state.screening?.estateValue && !state.redFlags?.length) {
+
+    // Check if they should be on specialist page
+    if (state.redirectedToSpecialist) {
+      router.push("/onboard/specialist");
+      return;
+    }
+
+    // Check if they completed screening
+    if (!state.fitAnswers) {
       router.push("/onboard/screening");
       return;
     }
 
-    setRedFlags(state.redFlags || []);
-    setHasRedFlags((state.redFlags || []).length > 0);
     setGrantType(state.grantType || "probate");
     setRecommendedTier(state.recommendedTier || "guided");
+    setSelectedTier(state.recommendedTier || "guided");
 
-    // Simulate loading for red flag matching
-    if ((state.redFlags || []).length > 0) {
-      setTimeout(() => {
-        setIsLoading(false);
-        setTimeout(() => setShowMatch(true), 500);
-      }, 2500);
-    } else {
+    // Brief loading state for smooth transition
+    setTimeout(() => {
       setIsLoading(false);
-    }
+    }, 300);
   }, [router]);
 
-  const getRedFlagMessage = () => {
-    if (redFlags.includes("dispute")) {
-      return "Estates with potential disputes require a litigation specialist.";
+  // Inactivity popup timer
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
     }
-    if (redFlags.includes("foreign_assets")) {
-      return "Foreign assets require specialized cross-border expertise.";
-    }
-    return "Your situation needs specialized legal help.";
+    setShowInactivityPopup(false);
+
+    inactivityTimerRef.current = setTimeout(() => {
+      setShowInactivityPopup(true);
+    }, 30000); // 30 seconds
+  }, []);
+
+  useEffect(() => {
+    resetInactivityTimer();
+
+    const handleActivity = () => {
+      if (showInactivityPopup) return; // Don't reset if popup is already showing
+      resetInactivityTimer();
+    };
+
+    window.addEventListener("click", handleActivity);
+    window.addEventListener("scroll", handleActivity);
+    window.addEventListener("mousemove", handleActivity);
+
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+      window.removeEventListener("click", handleActivity);
+      window.removeEventListener("scroll", handleActivity);
+      window.removeEventListener("mousemove", handleActivity);
+    };
+  }, [resetInactivityTimer, showInactivityPopup]);
+
+  const handleSelectTier = (tier: Tier) => {
+    setSelectedTier(tier);
+    saveOnboardState({ selectedTier: tier });
   };
 
   const handleContinue = () => {
-    router.push("/onboard/pricing");
+    saveOnboardState({ selectedTier });
+    router.push(`/pay?tier=${selectedTier}`);
   };
 
-  // Red flag path - route to Open Door Law
-  if (hasRedFlags) {
+  const dismissPopup = () => {
+    setShowInactivityPopup(false);
+    resetInactivityTimer();
+  };
+
+  if (isLoading) {
     return (
-      <div className="space-y-8">
-        <div className="space-y-2 text-center">
-          <h1 className="font-serif text-3xl font-semibold text-[color:var(--brand)] sm:text-4xl">
-            Your situation needs specialized help
-          </h1>
-          <p className="text-[color:var(--muted-ink)]">{getRedFlagMessage()}</p>
+      <div className="space-y-8 text-center py-12">
+        <div className="relative mx-auto w-16 h-16">
+          <div className="absolute inset-0 rounded-full border-4 border-[color:var(--border-muted)]"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-[color:var(--brand)] border-t-transparent animate-spin"></div>
         </div>
-
-        {isLoading ? (
-          <div className="space-y-6 py-8">
-            <div className="flex justify-center">
-              <Loader2 className="h-12 w-12 animate-spin text-[color:var(--brand)]" />
-            </div>
-            <p className="text-center text-[color:var(--muted-ink)]">
-              Finding the right firm for you...
-            </p>
-          </div>
-        ) : (
-          <div
-            className={`space-y-6 transition-all duration-500 ${
-              showMatch ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            <div className="rounded-2xl border-2 border-green-500 bg-green-50 p-6 space-y-4">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="h-8 w-8 text-green-600" />
-                <div>
-                  <p className="text-sm text-green-600 font-medium">Matched</p>
-                  <p className="text-2xl font-bold text-green-900">Open Door Law</p>
-                </div>
-              </div>
-
-              <p className="text-green-800">
-                {redFlags.includes("dispute")
-                  ? "Specialists in contested estates and will disputes"
-                  : "Specialists in complex estates with international assets"}
-              </p>
-
-              <ul className="space-y-2 text-sm text-green-700">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Experienced estate litigation team
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Free initial consultation
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Based in Vancouver, BC
-                </li>
-              </ul>
-            </div>
-
-            <Button
-              onClick={() => window.open("https://opendoorlaw.com", "_blank")}
-              size="lg"
-              className="w-full h-14 text-lg"
-            >
-              Contact Open Door Law
-              <ExternalLink className="ml-2 h-5 w-5" />
-            </Button>
-
-            <p className="text-center text-sm text-[color:var(--muted-ink)]">
-              Not ready? We'll email you their contact information.
-            </p>
-          </div>
-        )}
+        <p className="text-[color:var(--muted-ink)]">Preparing your results...</p>
       </div>
     );
   }
 
-  // Good fit path
-  const tierInfo = TIER_INFO[recommendedTier];
+  const tierInfo = TIER_INFO[selectedTier];
+  const recommendedTierInfo = TIER_INFO[recommendedTier];
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-2 text-center">
-        <div className="flex justify-center mb-4">
-          <div className="rounded-full bg-green-100 p-4">
-            <CheckCircle2 className="h-12 w-12 text-green-600" />
-          </div>
-        </div>
+    <div className="space-y-8 pb-24 md:pb-8">
+      {/* Header Section */}
+      <motion.div
+        className="space-y-2 text-center"
+        variants={headerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <h1 className="font-serif text-3xl font-semibold text-[color:var(--brand)] sm:text-4xl">
-          Good news - we can help
+          Good news!
         </h1>
-        <p className="text-[color:var(--muted-ink)]">Based on your answers, here's what you need.</p>
+        <p className="text-[color:var(--muted-ink)]">
+          Based on your answers, we can help. Here&apos;s what we recommend to get
+          your{" "}
+          <span className="font-medium text-[color:var(--brand)]">
+            {grantType === "probate" ? "probate" : "administration"}
+          </span>{" "}
+          done quickly and affordably.
+        </p>
+      </motion.div>
+
+      {/* Recommended Package Card */}
+      <motion.div
+        className="relative rounded-2xl border-2 border-emerald-500 bg-white p-6 shadow-lg shadow-emerald-500/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/20"
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Recommended Badge */}
+        <motion.div
+          className="absolute -top-3 left-4 flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white"
+          variants={badgeVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <Star className="h-3 w-3 fill-current" />
+          RECOMMENDED FOR YOU
+        </motion.div>
+
+        <div className="mt-2 space-y-4">
+          {/* Package Name */}
+          <div>
+            <h2 className="text-2xl font-bold text-[color:var(--brand)]">
+              {recommendedTierInfo.name}
+            </h2>
+            <p className="text-sm text-[color:var(--muted-ink)]">
+              {recommendedTierInfo.tagline}
+            </p>
+          </div>
+
+          {/* Price */}
+          <div className="flex items-baseline gap-2">
+            <span className="text-4xl font-bold text-[color:var(--brand)]">
+              ${recommendedTierInfo.price.toLocaleString()}
+            </span>
+            <span className="text-sm text-[color:var(--muted-ink)]">
+              Fixed price. No surprises.
+            </span>
+          </div>
+
+          {/* Features */}
+          <div className="space-y-2 pt-2">
+            {recommendedTierInfo.features.map((feature, index) => (
+              <motion.div
+                key={feature}
+                className="flex items-start gap-3"
+                variants={featureVariants}
+                initial="hidden"
+                animate="visible"
+                custom={index}
+              >
+                <motion.div
+                  variants={checkVariants}
+                  initial="hidden"
+                  animate="visible"
+                  custom={index}
+                >
+                  <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+                </motion.div>
+                <span className="text-sm text-gray-700">{feature}</span>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Select Button */}
+          <Button
+            onClick={() => handleSelectTier(recommendedTier)}
+            size="lg"
+            className={`w-full h-12 text-base font-semibold transition-all ${
+              selectedTier === recommendedTier
+                ? "bg-emerald-600 hover:bg-emerald-700"
+                : "bg-[color:var(--brand)] hover:bg-[color:var(--brand)]/90"
+            }`}
+          >
+            {selectedTier === recommendedTier ? (
+              <>
+                <CheckCircle2 className="mr-2 h-5 w-5" />
+                Selected
+              </>
+            ) : (
+              <>
+                Select {recommendedTierInfo.name}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </>
+            )}
+          </Button>
+        </div>
+      </motion.div>
+
+      {/* Other Options Toggle */}
+      <motion.div
+        variants={otherOptionsVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <button
+          onClick={() => setShowOtherOptions(!showOtherOptions)}
+          className="flex w-full items-center justify-center gap-2 py-2 text-sm font-medium text-[color:var(--muted-ink)] transition-colors hover:text-[color:var(--brand)]"
+        >
+          {showOtherOptions ? (
+            <>
+              Hide other options
+              <ChevronUp className="h-4 w-4" />
+            </>
+          ) : (
+            <>
+              See other options
+              <ChevronDown className="h-4 w-4" />
+            </>
+          )}
+        </button>
+      </motion.div>
+
+      {/* Other Options Expanded */}
+      <AnimatePresence>
+        {showOtherOptions && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="grid gap-4 md:grid-cols-3">
+              {(Object.keys(TIER_INFO) as Tier[]).map((tierKey, index) => {
+                const tier = TIER_INFO[tierKey];
+                const isRecommended = tierKey === recommendedTier;
+                const isSelected = tierKey === selectedTier;
+
+                return (
+                  <motion.div
+                    key={tierKey}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`rounded-xl border-2 p-4 transition-all duration-300 hover:-translate-y-1 ${
+                      isSelected
+                        ? "border-emerald-500 bg-emerald-50"
+                        : isRecommended
+                        ? "border-[color:var(--brand)]/30 bg-white"
+                        : "border-[color:var(--border-muted)] bg-white"
+                    }`}
+                  >
+                    {isRecommended && (
+                      <span className="mb-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                        Recommended
+                      </span>
+                    )}
+                    <h3 className="font-bold text-[color:var(--brand)]">
+                      {tier.name}
+                    </h3>
+                    <p className="text-2xl font-bold text-[color:var(--brand)]">
+                      ${tier.price.toLocaleString()}
+                    </p>
+                    <p className="mb-3 text-xs text-[color:var(--muted-ink)]">
+                      {tier.tagline}
+                    </p>
+                    <ul className="mb-4 space-y-1">
+                      {tier.features.slice(0, 4).map((feature) => (
+                        <li
+                          key={feature}
+                          className="flex items-start gap-2 text-xs text-gray-600"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                      {tier.features.length > 4 && (
+                        <li className="text-xs text-[color:var(--muted-ink)] pl-5">
+                          +{tier.features.length - 4} more
+                        </li>
+                      )}
+                    </ul>
+                    <Button
+                      onClick={() => handleSelectTier(tierKey)}
+                      size="sm"
+                      variant={isSelected ? "primary" : "outline"}
+                      className={`w-full ${
+                        isSelected ? "bg-emerald-600 hover:bg-emerald-700" : ""
+                      }`}
+                    >
+                      {isSelected ? "Selected" : "Select"}
+                    </Button>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Price Comparison Section */}
+      <div ref={comparisonRef} className="mt-8 space-y-4">
+        <motion.h3
+          initial={{ opacity: 0 }}
+          animate={comparisonInView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center text-lg font-semibold text-[color:var(--brand)]"
+        >
+          Why thousands choose ProbateDesk over traditional lawyers
+        </motion.h3>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* Lawyer Column */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={
+              comparisonInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }
+            }
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="rounded-xl bg-gray-100 p-5"
+          >
+            <div className="mb-4">
+              <p className="text-sm font-medium text-gray-500">
+                Traditional Lawyer
+              </p>
+              <p className="text-2xl font-bold text-gray-700">
+                $5,000 - $10,000+
+              </p>
+              <p className="text-xs text-gray-500">
+                (and that&apos;s just the start)
+              </p>
+            </div>
+            <div className="space-y-2">
+              {lawyerDownsides.map((item, index) => (
+                <motion.div
+                  key={item}
+                  className="flex items-center gap-2"
+                  variants={comparisonRowVariants}
+                  initial="hidden"
+                  animate={comparisonInView ? "visible" : "hidden"}
+                  custom={index}
+                >
+                  <X className="h-4 w-4 flex-shrink-0 text-red-500" />
+                  <span className="text-sm text-gray-600">{item}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ProbateDesk Column */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={
+              comparisonInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }
+            }
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-5"
+          >
+            <div className="mb-4">
+              <p className="text-sm font-medium text-emerald-600">ProbateDesk</p>
+              <p className="text-2xl font-bold text-emerald-700">
+                $799 - $2,499
+              </p>
+              <p className="text-xs text-emerald-600">Fixed price. Period.</p>
+            </div>
+            <div className="space-y-2">
+              {probateDeskBenefits.map((item, index) => (
+                <motion.div
+                  key={item}
+                  className="flex items-center gap-2"
+                  variants={comparisonRowVariants}
+                  initial="hidden"
+                  animate={comparisonInView ? "visible" : "hidden"}
+                  custom={index + 0.5}
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={comparisonInView ? { scale: 1 } : { scale: 0 }}
+                    transition={{
+                      delay: 0.5 + index * 0.1,
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 15,
+                    }}
+                  >
+                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-500" />
+                  </motion.div>
+                  <span className="text-sm text-emerald-800">{item}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Disclaimer */}
+        <p className="text-center text-xs text-gray-400">
+          *Lawyer fees based on industry surveys of BC probate services. Actual
+          costs vary. ProbateDesk pricing is fixed with no hidden fees.
+        </p>
       </div>
 
-      {/* Grant type card */}
-      <div className="rounded-xl border-2 border-[color:var(--brand)] p-6 space-y-3">
-        <p className="text-sm text-[color:var(--muted-ink)]">You need</p>
-        <p className="text-2xl font-bold text-[color:var(--brand)]">
-          {grantType === "probate" ? "Probate" : "Administration"}
-        </p>
+      {/* Continue Button */}
+      <div className="pt-4">
+        <Button
+          onClick={handleContinue}
+          size="lg"
+          className="w-full h-14 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 transition-all hover:scale-[1.02]"
+        >
+          Continue with {tierInfo.name} - ${tierInfo.price.toLocaleString()}
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+      </div>
 
-        {grantType === "administration" && (
-          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 mt-4">
-            <div className="flex gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-amber-800">
-                <p className="font-medium">Since there's no will, this is called Administration.</p>
-                <p className="mt-1">
-                  The court looks more closely at these cases. Small mistakes can cause delays.
+      {/* Sticky CTA for Mobile */}
+      <div className="fixed bottom-0 left-0 right-0 border-t border-[color:var(--border-muted)] bg-white p-4 md:hidden">
+        <Button
+          onClick={handleContinue}
+          size="lg"
+          className="w-full h-12 font-semibold bg-emerald-600 hover:bg-emerald-700"
+        >
+          Continue - ${tierInfo.price.toLocaleString()}
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+      </div>
+
+      {/* Inactivity Popup */}
+      <AnimatePresence>
+        {showInactivityPopup && (
+          <motion.div
+            className="fixed bottom-20 right-4 z-50 max-w-sm rounded-xl border border-[color:var(--border-muted)] bg-white p-4 shadow-xl md:bottom-4"
+            variants={popupVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <button
+              onClick={dismissPopup}
+              className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100">
+                <MessageCircle className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="font-medium text-[color:var(--brand)]">
+                  Have questions?
                 </p>
+                <p className="mt-1 text-sm text-[color:var(--muted-ink)]">
+                  Most executors save over{" "}
+                  <span className="font-semibold text-emerald-600">$4,000</span>{" "}
+                  compared to hiring a lawyer.
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      window.location.href = "mailto:hello@probatedesk.com";
+                    }}
+                  >
+                    Chat with us
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-700"
+                    onClick={() => {
+                      dismissPopup();
+                      handleContinue();
+                    }}
+                  >
+                    Continue
+                    <ArrowRight className="ml-1 h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
-      </div>
-
-      {/* Recommended tier preview */}
-      <div className="rounded-xl bg-[color:var(--bg-muted)] p-6 space-y-2">
-        <p className="text-sm text-[color:var(--muted-ink)]">Recommended for you</p>
-        <div className="flex items-baseline justify-between">
-          <p className="text-xl font-bold text-[color:var(--brand)]">{tierInfo.name}</p>
-          <p className="text-2xl font-bold text-[color:var(--brand)]">
-            ${tierInfo.price.toLocaleString()}
-          </p>
-        </div>
-        <p className="text-sm text-[color:var(--muted-ink)]">{tierInfo.tagline}</p>
-      </div>
-
-      <Button onClick={handleContinue} size="lg" className="w-full h-14 text-lg">
-        Continue to Pricing
-        <ArrowRight className="ml-2 h-5 w-5" />
-      </Button>
+      </AnimatePresence>
     </div>
   );
 }

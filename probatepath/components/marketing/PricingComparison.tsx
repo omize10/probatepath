@@ -187,7 +187,7 @@ export function PricingComparison() {
             size="lg"
             className="bg-emerald-500 px-8 py-6 text-base font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:-translate-y-0.5 hover:bg-emerald-600 hover:shadow-xl hover:shadow-emerald-500/30"
           >
-            <Link href="/onboard/name">
+            <Link href="/onboard/executor">
               Get started today
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>

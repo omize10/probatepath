@@ -231,7 +231,7 @@ export default function PayPage() {
             </p>
             <div className="flex flex-col gap-3">
               <Button asChild className="w-full">
-                <Link href="/onboard/name">Start Over</Link>
+                <Link href="/onboard/executor">Start Over</Link>
               </Button>
               <Button asChild variant="outline" className="w-full">
                 <Link href="/">Back to Home</Link>

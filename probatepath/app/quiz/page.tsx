@@ -5,5 +5,5 @@ import { redirect } from "next/navigation";
  * The new flow includes screening questions at /onboard/screening
  */
 export default function QuizPageRedirect() {
-  redirect("/onboard/name");
+  redirect("/onboard/executor");
 }

@@ -12,17 +12,20 @@ export default function OnboardEmailPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
-  const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const state = getOnboardState();
-    if (!state.name) {
-      router.push("/onboard/name");
+    // Check previous steps
+    if (state.isExecutor === undefined) {
+      router.push("/onboard/executor");
       return;
     }
-    setName(state.name);
+    if (!state.relationshipToDeceased) {
+      router.push("/onboard/relationship");
+      return;
+    }
     if (state.email) {
       setEmail(state.email);
     }
@@ -42,7 +45,7 @@ export default function OnboardEmailPage() {
       return;
     }
     if (email.trim().toLowerCase() !== confirmEmail.trim().toLowerCase()) {
-      setError("Email addresses don't match");
+      setError("Email addresses don't match. Please try again.");
       return;
     }
 
@@ -55,32 +58,30 @@ export default function OnboardEmailPage() {
   const emailsMatch = email.trim().toLowerCase() === confirmEmail.trim().toLowerCase();
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && email.trim()) {
+    if (e.key === "Enter" && email.trim() && confirmEmail.trim() && emailsMatch) {
       handleContinue();
     }
   };
-
-  const firstName = name.split(" ")[0];
 
   return (
     <div className="space-y-8">
       <div className="space-y-2 text-center">
         <h1 className="font-serif text-3xl font-semibold text-[color:var(--brand)] sm:text-4xl">
-          Hi {firstName}
+          Welcome
         </h1>
         <p className="text-[color:var(--muted-ink)]">
-          We'll send updates about your case here.
+          Please provide your email address. We use email as our primary way of communicating updates about your case.
         </p>
       </div>
 
       <div className="space-y-4">
         <WarningCallout severity="warning">
-          We'll send important legal documents to this email. Make sure you can access it and check it regularly.
+          We&apos;ll send important legal documents to this email. Make sure you can access it and check it regularly.
         </WarningCallout>
 
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium text-[color:var(--brand)]">
-            What's your email?
+            Email address
           </label>
           <Input
             id="email"
@@ -99,7 +100,7 @@ export default function OnboardEmailPage() {
 
         <div className="space-y-2">
           <label htmlFor="confirm-email" className="text-sm font-medium text-[color:var(--brand)]">
-            Confirm your email
+            Confirm email address
           </label>
           <Input
             id="confirm-email"
@@ -114,7 +115,7 @@ export default function OnboardEmailPage() {
             className="h-14 text-lg"
           />
           {confirmEmail && !emailsMatch && (
-            <p className="text-sm text-red-600">Emails don't match</p>
+            <p className="text-sm text-red-600">Emails don&apos;t match</p>
           )}
           {confirmEmail && emailsMatch && email && (
             <p className="text-sm text-green-600">Emails match</p>
@@ -135,7 +136,7 @@ export default function OnboardEmailPage() {
 
         <Button
           variant="ghost"
-          onClick={() => router.push("/onboard/name")}
+          onClick={() => router.push("/onboard/relationship")}
           className="w-full"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />

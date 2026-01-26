@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { getProgress } from "@/lib/onboard/state";
 
 const STEPS = [
-  { path: "/onboard/name", label: "Name" },
+  { path: "/onboard/executor", label: "Start" },
+  { path: "/onboard/relationship", label: "About You" },
   { path: "/onboard/email", label: "Email" },
   { path: "/onboard/phone", label: "Phone" },
-  { path: "/onboard/call", label: "Call" },
+  { path: "/onboard/call-choice", label: "Options" },
   { path: "/onboard/screening", label: "Questions" },
   { path: "/onboard/result", label: "Result" },
   { path: "/onboard/pricing", label: "Pricing" },
@@ -16,7 +17,7 @@ const STEPS = [
 
 export default function OnboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const progress = getProgress(pathname);
+  const progress = getProgress(pathname ?? "/onboard/executor");
 
   return (
     <div className="min-h-screen bg-[color:var(--bg-canvas)] flex flex-col">

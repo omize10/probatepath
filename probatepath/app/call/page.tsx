@@ -5,5 +5,5 @@ import { redirect } from "next/navigation";
  * The new flow includes phone collection and outbound call at /onboard/call
  */
 export default function CallPageRedirect() {
-  redirect("/onboard/name");
+  redirect("/onboard/executor");
 }

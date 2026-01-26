@@ -322,7 +322,7 @@ export function HowItWorks() {
           whileTap={{ scale: 0.98 }}
         >
           <Button asChild size="lg" className="shadow-lg">
-            <Link href="/onboard/name">
+            <Link href="/onboard/executor">
               {currentTier.cta}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>

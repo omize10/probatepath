@@ -2,63 +2,102 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ArrowLeft, HelpCircle } from "lucide-react";
+import { ArrowLeft, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getOnboardState, saveOnboardState, calculateResult, type ScreeningAnswers } from "@/lib/onboard/state";
+import {
+  getOnboardState,
+  saveOnboardState,
+  calculateResult,
+  shouldRedirectToSpecialist,
+  type FitAnswers,
+} from "@/lib/onboard/state";
 
-type Question = "will" | "original" | "dispute" | "foreign" | "value";
+type Question =
+  | "will"
+  | "witnessed"
+  | "bc"
+  | "original"
+  | "beneficiaries"
+  | "dispute"
+  | "assets";
 
 interface HelpText {
   title: string;
   content: string;
 }
 
-const HELP_TEXT: Record<string, HelpText> = {
+const HELP_TEXT: Record<Question, HelpText> = {
   will: {
     title: "Not sure about the will?",
-    content: "A will is a legal document that says who gets what. If you haven't found one, assume there isn't one.",
+    content: "A will is a legal document that says who gets what. Check with family members or look through important papers. If you can't find one, select 'Not sure'.",
+  },
+  witnessed: {
+    title: "What does 'properly witnessed' mean?",
+    content: "A valid will in BC must be signed by the will-maker in front of 2 witnesses, who then also sign the will. The witnesses cannot be beneficiaries.",
+  },
+  bc: {
+    title: "Does it matter where the will was prepared?",
+    content: "Wills from other provinces or countries can still be valid in BC, but may require additional steps. We can still help in most cases.",
   },
   original: {
+    title: "Why do you need the original?",
+    content: "The court requires the original signed will to grant probate. If you only have a copy, additional steps are needed to prove the will is valid.",
+  },
+  beneficiaries: {
     title: "Why does this matter?",
-    content: "The court requires the original will. If you only have a copy, extra steps are needed to prove it's valid.",
+    content: "Keeping beneficiaries informed helps prevent surprises and potential disputes later. It's not required, but it's generally a good practice.",
   },
   dispute: {
     title: "What counts as a dispute?",
-    content: "Family disagreements about inheritance, someone challenging the will, or concerns about how assets are distributed.",
+    content: "This includes disagreements about the will's validity, concerns about mental capacity when signed, undue influence claims, or family conflicts about distribution.",
   },
-  foreign: {
-    title: "What are foreign assets?",
-    content: "Property, bank accounts, or investments located outside Canada. These require special handling.",
-  },
-  value: {
-    title: "How to estimate value?",
-    content: "Add up property value, bank accounts, investments, and other assets. A rough estimate is fine.",
+  assets: {
+    title: "Why does asset location matter?",
+    content: "We specialize in BC probate. Assets in other Canadian provinces can be handled through ancillary probate. International assets require specialized legal help.",
   },
 };
 
 export default function OnboardScreeningPage() {
   const router = useRouter();
   const [question, setQuestion] = useState<Question>("will");
-  const [answers, setAnswers] = useState<ScreeningAnswers>({});
+  const [answers, setAnswers] = useState<FitAnswers>({});
   const [showHelp, setShowHelp] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const state = getOnboardState();
-    // Allow continuing from call page even without call
+    // Allow continuing from call-choice page
     if (!state.phone) {
       router.push("/onboard/phone");
       return;
     }
-    if (state.screening) {
-      setAnswers(state.screening);
+    if (state.scheduledCall === undefined) {
+      router.push("/onboard/call-choice");
+      return;
+    }
+    if (state.fitAnswers) {
+      setAnswers(state.fitAnswers);
     }
   }, [router]);
 
-  const handleAnswer = (key: keyof ScreeningAnswers, value: boolean | string) => {
+  const handleAnswer = <K extends keyof FitAnswers>(key: K, value: FitAnswers[K]) => {
     const updated = { ...answers, [key]: value };
     setAnswers(updated);
-    saveOnboardState({ screening: updated });
+    saveOnboardState({ fitAnswers: updated });
+
+    // Check for immediate red flags
+    if (key === "potentialDisputes" && value === "yes") {
+      // Redirect to specialist immediately
+      saveOnboardState({ fitAnswers: updated, redirectedToSpecialist: true });
+      router.push("/onboard/specialist");
+      return;
+    }
+    if (key === "assetsOutsideBC" && value === "international") {
+      // Redirect to specialist immediately
+      saveOnboardState({ fitAnswers: updated, redirectedToSpecialist: true });
+      router.push("/onboard/specialist");
+      return;
+    }
 
     // Auto-advance to next question
     setTimeout(() => {
@@ -66,79 +105,70 @@ export default function OnboardScreeningPage() {
     }, 300);
   };
 
-  const advanceQuestion = (currentKey: keyof ScreeningAnswers, value: boolean | string, updatedAnswers: ScreeningAnswers) => {
-    // Validate that we actually got an answer before advancing
-    if (value === undefined || value === null) {
-      console.log('[screening] No valid answer, not advancing');
-      return;
-    }
-
-    console.log('[screening] Advancing from', question, 'with value', value);
-
+  const advanceQuestion = <K extends keyof FitAnswers>(
+    currentKey: K,
+    value: FitAnswers[K],
+    updatedAnswers: FitAnswers
+  ) => {
     switch (question) {
       case "will":
-        if (value === true) {
+        if (value === "yes") {
+          setQuestion("witnessed");
+        } else {
+          // Skip will-specific questions
           setQuestion("original");
-        } else if (value === false) {
-          // No will - skip original question
-          setQuestion("dispute");
         }
         break;
+      case "witnessed":
+        setQuestion("bc");
+        break;
+      case "bc":
+        setQuestion("original");
+        break;
       case "original":
-        // Always advance to dispute
+        setQuestion("beneficiaries");
+        break;
+      case "beneficiaries":
         setQuestion("dispute");
         break;
       case "dispute":
-        if (value === true) {
-          // Red flag - go to result immediately
-          console.log('[screening] Dispute detected, finishing screening early');
-          finishScreening({ ...updatedAnswers, expectsDispute: true });
-        } else if (value === false) {
-          setQuestion("foreign");
-        }
+        // If they said yes, they were already redirected
+        setQuestion("assets");
         break;
-      case "foreign":
-        if (value === true) {
-          // Red flag - go to result immediately
-          console.log('[screening] Foreign assets detected, finishing screening early');
-          finishScreening({ ...updatedAnswers, foreignAssets: true });
-        } else if (value === false) {
-          setQuestion("value");
-        }
-        break;
-      case "value":
-        // Any value here completes screening - THIS IS THE FINAL STEP
-        console.log('[screening] Final question answered, finishing screening with complete answers:', updatedAnswers);
+      case "assets":
+        // If they said international, they were already redirected
         finishScreening(updatedAnswers);
         break;
     }
   };
 
-  const finishScreening = (finalAnswers: ScreeningAnswers) => {
-    // GUARD: Prevent double submission
-    if (isSubmitting) {
-      console.log('[screening] Already submitting, preventing double submission');
-      return;
-    }
-    
-    console.log('[screening] finishScreening called with answers:', finalAnswers);
+  const finishScreening = (finalAnswers: FitAnswers) => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
+      // Check if should redirect to specialist
+      if (shouldRedirectToSpecialist(finalAnswers)) {
+        saveOnboardState({
+          fitAnswers: finalAnswers,
+          redirectedToSpecialist: true,
+        });
+        router.push("/onboard/specialist");
+        return;
+      }
+
       const result = calculateResult(finalAnswers);
-      console.log('[screening] Calculated result:', result);
-      
       saveOnboardState({
-        screening: finalAnswers,
+        fitAnswers: finalAnswers,
         grantType: result.grantType,
         recommendedTier: result.recommendedTier,
         redFlags: result.redFlags,
+        fitCheckPassed: result.fitCheckPassed,
       });
 
-      console.log('[screening] State saved, pushing to /onboard/result');
       router.push("/onboard/result");
     } catch (error) {
-      console.error('[screening] Error in finishScreening:', error);
+      console.error("[screening] Error in finishScreening:", error);
       setIsSubmitting(false);
     }
   };
@@ -146,23 +176,29 @@ export default function OnboardScreeningPage() {
   const goBack = () => {
     switch (question) {
       case "will":
-        router.push("/onboard/call");
+        router.push("/onboard/call-choice");
         break;
-      case "original":
+      case "witnessed":
         setQuestion("will");
         break;
-      case "dispute":
-        if (answers.hasWill) {
-          setQuestion("original");
+      case "bc":
+        setQuestion("witnessed");
+        break;
+      case "original":
+        if (answers.hasWill === "yes") {
+          setQuestion("bc");
         } else {
           setQuestion("will");
         }
         break;
-      case "foreign":
-        setQuestion("dispute");
+      case "beneficiaries":
+        setQuestion("original");
         break;
-      case "value":
-        setQuestion("foreign");
+      case "dispute":
+        setQuestion("beneficiaries");
+        break;
+      case "assets":
+        setQuestion("dispute");
         break;
     }
   };
@@ -172,23 +208,91 @@ export default function OnboardScreeningPage() {
       case "will":
         return (
           <QuestionCard
-            title="Did they have a will?"
+            title="Did your loved one have a will?"
             helpKey="will"
             showHelp={showHelp}
             setShowHelp={setShowHelp}
           >
             <div className="grid gap-3">
               <OptionButton
-                selected={answers.hasWill === true}
-                onClick={() => handleAnswer("hasWill", true)}
+                selected={answers.hasWill === "yes"}
+                onClick={() => handleAnswer("hasWill", "yes")}
               >
-                Yes, there's a will
+                Yes
               </OptionButton>
               <OptionButton
-                selected={answers.hasWill === false}
-                onClick={() => handleAnswer("hasWill", false)}
+                selected={answers.hasWill === "no"}
+                onClick={() => handleAnswer("hasWill", "no")}
               >
-                No, no will
+                No
+              </OptionButton>
+              <OptionButton
+                selected={answers.hasWill === "not_sure"}
+                onClick={() => handleAnswer("hasWill", "not_sure")}
+              >
+                Not sure
+              </OptionButton>
+            </div>
+          </QuestionCard>
+        );
+
+      case "witnessed":
+        return (
+          <QuestionCard
+            title="Was the will signed by your loved one in the presence of 2 witnesses?"
+            helpKey="witnessed"
+            showHelp={showHelp}
+            setShowHelp={setShowHelp}
+          >
+            <div className="grid gap-3">
+              <OptionButton
+                selected={answers.willProperlyWitnessed === "yes"}
+                onClick={() => handleAnswer("willProperlyWitnessed", "yes")}
+              >
+                Yes
+              </OptionButton>
+              <OptionButton
+                selected={answers.willProperlyWitnessed === "no"}
+                onClick={() => handleAnswer("willProperlyWitnessed", "no")}
+              >
+                No
+              </OptionButton>
+              <OptionButton
+                selected={answers.willProperlyWitnessed === "not_sure"}
+                onClick={() => handleAnswer("willProperlyWitnessed", "not_sure")}
+              >
+                Not sure
+              </OptionButton>
+            </div>
+          </QuestionCard>
+        );
+
+      case "bc":
+        return (
+          <QuestionCard
+            title="Was this will prepared in British Columbia?"
+            helpKey="bc"
+            showHelp={showHelp}
+            setShowHelp={setShowHelp}
+          >
+            <div className="grid gap-3">
+              <OptionButton
+                selected={answers.willPreparedInBC === "yes"}
+                onClick={() => handleAnswer("willPreparedInBC", "yes")}
+              >
+                Yes
+              </OptionButton>
+              <OptionButton
+                selected={answers.willPreparedInBC === "no"}
+                onClick={() => handleAnswer("willPreparedInBC", "no")}
+              >
+                No
+              </OptionButton>
+              <OptionButton
+                selected={answers.willPreparedInBC === "not_sure"}
+                onClick={() => handleAnswer("willPreparedInBC", "not_sure")}
+              >
+                Not sure
               </OptionButton>
             </div>
           </QuestionCard>
@@ -197,23 +301,57 @@ export default function OnboardScreeningPage() {
       case "original":
         return (
           <QuestionCard
-            title="Do you have the original will?"
+            title="Do you have the original will in your possession?"
             helpKey="original"
+            showHelp={showHelp}
+            setShowHelp={setShowHelp}
+          >
+            <p className="text-sm text-[color:var(--muted-ink)] mb-4">
+              You&apos;ll need the original signed will for the probate process.
+            </p>
+            <div className="grid gap-3">
+              <OptionButton
+                selected={answers.hasOriginalWill === true}
+                onClick={() => handleAnswer("hasOriginalWill", true)}
+              >
+                Yes, I have the original
+              </OptionButton>
+              <OptionButton
+                selected={answers.hasOriginalWill === false}
+                onClick={() => handleAnswer("hasOriginalWill", false)}
+              >
+                No, I only have a copy
+              </OptionButton>
+            </div>
+          </QuestionCard>
+        );
+
+      case "beneficiaries":
+        return (
+          <QuestionCard
+            title="Are the beneficiaries aware of what's in the will?"
+            helpKey="beneficiaries"
             showHelp={showHelp}
             setShowHelp={setShowHelp}
           >
             <div className="grid gap-3">
               <OptionButton
-                selected={answers.hasOriginal === true}
-                onClick={() => handleAnswer("hasOriginal", true)}
+                selected={answers.beneficiariesAware === "yes"}
+                onClick={() => handleAnswer("beneficiariesAware", "yes")}
               >
-                Yes, I have the original
+                Yes, everyone knows
               </OptionButton>
               <OptionButton
-                selected={answers.hasOriginal === false}
-                onClick={() => handleAnswer("hasOriginal", false)}
+                selected={answers.beneficiariesAware === "no"}
+                onClick={() => handleAnswer("beneficiariesAware", "no")}
               >
-                No, only a copy
+                No, I haven&apos;t shared it yet
+              </OptionButton>
+              <OptionButton
+                selected={answers.beneficiariesAware === "partial"}
+                onClick={() => handleAnswer("beneficiariesAware", "partial")}
+              >
+                Some know, some don&apos;t
               </OptionButton>
             </div>
           </QuestionCard>
@@ -222,92 +360,79 @@ export default function OnboardScreeningPage() {
       case "dispute":
         return (
           <QuestionCard
-            title="Is anyone likely to disagree about the estate?"
+            title="Do you believe there may be any reason for someone to dispute the will?"
             helpKey="dispute"
             showHelp={showHelp}
             setShowHelp={setShowHelp}
           >
             <div className="grid gap-3">
               <OptionButton
-                selected={answers.expectsDispute === false}
-                onClick={() => handleAnswer("expectsDispute", false)}
+                selected={answers.potentialDisputes === "no"}
+                onClick={() => handleAnswer("potentialDisputes", "no")}
               >
-                No, everyone's on the same page
+                No, I don&apos;t expect any disputes
               </OptionButton>
               <OptionButton
-                selected={answers.expectsDispute === true}
-                onClick={() => handleAnswer("expectsDispute", true)}
+                selected={answers.potentialDisputes === "yes"}
+                onClick={() => handleAnswer("potentialDisputes", "yes")}
                 variant="warning"
               >
-                Yes, there may be disagreements
+                Yes, there may be disputes
+              </OptionButton>
+              <OptionButton
+                selected={answers.potentialDisputes === "not_sure"}
+                onClick={() => handleAnswer("potentialDisputes", "not_sure")}
+              >
+                I&apos;m not sure
               </OptionButton>
             </div>
           </QuestionCard>
         );
 
-      case "foreign":
+      case "assets":
         return (
           <QuestionCard
-            title="Are there any assets outside Canada?"
-            helpKey="foreign"
+            title="Did the deceased have any assets outside of British Columbia?"
+            helpKey="assets"
             showHelp={showHelp}
             setShowHelp={setShowHelp}
           >
             <div className="grid gap-3">
               <OptionButton
-                selected={answers.foreignAssets === false}
-                onClick={() => handleAnswer("foreignAssets", false)}
+                selected={answers.assetsOutsideBC === "none"}
+                onClick={() => handleAnswer("assetsOutsideBC", "none")}
               >
-                No, everything is in Canada
+                No, all assets are in BC
               </OptionButton>
               <OptionButton
-                selected={answers.foreignAssets === true}
-                onClick={() => handleAnswer("foreignAssets", true)}
+                selected={answers.assetsOutsideBC === "other_provinces"}
+                onClick={() => handleAnswer("assetsOutsideBC", "other_provinces")}
+              >
+                Yes, in other Canadian provinces
+              </OptionButton>
+              <OptionButton
+                selected={answers.assetsOutsideBC === "international"}
+                onClick={() => handleAnswer("assetsOutsideBC", "international")}
                 variant="warning"
               >
-                Yes, there are foreign assets
-              </OptionButton>
-            </div>
-          </QuestionCard>
-        );
-
-      case "value":
-        return (
-          <QuestionCard
-            title="Roughly, what's the total estate worth?"
-            helpKey="value"
-            showHelp={showHelp}
-            setShowHelp={setShowHelp}
-          >
-            <div className="grid gap-3">
-              <OptionButton
-                selected={answers.estateValue === "under_50k"}
-                onClick={() => handleAnswer("estateValue", "under_50k")}
-              >
-                Under $50,000
-              </OptionButton>
-              <OptionButton
-                selected={answers.estateValue === "50k_150k"}
-                onClick={() => handleAnswer("estateValue", "50k_150k")}
-              >
-                $50,000 - $150,000
-              </OptionButton>
-              <OptionButton
-                selected={answers.estateValue === "150k_500k"}
-                onClick={() => handleAnswer("estateValue", "150k_500k")}
-              >
-                $150,000 - $500,000
-              </OptionButton>
-              <OptionButton
-                selected={answers.estateValue === "over_500k"}
-                onClick={() => handleAnswer("estateValue", "over_500k")}
-              >
-                Over $500,000
+                Yes, outside of Canada
               </OptionButton>
             </div>
           </QuestionCard>
         );
     }
+  };
+
+  // Calculate progress through questions
+  const getQuestionNumber = (): number => {
+    const questionOrder: Question[] = answers.hasWill === "yes"
+      ? ["will", "witnessed", "bc", "original", "beneficiaries", "dispute", "assets"]
+      : ["will", "original", "beneficiaries", "dispute", "assets"];
+    return questionOrder.indexOf(question) + 1;
+  };
+
+  const getTotalQuestions = (): number => {
+    return answers.hasWill === "yes" ? 7 : 5;
   };
 
   return (
@@ -317,7 +442,10 @@ export default function OnboardScreeningPage() {
           A few quick questions
         </h1>
         <p className="text-[color:var(--muted-ink)]">
-          This helps us understand your situation.
+          Before we get started, we need to confirm our service is right for you. This only takes about 2 minutes.
+        </p>
+        <p className="text-sm text-[color:var(--muted-ink)]">
+          Question {getQuestionNumber()} of {getTotalQuestions()}
         </p>
       </div>
 
@@ -339,7 +467,7 @@ function QuestionCard({
   children,
 }: {
   title: string;
-  helpKey: string;
+  helpKey: Question;
   showHelp: string | null;
   setShowHelp: (key: string | null) => void;
   children: React.ReactNode;

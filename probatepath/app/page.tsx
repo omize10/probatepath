@@ -70,7 +70,7 @@ export default function HomePage() {
               </div>
               <div className="mt-10 flex w-full flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
                 <Button asChild size="lg" className="w-full !bg-white/15 text-white hover:!bg-white/25 sm:w-auto">
-                  <Link href="/onboard/name">
+                  <Link href="/onboard/executor">
                     Get started
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>

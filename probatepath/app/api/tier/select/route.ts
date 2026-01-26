@@ -67,14 +67,16 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Update user's selected tier
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        selectedTier: dbTier,
-        isPremium: dbTier === "premium",
-      },
-    });
+    // Update user's selected tier (skip for mock beta users - they don't exist in DB)
+    if (!userId.startsWith("beta-test-user")) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          selectedTier: dbTier,
+          isPremium: dbTier === "premium",
+        },
+      });
+    }
 
     return NextResponse.json({
       tierSelectionId: tierSelection.id,

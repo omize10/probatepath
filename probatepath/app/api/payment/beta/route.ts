@@ -77,13 +77,15 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Update user's intake method based on tier
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          intakeMethod: selectedTier === "basic" ? "manual" : "callback",
-        },
-      });
+      // Update user's intake method based on tier (skip for mock beta users)
+      if (!userId.startsWith("beta-test-user")) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            intakeMethod: selectedTier === "basic" ? "manual" : "callback",
+          },
+        });
+      }
     }
 
     // Route based on tier

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma, prismaEnabled } from "@/lib/prisma";
-import { TIER_PRICES, type Tier } from "@/types/pricing";
+import { TIER_PRICES, TIER_NAME_MAP, type Tier, type NewTier, type LegacyTier } from "@/types/pricing";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,28 +17,36 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { tier, addOns = [] } = body as { tier: Tier; addOns?: string[] };
+    const { selectedTier, addOns = [] } = body as { selectedTier: Tier; addOns?: string[] };
 
-    if (!tier || !["basic", "standard", "premium"].includes(tier)) {
+    if (!selectedTier || !["essentials", "guided", "full_service", "basic", "standard", "premium"].includes(selectedTier)) {
       return NextResponse.json({ error: "Invalid tier selection" }, { status: 400 });
     }
 
-    const tierPrice = TIER_PRICES[tier];
+    // Map new tier names to legacy names for database storage
+    const isNewTierName = (tier: Tier): tier is NewTier =>
+      ["essentials", "guided", "full_service"].includes(tier);
+
+    const dbTier: LegacyTier = isNewTierName(selectedTier)
+      ? TIER_NAME_MAP[selectedTier]
+      : selectedTier as LegacyTier;
+
+    const tierPrice = TIER_PRICES[selectedTier];
 
     if (!prismaEnabled) {
       // Return mock data if Prisma is not enabled
       return NextResponse.json({
         tierSelectionId: "mock-tier-selection-id",
-        tier,
+        tier: dbTier,
         tierPrice,
       });
     }
 
-    // Create tier selection record
+    // Create tier selection record (store as legacy tier name)
     const tierSelection = await prisma.tierSelection.create({
       data: {
         userId,
-        selectedTier: tier,
+        selectedTier: dbTier,
         tierPrice,
         screeningFlags: addOns,
       },
@@ -48,8 +56,8 @@ export async function POST(request: NextRequest) {
     await prisma.user.update({
       where: { id: userId },
       data: {
-        selectedTier: tier,
-        isPremium: tier === "premium",
+        selectedTier: dbTier,
+        isPremium: dbTier === "premium",
       },
     });
 

@@ -16,6 +16,7 @@ export default function OnboardCallPage() {
   const [callId, setCallId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [retryCount, setRetryCount] = useState(0);
+  const [hasWaitedEnough, setHasWaitedEnough] = useState(false);
   const [readyChecks, setReadyChecks] = useState({
     phoneNearby: false,
     canTalk: false,
@@ -82,6 +83,18 @@ export default function OnboardCallPage() {
       initiateCall();
     }
   };
+
+  // Enable Continue button after 30 seconds regardless of call status
+  useEffect(() => {
+    if (!callId) return;
+
+    const timer = setTimeout(() => {
+      console.log('[call] 30 seconds elapsed, enabling Continue button');
+      setHasWaitedEnough(true);
+    }, 30 * 1000); // 30 seconds
+
+    return () => clearTimeout(timer);
+  }, [callId]);
 
   // Poll for call completion - faster polling (1 second)
   useEffect(() => {
@@ -184,9 +197,9 @@ export default function OnboardCallPage() {
     };
   }, [callId, callStatus]);
 
-  // Allow continuing after call ends (any terminal state)
+  // Allow continuing after call ends (any terminal state) OR after 30 seconds
   const terminalStates: CallStatus[] = ['completed', 'no_answer', 'failed'];
-  const canContinue = terminalStates.includes(callStatus);
+  const canContinue = terminalStates.includes(callStatus) || hasWaitedEnough;
 
   const handleContinue = () => {
     router.push('/onboard/screening');

@@ -13,9 +13,9 @@ export async function POST(request: NextRequest) {
     if (session?.user) {
       userId = (session.user as { id?: string }).id;
     } else {
-      // Extract user ID from tier selection or use mock
-      userId = "beta-test-user-" + Date.now();
-      console.warn("[payment/beta] BETA MODE: Using mock user ID:", userId);
+      // Use permanent beta user (exists in DB)
+      userId = "beta-user-permanent";
+      console.warn("[payment/beta] BETA MODE: Using permanent beta user");
     }
 
     if (!userId) {
@@ -80,8 +80,8 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Update user's intake method based on tier (skip for mock beta users)
-      if (!actualUserId.startsWith("beta-test-user")) {
+      // Update user's intake method based on tier (skip for beta user)
+      if (actualUserId !== "beta-user-permanent") {
         await prisma.user.update({
           where: { id: actualUserId },
           data: {

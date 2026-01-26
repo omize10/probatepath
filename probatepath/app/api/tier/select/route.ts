@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
     if (session?.user) {
       userId = (session.user as { id?: string }).id;
     } else {
-      // Create a temporary mock user ID for beta testing
-      userId = "beta-test-user-" + Date.now();
-      console.warn("[tier/select] BETA MODE: Using mock user ID:", userId);
+      // Use permanent beta user (exists in DB with this exact ID)
+      userId = "beta-user-permanent";
+      console.warn("[tier/select] BETA MODE: Using permanent beta user");
     }
 
     if (!userId) {
@@ -57,21 +57,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // BETA: Create temporary user if using mock ID (foreign key requires user to exist)
-    if (userId.startsWith("beta-test-user")) {
-      await prisma.user.upsert({
-        where: { id: userId },
-        update: {}, // Do nothing if exists
-        create: {
-          id: userId,
-          email: `${userId}@beta.probatedesk.com`,
-          name: "Beta Test User",
-          created_via: "beta_flow",
-        },
-      });
-      console.log("[tier/select] BETA: Created temporary user:", userId);
-    }
-
     // Create tier selection record (store as legacy tier name)
     const tierSelection = await prisma.tierSelection.create({
       data: {
@@ -82,8 +67,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Update user's selected tier (skip for mock beta users - they don't exist in DB)
-    if (!userId.startsWith("beta-test-user")) {
+    // Update user's selected tier (skip for beta user)
+    if (userId !== "beta-user-permanent") {
       await prisma.user.update({
         where: { id: userId },
         data: {

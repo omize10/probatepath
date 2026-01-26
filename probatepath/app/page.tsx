@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TestimonialsSection } from "@/components/marketing/TestimonialsSection";
-import { PricingComparison } from "@/components/marketing/PricingComparison";
+import { ReceiptComparison } from "@/components/marketing/ReceiptComparison";
 import { CinematicTimeline } from "@/components/marketing/CinematicTimeline";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { ScrollFade } from "@/components/scroll-fade";
@@ -118,10 +118,10 @@ export default function HomePage() {
         ))}
       </ScrollFade>
 
-      {/* Pricing Comparison */}
-      <ScrollFade as="section">
-        <PricingComparison />
-      </ScrollFade>
+      {/* Receipt Comparison */}
+      <section>
+        <ReceiptComparison />
+      </section>
 
       {/* How It Works - Cinematic Timeline */}
       <section id="how-it-works" className="relative left-1/2 w-screen -translate-x-1/2">

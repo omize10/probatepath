@@ -7,12 +7,22 @@ import { TIER_PRICES, TIER_NAME_MAP, type Tier, type NewTier, type LegacyTier } 
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+
+    // BETA MODE: Log session state for debugging
+    console.log("[tier/select] Session check:", {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      userId: (session?.user as { id?: string })?.id,
+    });
+
     if (!session?.user) {
+      console.error("[tier/select] No session or user found");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const userId = (session.user as { id?: string }).id;
     if (!userId) {
+      console.error("[tier/select] User ID not found in session");
       return NextResponse.json({ error: "User ID not found" }, { status: 401 });
     }
 

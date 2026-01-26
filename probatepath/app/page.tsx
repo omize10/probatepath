@@ -71,7 +71,7 @@ export default function HomePage() {
               <div className="mt-10 flex w-full flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
                 <Button asChild size="lg" className="w-full !bg-white/15 text-white hover:!bg-white/25 sm:w-auto">
                   <Link href="/onboard/name">
-                    Get Started
+                    Get started
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -90,7 +90,7 @@ export default function HomePage() {
                   <p className="!text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Flexible service tiers</p>
                 </div>
                 <div className="space-y-1 text-white">
-                  <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Court Ready in 3 Days<Link href="/turnaround" className="text-[0.6rem] align-super hover:underline">*</Link></p>
+                  <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Court Ready in 3 Days<Link href="/turnaround" className="hover:underline"><sup className="text-[8px] ml-0.5">*</sup></Link></p>
                 </div>
               </div>
             </div>

@@ -28,7 +28,7 @@ const tiers = [
       { name: "Requisition assistance", included: false },
       { name: "Post-grant guidance", included: false },
     ],
-    cta: "Get Started",
+    cta: "Get started",
     href: "/create-account",
   },
   {
@@ -46,7 +46,7 @@ const tiers = [
       { name: "Concierge support services", included: true },
       { name: "Priority same-day response", included: false },
     ],
-    cta: "Get Started",
+    cta: "Get started",
     href: "/create-account",
   },
   {
@@ -64,7 +64,7 @@ const tiers = [
       { name: "Distribution templates and calculations", included: true },
       { name: "Comparable to lawyer at discounted price", included: true },
     ],
-    cta: "Get Started",
+    cta: "Get started",
     href: "/create-account",
   },
 ];

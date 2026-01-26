@@ -305,7 +305,7 @@ export default function PortalPricingPage() {
                   Saving...
                 </>
               ) : (
-                "Get Started"
+                "Get started"
               )}
             </Button>
           </div>

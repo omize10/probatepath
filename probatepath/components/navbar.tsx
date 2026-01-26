@@ -31,12 +31,11 @@ function Logo({ className }: { className?: string }) {
 
 const NAV_LINKS = [
   { href: "/how-it-works", label: "How it works" },
-  { href: "/pricing", label: "Pricing Tiers" },
+  { href: "/pricing", label: "Pricing tiers" },
   { href: "/info", label: "About probate" },
   { href: "/faqs", label: "FAQs" },
   { href: "/legal", label: "Legal" },
   { href: "/contact", label: "Contact" },
-  { href: "/portal", label: "My Desk" },
 ];
 
 function useScrolled(threshold = 12) {
@@ -62,7 +61,6 @@ export function Navbar() {
   const pathname = usePathname();
   const scrolled = useScrolled();
   const portalHref = isAuthed ? "/portal" : `/login?next=${encodeURIComponent("/portal")}`;
-  const actionLabel = isAuthed ? "My Desk" : "Sign in";
 
   return (
     <header
@@ -81,12 +79,11 @@ export function Navbar() {
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
           {NAV_LINKS.map(({ href, label }) => {
-            const targetHref = label === "My Desk" ? portalHref : href;
             const isActive = pathname === href || (pathname ?? "").startsWith(href);
             return (
               <Link
                 key={href}
-                href={targetHref}
+                href={href}
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium text-[#0a0d12] transition-colors hover:text-[#0a0d12]",
                   isActive && "bg-[#f0f3f7] text-[#0a0d12]",
@@ -110,7 +107,7 @@ export function Navbar() {
             </button>
           ) : null}
           <Button asChild size="sm">
-            <Link href={portalHref}>{actionLabel}</Link>
+            <Link href={portalHref}>My Desk</Link>
           </Button>
         </div>
 
@@ -142,12 +139,11 @@ export function Navbar() {
 
             <div className="mt-6 space-y-3">
               {NAV_LINKS.map(({ href, label }) => {
-                const targetHref = label === "My Desk" ? portalHref : href;
                 const isActive = pathname === href || (pathname ?? "").startsWith(href);
                 return (
                   <SheetClose asChild key={href}>
                     <Link
-                      href={targetHref}
+                      href={href}
                       className={cn(
                         "block rounded-2xl border border-transparent px-4 py-3 text-base font-medium text-[#0a0d12] transition hover:border-[color:var(--border-muted)] hover:text-[#0a0d12]",
                         isActive && "border-[color:var(--border-muted)] bg-[#f0f3f7] text-[#0a0d12]",
@@ -175,7 +171,7 @@ export function Navbar() {
               ) : null}
               <SheetClose asChild>
                 <Button asChild className="w-full justify-center">
-                  <Link href={portalHref}>{actionLabel}</Link>
+                  <Link href={portalHref}>My Desk</Link>
                 </Button>
               </SheetClose>
             </div>

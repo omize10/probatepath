@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Pause } from "lucide-react";
 import type { Testimonial } from "@/lib/testimonials";
 import { testimonials as defaultTestimonials } from "@/lib/testimonials";
 import { cn } from "@/lib/utils";
@@ -9,138 +9,73 @@ import { TestimonialCard } from "./TestimonialCard";
 
 interface TestimonialsCarouselProps {
   testimonials?: Testimonial[];
-  motionEnabled?: boolean;
   className?: string;
 }
 
 export function TestimonialsCarousel({
   testimonials = defaultTestimonials,
-  motionEnabled = true,
   className,
 }: TestimonialsCarouselProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const frameRef = useRef<number | undefined>(undefined);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
+  // Duplicate testimonials for seamless infinite loop
   const trackItems = useMemo(() => [...testimonials, ...testimonials], [testimonials]);
 
-  useEffect(() => {
-    const media = window.matchMedia("(min-width: 768px)");
-    const handleChange = (event: MediaQueryListEvent | MediaQueryList) => {
-      setIsDesktop(event.matches);
-    };
-
-    handleChange(media);
-    media.addEventListener("change", handleChange);
-    return () => media.removeEventListener("change", handleChange);
-  }, []);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !isDesktop || !motionEnabled) return;
-
-    let lastTime: number | null = null;
-
-    const loop = (timestamp: number) => {
-      if (lastTime === null) lastTime = timestamp;
-      const delta = timestamp - lastTime;
-      lastTime = timestamp;
-
-      if (!isHovered) {
-        const pixelsPerMs = 0.08; // faster, more engaging speed
-        const increment = delta * pixelsPerMs;
-        container.scrollLeft += increment;
-
-        const halfWidth = container.scrollWidth / 2;
-        if (container.scrollLeft >= halfWidth) {
-          container.scrollLeft -= halfWidth;
-        }
-      }
-
-      frameRef.current = window.requestAnimationFrame(loop);
-    };
-
-    frameRef.current = window.requestAnimationFrame(loop);
-    return () => {
-      if (frameRef.current) {
-        window.cancelAnimationFrame(frameRef.current);
-      }
-    };
-  }, [isDesktop, isHovered, motionEnabled]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    if (!motionEnabled) {
-      container.scrollLeft = 0;
-    }
-  }, [motionEnabled]);
-
-  const handleStep = (direction: "next" | "prev") => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const firstCard = container.querySelector<HTMLElement>("[data-testimonial-card]");
-    const cardWidth = firstCard?.offsetWidth ?? 360;
-    const gap = 16; // matches gap-4
-    const distance = cardWidth + gap;
-    const delta = direction === "next" ? distance : -distance;
-
-    const halfWidth = container.scrollWidth / 2;
-    let nextLeft = container.scrollLeft + delta;
-
-    if (nextLeft >= halfWidth) {
-      nextLeft -= halfWidth;
-    } else if (nextLeft < 0) {
-      nextLeft = halfWidth + nextLeft;
-    }
-
-    container.scrollTo({ left: nextLeft, behavior: "smooth" });
-  };
-
   return (
-    <div className={cn("relative", className)}>
+    <div
+      className={cn("relative overflow-hidden", className)}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Pause indicator */}
+      {isPaused && (
+        <div className="absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs text-[color:var(--slate)] shadow-sm backdrop-blur-sm">
+          <Pause className="h-3 w-3" />
+          Paused
+        </div>
+      )}
+
+      {/* Scrolling track - CSS animation */}
       <div
-        ref={containerRef}
         className={cn(
-          "group flex gap-5 overflow-x-auto px-6 py-4 md:px-8",
-          "snap-x snap-mandatory md:snap-none",
-          "scroll-smooth",
+          "flex gap-6 py-4 px-6",
+          "animate-testimonials-scroll",
+          isPaused && "animate-pause"
         )}
+        style={{
+          width: "max-content",
+        }}
         aria-label="Client testimonials"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         {trackItems.map((testimonial, index) => (
           <div
             key={`${testimonial.id}-${index}`}
-            data-testimonial-card
-            className="w-[86vw] shrink-0 snap-center md:w-[360px]"
+            className="w-[350px] shrink-0"
           >
             <TestimonialCard testimonial={testimonial} />
           </div>
         ))}
       </div>
 
-      <div className="pointer-events-none absolute inset-y-0 left-0 hidden items-center justify-between px-3 md:flex">
-        <button
-          type="button"
-          className="pointer-events-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--border-muted)] bg-white text-[color:var(--brand)] shadow-[0_18px_38px_-28px_rgba(14,26,42,0.45)] transition hover:-translate-y-0.5 hover:text-[color:var(--brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand)]"
-          aria-label="Previous testimonial"
-          onClick={() => handleStep("prev")}
-        >
-          <ChevronLeft className="h-5 w-5" aria-hidden />
-        </button>
-        <button
-          type="button"
-          className="pointer-events-auto inline-flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--border-muted)] bg-white text-[color:var(--brand)] shadow-[0_18px_38px_-28px_rgba(14,26,42,0.45)] transition hover:-translate-y-0.5 hover:text-[color:var(--brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand)]"
-          aria-label="Next testimonial"
-          onClick={() => handleStep("next")}
-        >
-          <ChevronRight className="h-5 w-5" aria-hidden />
-        </button>
-      </div>
+      {/* CSS for animation */}
+      <style jsx>{`
+        @keyframes testimonials-scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+
+        .animate-testimonials-scroll {
+          animation: testimonials-scroll 45s linear infinite;
+        }
+
+        .animate-pause {
+          animation-play-state: paused;
+        }
+      `}</style>
     </div>
   );
 }

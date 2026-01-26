@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, X, Check, Building2, ShieldCheck, BadgeCheck } from "lucide-react";
+import { ArrowRight, X, Check } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -17,24 +17,6 @@ const probateDeskPoints = [
   "Reviewed by BC specialists",
   "Clear, fixed pricing",
   "Support when you need it",
-];
-
-const trustItems = [
-  {
-    icon: Building2,
-    title: "Operated by Court Line Law",
-    subtitle: "BC-registered legal services",
-  },
-  {
-    icon: ShieldCheck,
-    title: "100% Canadian Infrastructure",
-    subtitle: "Your data never leaves Canada",
-  },
-  {
-    icon: BadgeCheck,
-    title: "Specialist Reviewed",
-    subtitle: "Every document checked",
-  },
 ];
 
 // Animation variants
@@ -76,7 +58,7 @@ const bulletVariants = {
 
 export function PricingComparison() {
   return (
-    <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-gradient-to-b from-[#0f172a] to-[#1e293b] py-24">
+    <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-x-hidden bg-gradient-to-b from-[#0f172a] to-[#1e293b] py-24">
       <div className="mx-auto max-w-6xl px-6">
         {/* Header */}
         <motion.div
@@ -144,7 +126,7 @@ export function PricingComparison() {
 
           {/* ProbateDesk Card */}
           <motion.div
-            className="relative rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/[0.08] p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(16,185,129,0.15)] md:scale-[1.02] md:p-10"
+            className="relative rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 p-8 shadow-[0_0_40px_rgba(16,185,129,0.2)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_60px_rgba(16,185,129,0.35)] md:scale-[1.03] md:p-10"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -152,7 +134,7 @@ export function PricingComparison() {
           >
             {/* Recommended Badge */}
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-white shadow-lg shadow-emerald-500/25">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-white shadow-lg shadow-emerald-500/30">
                 <Check className="h-3.5 w-3.5" />
                 RECOMMENDED
               </span>
@@ -162,7 +144,7 @@ export function PricingComparison() {
               ProbateDesk
             </h3>
             <p className="mb-1 text-4xl font-bold text-white">$799–$2,499</p>
-            <p className="mb-2 text-sm text-slate-400">
+            <p className="mb-2 text-sm text-slate-300">
               Fixed pricing. No surprises.
             </p>
             <div className="my-6 h-px bg-white/10" />
@@ -210,26 +192,6 @@ export function PricingComparison() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
-        </motion.div>
-
-        {/* Trust Badges */}
-        <motion.div
-          className="mx-auto mt-16 grid max-w-4xl gap-4 md:grid-cols-3"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.7, duration: 0.5 }}
-        >
-          {trustItems.map((item, index) => (
-            <div
-              key={index}
-              className="rounded-xl border border-white/10 bg-white/[0.03] p-5 text-center"
-            >
-              <item.icon className="mx-auto mb-3 h-6 w-6 text-emerald-500" />
-              <p className="text-sm font-semibold text-white">{item.title}</p>
-              <p className="mt-1 text-xs text-slate-400">{item.subtitle}</p>
-            </div>
-          ))}
         </motion.div>
 
         {/* Footnote */}

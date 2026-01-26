@@ -174,7 +174,17 @@ export function HowItWorks() {
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <div className="inline-flex rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-1.5 shadow-sm">
+        <div className="relative inline-flex rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] p-1.5 shadow-sm">
+          {/* Sliding Background Indicator */}
+          <motion.div
+            className="absolute top-1.5 bottom-1.5 rounded-xl bg-[color:var(--brand)] shadow-md"
+            initial={false}
+            animate={{
+              x: tierOrder.indexOf(activeTier) * 120 + 6,
+              width: 108,
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          />
           {tierOrder.map((tierKey) => {
             const tier = tiers[tierKey];
             const isActive = activeTier === tierKey;
@@ -182,17 +192,13 @@ export function HowItWorks() {
               <motion.button
                 key={tierKey}
                 onClick={() => setActiveTier(tierKey)}
-                className={`relative rounded-xl px-5 py-3 text-center transition-colors duration-300 ${
-                  isActive
-                    ? "bg-[color:var(--brand)] text-white shadow-md"
-                    : "text-[color:var(--muted-ink)] hover:text-[color:var(--brand)]"
-                }`}
-                whileHover={{ scale: isActive ? 1 : 1.05 }}
+                className="relative z-10 w-[120px] rounded-xl px-5 py-3 text-center"
+                whileHover={{ scale: isActive ? 1 : 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                <span className="block text-sm font-semibold">{tier.name}</span>
-                <span className={`block text-xs ${isActive ? "text-white/80" : "text-[color:var(--muted-ink)]"}`}>
+                <span className={`block text-sm font-semibold transition-colors duration-200 ${isActive ? "text-white" : "text-[color:var(--muted-ink)] hover:text-[color:var(--brand)]"}`}>{tier.name}</span>
+                <span className={`block text-xs transition-colors duration-200 ${isActive ? "text-white/80" : "text-[color:var(--muted-ink)]"}`}>
                   {tier.price}
                 </span>
               </motion.button>

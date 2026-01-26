@@ -292,3 +292,44 @@ select:focus-visible {
 body::after {
   content: none;
 }
+
+/* Cinematic Timeline Animations */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
+  }
+}
+
+/* Custom scrollbar for cinematic sections */
+.cinematic-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cinematic-scroll::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.cinematic-scroll::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 4px;
+}
+
+.cinematic-scroll::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}

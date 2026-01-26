@@ -354,7 +354,7 @@ export default function OnboardResultPage() {
         </button>
       </motion.div>
 
-      {/* Other Options Expanded */}
+      {/* Other Options Expanded - Selected tier appears first */}
       <AnimatePresence>
         {showOtherOptions && (
           <motion.div
@@ -365,7 +365,16 @@ export default function OnboardResultPage() {
             className="overflow-hidden"
           >
             <div className="grid gap-4 md:grid-cols-3">
-              {(Object.keys(TIER_INFO) as Tier[]).map((tierKey, index) => {
+              {/* Sort tiers: selected first, then recommended, then others */}
+              {(Object.keys(TIER_INFO) as Tier[])
+                .sort((a, b) => {
+                  if (a === selectedTier) return -1;
+                  if (b === selectedTier) return 1;
+                  if (a === recommendedTier) return -1;
+                  if (b === recommendedTier) return 1;
+                  return 0;
+                })
+                .map((tierKey, index) => {
                 const tier = TIER_INFO[tierKey];
                 const isRecommended = tierKey === recommendedTier;
                 const isSelected = tierKey === selectedTier;
@@ -373,18 +382,24 @@ export default function OnboardResultPage() {
                 return (
                   <motion.div
                     key={tierKey}
+                    layout
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                     className={`rounded-xl border-2 p-4 transition-all duration-300 hover:-translate-y-1 ${
                       isSelected
-                        ? "border-emerald-500 bg-emerald-50"
+                        ? "border-emerald-500 bg-emerald-50 order-first"
                         : isRecommended
                         ? "border-[color:var(--brand)]/30 bg-white"
                         : "border-[color:var(--border-muted)] bg-white"
                     }`}
                   >
-                    {isRecommended && (
+                    {isSelected && (
+                      <span className="mb-2 inline-block rounded-full bg-emerald-500 px-2 py-0.5 text-xs font-medium text-white">
+                        Your Selection
+                      </span>
+                    )}
+                    {isRecommended && !isSelected && (
                       <span className="mb-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
                         Recommended
                       </span>

@@ -89,7 +89,7 @@ export function PdfUpload({ onComplete, onBack }: PdfUploadProps) {
     <div className="space-y-4">
       <div
         className={`rounded-xl border-2 border-dashed p-10 text-center transition ${
-          dragging ? "border-[color:var(--brand)] bg-[color:var(--brand)]/5" : "border-gray-300 hover:border-[color:var(--brand)]"
+          dragging ? "border-[color:var(--brand)] bg-blue-50" : "border-gray-300 hover:border-[color:var(--brand)]"
         }`}
       >
         <input type="file" accept=".pdf" onChange={handleFileChange} className="hidden" id="pdf-upload-input" />

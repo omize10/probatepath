@@ -90,7 +90,7 @@ export function ProbateFeeCalculator() {
               onClick={() => handlePreset(val)}
               className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                 estateValue === val
-                  ? "border-[color:var(--brand)] bg-[color:var(--brand)]/10 text-[color:var(--brand)]"
+                  ? "border-[color:var(--brand)] bg-blue-100 text-[color:var(--brand)]"
                   : "border-gray-200 text-slate-700 hover:border-gray-300 hover:bg-gray-50"
               }`}
             >

@@ -136,7 +136,7 @@ export function DeathCertificateStep({
             onClick={handleHasCertificate}
             className={`w-full rounded-xl border-2 px-4 py-4 text-left transition ${
               estate.prerequisites.hasDeathCertificate === "yes"
-                ? "border-[color:var(--brand)] bg-[color:var(--brand)]/5"
+                ? "border-[color:var(--brand)] bg-blue-50"
                 : "border-[color:var(--border-muted)] hover:border-[color:var(--brand)]/50"
             }`}
           >

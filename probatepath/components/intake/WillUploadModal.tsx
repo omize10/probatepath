@@ -103,7 +103,7 @@ export function WillUploadModal({ open, onClose, onComplete }: WillUploadModalPr
           <button
             type="button"
             onClick={() => setMode("pdf")}
-            className="flex flex-col rounded-2xl border-2 border-gray-200 p-6 text-left transition hover:border-[color:var(--brand)] hover:bg-[color:var(--brand)]/5"
+            className="flex flex-col rounded-2xl border-2 border-gray-200 p-6 text-left transition hover:border-[color:var(--brand)] hover:bg-blue-50"
           >
             <span className="mb-3 text-4xl" aria-hidden>
               📄
@@ -114,7 +114,7 @@ export function WillUploadModal({ open, onClose, onComplete }: WillUploadModalPr
           <button
             type="button"
             onClick={() => setMode("photo")}
-            className="flex flex-col rounded-2xl border-2 border-gray-200 p-6 text-left transition hover:border-[color:var(--brand)] hover:bg-[color:var(--brand)]/5"
+            className="flex flex-col rounded-2xl border-2 border-gray-200 p-6 text-left transition hover:border-[color:var(--brand)] hover:bg-blue-50"
           >
             <span className="mb-3 text-4xl" aria-hidden>
               📸

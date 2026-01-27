@@ -514,11 +514,11 @@ function OptionButton({
   const baseClasses = "w-full h-14 text-left px-4 rounded-xl border-2 transition-all font-medium";
   const variantClasses = {
     default: selected
-      ? "border-[color:var(--brand)] bg-[color:var(--brand)]/5 text-[color:var(--brand)]"
-      : "border-[color:var(--border-muted)] hover:border-[color:var(--brand)]/50",
+      ? "border-[color:var(--brand)] bg-blue-50 text-[color:var(--brand)]"
+      : "border-[color:var(--border-muted)] text-[color:var(--ink)] hover:border-[color:var(--brand)]/50",
     warning: selected
       ? "border-amber-500 bg-amber-50 text-amber-700"
-      : "border-[color:var(--border-muted)] hover:border-amber-400",
+      : "border-[color:var(--border-muted)] text-[color:var(--ink)] hover:border-amber-400",
   };
 
   return (

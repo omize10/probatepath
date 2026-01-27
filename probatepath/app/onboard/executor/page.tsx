@@ -34,7 +34,7 @@ export default function OnboardExecutorPage() {
         <button
           onClick={() => handleSelect(true)}
           className="w-full h-16 text-lg font-medium rounded-xl border-2 border-[color:var(--border-muted)]
-                     hover:border-[color:var(--brand)] hover:bg-[color:var(--brand)]/5
+                     text-[color:var(--ink)] hover:border-[color:var(--brand)] hover:bg-blue-50
                      transition-all duration-200"
         >
           Yes, I am the executor
@@ -43,7 +43,7 @@ export default function OnboardExecutorPage() {
         <button
           onClick={() => handleSelect(false)}
           className="w-full h-16 text-lg font-medium rounded-xl border-2 border-[color:var(--border-muted)]
-                     hover:border-[color:var(--brand)] hover:bg-[color:var(--brand)]/5
+                     text-[color:var(--ink)] hover:border-[color:var(--brand)] hover:bg-blue-50
                      transition-all duration-200"
         >
           No, I am not the executor

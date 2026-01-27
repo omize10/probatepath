@@ -94,7 +94,7 @@ export default function OnboardCallChoicePage() {
           </>
         ) : (
           <>
-            <div className="mx-auto w-20 h-20 rounded-full bg-[color:var(--brand)]/10 flex items-center justify-center">
+            <div className="mx-auto w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center">
               <Loader2 className="w-10 h-10 text-[color:var(--brand)] animate-spin" />
             </div>
             <div className="space-y-2">
@@ -133,8 +133,8 @@ export default function OnboardCallChoicePage() {
         <button
           onClick={handleCallMeNow}
           disabled={calling}
-          className="relative w-full p-6 text-left rounded-2xl border-2 border-[color:var(--brand)] bg-[color:var(--brand)]/5
-                     hover:bg-[color:var(--brand)]/10 transition-all duration-200 group disabled:opacity-50"
+          className="relative w-full p-6 text-left rounded-2xl border-2 border-[color:var(--brand)] bg-blue-50
+                     hover:bg-blue-100 transition-all duration-200 group disabled:opacity-50"
         >
           {/* Recommended badge */}
           <div className="absolute -top-3 left-4 px-2 py-0.5 bg-[color:var(--brand)] text-white text-xs font-medium rounded-full flex items-center gap-1">
@@ -143,7 +143,7 @@ export default function OnboardCallChoicePage() {
           </div>
 
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-14 h-14 rounded-full bg-[color:var(--brand)]/10 flex items-center justify-center">
+            <div className="flex-shrink-0 w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
               <Phone className="w-7 h-7 text-[color:var(--brand)]" />
             </div>
             <div className="flex-1">

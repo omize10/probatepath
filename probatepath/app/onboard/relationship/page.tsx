@@ -61,8 +61,8 @@ export default function OnboardRelationshipPage() {
             onClick={() => handleSelect(relationship)}
             className={`w-full h-14 text-left px-4 rounded-xl border-2 transition-all font-medium
               ${selected === relationship
-                ? "border-[color:var(--brand)] bg-[color:var(--brand)]/5 text-[color:var(--brand)]"
-                : "border-[color:var(--border-muted)] hover:border-[color:var(--brand)]/50"
+                ? "border-[color:var(--brand)] bg-blue-50 text-[color:var(--brand)]"
+                : "border-[color:var(--border-muted)] text-[color:var(--ink)] hover:border-[color:var(--brand)]/50"
               }`}
           >
             {RELATIONSHIP_LABELS[relationship]}

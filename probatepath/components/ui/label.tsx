@@ -9,7 +9,7 @@ export type LabelProps = LabelHTMLAttributes<HTMLLabelElement>;
 export const Label = forwardRef<HTMLLabelElement, LabelProps>(({ className, ...props }, ref) => (
   <label
     ref={ref}
-    className={cn("text-sm font-semibold text-slate-200 transition-colors", className)}
+    className={cn("text-sm font-semibold text-slate-700 transition-colors", className)}
     {...props}
   />
 ));

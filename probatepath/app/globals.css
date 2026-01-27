@@ -426,32 +426,26 @@ body::after {
   justify-content: center;
   padding: 1rem 2.5rem;
   font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--pp-navy);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 255, 255, 1) 20%,
-    rgba(240, 240, 255, 1) 40%,
-    rgba(255, 255, 255, 1) 60%,
-    rgba(255, 255, 255, 0.9) 100%
-  );
-  background-size: 200% 100%;
+  font-weight: 700;
+  color: #0d1726;
+  background: #ffffff;
   border-radius: 9999px;
   border: none;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation:
-    shimmer 3s ease-in-out infinite,
-    pulseGlow 2s ease-in-out infinite;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 0.2),
+    0 0 40px rgba(255, 255, 255, 0.1);
+  animation: pulseGlow 2s ease-in-out infinite;
 }
 
 .cta-animated-button:hover {
   transform: scale(1.05);
+  background: #f0f4ff;
   box-shadow:
-    0 0 40px rgba(255, 255, 255, 0.3),
-    0 0 80px rgba(255, 255, 255, 0.2),
-    0 0 120px rgba(255, 255, 255, 0.1);
+    0 0 40px rgba(255, 255, 255, 0.4),
+    0 0 80px rgba(255, 255, 255, 0.25),
+    0 0 120px rgba(255, 255, 255, 0.15);
 }
 
 .cta-animated-button:hover .cta-arrow {

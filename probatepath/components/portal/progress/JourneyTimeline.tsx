@@ -20,8 +20,8 @@ export function JourneyTimeline({ steps }: JourneyTimelineProps) {
   return (
     <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-900">Your journey</h3>
-        <span className="text-xs font-medium text-gray-500">{progressPercent}% complete</span>
+        <h3 className="text-sm font-semibold text-[color:var(--ink)]">Your journey</h3>
+        <span className="text-xs font-medium text-slate-600">{progressPercent}% complete</span>
       </div>
 
       {/* Progress bar */}
@@ -80,14 +80,14 @@ export function JourneyTimeline({ steps }: JourneyTimelineProps) {
               {/* Content */}
               <div className={`pb-5 ${isLast ? "pb-0" : ""}`}>
                 <p className={`text-sm ${
-                  step.status === "active" ? "font-semibold text-gray-900" :
-                  step.status === "done" ? "font-medium text-gray-700" :
-                  "text-gray-500"
+                  step.status === "active" ? "font-semibold text-[color:var(--ink)]" :
+                  step.status === "done" ? "font-medium text-slate-700" :
+                  "text-slate-600"
                 }`}>
                   {step.label}
                 </p>
                 {step.date && (
-                  <p className="text-xs text-gray-600 mt-0.5">{step.date}</p>
+                  <p className="text-xs text-slate-700 mt-0.5">{step.date}</p>
                 )}
               </div>
             </div>

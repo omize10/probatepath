@@ -34,7 +34,7 @@ export function CourtFileNumberForm({ caseId, existingFileNumber }: CourtFileNum
     >
       <input type="hidden" name="caseId" value={caseId} />
       <div className="flex-1">
-        <label htmlFor="courtFileNumber" className="block text-xs font-medium text-gray-700 mb-1">
+        <label htmlFor="courtFileNumber" className="block text-xs font-medium text-slate-700 mb-1">
           Court file number
         </label>
         <input

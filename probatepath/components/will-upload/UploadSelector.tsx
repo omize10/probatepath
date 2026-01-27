@@ -35,9 +35,9 @@ export function UploadSelector() {
   return (
     <div className="space-y-8">
       <header className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">The will</p>
-        <h1 className="text-2xl font-semibold text-gray-900">Upload your will to help fill in these questions</h1>
-        <p className="text-sm text-gray-600">
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-600">The will</p>
+        <h1 className="text-2xl font-semibold text-[color:var(--ink)]">Upload your will to help fill in these questions</h1>
+        <p className="text-sm text-slate-700">
           We&apos;ll read your will and suggest answers. You review everything before saving.
         </p>
       </header>
@@ -79,8 +79,8 @@ export function UploadSelector() {
           } ${!acknowledged ? "cursor-not-allowed opacity-60" : "bg-white"}`}
         >
           <div className="text-3xl">📄</div>
-          <p className="mt-3 text-lg font-semibold text-gray-900">Upload PDF</p>
-          <p className="mt-1 text-sm text-gray-600">Best for digital wills or scans.</p>
+          <p className="mt-3 text-lg font-semibold text-[color:var(--ink)]">Upload PDF</p>
+          <p className="mt-1 text-sm text-slate-700">Best for digital wills or scans.</p>
         </button>
         <button
           type="button"
@@ -91,8 +91,8 @@ export function UploadSelector() {
           } ${!acknowledged ? "cursor-not-allowed opacity-60" : "bg-white"}`}
         >
           <div className="text-3xl">📸</div>
-          <p className="mt-3 text-lg font-semibold text-gray-900">Upload Photos</p>
-          <p className="mt-1 text-sm text-gray-600">Best for paper wills.</p>
+          <p className="mt-3 text-lg font-semibold text-[color:var(--ink)]">Upload Photos</p>
+          <p className="mt-1 text-sm text-slate-700">Best for paper wills.</p>
         </button>
       </div>
 

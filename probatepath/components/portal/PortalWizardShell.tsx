@@ -38,8 +38,8 @@ export function PortalWizardShell({
         </span>
       </div>
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-        {subtitle ? <p className="text-sm text-gray-700">{subtitle}</p> : null}
+        <h2 className="text-lg font-semibold text-[color:var(--ink)]">{title}</h2>
+        {subtitle ? <p className="text-sm text-slate-700">{subtitle}</p> : null}
       </div>
       <div className="text-sm text-gray-800">{children}</div>
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2">

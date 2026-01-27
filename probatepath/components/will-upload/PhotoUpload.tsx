@@ -122,8 +122,8 @@ export function PhotoUpload({ onComplete, onBack }: PhotoUploadProps) {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <div>
-          <p className="text-lg font-semibold text-gray-900">Take photo / choose photos</p>
-          <p className="text-sm text-gray-600">
+          <p className="text-lg font-semibold text-[color:var(--ink)]">Take photo / choose photos</p>
+          <p className="text-sm text-slate-700">
             Take clear, well-lit photos of each page. Avoid shadows or glare. For now, upload the clearest page first.
           </p>
         </div>
@@ -191,7 +191,7 @@ export function PhotoUpload({ onComplete, onBack }: PhotoUploadProps) {
           {uploading ? "Uploading and reading..." : "Upload and read my will"}
         </Button>
       </div>
-      <p className="text-xs text-gray-500">We automatically delete uploads after 90 days.</p>
+      <p className="text-xs text-slate-600">We automatically delete uploads after 90 days.</p>
     </div>
   );
 }

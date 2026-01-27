@@ -57,8 +57,8 @@ export default function ProcessingPage() {
     <main className="flex min-h-screen items-center justify-center bg-white px-4 py-16">
       <div className="flex w-full max-w-md flex-col items-center rounded-2xl border border-gray-200 bg-white px-8 py-10 text-center shadow-sm">
         <div className="mb-6 h-14 w-14 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" aria-hidden />
-        <h1 className="text-lg font-semibold text-gray-900">Reading your will...</h1>
-        <p className="mt-2 text-sm text-gray-600">This may take 30-60 seconds.</p>
+        <h1 className="text-lg font-semibold text-[color:var(--ink)]">Reading your will...</h1>
+        <p className="mt-2 text-sm text-slate-700">This may take 30-60 seconds.</p>
         {error ? (
           <div className="mt-4 w-full rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}

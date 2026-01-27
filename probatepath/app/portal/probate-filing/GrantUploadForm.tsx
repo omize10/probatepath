@@ -84,7 +84,7 @@ export function GrantUploadForm({ caseId, existingUrl }: GrantUploadFormProps) {
 
   return (
     <div className="space-y-2">
-      <p className="text-sm text-gray-600">Optional: Upload a copy of your grant document for your records.</p>
+      <p className="text-sm text-slate-700">Optional: Upload a copy of your grant document for your records.</p>
       <div>
         <label className="relative cursor-pointer">
           <input
@@ -98,8 +98,8 @@ export function GrantUploadForm({ caseId, existingUrl }: GrantUploadFormProps) {
           <span
             className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
               uploading
-                ? "bg-gray-200 text-gray-600 cursor-not-allowed"
-                : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                ? "bg-gray-200 text-slate-700 cursor-not-allowed"
+                : "border border-gray-300 bg-white text-slate-700 hover:bg-gray-50"
             }`}
           >
             {uploading ? (
@@ -120,7 +120,7 @@ export function GrantUploadForm({ caseId, existingUrl }: GrantUploadFormProps) {
             )}
           </span>
         </label>
-        <p className="mt-1 text-xs text-gray-500">PDF, JPG, or PNG up to 10MB</p>
+        <p className="mt-1 text-xs text-slate-600">PDF, JPG, or PNG up to 10MB</p>
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

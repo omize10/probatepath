@@ -84,7 +84,7 @@ export function AdminApplicantsStep({
                   className="h-4 w-4 text-[color:var(--brand)]"
                 />
                 <span className="flex-1">{option.label}</span>
-                <span className="text-xs text-gray-500">Priority {option.priority}</span>
+                <span className="text-xs text-slate-600">Priority {option.priority}</span>
               </label>
             ))}
           </div>
@@ -292,7 +292,7 @@ export function AdminApplicantsStep({
       {/* Summary of what's needed */}
       {selectedRelationship && !spouseBlocks && !childrenBlock && (
         <QuestionCard title="What happens next">
-          <div className="text-sm text-gray-700 space-y-2">
+          <div className="text-sm text-slate-700 space-y-2">
             {administration.spouseConsents === "yes" && (
               <p className="flex items-start gap-2">
                 <span className="text-amber-600">⚠</span>

@@ -37,8 +37,8 @@ function TestSection({
 }) {
   return (
     <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-      <p className="mt-1 text-sm text-gray-600">{description}</p>
+      <h2 className="text-lg font-semibold text-[color:var(--ink)]">{title}</h2>
+      <p className="mt-1 text-sm text-slate-700">{description}</p>
       <div className="mt-4">{children}</div>
     </div>
   );
@@ -344,7 +344,7 @@ export function DevTools() {
         {/* Cron Test */}
         <TestSection title="Run Cron Job" description="Manually trigger the daily cron job">
           <div className="space-y-3">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-600">
               This runs the same job that executes daily: processes reminders, grant check-ins, and cleans up tokens.
             </p>
             <button
@@ -361,7 +361,7 @@ export function DevTools() {
         {/* Env Check */}
         <TestSection title="Check Environment" description="Verify all required env vars are configured">
           <div className="space-y-3">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-600">
               Checks if RESEND_API_KEY, Twilio credentials, and other required variables are set.
             </p>
             <button
@@ -484,7 +484,7 @@ export function DevTools() {
         {/* List Cases */}
         <TestSection title="List All Cases" description="Get a list of all cases with IDs">
           <div className="space-y-3">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-600">
               Useful for getting case IDs to use with other dev tools.
             </p>
             <button

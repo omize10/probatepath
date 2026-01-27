@@ -198,8 +198,8 @@ export function AdminConsentStep({ estate, updateAdministration }: AdminConsentS
         description="When someone dies without a valid will, BC's Wills, Estates and Succession Act (WESA) determines who inherits."
       >
         <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-3">
-          <p className="font-medium text-gray-900">BC Intestacy Rules (simplified):</p>
-          <ul className="list-disc list-inside text-gray-700 space-y-1">
+          <p className="font-medium text-[color:var(--ink)]">BC Intestacy Rules (simplified):</p>
+          <ul className="list-disc list-inside text-slate-700 space-y-1">
             <li>
               <strong>Spouse only, no children:</strong> Spouse inherits everything
             </li>
@@ -252,7 +252,7 @@ export function AdminConsentStep({ estate, updateAdministration }: AdminConsentS
                           </span>
                         )}
                       </td>
-                      <td className="p-3 text-gray-600">
+                      <td className="p-3 text-slate-700">
                         {RELATIONSHIP_LABELS[heir.relationship] || heir.relationship}
                       </td>
                       <td className="p-3 text-right font-medium">
@@ -313,8 +313,8 @@ export function AdminConsentStep({ estate, updateAdministration }: AdminConsentS
       >
         <div className="space-y-4">
           <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-3">
-            <p className="font-medium text-gray-900">As Administrator, you will:</p>
-            <ul className="list-disc list-inside text-gray-700 space-y-1">
+            <p className="font-medium text-[color:var(--ink)]">As Administrator, you will:</p>
+            <ul className="list-disc list-inside text-slate-700 space-y-1">
               <li>Apply for a "Grant of Administration" (not "Grant of Probate")</li>
               <li>Collect and manage the estate assets</li>
               <li>Pay valid debts and claims against the estate</li>
@@ -356,7 +356,7 @@ export function AdminConsentStep({ estate, updateAdministration }: AdminConsentS
       {/* P1 Notices Info */}
       {hasHeirs && (
         <QuestionCard title="Notice requirements">
-          <div className="text-sm text-gray-700 space-y-2">
+          <div className="text-sm text-slate-700 space-y-2">
             <p>
               You will need to send a P1 Notice to all intestate heirs listed above. This is the
               same process as for estates with a will, but the recipients are determined by BC law

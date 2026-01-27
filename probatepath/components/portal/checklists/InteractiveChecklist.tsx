@@ -59,11 +59,11 @@ export function InteractiveChecklist({
       <div className="px-5 py-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-            {description && <p className="text-xs text-gray-500 mt-0.5">{description}</p>}
+            <h3 className="text-base font-semibold text-[color:var(--ink)]">{title}</h3>
+            {description && <p className="text-xs text-slate-600 mt-0.5">{description}</p>}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-gray-500">{checked.size}/{items.length}</span>
+            <span className="text-xs font-medium text-slate-600">{checked.size}/{items.length}</span>
             <div className="h-2 w-20 rounded-full bg-gray-100 overflow-hidden">
               <div
                 className="h-full rounded-full bg-[color:var(--brand)] transition-all duration-300"
@@ -86,11 +86,11 @@ export function InteractiveChecklist({
               className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[color:var(--brand)] focus:ring-[color:var(--brand)]"
             />
             <div className="flex-1">
-              <span className={`text-sm ${checked.has(item.id) ? "text-gray-500 line-through" : "text-gray-900"} ${item.critical ? "font-medium" : ""}`}>
+              <span className={`text-sm ${checked.has(item.id) ? "text-slate-600 line-through" : "text-[color:var(--ink)]"} ${item.critical ? "font-medium" : ""}`}>
                 {item.label}
               </span>
               {item.description && (
-                <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
+                <p className="text-xs text-slate-600 mt-0.5">{item.description}</p>
               )}
               {item.critical && !checked.has(item.id) && (
                 <span className="inline-flex mt-1 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-700">

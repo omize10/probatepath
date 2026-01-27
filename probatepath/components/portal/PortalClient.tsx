@@ -233,7 +233,7 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
               completionMessage="Your document packet is ready."
             />
             <div className="rounded-2xl bg-white px-6 py-4 shadow-sm">
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-slate-700">
                 When your packet is ready, we'll email and text you, and this page will unlock your next step.
               </p>
             </div>
@@ -243,8 +243,8 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
         ) : portalStatus === "will_search_ready" ? (
           <section className="space-y-4 rounded-2xl bg-white px-6 py-6 shadow-sm">
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-gray-900">Hooray – your packet is ready.</h2>
-              <p className="text-sm text-gray-700">
+              <h2 className="text-lg font-semibold text-[color:var(--ink)]">Hooray – your packet is ready.</h2>
+              <p className="text-sm text-slate-700">
                 We've prepared your document packet based on your intake. Your next step is to start your will search and notices.
               </p>
             </div>
@@ -253,19 +253,19 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
         ) : portalStatus === "will_search_sent" && !hasNoticesSent ? (
           <section className="space-y-4">
             <div className="rounded-2xl bg-white px-6 py-4 shadow-sm space-y-2">
-              <h2 className="text-lg font-semibold text-gray-900">Next: send P1 notices.</h2>
-              <p className="text-sm text-gray-700">
+              <h2 className="text-lg font-semibold text-[color:var(--ink)]">Next: send P1 notices.</h2>
+              <p className="text-sm text-slate-700">
                 You told us you mailed your will search on {matter.willSearchMailedAtDisplay ?? "—"}. Now send the P1 notices.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <Link href="/portal/p1-tracker" className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4 hover:border-[color:var(--brand)] transition block">
-                <p className="text-sm font-semibold text-gray-900">P1 notice tracker</p>
-                <p className="text-xs text-gray-500 mt-0.5">Track delivery to each beneficiary.</p>
+                <p className="text-sm font-semibold text-[color:var(--ink)]">P1 notice tracker</p>
+                <p className="text-xs text-slate-600 mt-0.5">Track delivery to each beneficiary.</p>
               </Link>
               <Link href="/portal/checklists" className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4 hover:border-[color:var(--brand)] transition block">
-                <p className="text-sm font-semibold text-gray-900">Checklists</p>
-                <p className="text-xs text-gray-500 mt-0.5">Print and mailing verification guides.</p>
+                <p className="text-sm font-semibold text-[color:var(--ink)]">Checklists</p>
+                <p className="text-xs text-slate-600 mt-0.5">Print and mailing verification guides.</p>
               </Link>
             </div>
             <NeedHelp />
@@ -283,7 +283,7 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
               {/* Waiting period status */}
               {daysRemaining !== null && daysRemaining > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-slate-700">
                     You must wait {daysRemaining} day(s) from that date before filing.
                   </p>
                   {!certificateUploaded && (
@@ -294,7 +294,7 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-700">Your 21-day waiting period is complete.</p>
+                  <p className="text-sm text-slate-700">Your 21-day waiting period is complete.</p>
                   {!certificateUploaded && (
                     <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-2">
                       <p className="text-sm font-semibold text-amber-800">Certificate required</p>
@@ -326,16 +326,16 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
         ) : portalStatus === "probate_package_ready" ? (
           <section className="space-y-4 rounded-2xl bg-white px-6 py-6 shadow-sm">
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-gray-900">{isAdministration ? "Court filing package is ready." : "Probate filing package is ready."}</h2>
-              <p className="text-sm text-gray-700">Download, get your affidavits notarized, and file with the registry.</p>
+              <h2 className="text-lg font-semibold text-[color:var(--ink)]">{isAdministration ? "Court filing package is ready." : "Probate filing package is ready."}</h2>
+              <p className="text-sm text-slate-700">Download, get your affidavits notarized, and file with the registry.</p>
             </div>
             <NeedHelp />
           </section>
         ) : portalStatus === "probate_package_filed" || portalStatus === "waiting_for_grant" ? (
           <section className="space-y-4 rounded-2xl bg-white px-6 py-6 shadow-sm">
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-gray-900">Application filed</h2>
-              <p className="text-sm text-gray-700">
+              <h2 className="text-lg font-semibold text-[color:var(--ink)]">Application filed</h2>
+              <p className="text-sm text-slate-700">
                 Your {isAdministration ? "court" : "probate"} package has been filed. The court is reviewing your application. This can take several weeks. We'll contact you if anything else is needed.
               </p>
             </div>
@@ -346,20 +346,20 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
             <AnimatedStatus status="complete" label={grantedLabel} sublabel="You can now begin administering the estate." />
             <div className="grid gap-3 sm:grid-cols-2">
               <Link href="/portal/post-grant" className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4 hover:border-[color:var(--brand)] transition block">
-                <p className="text-sm font-semibold text-gray-900">Estate administration</p>
-                <p className="text-xs text-gray-500 mt-0.5">Collect assets, pay debts, distribute to beneficiaries.</p>
+                <p className="text-sm font-semibold text-[color:var(--ink)]">Estate administration</p>
+                <p className="text-xs text-slate-600 mt-0.5">Collect assets, pay debts, distribute to beneficiaries.</p>
               </Link>
               <Link href="/portal/requisitions" className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4 hover:border-[color:var(--brand)] transition block">
-                <p className="text-sm font-semibold text-gray-900">Requisitions</p>
-                <p className="text-xs text-gray-500 mt-0.5">Handle court correction requests if any arise.</p>
+                <p className="text-sm font-semibold text-[color:var(--ink)]">Requisitions</p>
+                <p className="text-xs text-slate-600 mt-0.5">Handle court correction requests if any arise.</p>
               </Link>
               <Link href="/portal/p1-tracker" className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4 hover:border-[color:var(--brand)] transition block">
-                <p className="text-sm font-semibold text-gray-900">P1 notice tracker</p>
-                <p className="text-xs text-gray-500 mt-0.5">Track delivery status of each beneficiary notice.</p>
+                <p className="text-sm font-semibold text-[color:var(--ink)]">P1 notice tracker</p>
+                <p className="text-xs text-slate-600 mt-0.5">Track delivery status of each beneficiary notice.</p>
               </Link>
               <Link href="/portal/checklists" className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4 hover:border-[color:var(--brand)] transition block">
-                <p className="text-sm font-semibold text-gray-900">Checklists and guides</p>
-                <p className="text-xs text-gray-500 mt-0.5">Print, sign, and mail verification checklists.</p>
+                <p className="text-sm font-semibold text-[color:var(--ink)]">Checklists and guides</p>
+                <p className="text-xs text-slate-600 mt-0.5">Print, sign, and mail verification checklists.</p>
               </Link>
             </div>
             <NeedHelp />
@@ -376,15 +376,15 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
 
 function NeedHelp() {
   return (
-    <div className="space-y-1 rounded-2xl bg-[color:var(--bg-muted)] px-4 py-3 text-sm text-gray-700">
-      <p className="font-semibold text-gray-900">Need help?</p>
+    <div className="space-y-1 rounded-2xl bg-[color:var(--bg-muted)] px-4 py-3 text-sm text-slate-700">
+      <p className="font-semibold text-[color:var(--ink)]">Need help?</p>
       <p>
         If anything has changed or you need to update details, please call{" "}
-        <a href="tel:6041234567" className="font-semibold text-gray-900">
+        <a href="tel:6041234567" className="font-semibold text-[color:var(--ink)]">
           604-123-4567
         </a>{" "}
         or email{" "}
-        <a href="mailto:help@probatedesk.ca" className="font-semibold text-gray-900">
+        <a href="mailto:help@probatedesk.ca" className="font-semibold text-[color:var(--ink)]">
           help@probatedesk.ca
         </a>
         .
@@ -409,11 +409,11 @@ function Accordion() {
     },
   ];
   return (
-    <div className="divide-y divide-gray-200 rounded-2xl border border-gray-200">
+    <div className="divide-y divide-[color:var(--border-muted)] rounded-2xl border border-[color:var(--border-muted)]">
       {items.map((item) => (
-        <details key={item.title} className="px-4 py-3 text-sm text-gray-700">
-          <summary className="cursor-pointer font-semibold text-gray-900">{item.title}</summary>
-          <p className="mt-2 text-gray-700">{item.body}</p>
+        <details key={item.title} className="px-4 py-3 text-sm text-slate-700">
+          <summary className="cursor-pointer font-semibold text-[color:var(--ink)]">{item.title}</summary>
+          <p className="mt-2 text-slate-700">{item.body}</p>
         </details>
       ))}
     </div>

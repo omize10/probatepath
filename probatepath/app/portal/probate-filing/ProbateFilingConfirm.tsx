@@ -30,7 +30,7 @@ export function ProbateFilingConfirm({ caseId, caseCode, pathType, onSubmitActio
   return (
     <div className="space-y-4">
       {/* Instructions */}
-      <div className="text-sm text-gray-700 space-y-2">
+      <div className="text-sm text-slate-700 space-y-2">
         <ul className="list-disc space-y-1 pl-5">
           <li>You can mail or bring this package to the Supreme Court registry that handles your {pathLabel} application.</li>
           <li>Use the address shown on your filing packet or on the court website.</li>

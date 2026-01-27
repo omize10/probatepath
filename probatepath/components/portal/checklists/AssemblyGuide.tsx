@@ -68,8 +68,8 @@ export function AssemblyGuide() {
   return (
     <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100">
-        <h3 className="text-base font-semibold text-gray-900">Document assembly guide</h3>
-        <p className="text-xs text-gray-500 mt-0.5">How to put your probate filing package together, step by step.</p>
+        <h3 className="text-base font-semibold text-[color:var(--ink)]">Document assembly guide</h3>
+        <p className="text-xs text-slate-600 mt-0.5">How to put your probate filing package together, step by step.</p>
       </div>
       <div className="divide-y divide-gray-100">
         {ASSEMBLY_STEPS.map((step) => (
@@ -79,11 +79,11 @@ export function AssemblyGuide() {
                 {step.step}
               </div>
               <div className="flex-1">
-                <h4 className="text-sm font-semibold text-gray-900">{step.title}</h4>
-                <p className="text-xs text-gray-600 mt-0.5">{step.description}</p>
+                <h4 className="text-sm font-semibold text-[color:var(--ink)]">{step.title}</h4>
+                <p className="text-xs text-slate-700 mt-0.5">{step.description}</p>
                 <ul className="mt-2 space-y-1">
                   {step.details.map((detail, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-gray-700">
+                    <li key={i} className="flex items-start gap-2 text-xs text-slate-700">
                       <span className="mt-1 h-1 w-1 rounded-full bg-gray-400 shrink-0" />
                       <span>{detail}</span>
                     </li>

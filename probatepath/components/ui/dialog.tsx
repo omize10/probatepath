@@ -81,7 +81,7 @@ export function DialogHeader({ className, children, ...props }: HTMLAttributes<H
 
 export function DialogTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <h2 className={cn("text-2xl font-semibold leading-tight text-gray-900", className)} {...props}>
+    <h2 className={cn("text-2xl font-semibold leading-tight text-[color:var(--ink)]", className)} {...props}>
       {children}
     </h2>
   );
@@ -89,7 +89,7 @@ export function DialogTitle({ className, children, ...props }: HTMLAttributes<HT
 
 export function DialogDescription({ className, children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-sm text-gray-600", className)} {...props}>
+    <p className={cn("text-sm text-slate-700", className)} {...props}>
       {children}
     </p>
   );

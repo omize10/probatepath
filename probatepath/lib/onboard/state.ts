@@ -64,10 +64,16 @@ export interface OnboardState {
   redirectedToSpecialist?: boolean;
   fitCheckPassed?: boolean;
 
-  // Legacy fields (for backwards compatibility during transition)
-  name?: string;
+  // Account creation
+  accountCreated?: boolean;
+
+  // Referral (asked after payment)
   referralSource?: ReferralSource;
   referralFuneralHome?: string;
+  referralCompleted?: boolean;
+
+  // Legacy fields (for backwards compatibility during transition)
+  name?: string;
   aiCallId?: string;
 
   // Tracking

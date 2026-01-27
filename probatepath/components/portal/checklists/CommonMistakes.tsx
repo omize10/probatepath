@@ -69,8 +69,8 @@ export function CommonMistakes() {
   return (
     <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100">
-        <h3 className="text-base font-semibold text-gray-900">Common mistakes to avoid</h3>
-        <p className="text-xs text-gray-500 mt-0.5">These are the most frequent errors executors make. Read each one carefully.</p>
+        <h3 className="text-base font-semibold text-[color:var(--ink)]">Common mistakes to avoid</h3>
+        <p className="text-xs text-slate-600 mt-0.5">These are the most frequent errors executors make. Read each one carefully.</p>
       </div>
       <div className="divide-y divide-gray-50">
         {MISTAKES.map((mistake) => {
@@ -83,12 +83,12 @@ export function CommonMistakes() {
                 </svg>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-900">{mistake.title}</span>
+                    <span className="text-sm font-medium text-[color:var(--ink)]">{mistake.title}</span>
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ${styles.badge}`}>
                       {SEVERITY_LABELS[mistake.severity]}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 mt-1">{mistake.description}</p>
+                  <p className="text-xs text-slate-700 mt-1">{mistake.description}</p>
                 </div>
               </div>
             </div>

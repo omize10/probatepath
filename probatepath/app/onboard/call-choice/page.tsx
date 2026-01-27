@@ -168,7 +168,7 @@ export default function OnboardCallChoicePage() {
         >
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-              <FileText className="w-5 h-5 text-gray-600" />
+              <FileText className="w-5 h-5 text-slate-700" />
             </div>
             <div className="flex-1">
               <h3 className="font-medium text-[color:var(--brand)]">

@@ -278,7 +278,7 @@ export default function ProbateFeeCalculatorPage() {
 
         <div className="rounded-2xl border border-[color:var(--brand)]/20 bg-blue-50/30 p-5 my-6 not-prose">
           <p className="text-sm font-semibold text-[color:var(--brand)]">Save on professional costs</p>
-          <p className="mt-2 text-sm text-gray-700">
+          <p className="mt-2 text-sm text-slate-700">
             ProbateDesk prepares all your probate forms for $799-$2,499 — a fraction of the $3,000-$15,000+
             lawyers charge. We handle P1 notices, probate package assembly, and filing guidance.{" "}
             <Link href="/how-it-works" className="text-[color:var(--brand)] underline font-medium">

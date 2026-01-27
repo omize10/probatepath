@@ -36,7 +36,7 @@ export function OperationalTransparency({
 
   return (
     <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white p-5 shadow-sm">
-      <h3 className="text-sm font-semibold text-gray-900 mb-3">{title}</h3>
+      <h3 className="text-sm font-semibold text-[color:var(--ink)] mb-3">{title}</h3>
       <div className="space-y-2">
         {steps.map((step, i) => {
           const isActive = i === currentIndex;
@@ -63,9 +63,9 @@ export function OperationalTransparency({
                 </div>
               )}
               <span className={`text-xs ${
-                step.done ? "text-gray-500" :
-                isActive ? "text-gray-900 font-medium" :
-                "text-gray-500"
+                step.done ? "text-slate-600" :
+                isActive ? "text-[color:var(--ink)] font-medium" :
+                "text-slate-600"
               }`}>
                 {step.label}
               </span>

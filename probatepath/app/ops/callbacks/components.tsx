@@ -31,7 +31,7 @@ export function CallbackStatusBadge({ status }: { status: CallbackStatus }) {
 }
 
 const tierColors: Record<Tier, string> = {
-  basic: "bg-gray-100 text-gray-700 border-gray-200",
+  basic: "bg-gray-100 text-slate-700 border-gray-200",
   standard: "bg-blue-50 text-blue-700 border-blue-200",
   premium: "bg-yellow-100 text-yellow-800 border-yellow-300",
 };

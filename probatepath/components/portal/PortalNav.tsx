@@ -39,8 +39,8 @@ export function PortalNav({ statusLabel, pathType = "probate" }: PortalNavProps)
             </span>
           </Link>
           <div className="leading-tight">
-            <p className="text-sm font-semibold text-gray-900 sm:text-base">Portal</p>
-            <p className="text-xs text-gray-500">{workspaceLabel}</p>
+            <p className="text-sm font-semibold text-[color:var(--ink)] sm:text-base">Portal</p>
+            <p className="text-xs text-slate-600">{workspaceLabel}</p>
           </div>
         </div>
         <nav className="flex items-center gap-4 text-sm font-medium">
@@ -56,8 +56,8 @@ export function PortalNav({ statusLabel, pathType = "probate" }: PortalNavProps)
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "border-b-2 border-transparent pb-1 text-gray-600 transition hover:text-gray-900",
-                  isActive && "border-gray-900 text-gray-900",
+                  "border-b-2 border-transparent pb-1 text-slate-600 transition hover:text-[color:var(--ink)]",
+                  isActive && "border-[color:var(--ink)] text-[color:var(--ink)]",
                 )}
                 aria-current={isActive ? "page" : undefined}
               >

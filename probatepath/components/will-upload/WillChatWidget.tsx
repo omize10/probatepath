@@ -57,7 +57,7 @@ export function WillChatWidget({ extractionId, currentStep }: { extractionId: st
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
-        <h3 className="text-sm font-semibold text-gray-900">Will &amp; Probate Helper</h3>
+        <h3 className="text-sm font-semibold text-[color:var(--ink)]">Will &amp; Probate Helper</h3>
       </div>
 
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
@@ -65,13 +65,13 @@ export function WillChatWidget({ extractionId, currentStep }: { extractionId: st
           <div
             key={idx}
             className={`max-w-[90%] rounded-lg p-3 text-sm ${
-              message.role === "assistant" ? "bg-blue-50 text-gray-900" : "ml-auto bg-gray-100 text-gray-900"
+              message.role === "assistant" ? "bg-blue-50 text-[color:var(--ink)]" : "ml-auto bg-gray-100 text-[color:var(--ink)]"
             }`}
           >
             <p className="whitespace-pre-wrap">{message.content}</p>
           </div>
         ))}
-        {loading ? <div className="text-sm text-gray-600">Thinking...</div> : null}
+        {loading ? <div className="text-sm text-slate-700">Thinking...</div> : null}
         <div ref={messagesEndRef} />
       </div>
 
@@ -99,7 +99,7 @@ export function WillChatWidget({ extractionId, currentStep }: { extractionId: st
             Send
           </button>
         </div>
-        <p className="mt-2 text-xs text-gray-500">AI can answer general BC probate questions. Not legal advice.</p>
+        <p className="mt-2 text-xs text-slate-600">AI can answer general BC probate questions. Not legal advice.</p>
       </div>
     </div>
   );

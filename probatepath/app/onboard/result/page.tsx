@@ -197,7 +197,8 @@ export default function OnboardResultPage() {
 
   const handleContinue = () => {
     saveOnboardState({ selectedTier });
-    router.push(`/pay?tier=${selectedTier}`);
+    // Go to create account first, then payment
+    router.push("/onboard/create-account");
   };
 
   const dismissPopup = () => {
@@ -300,7 +301,7 @@ export default function OnboardResultPage() {
                 >
                   <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-emerald-500" />
                 </motion.div>
-                <span className="text-sm text-gray-700">{feature}</span>
+                <span className="text-sm text-[color:var(--ink)]">{feature}</span>
               </motion.div>
             ))}
           </div>
@@ -417,7 +418,7 @@ export default function OnboardResultPage() {
                       {tier.features.slice(0, 4).map((feature) => (
                         <li
                           key={feature}
-                          className="flex items-start gap-2 text-xs text-gray-600"
+                          className="flex items-start gap-2 text-xs text-[color:var(--ink)]"
                         >
                           <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500 mt-0.5" />
                           <span>{feature}</span>
@@ -466,16 +467,16 @@ export default function OnboardResultPage() {
               comparisonInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }
             }
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="rounded-xl bg-gray-100 p-5"
+            className="rounded-xl bg-slate-100 p-5"
           >
             <div className="mb-4">
-              <p className="text-sm font-medium text-gray-500">
+              <p className="text-sm font-medium text-slate-600">
                 Traditional Lawyer
               </p>
-              <p className="text-2xl font-bold text-gray-700">
+              <p className="text-2xl font-bold text-slate-800">
                 $5,000 - $10,000+
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-slate-600">
                 (and that&apos;s just the start)
               </p>
             </div>
@@ -490,7 +491,7 @@ export default function OnboardResultPage() {
                   custom={index}
                 >
                   <X className="h-4 w-4 flex-shrink-0 text-red-500" />
-                  <span className="text-sm text-gray-600">{item}</span>
+                  <span className="text-sm text-slate-700">{item}</span>
                 </motion.div>
               ))}
             </div>
@@ -542,7 +543,7 @@ export default function OnboardResultPage() {
         </div>
 
         {/* Disclaimer */}
-        <p className="text-center text-xs text-gray-600">
+        <p className="text-center text-xs text-slate-600">
           *Lawyer fees based on industry surveys of BC probate services. Actual
           costs vary. ProbateDesk pricing is fixed with no hidden fees.
         </p>
@@ -584,7 +585,7 @@ export default function OnboardResultPage() {
           >
             <button
               onClick={dismissPopup}
-              className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
+              className="absolute right-2 top-2 text-slate-500 hover:text-slate-700"
             >
               <X className="h-4 w-4" />
             </button>

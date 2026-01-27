@@ -107,9 +107,9 @@ export function PdfUpload({ onComplete, onBack }: PdfUploadProps) {
           className="block cursor-pointer space-y-2"
         >
           <div className="text-6xl">📄</div>
-          <p className="text-lg font-semibold text-gray-900">Drag and drop your PDF here</p>
-          <p className="text-sm text-gray-600">or click to browse</p>
-          <p className="mt-2 text-xs text-gray-500">Maximum file size: {MAX_FILE_SIZE_MB}MB · Accepted format: PDF</p>
+          <p className="text-lg font-semibold text-[color:var(--ink)]">Drag and drop your PDF here</p>
+          <p className="text-sm text-slate-700">or click to browse</p>
+          <p className="mt-2 text-xs text-slate-600">Maximum file size: {MAX_FILE_SIZE_MB}MB · Accepted format: PDF</p>
         </label>
       </div>
 
@@ -142,7 +142,7 @@ export function PdfUpload({ onComplete, onBack }: PdfUploadProps) {
           {uploading ? "Uploading and reading..." : "Upload and read my will"}
         </Button>
       </div>
-      <p className="text-xs text-gray-500">We automatically delete uploads after 90 days.</p>
+      <p className="text-xs text-slate-600">We automatically delete uploads after 90 days.</p>
     </div>
   );
 }

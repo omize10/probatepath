@@ -140,7 +140,7 @@ export function PostGrantDashboard({ data }: { data: PostGrantData }) {
             className={`px-4 py-2 text-sm font-medium border-b-2 transition whitespace-nowrap ${
               activeTab === tab.id
                 ? "border-[color:var(--brand)] text-[color:var(--brand)]"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-slate-600 hover:text-slate-700"
             }`}
           >
             {tab.label}
@@ -180,10 +180,10 @@ export function PostGrantDashboard({ data }: { data: PostGrantData }) {
 }
 
 function SummaryCard({ label, value, color }: { label: string; value: string; color?: string }) {
-  const textColor = color === "red" ? "text-red-700" : color === "green" ? "text-green-700" : "text-gray-900";
+  const textColor = color === "red" ? "text-red-700" : color === "green" ? "text-green-700" : "text-[color:var(--ink)]";
   return (
     <div className="rounded-xl border border-[color:var(--border-muted)] bg-white p-3 text-center">
-      <p className="text-xs uppercase tracking-widest text-gray-500">{label}</p>
+      <p className="text-xs uppercase tracking-widest text-slate-600">{label}</p>
       <p className={`text-lg font-bold ${textColor}`}>{value}</p>
     </div>
   );
@@ -229,11 +229,11 @@ function AssetsTab({ assets, setAssets, apiCall }: { assets: Asset[]; setAssets:
         <div key={asset.id} className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-900">{asset.name}</p>
-              <p className="text-xs text-gray-500">{asset.category}{asset.institution ? ` - ${asset.institution}` : ""}</p>
+              <p className="text-sm font-medium text-[color:var(--ink)]">{asset.name}</p>
+              <p className="text-xs text-slate-600">{asset.category}{asset.institution ? ` - ${asset.institution}` : ""}</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-gray-700">
+              <span className="text-xs font-medium text-slate-700">
                 {asset.actualValue ? formatCurrency(parseFloat(asset.actualValue)) : asset.estimatedValue ? `~${formatCurrency(parseFloat(asset.estimatedValue))}` : "—"}
               </span>
               <select
@@ -254,7 +254,7 @@ function AssetsTab({ assets, setAssets, apiCall }: { assets: Asset[]; setAssets:
       {showForm ? (
         <AddAssetForm onSubmit={addAsset} onCancel={() => setShowForm(false)} />
       ) : (
-        <button onClick={() => setShowForm(true)} className="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 px-4 py-2 text-xs font-medium text-gray-600 hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] transition">
+        <button onClick={() => setShowForm(true)} className="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 px-4 py-2 text-xs font-medium text-slate-700 hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] transition">
           + Add asset
         </button>
       )}
@@ -276,7 +276,7 @@ function AddAssetForm({ onSubmit, onCancel }: { onSubmit: (data: Record<string, 
       </div>
       <div className="flex gap-2">
         <button onClick={() => onSubmit(form)} disabled={!form.name} className="rounded-full bg-[color:var(--brand)] px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Add</button>
-        <button onClick={onCancel} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">Cancel</button>
+        <button onClick={onCancel} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-slate-700">Cancel</button>
       </div>
     </div>
   );
@@ -317,8 +317,8 @@ function DebtsTab({ debts, setDebts, apiCall }: { debts: Debt[]; setDebts: (d: D
         <div key={debt.id} className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-900">{debt.creditor}</p>
-              <p className="text-xs text-gray-500">{debt.category ?? "Debt"}</p>
+              <p className="text-sm font-medium text-[color:var(--ink)]">{debt.creditor}</p>
+              <p className="text-xs text-slate-600">{debt.category ?? "Debt"}</p>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-red-700">
@@ -342,7 +342,7 @@ function DebtsTab({ debts, setDebts, apiCall }: { debts: Debt[]; setDebts: (d: D
       {showForm ? (
         <AddDebtForm onSubmit={addDebt} onCancel={() => setShowForm(false)} />
       ) : (
-        <button onClick={() => setShowForm(true)} className="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 px-4 py-2 text-xs font-medium text-gray-600 hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] transition">
+        <button onClick={() => setShowForm(true)} className="inline-flex items-center gap-1 rounded-full border border-dashed border-gray-300 px-4 py-2 text-xs font-medium text-slate-700 hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] transition">
           + Add debt
         </button>
       )}
@@ -363,7 +363,7 @@ function AddDebtForm({ onSubmit, onCancel }: { onSubmit: (data: Record<string, s
       </div>
       <div className="flex gap-2">
         <button onClick={() => onSubmit(form)} disabled={!form.creditor} className="rounded-full bg-[color:var(--brand)] px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Add</button>
-        <button onClick={onCancel} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">Cancel</button>
+        <button onClick={onCancel} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-slate-700">Cancel</button>
       </div>
     </div>
   );
@@ -414,8 +414,8 @@ function DistributionsTab({ distributions, setDistributions, beneficiaries, netE
       <div className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-sm font-medium text-gray-900">Distribution calculator</p>
-            <p className="text-xs text-gray-500">Net estate: {formatCurrency(netEstate)} | Allocated: {totalPercent.toFixed(1)}% | Paid: {formatCurrency(totalDistributed)}</p>
+            <p className="text-sm font-medium text-[color:var(--ink)]">Distribution calculator</p>
+            <p className="text-xs text-slate-600">Net estate: {formatCurrency(netEstate)} | Allocated: {totalPercent.toFixed(1)}% | Paid: {formatCurrency(totalDistributed)}</p>
           </div>
           <div className="flex gap-2">
             {distributions.length === 0 && beneficiaries.length > 0 && (
@@ -440,8 +440,8 @@ function DistributionsTab({ distributions, setDistributions, beneficiaries, netE
         <div key={dist.id} className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-900">{dist.beneficiaryName}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-medium text-[color:var(--ink)]">{dist.beneficiaryName}</p>
+              <p className="text-xs text-slate-600">
                 {dist.sharePercent ? `${dist.sharePercent}%` : "No share set"}
                 {dist.shareAmount ? ` = ${formatCurrency(parseFloat(dist.shareAmount))}` : ""}
               </p>
@@ -450,7 +450,7 @@ function DistributionsTab({ distributions, setDistributions, beneficiaries, netE
               {dist.paidAt ? (
                 <span className="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Paid</span>
               ) : (
-                <button onClick={() => markPaid(dist.id)} className="rounded-full border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:border-green-500 hover:text-green-700">
+                <button onClick={() => markPaid(dist.id)} className="rounded-full border border-gray-200 px-3 py-1 text-xs font-medium text-slate-700 hover:border-green-500 hover:text-green-700">
                   Mark paid
                 </button>
               )}
@@ -497,7 +497,7 @@ function ReleasesTab({ releases, setReleases, beneficiaries, apiCall }: { releas
   return (
     <div className="space-y-3">
       <div className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4">
-        <p className="text-sm text-gray-700 mb-3">
+        <p className="text-sm text-slate-700 mb-3">
           Once distributions are made, get a signed release from each beneficiary confirming they received their share.
         </p>
         {releases.length === 0 && beneficiaries.length > 0 && (
@@ -511,8 +511,8 @@ function ReleasesTab({ releases, setReleases, beneficiaries, apiCall }: { releas
         <div key={release.id} className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-900">{release.beneficiaryName}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-medium text-[color:var(--ink)]">{release.beneficiaryName}</p>
+              <p className="text-xs text-slate-600">
                 {release.signedAt ? "Signed" : release.sentAt ? "Sent, awaiting signature" : "Not sent"}
               </p>
             </div>
@@ -520,7 +520,7 @@ function ReleasesTab({ releases, setReleases, beneficiaries, apiCall }: { releas
               {!release.sentAt && (
                 <button
                   onClick={() => updateRelease(release.id, { sentAt: new Date().toISOString() })}
-                  className="rounded-full border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:border-[color:var(--brand)]"
+                  className="rounded-full border border-gray-200 px-3 py-1 text-xs font-medium text-slate-700 hover:border-[color:var(--brand)]"
                 >
                   Mark sent
                 </button>
@@ -528,7 +528,7 @@ function ReleasesTab({ releases, setReleases, beneficiaries, apiCall }: { releas
               {release.sentAt && !release.signedAt && (
                 <button
                   onClick={() => updateRelease(release.id, { signedAt: new Date().toISOString() })}
-                  className="rounded-full border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:border-green-500 hover:text-green-700"
+                  className="rounded-full border border-gray-200 px-3 py-1 text-xs font-medium text-slate-700 hover:border-green-500 hover:text-green-700"
                 >
                   Mark signed
                 </button>
@@ -569,8 +569,8 @@ function CloseoutTab({ assets, debts, distributions, releases }: { assets: Asset
     <div className="space-y-4">
       <div className="rounded-xl border border-[color:var(--border-muted)] bg-white p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-900">Estate closeout checklist</h3>
-          <span className="text-xs text-gray-500">{completedCount}/{steps.length} complete</span>
+          <h3 className="text-sm font-semibold text-[color:var(--ink)]">Estate closeout checklist</h3>
+          <span className="text-xs text-slate-600">{completedCount}/{steps.length} complete</span>
         </div>
         <div className="space-y-3">
           {steps.map((step) => (
@@ -582,7 +582,7 @@ function CloseoutTab({ assets, debts, distributions, releases }: { assets: Asset
               ) : (
                 <div className="h-5 w-5 rounded-full border-2 border-gray-300 shrink-0" />
               )}
-              <span className={`text-sm ${step.done ? "text-gray-500 line-through" : "text-gray-900"}`}>
+              <span className={`text-sm ${step.done ? "text-slate-600 line-through" : "text-[color:var(--ink)]"}`}>
                 {step.label}
               </span>
             </div>
@@ -597,8 +597,8 @@ function CloseoutTab({ assets, debts, distributions, releases }: { assets: Asset
         </div>
       )}
 
-      <div className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4 text-xs text-gray-600 space-y-2">
-        <p className="font-medium text-gray-900">Final steps (manual)</p>
+      <div className="rounded-xl border border-[color:var(--border-muted)] bg-white p-4 text-xs text-slate-700 space-y-2">
+        <p className="font-medium text-[color:var(--ink)]">Final steps (manual)</p>
         <ul className="space-y-1 list-disc list-inside">
           <li>File a final T1 tax return for the deceased for the year of death.</li>
           <li>File a T3 Trust Return if the estate earned income during administration.</li>

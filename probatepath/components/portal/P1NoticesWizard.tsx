@@ -52,7 +52,7 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
       title: "Step 2: P1 notices",
       subtitle: `Now we send notice of your ${applicationLabel} to the people who must be told.`,
       body: (
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-slate-700">
           You’ll download the P1 notice, sign it, and send it to everyone entitled to notice. We’ll walk you through printing, signing, and mailing/emailing copies.
         </p>
       ),
@@ -77,7 +77,7 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
               <a
                 href={pdfUrl}
                 target="_blank"
-                className="inline-flex items-center rounded-full border border-gray-900 px-4 py-2 text-sm font-semibold text-gray-900 transition hover:bg-gray-900 hover:text-white"
+                className="inline-flex items-center rounded-full border border-gray-900 px-4 py-2 text-sm font-semibold text-[color:var(--ink)] transition hover:bg-gray-900 hover:text-white"
               >
                 Download P1 notice only
               </a>
@@ -90,7 +90,7 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
               PDF not found (please upload in ops)
             </button>
           )}
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-slate-700">
             Our records show {recipientCount ?? "at least one"} recipient(s). Print extra copies if you need them.
           </p>
         </div>
@@ -100,14 +100,14 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
       title: "Sign the notice",
       subtitle: "Sign the original and make copies.",
       body: (
-        <p className="text-sm text-gray-700">Sign the original notice. Then make photocopies so each person receives a signed copy.</p>
+        <p className="text-sm text-slate-700">Sign the original notice. Then make photocopies so each person receives a signed copy.</p>
       ),
     },
     {
       title: "Send each notice",
       subtitle: "Mail or email each person entitled to notice.",
       body: (
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-slate-700">
           For each person entitled to notice: mail the signed notice, or email a scanned copy and wait for them to reply confirming they got it. Most people simply mail the
           notices.
         </p>
@@ -118,7 +118,7 @@ export function P1NoticesWizard({ caseId, pdfUrl, packetUrl, recipientCount, sho
       subtitle: "Confirm you've sent every notice.",
       body: (
         <div className="space-y-4">
-          <p className="text-sm text-gray-700">
+          <p className="text-sm text-slate-700">
             After you send your notices, you must wait 21 days before you file your {applicationLabel}. The court needs to give recipients time to respond.
           </p>
           <WarningCallout severity="danger" title="This starts your 21-day countdown">

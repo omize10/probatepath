@@ -80,9 +80,9 @@ export default async function WillSearchPage() {
         {mailedAt ? (
           <div className="space-y-4">
             <div className="space-y-3 rounded-2xl bg-white px-6 py-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900">Will search sent</h2>
-              <p className="text-sm text-gray-700">You told us you mailed your will search on {formatDate(mailedAt)}.</p>
-              <p className="text-sm text-gray-700">
+              <h2 className="text-lg font-semibold text-[color:var(--ink)]">Will search sent</h2>
+              <p className="text-sm text-slate-700">You told us you mailed your will search on {formatDate(mailedAt)}.</p>
+              <p className="text-sm text-slate-700">
                 Vital Statistics usually takes a few weeks to respond. Keep the result with your probate documents. You can continue with notices next.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
@@ -93,15 +93,15 @@ export default async function WillSearchPage() {
                   Continue to P1 notices
                 </Link>
                 {waitingUntil ? (
-                  <p className="text-xs text-gray-600">Earliest next step: {formatDate(waitingUntil)} (21-day wait after notices will start there).</p>
+                  <p className="text-xs text-slate-700">Earliest next step: {formatDate(waitingUntil)} (21-day wait after notices will start there).</p>
                 ) : null}
               </div>
             </div>
 
             {/* Certificate upload section */}
             <div className="rounded-2xl bg-white px-6 py-6 shadow-sm space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">Will search certificate</h3>
-              <p className="text-sm text-gray-700">
+              <h3 className="text-lg font-semibold text-[color:var(--ink)]">Will search certificate</h3>
+              <p className="text-sm text-slate-700">
                 When your certificate arrives from Vital Statistics, upload it here. This certificate is required for your court filing.
               </p>
               <WillSearchCertificateUpload

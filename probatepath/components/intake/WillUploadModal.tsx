@@ -108,8 +108,8 @@ export function WillUploadModal({ open, onClose, onComplete }: WillUploadModalPr
             <span className="mb-3 text-4xl" aria-hidden>
               📄
             </span>
-            <span className="font-semibold text-gray-900">Upload PDF</span>
-            <span className="mt-1 text-sm text-gray-600">Best for digital wills or full scans.</span>
+            <span className="font-semibold text-[color:var(--ink)]">Upload PDF</span>
+            <span className="mt-1 text-sm text-slate-700">Best for digital wills or full scans.</span>
           </button>
           <button
             type="button"
@@ -119,8 +119,8 @@ export function WillUploadModal({ open, onClose, onComplete }: WillUploadModalPr
             <span className="mb-3 text-4xl" aria-hidden>
               📸
             </span>
-            <span className="font-semibold text-gray-900">Upload photos</span>
-            <span className="mt-1 text-sm text-gray-600">Use your camera or choose clear images.</span>
+            <span className="font-semibold text-[color:var(--ink)]">Upload photos</span>
+            <span className="mt-1 text-sm text-slate-700">Use your camera or choose clear images.</span>
           </button>
         </div>
       </div>
@@ -147,7 +147,7 @@ export function WillUploadModal({ open, onClose, onComplete }: WillUploadModalPr
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 transition hover:bg-gray-200"
+          className="absolute right-4 top-4 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-gray-200"
         >
           Close
         </button>

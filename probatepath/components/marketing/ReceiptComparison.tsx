@@ -102,7 +102,7 @@ function ReceiptLine({
       <span className="flex-1 overflow-hidden">
         {description}
         {!isTotal && (
-          <span className="text-gray-500">
+          <span className="text-slate-600">
             {"".padEnd(30 - description.length, ".")}
           </span>
         )}
@@ -150,7 +150,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
         />
 
         {/* Receipt content */}
-        <div className="relative space-y-4 text-gray-700">
+        <div className="relative space-y-4 text-slate-700">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -161,7 +161,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
             <h3 className="font-mono text-lg font-bold tracking-tight text-gray-800">
               SMITH & ASSOCIATES
             </h3>
-            <p className="font-mono text-xs text-gray-500">
+            <p className="font-mono text-xs text-slate-600">
               Barristers & Solicitors
             </p>
           </motion.div>
@@ -171,11 +171,11 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 0.4 }}
-            className="font-mono text-xs text-gray-500 space-y-1"
+            className="font-mono text-xs text-slate-600 space-y-1"
           >
             <p>INVOICE #4892</p>
             <p>Date: {currentMonth}</p>
-            <p className="pt-2 text-gray-600">Estate of: Sample Client</p>
+            <p className="pt-2 text-slate-700">Estate of: Sample Client</p>
           </motion.div>
 
           {/* Divider */}
@@ -241,7 +241,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 2.5 }}
-            className="pt-2 font-mono text-[10px] text-gray-500 space-y-0.5"
+            className="pt-2 font-mono text-[10px] text-slate-600 space-y-0.5"
           >
             <p>* Final amount may vary</p>
             <p>* Additional fees may apply</p>
@@ -332,14 +332,14 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             className="flex justify-between items-baseline"
           >
             <div>
-              <p className="text-[10px] font-semibold text-gray-500 tracking-[0.2em] uppercase">
+              <p className="text-[10px] font-semibold text-slate-600 tracking-[0.2em] uppercase">
                 Receipt
               </p>
-              <p className="text-[10px] text-gray-500 mt-0.5 font-mono">
+              <p className="text-[10px] text-slate-600 mt-0.5 font-mono">
                 {receiptNumber}
               </p>
             </div>
-            <p className="text-[11px] text-gray-500">{currentDate}</p>
+            <p className="text-[11px] text-slate-600">{currentDate}</p>
           </motion.div>
 
           {/* Divider */}
@@ -352,10 +352,10 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             transition={{ delay: 3.2 }}
             className="space-y-3"
           >
-            <h4 className="text-lg font-semibold text-gray-900">
+            <h4 className="text-lg font-semibold text-[color:var(--ink)]">
               BC Probate Document Package
             </h4>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <ul className="space-y-2 text-sm text-slate-700">
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                 Court-ready probate application
@@ -385,8 +385,8 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             transition={{ delay: 3.4, type: "spring", stiffness: 200 }}
             className="flex justify-between items-center py-2"
           >
-            <span className="text-sm font-medium text-gray-500">TOTAL</span>
-            <span className="text-3xl font-bold text-gray-900">$799.00</span>
+            <span className="text-sm font-medium text-slate-600">TOTAL</span>
+            <span className="text-3xl font-bold text-[color:var(--ink)]">$799.00</span>
           </motion.div>
 
           {/* Paid indicator - simple checkmark style */}
@@ -412,7 +412,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 3.8 }}
-            className="text-center text-xs text-gray-500 pt-2"
+            className="text-center text-xs text-slate-600 pt-2"
           >
             Thank you for choosing ProbateDesk.
           </motion.p>

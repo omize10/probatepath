@@ -63,7 +63,7 @@ const FLAG_TYPE_LABELS: Record<FlagType, string> = {
 };
 
 const SEVERITY_COLORS: Record<FlagSeverity, string> = {
-  LOW: "bg-gray-100 text-gray-700",
+  LOW: "bg-slate-200 text-slate-800",
   MEDIUM: "bg-yellow-100 text-yellow-800",
   HIGH: "bg-orange-100 text-orange-800",
   CRITICAL: "bg-red-100 text-red-800",
@@ -73,7 +73,7 @@ const STATUS_COLORS: Record<FlagStatus, string> = {
   OPEN: "bg-blue-100 text-blue-800",
   IN_PROGRESS: "bg-purple-100 text-purple-800",
   RESOLVED: "bg-green-100 text-green-800",
-  DISMISSED: "bg-gray-100 text-gray-700",
+  DISMISSED: "bg-slate-200 text-slate-800",
 };
 
 export function NotesCard({ matterId, notes }: { matterId: string; notes: MatterNote[] }) {

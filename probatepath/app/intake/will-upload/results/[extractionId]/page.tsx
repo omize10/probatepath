@@ -36,9 +36,9 @@ export default async function WillResultsPage({ params }: { params: { extraction
         <div className="grid gap-6">
           <section className="space-y-4">
             <header className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">AI extraction</p>
-              <h1 className="text-2xl font-semibold text-gray-900">Here&apos;s what we found in your will</h1>
-              <p className="text-sm text-gray-600">Review each item. You decide what to keep before continuing.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-600">AI extraction</p>
+              <h1 className="text-2xl font-semibold text-[color:var(--ink)]">Here&apos;s what we found in your will</h1>
+              <p className="text-sm text-slate-700">Review each item. You decide what to keep before continuing.</p>
             </header>
             <ExtractionResults extraction={data} />
           </section>

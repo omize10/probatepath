@@ -60,10 +60,10 @@ export function ForcedPause({
       {/* Countdown display */}
       {remaining > 0 && (
         <div className="flex items-center justify-center gap-3 p-4 rounded-lg bg-gray-100 border border-gray-200">
-          <Clock className="h-5 w-5 text-gray-500 animate-pulse" />
+          <Clock className="h-5 w-5 text-slate-600 animate-pulse" />
           <div className="text-center">
-            <p className="text-sm text-gray-600">{message}</p>
-            <p className="text-2xl font-mono font-bold text-gray-900 mt-1">
+            <p className="text-sm text-slate-700">{message}</p>
+            <p className="text-2xl font-mono font-bold text-[color:var(--ink)] mt-1">
               {remaining}s
             </p>
           </div>
@@ -92,7 +92,7 @@ export function ForcedPause({
 
       {/* Helper text when disabled */}
       {!isComplete && remaining === 0 && !acknowledged && (
-        <p className="text-sm text-center text-gray-500">
+        <p className="text-sm text-center text-slate-600">
           Check the box above to continue
         </p>
       )}

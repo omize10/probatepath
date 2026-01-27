@@ -140,7 +140,7 @@ export function RequisitionManager({ data }: { data: RequisitionData }) {
         {/* Active requisitions */}
         {requisitions.length === 0 ? (
           <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white p-6 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-slate-600">
               No requisitions yet. If the court sends you a requisition letter, upload it here and we'll help you respond.
             </p>
           </div>
@@ -157,10 +157,10 @@ export function RequisitionManager({ data }: { data: RequisitionData }) {
             className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition"
           >
             <div>
-              <h3 className="text-sm font-semibold text-gray-900">Common requisition types and how to respond</h3>
-              <p className="text-xs text-gray-500 mt-0.5">Click to expand guidance for each type.</p>
+              <h3 className="text-sm font-semibold text-[color:var(--ink)]">Common requisition types and how to respond</h3>
+              <p className="text-xs text-slate-600 mt-0.5">Click to expand guidance for each type.</p>
             </div>
-            <svg className={`h-4 w-4 text-gray-500 transition ${showGuide ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className={`h-4 w-4 text-slate-600 transition ${showGuide ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
@@ -169,13 +169,13 @@ export function RequisitionManager({ data }: { data: RequisitionData }) {
             <div className="border-t border-gray-100 divide-y divide-gray-50">
               {COMMON_REQUISITIONS.map((item) => (
                 <details key={item.title} className="px-5 py-3">
-                  <summary className="cursor-pointer text-sm font-medium text-gray-900">
+                  <summary className="cursor-pointer text-sm font-medium text-[color:var(--ink)]">
                     {item.title}
-                    <span className="block text-xs text-gray-500 font-normal mt-0.5">{item.description}</span>
+                    <span className="block text-xs text-slate-600 font-normal mt-0.5">{item.description}</span>
                   </summary>
                   <ol className="mt-2 space-y-1 pl-4">
                     {item.guidance.map((step, i) => (
-                      <li key={i} className="text-xs text-gray-700 list-decimal">{step}</li>
+                      <li key={i} className="text-xs text-slate-700 list-decimal">{step}</li>
                     ))}
                   </ol>
                 </details>
@@ -203,10 +203,10 @@ function UploadForm({ onSubmit, onCancel }: { onSubmit: (file: File, description
 
   return (
     <div className="rounded-2xl border border-[color:var(--brand)]/20 bg-blue-50/30 p-5 space-y-3">
-      <h3 className="text-sm font-semibold text-gray-900">Upload court requisition</h3>
+      <h3 className="text-sm font-semibold text-[color:var(--ink)]">Upload court requisition</h3>
       <div className="space-y-3">
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Requisition letter (PDF or image)</label>
+          <label className="block text-xs font-medium text-slate-700 mb-1">Requisition letter (PDF or image)</label>
           <input
             type="file"
             accept=".pdf,image/*"
@@ -215,7 +215,7 @@ function UploadForm({ onSubmit, onCancel }: { onSubmit: (file: File, description
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">What is the court asking for?</label>
+          <label className="block text-xs font-medium text-slate-700 mb-1">What is the court asking for?</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -224,7 +224,7 @@ function UploadForm({ onSubmit, onCancel }: { onSubmit: (file: File, description
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Response due date (if specified)</label>
+          <label className="block text-xs font-medium text-slate-700 mb-1">Response due date (if specified)</label>
           <input
             type="date"
             value={dueAt}
@@ -241,7 +241,7 @@ function UploadForm({ onSubmit, onCancel }: { onSubmit: (file: File, description
         >
           {submitting ? "Uploading..." : "Upload"}
         </button>
-        <button onClick={onCancel} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">Cancel</button>
+        <button onClick={onCancel} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-slate-700">Cancel</button>
       </div>
     </div>
   );
@@ -263,9 +263,9 @@ function RequisitionCard({ requisition, onUpdate }: { requisition: Requisition; 
           <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[requisition.status]}`}>
             {STATUS_LABELS[requisition.status]}
           </span>
-          <span className="text-sm text-gray-900">{requisition.description || "Court requisition"}</span>
+          <span className="text-sm text-[color:var(--ink)]">{requisition.description || "Court requisition"}</span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-slate-600">
           {isOverdue && <span className="text-red-600 font-medium">Overdue</span>}
           {requisition.dueAt && !isOverdue && requisition.status !== "resolved" && (
             <span>Due {format(new Date(requisition.dueAt), "MMM d")}</span>
@@ -278,13 +278,13 @@ function RequisitionCard({ requisition, onUpdate }: { requisition: Requisition; 
         <div className="border-t border-gray-100 px-4 py-4 space-y-3">
           {requisition.courtNotes && (
             <div>
-              <p className="text-xs font-medium text-gray-500 mb-1">Court notes</p>
-              <p className="text-sm text-gray-700">{requisition.courtNotes}</p>
+              <p className="text-xs font-medium text-slate-600 mb-1">Court notes</p>
+              <p className="text-sm text-slate-700">{requisition.courtNotes}</p>
             </div>
           )}
 
           <div>
-            <p className="text-xs font-medium text-gray-500 mb-1">Your response notes</p>
+            <p className="text-xs font-medium text-slate-600 mb-1">Your response notes</p>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

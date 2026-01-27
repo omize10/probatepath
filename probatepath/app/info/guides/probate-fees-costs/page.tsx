@@ -77,7 +77,7 @@ export default function ProbateFeesCostsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex-1">
               <p className="text-base font-bold text-[color:var(--brand)]">Try our free probate fee calculator</p>
-              <p className="text-sm text-gray-600 mt-1">Enter your estate value and instantly see your total court costs with a full bracket breakdown.</p>
+              <p className="text-sm text-slate-700 mt-1">Enter your estate value and instantly see your total court costs with a full bracket breakdown.</p>
             </div>
             <Link
               href="/info/calculators/probate-fees"

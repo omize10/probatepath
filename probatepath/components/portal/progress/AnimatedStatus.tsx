@@ -105,11 +105,11 @@ export function AnimatedStatus({ status, label, sublabel }: AnimatedStatusProps)
 
       {/* Text content */}
       <div className="flex-1 min-w-0">
-        {label && <p className="text-sm font-semibold text-gray-900">{label}</p>}
-        <p className="text-xs text-gray-500 transition-opacity duration-500">
+        {label && <p className="text-sm font-semibold text-[color:var(--ink)]">{label}</p>}
+        <p className="text-xs text-slate-600 transition-opacity duration-500">
           {config.messages[messageIndex]}
         </p>
-        {sublabel && <p className="text-xs text-gray-600 mt-0.5">{sublabel}</p>}
+        {sublabel && <p className="text-xs text-slate-700 mt-0.5">{sublabel}</p>}
       </div>
     </div>
   );

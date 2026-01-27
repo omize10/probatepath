@@ -71,7 +71,7 @@ export function NotLawFirmSection({ className }: NotLawFirmSectionProps) {
         </h2>
 
         {/* Supporting copy */}
-        <p className="mt-8 text-lg leading-relaxed text-white/70 max-w-2xl mx-auto sm:text-xl">
+        <p className="mt-8 text-lg leading-relaxed text-white/90 max-w-2xl mx-auto sm:text-xl">
           No billable hours. No legal jargon. No $5,000 surprise invoices.
           <br className="hidden sm:block" />
           Just specialists who know BC probate inside and out, preparing your
@@ -93,7 +93,7 @@ export function NotLawFirmSection({ className }: NotLawFirmSectionProps) {
         </div>
 
         {/* Trust indicator */}
-        <p className="mt-10 text-sm text-white/40">
+        <p className="mt-10 text-sm text-white/80">
           Join hundreds of BC executors who&apos;ve simplified their probate journey
         </p>
       </div>

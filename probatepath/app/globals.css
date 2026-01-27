@@ -427,7 +427,7 @@ body::after {
   padding: 1rem 2.5rem;
   font-size: 1.125rem;
   font-weight: 700;
-  color: #0d1726;
+  color: #0d1726 !important;
   background: #ffffff;
   border-radius: 9999px;
   border: none;

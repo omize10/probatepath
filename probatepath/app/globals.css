@@ -502,10 +502,37 @@ body::after {
   animation: textGradient 4s ease-in-out infinite;
 }
 
-/* Grid pattern */
+/* Grid pattern (kept for potential reuse) */
 .grid-pattern {
   background-image:
     radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 0);
   background-size: 40px 40px;
   animation: subtlePulse 4s ease-in-out infinite;
+}
+
+/* Clean CTA Button - minimal professional style */
+.cta-clean-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0d1726;
+  background: #ffffff;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.cta-clean-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.cta-clean-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }

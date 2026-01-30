@@ -39,9 +39,9 @@ export function Footer() {
         <div className="space-y-3">
           <div className="flex flex-col items-start leading-none">
             <span className="text-xl font-bold tracking-tight" style={{ color: 'var(--brand)' }}>
-              ProbateDesk<span className="text-[#445266]">.com</span>
+              ProbateDesk<span className="text-[color:var(--text-tertiary)]">.com</span>
             </span>
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#445266]">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--text-tertiary)]">
               Done
             </span>
           </div>
@@ -120,7 +120,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto mt-12 flex w-full max-w-6xl flex-col gap-2 px-6 text-xs text-[#616977] sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto mt-12 flex w-full max-w-6xl flex-col gap-2 px-6 text-xs text-[color:var(--text-tertiary)] sm:flex-row sm:items-center sm:justify-between">
         <p>&copy; {new Date().getFullYear()} ProbateDesk Technologies Inc. All rights reserved.</p>
         <div className="flex items-center gap-3">
           <p>ProbateDesk provides document preparation support and general information. We do not provide legal advice; executors remain self-represented.</p>

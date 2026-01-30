@@ -20,9 +20,9 @@ function Logo({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col items-start leading-none", className)}>
       <span className="text-2xl font-bold tracking-tight" style={{ color: 'var(--brand)' }}>
-        ProbateDesk<span className="text-[#445266]">.com</span>
+        ProbateDesk<span className="text-[color:var(--text-tertiary)]">.com</span>
       </span>
-      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#445266]">
+      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--text-tertiary)]">
         Done
       </span>
     </div>
@@ -100,7 +100,7 @@ export function Navbar() {
           {isAuthed ? (
             <button
               type="button"
-              className="text-sm font-medium text-[#445266] hover:text-[color:var(--brand)]"
+              className="text-sm font-medium text-[color:var(--text-tertiary)] hover:text-[color:var(--brand)]"
               onClick={() => signOut({ callbackUrl: "/" })}
             >
               Sign out
@@ -115,7 +115,7 @@ export function Navbar() {
           <SheetTrigger asChild>
             <button
               type="button"
-              className="inline-flex items-center justify-center rounded-md border border-[color:var(--border-muted)] bg-[rgba(255,255,255,0.9)] p-2 text-[#445266] transition hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand)] md:hidden"
+              className="inline-flex items-center justify-center rounded-md border border-[color:var(--border-muted)] bg-[rgba(255,255,255,0.9)] p-2 text-[color:var(--text-tertiary)] transition hover:border-[color:var(--brand)] hover:text-[color:var(--brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand)] md:hidden"
               aria-label="Open navigation menu"
             >
               <Menu className="h-5 w-5" />
@@ -129,7 +129,7 @@ export function Navbar() {
               <SheetClose asChild>
                 <button
                   type="button"
-                  className="rounded-full p-2 text-[#445266] transition hover:text-[color:var(--brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand)]"
+                  className="rounded-full p-2 text-[color:var(--text-tertiary)] transition hover:text-[color:var(--brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand)]"
                   aria-label="Close navigation menu"
                 >
                   <X className="h-5 w-5" />
@@ -162,7 +162,7 @@ export function Navbar() {
                 <SheetClose asChild>
                   <button
                     type="button"
-                    className="w-full py-2 text-sm font-medium text-[#445266] hover:text-[color:var(--brand)]"
+                    className="w-full py-2 text-sm font-medium text-[color:var(--text-tertiary)] hover:text-[color:var(--brand)]"
                     onClick={() => signOut({ callbackUrl: "/" })}
                   >
                     Sign out

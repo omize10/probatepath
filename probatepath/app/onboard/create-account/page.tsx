@@ -180,7 +180,7 @@ export default function OnboardCreateAccountPage() {
               setExistingAccount(false);
             }}
             required
-            className="w-full rounded-xl border border-[color:var(--border-muted)] px-4 py-3 text-[color:var(--brand)] placeholder:text-gray-400 focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
+            className="w-full rounded-xl border border-[color:var(--border-muted)] px-4 py-3 text-[color:var(--brand)] placeholder:text-[color:var(--text-placeholder)] focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
           />
         </div>
 
@@ -203,7 +203,7 @@ export default function OnboardCreateAccountPage() {
             Full legal name
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[color:var(--text-placeholder)]" />
             <input
               type="text"
               id="name"
@@ -212,7 +212,7 @@ export default function OnboardCreateAccountPage() {
               placeholder="Enter your full legal name"
               required
               minLength={2}
-              className="w-full rounded-xl border border-[color:var(--border-muted)] pl-10 pr-4 py-3 text-[color:var(--brand)] placeholder:text-gray-400 focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
+              className="w-full rounded-xl border border-[color:var(--border-muted)] pl-10 pr-4 py-3 text-[color:var(--brand)] placeholder:text-[color:var(--text-placeholder)] focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
             />
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function OnboardCreateAccountPage() {
             Create a password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[color:var(--text-placeholder)]" />
             <input
               type={showPassword ? "text" : "password"}
               id="password"
@@ -232,12 +232,12 @@ export default function OnboardCreateAccountPage() {
               placeholder="At least 8 characters"
               required
               minLength={8}
-              className="w-full rounded-xl border border-[color:var(--border-muted)] pl-10 pr-12 py-3 text-[color:var(--brand)] placeholder:text-gray-400 focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
+              className="w-full rounded-xl border border-[color:var(--border-muted)] pl-10 pr-12 py-3 text-[color:var(--brand)] placeholder:text-[color:var(--text-placeholder)] focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-700"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--text-placeholder)] hover:text-slate-700"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -250,7 +250,7 @@ export default function OnboardCreateAccountPage() {
             Confirm password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[color:var(--text-placeholder)]" />
             <input
               type={showPassword ? "text" : "password"}
               id="confirmPassword"
@@ -258,7 +258,7 @@ export default function OnboardCreateAccountPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Re-enter your password"
               required
-              className="w-full rounded-xl border border-[color:var(--border-muted)] pl-10 pr-4 py-3 text-[color:var(--brand)] placeholder:text-gray-400 focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
+              className="w-full rounded-xl border border-[color:var(--border-muted)] pl-10 pr-4 py-3 text-[color:var(--brand)] placeholder:text-[color:var(--text-placeholder)] focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
             />
           </div>
         </div>

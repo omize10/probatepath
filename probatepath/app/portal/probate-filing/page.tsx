@@ -103,7 +103,7 @@ function StepShell({
       </div>
       <div className="space-y-2">
         <h2 className="text-lg font-semibold text-[color:var(--ink)]">{title}</h2>
-        <p className="text-sm text-slate-700">{description}</p>
+        <p className="text-sm text-[color:var(--text-secondary)]">{description}</p>
       </div>
       <div className="mt-4 space-y-3">{children}</div>
     </div>
@@ -174,7 +174,7 @@ function WaitingStep({ caseId, portalStatus, courtFileNumber, grantIssuedAt, gra
             </p>
           )}
         </div>
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-[color:var(--text-secondary)]">
           Congratulations! You can now begin administering the estate. Visit your portal to see the next steps.
         </p>
         <Link
@@ -199,12 +199,12 @@ function WaitingStep({ caseId, portalStatus, courtFileNumber, grantIssuedAt, gra
             </p>
           )}
         </div>
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-[color:var(--text-secondary)]">
           Your {applicationLabel} is with the court. Review times vary, but you should receive your {grantLabel.toLowerCase()} within a few weeks. We'll check in periodically.
         </p>
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+        <div className="rounded-xl border border-[color:var(--border-subtle)] bg-gray-50 p-4 space-y-3">
           <p className="font-medium text-[color:var(--ink)]">Received your {grantLabel.toLowerCase()}?</p>
-          <p className="text-sm text-slate-700">When the court issues your grant, let us know so we can update your file and show you the next steps.</p>
+          <p className="text-sm text-[color:var(--text-secondary)]">When the court issues your grant, let us know so we can update your file and show you the next steps.</p>
           <form action={markGrantReceivedAction}>
             <input type="hidden" name="caseId" value={caseId} />
             <button
@@ -229,8 +229,8 @@ function WaitingStep({ caseId, portalStatus, courtFileNumber, grantIssuedAt, gra
   // Just filed - needs court file number
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-700">Your {applicationLabel} has been filed.</p>
-      <p className="text-sm text-slate-700">
+      <p className="text-sm text-[color:var(--text-secondary)]">Your {applicationLabel} has been filed.</p>
+      <p className="text-sm text-[color:var(--text-secondary)]">
         The court will review your materials and issue a {grantLabel.toLowerCase()} if everything is in order. This can take several weeks or longer depending on court workload.
       </p>
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-3">
@@ -281,7 +281,7 @@ function ChecklistStep({ caseId, nextStep, pathType }: { caseId: string; nextSte
         {items.map((label, idx) => (
           <li key={label} className="flex items-start gap-3">
             <input id={`pkg-${idx}`} type="checkbox" className="mt-1 h-4 w-4 rounded border-gray-300" name={`pkg-${idx}`} required />
-            <label htmlFor={`pkg-${idx}`} className="text-sm text-slate-700">
+            <label htmlFor={`pkg-${idx}`} className="text-sm text-[color:var(--text-secondary)]">
               {label}
             </label>
           </li>
@@ -377,14 +377,14 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
     {
       title: "Find the P2 form in your packet",
       description: "In your packet, find the form labelled P2.",
-      content: <p className="text-sm text-slate-700">You’ll sign P2 at home in the next step.</p>,
+      content: <p className="text-sm text-[color:var(--text-secondary)]">You’ll sign P2 at home in the next step.</p>,
       cta: "I’ve found the P2 form",
     },
     {
       title: "Sign P2 at home",
       description: "Complete only what you are allowed to sign at home on P2.",
       content: (
-        <ul className="list-disc space-y-1 pl-5 text-sm text-slate-700">
+        <ul className="list-disc space-y-1 pl-5 text-sm text-[color:var(--text-secondary)]">
           <li>Sign where it says “Applicant’s signature” on P2.</li>
           <li>Do not write anywhere else on P2.</li>
           <li>Leave any sections clearly marked “For court use only” blank.</li>
@@ -397,7 +397,7 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
       title: "Get ready for your notary appointment",
       description: "Book a short appointment with a BC notary public or lawyer.",
       content: (
-        <div className="space-y-2 text-sm text-slate-700">
+        <div className="space-y-2 text-sm text-[color:var(--text-secondary)]">
           <ul className="list-disc space-y-1 pl-5">
             <li>Book an appointment with a BC notary public or lawyer.</li>
             <li>Bring your government-issued photo ID.</li>
@@ -419,7 +419,7 @@ export default async function ProbateFilingWizard({ searchParams }: { searchPara
       title: "Sign and notarize at your appointment",
       description: "The notary or lawyer will guide you through the signatures and notarization.",
       content: (
-        <ul className="list-disc space-y-1 pl-5 text-sm text-slate-700">
+        <ul className="list-disc space-y-1 pl-5 text-sm text-[color:var(--text-secondary)]">
           <li>At the appointment, the notary or lawyer will tell you where to sign and will complete the notary sections.</li>
           <li>Show them the script above if needed.</li>
           <li>Do not fill in anything they say they will complete.</li>

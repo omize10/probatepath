@@ -70,7 +70,7 @@ export function DeceasedStep({ draft, errors, showErrors, updateDeceased }: Dece
             />
             <label htmlFor="name-confirm" className="text-sm leading-tight cursor-pointer">
               <span className="font-medium">I confirm this name matches the death certificate exactly</span>
-              <span className="block text-slate-600 mt-0.5">I have checked spelling, middle names, and any suffixes</span>
+              <span className="block text-[color:var(--text-tertiary)] mt-0.5">I have checked spelling, middle names, and any suffixes</span>
             </label>
           </div>
         )}

@@ -91,7 +91,7 @@ export function NotificationBell() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-gray-100 transition"
+        className="relative flex h-8 w-8 items-center justify-center rounded-full text-[color:var(--text-secondary)] hover:bg-gray-100 transition"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
       >
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -105,8 +105,8 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-gray-200 bg-white shadow-lg z-50 overflow-hidden">
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+        <div className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-[color:var(--border-subtle)] bg-white shadow-lg z-50 overflow-hidden">
+          <div className="flex items-center justify-between border-b border-[color:var(--border-subtle)] px-4 py-3">
             <h3 className="text-sm font-semibold text-[color:var(--ink)]">Notifications</h3>
             <div className="flex items-center gap-2">
               {unreadCount > 0 && (
@@ -120,7 +120,7 @@ export function NotificationBell() {
               <Link
                 href="/portal/notifications"
                 onClick={() => setOpen(false)}
-                className="text-xs text-slate-600 hover:text-[color:var(--ink)]"
+                className="text-xs text-[color:var(--text-tertiary)] hover:text-[color:var(--ink)]"
               >
                 View all
               </Link>
@@ -129,7 +129,7 @@ export function NotificationBell() {
 
           <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-slate-600">
+              <div className="px-4 py-8 text-center text-sm text-[color:var(--text-tertiary)]">
                 No notifications yet.
               </div>
             ) : (
@@ -145,7 +145,7 @@ export function NotificationBell() {
           </div>
 
           {notifications.length > 8 && (
-            <div className="border-t border-gray-100 px-4 py-2 text-center">
+            <div className="border-t border-[color:var(--border-subtle)] px-4 py-2 text-center">
               <Link
                 href="/portal/notifications"
                 onClick={() => setOpen(false)}
@@ -181,16 +181,16 @@ function NotificationItem({
   const content = (
     <div className={`flex items-start gap-3 px-4 py-3 transition ${isUnread ? "bg-blue-50/50" : "hover:bg-gray-50"}`}>
       <div className="shrink-0 mt-0.5">
-        <svg className={`h-4 w-4 ${isUnread ? "text-[color:var(--brand)]" : "text-slate-600"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className={`h-4 w-4 ${isUnread ? "text-[color:var(--brand)]" : "text-[color:var(--text-tertiary)]"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={iconPath} />
         </svg>
       </div>
       <div className="flex-1 min-w-0">
-        <p className={`text-xs ${isUnread ? "font-semibold text-[color:var(--ink)]" : "font-medium text-slate-700"}`}>
+        <p className={`text-xs ${isUnread ? "font-semibold text-[color:var(--ink)]" : "font-medium text-[color:var(--text-secondary)]"}`}>
           {notification.title}
         </p>
-        <p className="text-xs text-slate-600 mt-0.5 line-clamp-2">{notification.body}</p>
-        <p className="text-[10px] text-slate-700 mt-1">{timeAgo(notification.createdAt)}</p>
+        <p className="text-xs text-[color:var(--text-tertiary)] mt-0.5 line-clamp-2">{notification.body}</p>
+        <p className="text-[10px] text-[color:var(--text-secondary)] mt-1">{timeAgo(notification.createdAt)}</p>
       </div>
       {isUnread && <div className="h-2 w-2 rounded-full bg-[color:var(--brand)] shrink-0 mt-1.5" />}
     </div>

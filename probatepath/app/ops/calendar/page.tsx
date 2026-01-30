@@ -468,7 +468,7 @@ export default function OpsCalendarPage() {
                 <button
                   onClick={() => setAllSlots(true)}
                   disabled={saving}
-                  className="flex-1 rounded-full bg-green-100 px-3 py-2 text-xs font-semibold text-green-800 transition hover:bg-green-200 disabled:opacity-50"
+                  className="flex-1 rounded-full bg-green-100 px-3 py-2 text-xs font-semibold text-green-800 transition hover:bg-green-200 disabled:opacity-60"
                 >
                   {saving ? (
                     <Loader2 className="mx-auto h-4 w-4 animate-spin" />
@@ -479,7 +479,7 @@ export default function OpsCalendarPage() {
                 <button
                   onClick={() => setAllSlots(false)}
                   disabled={saving}
-                  className="flex-1 rounded-full bg-red-100 px-3 py-2 text-xs font-semibold text-red-800 transition hover:bg-red-200 disabled:opacity-50"
+                  className="flex-1 rounded-full bg-red-100 px-3 py-2 text-xs font-semibold text-red-800 transition hover:bg-red-200 disabled:opacity-60"
                 >
                   {saving ? (
                     <Loader2 className="mx-auto h-4 w-4 animate-spin" />

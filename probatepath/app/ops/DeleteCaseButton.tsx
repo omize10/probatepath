@@ -26,7 +26,7 @@ export function DeleteCaseButton({ matterId, clientName }: { matterId: string; c
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="rounded-full bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+          className="rounded-full bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700 disabled:opacity-60"
         >
           {deleting ? "..." : "Confirm"}
         </button>

@@ -38,7 +38,7 @@ function TestSection({
   return (
     <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-[color:var(--ink)]">{title}</h2>
-      <p className="mt-1 text-sm text-slate-700">{description}</p>
+      <p className="mt-1 text-sm text-[color:var(--text-secondary)]">{description}</p>
       <div className="mt-4">{children}</div>
     </div>
   );
@@ -312,7 +312,7 @@ export function DevTools() {
             <button
               onClick={testEmail}
               disabled={emailLoading || !emailTo}
-              className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+              className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
             >
               {emailLoading ? "Sending..." : "Send Test Email"}
             </button>
@@ -333,7 +333,7 @@ export function DevTools() {
             <button
               onClick={testSms}
               disabled={smsLoading || !smsTo}
-              className="rounded-full bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50"
+              className="rounded-full bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"
             >
               {smsLoading ? "Sending..." : "Send Test SMS"}
             </button>
@@ -344,13 +344,13 @@ export function DevTools() {
         {/* Cron Test */}
         <TestSection title="Run Cron Job" description="Manually trigger the daily cron job">
           <div className="space-y-3">
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-[color:var(--text-tertiary)]">
               This runs the same job that executes daily: processes reminders, grant check-ins, and cleans up tokens.
             </p>
             <button
               onClick={runCron}
               disabled={cronLoading}
-              className="rounded-full bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
+              className="rounded-full bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-60"
             >
               {cronLoading ? "Running..." : "Run Cron Now"}
             </button>
@@ -361,13 +361,13 @@ export function DevTools() {
         {/* Env Check */}
         <TestSection title="Check Environment" description="Verify all required env vars are configured">
           <div className="space-y-3">
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-[color:var(--text-tertiary)]">
               Checks if RESEND_API_KEY, Twilio credentials, and other required variables are set.
             </p>
             <button
               onClick={checkEnv}
               disabled={envLoading}
-              className="rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-50"
+              className="rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-60"
             >
               {envLoading ? "Checking..." : "Check Environment"}
             </button>
@@ -395,7 +395,7 @@ export function DevTools() {
             <button
               onClick={resetUserPassword}
               disabled={resetLoading || !resetEmail || !resetPassword}
-              className="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+              className="rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
             >
               {resetLoading ? "Resetting..." : "Reset Password"}
             </button>
@@ -428,7 +428,7 @@ export function DevTools() {
             <button
               onClick={updatePortalStatus}
               disabled={statusLoading || !statusCaseId || !newStatus}
-              className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
             >
               {statusLoading ? "Updating..." : "Set Status"}
             </button>
@@ -473,7 +473,7 @@ export function DevTools() {
             <button
               onClick={updatePathType}
               disabled={pathLoading || !pathCaseId}
-              className="rounded-full bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-700 disabled:opacity-50"
+              className="rounded-full bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-700 disabled:opacity-60"
             >
               {pathLoading ? "Updating..." : "Set Path Type"}
             </button>
@@ -484,13 +484,13 @@ export function DevTools() {
         {/* List Cases */}
         <TestSection title="List All Cases" description="Get a list of all cases with IDs">
           <div className="space-y-3">
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-[color:var(--text-tertiary)]">
               Useful for getting case IDs to use with other dev tools.
             </p>
             <button
               onClick={listCases}
               disabled={casesLoading}
-              className="rounded-full bg-slate-600 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 disabled:opacity-50"
+              className="rounded-full bg-slate-600 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 disabled:opacity-60"
             >
               {casesLoading ? "Loading..." : "List Cases"}
             </button>

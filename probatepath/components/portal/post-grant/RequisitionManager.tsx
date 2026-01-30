@@ -140,7 +140,7 @@ export function RequisitionManager({ data }: { data: RequisitionData }) {
         {/* Active requisitions */}
         {requisitions.length === 0 ? (
           <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white p-6 text-center">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-[color:var(--text-tertiary)]">
               No requisitions yet. If the court sends you a requisition letter, upload it here and we'll help you respond.
             </p>
           </div>
@@ -158,24 +158,24 @@ export function RequisitionManager({ data }: { data: RequisitionData }) {
           >
             <div>
               <h3 className="text-sm font-semibold text-[color:var(--ink)]">Common requisition types and how to respond</h3>
-              <p className="text-xs text-slate-600 mt-0.5">Click to expand guidance for each type.</p>
+              <p className="text-xs text-[color:var(--text-tertiary)] mt-0.5">Click to expand guidance for each type.</p>
             </div>
-            <svg className={`h-4 w-4 text-slate-600 transition ${showGuide ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className={`h-4 w-4 text-[color:var(--text-tertiary)] transition ${showGuide ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
 
           {showGuide && (
-            <div className="border-t border-gray-100 divide-y divide-gray-50">
+            <div className="border-t border-[color:var(--border-subtle)] divide-y divide-gray-50">
               {COMMON_REQUISITIONS.map((item) => (
                 <details key={item.title} className="px-5 py-3">
                   <summary className="cursor-pointer text-sm font-medium text-[color:var(--ink)]">
                     {item.title}
-                    <span className="block text-xs text-slate-600 font-normal mt-0.5">{item.description}</span>
+                    <span className="block text-xs text-[color:var(--text-tertiary)] font-normal mt-0.5">{item.description}</span>
                   </summary>
                   <ol className="mt-2 space-y-1 pl-4">
                     {item.guidance.map((step, i) => (
-                      <li key={i} className="text-xs text-slate-700 list-decimal">{step}</li>
+                      <li key={i} className="text-xs text-[color:var(--text-secondary)] list-decimal">{step}</li>
                     ))}
                   </ol>
                 </details>
@@ -206,7 +206,7 @@ function UploadForm({ onSubmit, onCancel }: { onSubmit: (file: File, description
       <h3 className="text-sm font-semibold text-[color:var(--ink)]">Upload court requisition</h3>
       <div className="space-y-3">
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">Requisition letter (PDF or image)</label>
+          <label className="block text-xs font-medium text-[color:var(--text-secondary)] mb-1">Requisition letter (PDF or image)</label>
           <input
             type="file"
             accept=".pdf,image/*"
@@ -215,21 +215,21 @@ function UploadForm({ onSubmit, onCancel }: { onSubmit: (file: File, description
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">What is the court asking for?</label>
+          <label className="block text-xs font-medium text-[color:var(--text-secondary)] mb-1">What is the court asking for?</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Briefly describe what the requisition is about..."
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm min-h-[60px]"
+            className="w-full rounded-lg border border-[color:var(--border-subtle)] px-3 py-2 text-sm min-h-[60px]"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">Response due date (if specified)</label>
+          <label className="block text-xs font-medium text-[color:var(--text-secondary)] mb-1">Response due date (if specified)</label>
           <input
             type="date"
             value={dueAt}
             onChange={(e) => setDueAt(e.target.value)}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm"
+            className="rounded-lg border border-[color:var(--border-subtle)] px-3 py-1.5 text-sm"
           />
         </div>
       </div>
@@ -237,11 +237,11 @@ function UploadForm({ onSubmit, onCancel }: { onSubmit: (file: File, description
         <button
           onClick={handleSubmit}
           disabled={!file || submitting}
-          className="rounded-full bg-[color:var(--brand)] px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+          className="rounded-full bg-[color:var(--brand)] px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
         >
           {submitting ? "Uploading..." : "Upload"}
         </button>
-        <button onClick={onCancel} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-slate-700">Cancel</button>
+        <button onClick={onCancel} className="rounded-full border border-[color:var(--border-subtle)] px-4 py-1.5 text-xs font-medium text-[color:var(--text-secondary)]">Cancel</button>
       </div>
     </div>
   );
@@ -265,7 +265,7 @@ function RequisitionCard({ requisition, onUpdate }: { requisition: Requisition; 
           </span>
           <span className="text-sm text-[color:var(--ink)]">{requisition.description || "Court requisition"}</span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-slate-600">
+        <div className="flex items-center gap-2 text-xs text-[color:var(--text-tertiary)]">
           {isOverdue && <span className="text-red-600 font-medium">Overdue</span>}
           {requisition.dueAt && !isOverdue && requisition.status !== "resolved" && (
             <span>Due {format(new Date(requisition.dueAt), "MMM d")}</span>
@@ -275,16 +275,16 @@ function RequisitionCard({ requisition, onUpdate }: { requisition: Requisition; 
       </button>
 
       {expanded && (
-        <div className="border-t border-gray-100 px-4 py-4 space-y-3">
+        <div className="border-t border-[color:var(--border-subtle)] px-4 py-4 space-y-3">
           {requisition.courtNotes && (
             <div>
-              <p className="text-xs font-medium text-slate-600 mb-1">Court notes</p>
-              <p className="text-sm text-slate-700">{requisition.courtNotes}</p>
+              <p className="text-xs font-medium text-[color:var(--text-tertiary)] mb-1">Court notes</p>
+              <p className="text-sm text-[color:var(--text-secondary)]">{requisition.courtNotes}</p>
             </div>
           )}
 
           <div>
-            <p className="text-xs font-medium text-slate-600 mb-1">Your response notes</p>
+            <p className="text-xs font-medium text-[color:var(--text-tertiary)] mb-1">Your response notes</p>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -294,7 +294,7 @@ function RequisitionCard({ requisition, onUpdate }: { requisition: Requisition; 
                 }
               }}
               placeholder="Notes on how you're responding..."
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm min-h-[60px]"
+              className="w-full rounded-lg border border-[color:var(--border-subtle)] px-3 py-2 text-sm min-h-[60px]"
             />
           </div>
 

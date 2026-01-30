@@ -72,7 +72,7 @@ export function AdminApplicantsStep({
                 className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
                   selectedRelationship === option.value
                     ? "border-[color:var(--brand)] bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
+                    : "border-[color:var(--border-subtle)] hover:border-gray-300"
                 }`}
               >
                 <input
@@ -84,7 +84,7 @@ export function AdminApplicantsStep({
                   className="h-4 w-4 text-[color:var(--brand)]"
                 />
                 <span className="flex-1">{option.label}</span>
-                <span className="text-xs text-slate-600">Priority {option.priority}</span>
+                <span className="text-xs text-[color:var(--text-tertiary)]">Priority {option.priority}</span>
               </label>
             ))}
           </div>
@@ -110,7 +110,7 @@ export function AdminApplicantsStep({
                   className={`flex-1 text-center rounded-lg border p-3 cursor-pointer transition-colors ${
                     administration.spouseExists === option.value
                       ? "border-[color:var(--brand)] bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      : "border-[color:var(--border-subtle)] hover:border-gray-300"
                   }`}
                 >
                   <input
@@ -168,7 +168,7 @@ export function AdminApplicantsStep({
                       className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
                         administration.spouseConsents === option.value
                           ? "border-[color:var(--brand)] bg-blue-50"
-                          : "border-gray-200 hover:border-gray-300"
+                          : "border-[color:var(--border-subtle)] hover:border-gray-300"
                       }`}
                     >
                       <input
@@ -221,7 +221,7 @@ export function AdminApplicantsStep({
                   className={`flex-1 text-center rounded-lg border p-3 cursor-pointer transition-colors ${
                     administration.childrenExist === option.value
                       ? "border-[color:var(--brand)] bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      : "border-[color:var(--border-subtle)] hover:border-gray-300"
                   }`}
                 >
                   <input
@@ -254,7 +254,7 @@ export function AdminApplicantsStep({
                     className={`flex-1 text-center rounded-lg border p-3 cursor-pointer transition-colors ${
                       administration.childrenConsent === option.value
                         ? "border-[color:var(--brand)] bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
+                        : "border-[color:var(--border-subtle)] hover:border-gray-300"
                     }`}
                   >
                     <input
@@ -292,7 +292,7 @@ export function AdminApplicantsStep({
       {/* Summary of what's needed */}
       {selectedRelationship && !spouseBlocks && !childrenBlock && (
         <QuestionCard title="What happens next">
-          <div className="text-sm text-slate-700 space-y-2">
+          <div className="text-sm text-[color:var(--text-secondary)] space-y-2">
             {administration.spouseConsents === "yes" && (
               <p className="flex items-start gap-2">
                 <span className="text-amber-600">⚠</span>

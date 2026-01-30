@@ -12,7 +12,7 @@ export default function GlobalError({ error, reset }: { error: Error; reset: () 
     <div className="min-h-screen flex items-center justify-center bg-white p-6">
       <div className="max-w-xl text-center">
         <h1 className="text-3xl font-serif">Something went wrong</h1>
-        <p className="mt-4 text-sm text-slate-700">An unexpected error occurred. You can try again or return home.</p>
+        <p className="mt-4 text-sm text-[color:var(--text-secondary)]">An unexpected error occurred. You can try again or return home.</p>
         <div className="mt-6 flex justify-center gap-4">
           <button
             onClick={() => reset()}

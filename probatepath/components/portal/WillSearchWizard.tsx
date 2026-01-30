@@ -37,7 +37,7 @@ export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchW
       title: "Step 1: Will search",
       subtitle: "First we send a will search request to Vital Statistics.",
       body: (
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-[color:var(--text-secondary)]">
           A will search checks Vital Statistics for any registered wills. We’ll walk you through downloading, signing, and mailing the form so you can get your result.
         </p>
       ),
@@ -64,7 +64,7 @@ export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchW
               PDF not found (please upload in ops)
             </button>
           )}
-          <p className="text-sm text-slate-700">If you cannot download it, contact support and we’ll resend it.</p>
+          <p className="text-sm text-[color:var(--text-secondary)]">If you cannot download it, contact support and we’ll resend it.</p>
         </div>
       ),
     },
@@ -72,7 +72,7 @@ export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchW
       title: "Sign the form and fill in payment",
       subtitle: "Sign where indicated for the applicant and add payment.",
       body: (
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-[color:var(--text-secondary)]">
           Enter your credit card details in the payment section (or follow any payment instructions on the form). Make sure every signature line for the applicant is signed.
         </p>
       ),
@@ -81,7 +81,7 @@ export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchW
       title: "Prepare your mailing",
       subtitle: "Bundle the documents.",
       body: (
-        <p className="text-sm text-slate-700">Put the signed will search form and a photocopy of the death certificate into an envelope.</p>
+        <p className="text-sm text-[color:var(--text-secondary)]">Put the signed will search form and a photocopy of the death certificate into an envelope.</p>
       ),
     },
     {
@@ -89,7 +89,7 @@ export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchW
       subtitle: "Send the envelope.",
       body: (
         <div className="space-y-4">
-          <p className="text-sm text-slate-700">Mail the envelope to the address printed on the form.</p>
+          <p className="text-sm text-[color:var(--text-secondary)]">Mail the envelope to the address printed on the form.</p>
           <WarningCallout severity="warning" title="Before you confirm">
             Only click the button below after you have actually mailed the envelope.
             This starts your case timeline and cannot be undone.
@@ -129,7 +129,7 @@ export function WillSearchWizard({ caseId, pdfUrl, onSubmitAction }: WillSearchW
               type="button"
               onClick={() => setShowConfirm(true)}
               disabled={isSubmitting}
-              className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black disabled:opacity-50"
+              className="inline-flex items-center rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-black disabled:opacity-60"
             >
               {isSubmitting ? "Submitting..." : primaryLabel}
             </button>

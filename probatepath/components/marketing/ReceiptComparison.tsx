@@ -102,7 +102,7 @@ function ReceiptLine({
       <span className="flex-1 overflow-hidden">
         {description}
         {!isTotal && (
-          <span className="text-slate-600">
+          <span className="text-[color:var(--text-tertiary)]">
             {"".padEnd(30 - description.length, ".")}
           </span>
         )}
@@ -150,7 +150,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
         />
 
         {/* Receipt content */}
-        <div className="relative space-y-4 text-slate-700">
+        <div className="relative space-y-4 text-[color:var(--text-secondary)]">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -161,7 +161,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
             <h3 className="font-mono text-lg font-bold tracking-tight text-gray-800">
               SMITH & ASSOCIATES
             </h3>
-            <p className="font-mono text-xs text-slate-600">
+            <p className="font-mono text-xs text-[color:var(--text-tertiary)]">
               Barristers & Solicitors
             </p>
           </motion.div>
@@ -171,11 +171,11 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 0.4 }}
-            className="font-mono text-xs text-slate-600 space-y-1"
+            className="font-mono text-xs text-[color:var(--text-tertiary)] space-y-1"
           >
             <p>INVOICE #4892</p>
             <p>Date: {currentMonth}</p>
-            <p className="pt-2 text-slate-700">Estate of: Sample Client</p>
+            <p className="pt-2 text-[color:var(--text-secondary)]">Estate of: Sample Client</p>
           </motion.div>
 
           {/* Divider */}
@@ -241,7 +241,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 2.5 }}
-            className="pt-2 font-mono text-[10px] text-slate-600 space-y-0.5"
+            className="pt-2 font-mono text-[10px] text-[color:var(--text-tertiary)] space-y-0.5"
           >
             <p>* Final amount may vary</p>
             <p>* Additional fees may apply</p>
@@ -314,13 +314,13 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0, y: -10 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
             transition={{ delay: 3.0 }}
-            className="text-center pb-4 border-b border-gray-200"
+            className="text-center pb-4 border-b border-[color:var(--border-subtle)]"
           >
             <div className="inline-block px-5 py-2.5 bg-[#0d1726] rounded-lg">
-              <span className="text-white font-semibold text-lg tracking-tight">
+              <span className="text-white font-bold text-xl tracking-normal">
                 ProbateDesk
               </span>
-              <span className="text-emerald-400 font-semibold text-lg">.com</span>
+              <span className="text-emerald-400 font-medium text-base ml-1 opacity-90">.com</span>
             </div>
           </motion.div>
 
@@ -332,18 +332,18 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             className="flex justify-between items-baseline"
           >
             <div>
-              <p className="text-[10px] font-semibold text-slate-600 tracking-[0.2em] uppercase">
+              <p className="text-[10px] font-semibold text-[color:var(--text-tertiary)] tracking-[0.2em] uppercase">
                 Receipt
               </p>
-              <p className="text-[10px] text-slate-600 mt-0.5 font-mono">
+              <p className="text-[10px] text-[color:var(--text-tertiary)] mt-0.5 font-mono">
                 {receiptNumber}
               </p>
             </div>
-            <p className="text-[11px] text-slate-600">{currentDate}</p>
+            <p className="text-[11px] text-[color:var(--text-tertiary)]">{currentDate}</p>
           </motion.div>
 
           {/* Divider */}
-          <div className="border-t border-gray-100" />
+          <div className="border-t border-[color:var(--border-subtle)]" />
 
           {/* Main item */}
           <motion.div
@@ -355,7 +355,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             <h4 className="text-lg font-semibold text-[color:var(--ink)]">
               BC Probate Document Package
             </h4>
-            <ul className="space-y-2 text-sm text-slate-700">
+            <ul className="space-y-2 text-sm text-[color:var(--text-secondary)]">
               <li className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                 Court-ready probate application
@@ -376,7 +376,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
           </motion.div>
 
           {/* Divider */}
-          <div className="border-t border-gray-100" />
+          <div className="border-t border-[color:var(--border-subtle)]" />
 
           {/* Total */}
           <motion.div
@@ -385,7 +385,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             transition={{ delay: 3.4, type: "spring", stiffness: 200 }}
             className="flex justify-between items-center py-2"
           >
-            <span className="text-sm font-medium text-slate-600">TOTAL</span>
+            <span className="text-sm font-medium text-[color:var(--text-tertiary)]">TOTAL</span>
             <span className="text-3xl font-bold text-[color:var(--ink)]">$799.00</span>
           </motion.div>
 
@@ -412,7 +412,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 3.8 }}
-            className="text-center text-xs text-slate-600 pt-2"
+            className="text-center text-xs text-[color:var(--text-tertiary)] pt-2"
           >
             Thank you for choosing ProbateDesk.
           </motion.p>

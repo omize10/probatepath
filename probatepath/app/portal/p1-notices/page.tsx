@@ -93,10 +93,10 @@ export default async function P1NoticesPage() {
         {mailedAt ? (
           <div className="space-y-4 rounded-2xl bg-white px-6 py-6 shadow-sm">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">Notices sent</h2>
-            <p className="text-sm text-slate-700">You told us you sent your P1 notices on {formatDate(mailedAt)}.</p>
+            <p className="text-sm text-[color:var(--text-secondary)]">You told us you sent your P1 notices on {formatDate(mailedAt)}.</p>
             {daysRemaining !== null ? (
               daysRemaining > 0 ? (
-                <div className="space-y-2 text-sm text-slate-700">
+                <div className="space-y-2 text-sm text-[color:var(--text-secondary)]">
                   <p>
                     21-day countdown started. You have {daysRemaining} day(s) left. Earliest filing: {waitUntil ? formatDate(waitUntil) : "after wait"}.
                   </p>
@@ -107,10 +107,10 @@ export default async function P1NoticesPage() {
                       aria-label={`Progress ${percent}%`}
                     />
                   </div>
-                  <p className="text-xs text-slate-700">We’ll keep your waiting period here. Check back anytime.</p>
+                  <p className="text-xs text-[color:var(--text-secondary)]">We’ll keep your waiting period here. Check back anytime.</p>
                 </div>
               ) : (
-                <p className="text-sm text-slate-700">
+                <p className="text-sm text-[color:var(--text-secondary)]">
                   Your 21-day waiting period is complete. You’re ready for your probate filing step (coming soon in the portal).
                 </p>
               )
@@ -125,7 +125,7 @@ export default async function P1NoticesPage() {
               {daysRemaining !== null && daysRemaining <= 0 ? (
                 <button
                   disabled
-                  className="inline-flex items-center rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-slate-600"
+                  className="inline-flex items-center rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-[color:var(--text-tertiary)]"
                 >
                   Probate filing step coming soon
                 </button>

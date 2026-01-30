@@ -37,10 +37,10 @@ export function ExtractionResultCard({ title, value, confidence, status, onConfi
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-slate-700">{title}</p>
-          {confidence ? <p className="text-xs text-slate-600">{confidence}</p> : null}
+          <p className="text-sm font-medium text-[color:var(--text-secondary)]">{title}</p>
+          {confidence ? <p className="text-xs text-[color:var(--text-tertiary)]">{confidence}</p> : null}
         </div>
-        <div className="text-xs uppercase tracking-wide text-slate-600">
+        <div className="text-xs uppercase tracking-wide text-[color:var(--text-tertiary)]">
           {status === "pending" && "Pending"}
           {status === "confirmed" && "Confirmed"}
           {status === "edited" && "Edited"}

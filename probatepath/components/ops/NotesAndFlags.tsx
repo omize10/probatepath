@@ -128,7 +128,7 @@ export function NotesCard({ matterId, notes }: { matterId: string; notes: Matter
         <button
           type="submit"
           disabled={isPending || !newNote.trim()}
-          className="rounded-full bg-[color:var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-50"
+          className="rounded-full bg-[color:var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-60"
         >
           {isPending ? "Adding..." : "Add Note"}
         </button>
@@ -274,7 +274,7 @@ export function FlagsCard({ matterId, flags }: { matterId: string; flags: Matter
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-full bg-[color:var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-50"
+              className="rounded-full bg-[color:var(--brand)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-60"
             >
               {isPending ? "Adding..." : "Add Flag"}
             </button>

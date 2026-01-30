@@ -135,18 +135,18 @@ export function MailingTracker({ data }: { data: TrackerData }) {
     >
       {mailings.length === 0 ? (
         <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white p-6 text-center">
-          <p className="text-sm text-slate-700 mb-4">
+          <p className="text-sm text-[color:var(--text-secondary)] mb-4">
             Set up tracking for each beneficiary who needs a P1 notice.
           </p>
           <button
             onClick={initialize}
             disabled={loading || data.beneficiaries.length === 0}
-            className="inline-flex items-center rounded-full bg-[color:var(--brand)] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-50"
+            className="inline-flex items-center rounded-full bg-[color:var(--brand)] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-60"
           >
             {loading ? "Setting up..." : "Initialize tracking"}
           </button>
           {data.beneficiaries.length === 0 && (
-            <p className="mt-2 text-xs text-slate-600">No beneficiaries found in your intake.</p>
+            <p className="mt-2 text-xs text-[color:var(--text-tertiary)]">No beneficiaries found in your intake.</p>
           )}
         </div>
       ) : (
@@ -154,15 +154,15 @@ export function MailingTracker({ data }: { data: TrackerData }) {
           {/* Summary bar */}
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl border border-[color:var(--border-muted)] bg-white p-3 text-center">
-              <p className="text-xs uppercase tracking-widest text-slate-600">Total</p>
+              <p className="text-xs uppercase tracking-widest text-[color:var(--text-tertiary)]">Total</p>
               <p className="text-2xl font-bold text-[color:var(--ink)]">{totalCount}</p>
             </div>
             <div className="rounded-xl border border-[color:var(--border-muted)] bg-white p-3 text-center">
-              <p className="text-xs uppercase tracking-widest text-slate-600">Mailed</p>
+              <p className="text-xs uppercase tracking-widest text-[color:var(--text-tertiary)]">Mailed</p>
               <p className="text-2xl font-bold text-blue-700">{mailedCount}</p>
             </div>
             <div className="rounded-xl border border-[color:var(--border-muted)] bg-white p-3 text-center">
-              <p className="text-xs uppercase tracking-widest text-slate-600">Delivered</p>
+              <p className="text-xs uppercase tracking-widest text-[color:var(--text-tertiary)]">Delivered</p>
               <p className="text-2xl font-bold text-green-700">{deliveredCount}</p>
             </div>
           </div>
@@ -287,12 +287,12 @@ function MailingCard({
         </div>
         <div className="flex items-center gap-2">
           {daysRemaining !== null && mailing.status !== "delivered" && (
-            <span className="text-xs text-slate-600">
+            <span className="text-xs text-[color:var(--text-tertiary)]">
               {daysRemaining > 0 ? `${daysRemaining}d remaining` : "21 days complete"}
             </span>
           )}
           <svg
-            className={`h-4 w-4 text-slate-600 transition ${expanded ? "rotate-180" : ""}`}
+            className={`h-4 w-4 text-[color:var(--text-tertiary)] transition ${expanded ? "rotate-180" : ""}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -303,14 +303,14 @@ function MailingCard({
       </button>
 
       {expanded && (
-        <div className="border-t border-gray-100 px-4 py-4 space-y-4">
+        <div className="border-t border-[color:var(--border-subtle)] px-4 py-4 space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Delivery method</label>
+              <label className="block text-xs font-medium text-[color:var(--text-tertiary)] mb-1">Delivery method</label>
               <select
                 value={mailing.deliveryMethod}
                 onChange={(e) => onUpdate(mailing.id, { deliveryMethod: e.target.value })}
-                className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm"
+                className="w-full rounded-lg border border-[color:var(--border-subtle)] px-3 py-1.5 text-sm"
               >
                 {Object.entries(METHOD_LABELS).map(([val, label]) => (
                   <option key={val} value={val}>{label}</option>
@@ -318,7 +318,7 @@ function MailingCard({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Tracking number</label>
+              <label className="block text-xs font-medium text-[color:var(--text-tertiary)] mb-1">Tracking number</label>
               <input
                 type="text"
                 defaultValue={mailing.trackingNumber ?? ""}
@@ -328,13 +328,13 @@ function MailingCard({
                   }
                 }}
                 placeholder="Enter tracking number"
-                className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm"
+                className="w-full rounded-lg border border-[color:var(--border-subtle)] px-3 py-1.5 text-sm"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Carrier / notes</label>
+            <label className="block text-xs font-medium text-[color:var(--text-tertiary)] mb-1">Carrier / notes</label>
             <input
               type="text"
               defaultValue={mailing.carrierName ?? ""}
@@ -344,16 +344,16 @@ function MailingCard({
                 }
               }}
               placeholder="e.g., Canada Post, FedEx"
-              className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm"
+              className="w-full rounded-lg border border-[color:var(--border-subtle)] px-3 py-1.5 text-sm"
             />
           </div>
 
           {/* Timeline */}
-          <div className="flex items-center gap-2 text-xs text-slate-600">
+          <div className="flex items-center gap-2 text-xs text-[color:var(--text-tertiary)]">
             {mailing.printedAt && <span>Printed {format(new Date(mailing.printedAt), "MMM d")}</span>}
-            {mailing.printedAt && mailing.mailedAt && <span className="text-slate-600">→</span>}
+            {mailing.printedAt && mailing.mailedAt && <span className="text-[color:var(--text-tertiary)]">→</span>}
             {mailing.mailedAt && <span>Mailed {format(new Date(mailing.mailedAt), "MMM d")}</span>}
-            {mailing.mailedAt && mailing.deliveredAt && <span className="text-slate-600">→</span>}
+            {mailing.mailedAt && mailing.deliveredAt && <span className="text-[color:var(--text-tertiary)]">→</span>}
             {mailing.deliveredAt && <span>Delivered {format(new Date(mailing.deliveredAt), "MMM d")}</span>}
           </div>
 
@@ -368,7 +368,7 @@ function MailingCard({
 
           {/* Proof uploads */}
           <div>
-            <p className="text-xs font-medium text-slate-600 mb-2">
+            <p className="text-xs font-medium text-[color:var(--text-tertiary)] mb-2">
               Delivery proof {mailing.status === "printed" && !hasProofUploaded && (
                 <span className="text-red-500 font-normal">(required before marking as mailed)</span>
               )}
@@ -376,17 +376,17 @@ function MailingCard({
             {mailing.proofs.length > 0 && (
               <ul className="space-y-1 mb-2">
                 {mailing.proofs.map((proof) => (
-                  <li key={proof.id} className="flex items-center gap-2 text-xs text-slate-700">
+                  <li key={proof.id} className="flex items-center gap-2 text-xs text-[color:var(--text-secondary)]">
                     <svg className="h-3 w-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                     <span>{proof.fileName}</span>
-                    <span className="text-slate-700">({format(new Date(proof.uploadedAt), "MMM d")})</span>
+                    <span className="text-[color:var(--text-secondary)]">({format(new Date(proof.uploadedAt), "MMM d")})</span>
                   </li>
                 ))}
               </ul>
             )}
-            <label className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-gray-50 transition">
+            <label className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[color:var(--border-subtle)] px-3 py-1.5 text-xs font-medium text-[color:var(--text-secondary)] hover:bg-gray-50 transition">
               <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
               </svg>
@@ -415,7 +415,7 @@ function MailingCard({
                     onChange={(e) => handleCheckboxChange("confirmedMailedViaRegistered", e.target.checked)}
                     className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[color:var(--brand)] focus:ring-[color:var(--brand)]"
                   />
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-[color:var(--text-secondary)]">
                     I confirm I mailed Form P1 to <strong>{mailing.beneficiaryName}</strong> via registered mail
                   </span>
                 </label>
@@ -426,7 +426,7 @@ function MailingCard({
                     onChange={(e) => handleCheckboxChange("confirmedCorrectAddress", e.target.checked)}
                     className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[color:var(--brand)] focus:ring-[color:var(--brand)]"
                   />
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-[color:var(--text-secondary)]">
                     I confirm I mailed to this address:{" "}
                     <strong>{mailing.beneficiaryAddress || "Address not provided"}</strong>
                   </span>
@@ -438,7 +438,7 @@ function MailingCard({
                     onChange={(e) => handleCheckboxChange("confirmedUnderstand21Days", e.target.checked)}
                     className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[color:var(--brand)] focus:ring-[color:var(--brand)]"
                   />
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-[color:var(--text-secondary)]">
                     I understand I cannot file the probate application until 21 days after this mailing date
                   </span>
                 </label>
@@ -457,12 +457,12 @@ function MailingCard({
               <button
                 onClick={handleStatusAdvance}
                 disabled={saving || (mailing.status === "printed" && !canMarkAsMailed)}
-                className="inline-flex items-center rounded-full bg-[color:var(--brand)] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-50"
+                className="inline-flex items-center rounded-full bg-[color:var(--brand)] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[color:var(--accent-dark)] disabled:opacity-60"
               >
                 {saving ? "Saving..." : nextAction}
               </button>
               {mailing.status === "printed" && !canMarkAsMailed && (
-                <p className="text-xs text-slate-600">
+                <p className="text-xs text-[color:var(--text-tertiary)]">
                   Complete all confirmations and upload receipt to enable this button.
                 </p>
               )}

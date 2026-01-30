@@ -68,9 +68,9 @@ const SEVERITY_LABELS = {
 export function CommonMistakes() {
   return (
     <div className="rounded-2xl border border-[color:var(--border-muted)] bg-white overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-100">
+      <div className="px-5 py-4 border-b border-[color:var(--border-subtle)]">
         <h3 className="text-base font-semibold text-[color:var(--ink)]">Common mistakes to avoid</h3>
-        <p className="text-xs text-slate-600 mt-0.5">These are the most frequent errors executors make. Read each one carefully.</p>
+        <p className="text-xs text-[color:var(--text-tertiary)] mt-0.5">These are the most frequent errors executors make. Read each one carefully.</p>
       </div>
       <div className="divide-y divide-gray-50">
         {MISTAKES.map((mistake) => {
@@ -88,7 +88,7 @@ export function CommonMistakes() {
                       {SEVERITY_LABELS[mistake.severity]}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-700 mt-1">{mistake.description}</p>
+                  <p className="text-xs text-[color:var(--text-secondary)] mt-1">{mistake.description}</p>
                 </div>
               </div>
             </div>

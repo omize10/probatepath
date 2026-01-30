@@ -237,7 +237,7 @@ export default function OnboardCreateAccountPage() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--text-placeholder)] hover:text-slate-700"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--text-placeholder)] hover:text-[color:var(--text-secondary)]"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -271,8 +271,8 @@ export default function OnboardCreateAccountPage() {
 
         {/* Selected tier reminder */}
         {tierInfo && (
-          <div className="rounded-xl bg-gray-50 border border-gray-200 p-4">
-            <p className="text-xs text-slate-600 uppercase tracking-wide mb-1">Selected package</p>
+          <div className="rounded-xl bg-gray-50 border border-[color:var(--border-subtle)] p-4">
+            <p className="text-xs text-[color:var(--text-tertiary)] uppercase tracking-wide mb-1">Selected package</p>
             <div className="flex items-center justify-between">
               <span className="font-semibold text-[color:var(--brand)]">{tierInfo.name}</span>
               <span className="font-bold text-[color:var(--brand)]">${tierInfo.price.toLocaleString()}</span>
@@ -302,7 +302,7 @@ export default function OnboardCreateAccountPage() {
         Back
       </Button>
 
-      <p className="text-center text-xs text-slate-600">
+      <p className="text-center text-xs text-[color:var(--text-tertiary)]">
         By creating an account, you agree to our Terms of Service and Privacy Policy.
       </p>
     </div>

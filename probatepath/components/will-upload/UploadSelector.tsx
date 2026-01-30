@@ -35,9 +35,9 @@ export function UploadSelector() {
   return (
     <div className="space-y-8">
       <header className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-600">The will</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--text-tertiary)]">The will</p>
         <h1 className="text-2xl font-semibold text-[color:var(--ink)]">Upload your will to help fill in these questions</h1>
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-[color:var(--text-secondary)]">
           We&apos;ll read your will and suggest answers. You review everything before saving.
         </p>
       </header>
@@ -54,7 +54,7 @@ export function UploadSelector() {
         </p>
       </div>
 
-      <label className="flex items-start gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-800">
+      <label className="flex items-start gap-3 rounded-lg border border-[color:var(--border-subtle)] bg-gray-50 px-4 py-3 text-sm text-gray-800">
         <input
           type="checkbox"
           className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -75,35 +75,35 @@ export function UploadSelector() {
           onClick={() => setSelected("pdf")}
           disabled={!acknowledged || logging}
           className={`flex h-full flex-col rounded-xl border px-6 py-5 text-left shadow-sm transition ${
-            selected === "pdf" ? "border-blue-600 ring-2 ring-blue-100" : "border-gray-200 hover:border-blue-400"
+            selected === "pdf" ? "border-blue-600 ring-2 ring-blue-100" : "border-[color:var(--border-subtle)] hover:border-blue-400"
           } ${!acknowledged ? "cursor-not-allowed opacity-60" : "bg-white"}`}
         >
           <div className="text-3xl">📄</div>
           <p className="mt-3 text-lg font-semibold text-[color:var(--ink)]">Upload PDF</p>
-          <p className="mt-1 text-sm text-slate-700">Best for digital wills or scans.</p>
+          <p className="mt-1 text-sm text-[color:var(--text-secondary)]">Best for digital wills or scans.</p>
         </button>
         <button
           type="button"
           onClick={() => setSelected("photo")}
           disabled={!acknowledged || logging}
           className={`flex h-full flex-col rounded-xl border px-6 py-5 text-left shadow-sm transition ${
-            selected === "photo" ? "border-blue-600 ring-2 ring-blue-100" : "border-gray-200 hover:border-blue-400"
+            selected === "photo" ? "border-blue-600 ring-2 ring-blue-100" : "border-[color:var(--border-subtle)] hover:border-blue-400"
           } ${!acknowledged ? "cursor-not-allowed opacity-60" : "bg-white"}`}
         >
           <div className="text-3xl">📸</div>
           <p className="mt-3 text-lg font-semibold text-[color:var(--ink)]">Upload Photos</p>
-          <p className="mt-1 text-sm text-slate-700">Best for paper wills.</p>
+          <p className="mt-1 text-sm text-[color:var(--text-secondary)]">Best for paper wills.</p>
         </button>
       </div>
 
       {selected === "pdf" ? (
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <section className="rounded-2xl border border-[color:var(--border-subtle)] bg-white p-6 shadow-sm">
           <PdfUpload onComplete={handleComplete} />
         </section>
       ) : null}
 
       {selected === "photo" ? (
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <section className="rounded-2xl border border-[color:var(--border-subtle)] bg-white p-6 shadow-sm">
           <PhotoUpload onComplete={handleComplete} />
         </section>
       ) : null}

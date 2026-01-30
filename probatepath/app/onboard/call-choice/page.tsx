@@ -11,6 +11,7 @@ export default function OnboardCallChoicePage() {
   const [calling, setCalling] = useState(false);
   const [callInitiated, setCallInitiated] = useState(false);
   const [callFallback, setCallFallback] = useState(false);
+  const [callStatus, setCallStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const state = getOnboardState();
@@ -19,6 +20,44 @@ export default function OnboardCallChoicePage() {
       return;
     }
   }, [router]);
+
+  // Poll call status as a fallback mechanism
+  const pollCallStatus = async (callId: string) => {
+    let attempts = 0;
+    const maxAttempts = 12; // Poll for 60 seconds (12 attempts * 5 seconds)
+
+    const poll = async () => {
+      if (attempts >= maxAttempts) {
+        console.log("[call-choice] Stopped polling after", attempts, "attempts");
+        return;
+      }
+
+      attempts++;
+
+      try {
+        const response = await fetch(`/api/retell/check-status/${callId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setCallStatus(data.status);
+
+          // If call reached a final state, stop polling
+          const finalStates = ["completed", "failed", "no_answer", "voicemail", "abandoned"];
+          if (finalStates.includes(data.status)) {
+            console.log("[call-choice] Call reached final state:", data.status);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("[call-choice] Error polling status:", error);
+      }
+
+      // Continue polling
+      setTimeout(poll, 5000);
+    };
+
+    // Start polling after 3 seconds
+    setTimeout(poll, 3000);
+  };
 
   const handleCallMeNow = async () => {
     setCalling(true);
@@ -57,12 +96,18 @@ export default function OnboardCallChoicePage() {
       }
 
       // Save call info to state
+      const aiCallId = (data.ai_call_id || data.call_id) as string;
       saveOnboardState({
         scheduledCall: true,
-        aiCallId: (data.ai_call_id || data.call_id) as string,
+        aiCallId,
       });
 
       setCallInitiated(true);
+
+      // Start polling call status as a fallback
+      if (aiCallId) {
+        pollCallStatus(aiCallId);
+      }
 
       // Wait 3 seconds to show success, then proceed
       setTimeout(() => {
@@ -91,13 +136,13 @@ export default function OnboardCallChoicePage() {
         </div>
         <div className="space-y-2">
           <h2 className="text-2xl font-semibold text-[color:var(--brand)]">
-            We&apos;ll call you back shortly
+            Call service temporarily unavailable
           </h2>
           <p className="text-[color:var(--muted-ink)]">
-            Our calling service is temporarily busy. A team member will call you back within 30 minutes during business hours.
+            Our AI calling assistant is currently unavailable. You can continue with the questionnaire below.
           </p>
           <p className="text-sm text-[color:var(--muted-ink)]">
-            In the meantime, you can continue with the questionnaire below.
+            We&apos;ll follow up via email if we need to connect.
           </p>
         </div>
         <Button
@@ -167,7 +212,7 @@ export default function OnboardCallChoicePage() {
           onClick={handleCallMeNow}
           disabled={calling}
           className="relative w-full p-6 text-left rounded-2xl border-2 border-[color:var(--brand)] bg-blue-50
-                     hover:bg-blue-100 transition-all duration-200 group disabled:opacity-50"
+                     hover:bg-blue-100 transition-all duration-200 group disabled:opacity-60"
         >
           {/* Recommended badge */}
           <div className="absolute -top-3 left-4 px-2 py-0.5 bg-[color:var(--brand)] text-white text-xs font-medium rounded-full flex items-center gap-1">
@@ -201,7 +246,7 @@ export default function OnboardCallChoicePage() {
         >
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-              <FileText className="w-5 h-5 text-slate-700" />
+              <FileText className="w-5 h-5 text-[color:var(--text-secondary)]" />
             </div>
             <div className="flex-1">
               <h3 className="font-medium text-[color:var(--brand)]">

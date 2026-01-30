@@ -132,7 +132,7 @@ export function ConfirmDialog({
           {/* Type-to-confirm mode */}
           {confirmMode === "type" && (
             <div className={cn("rounded-lg border p-4", config.border, config.bg)}>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-[color:var(--text-secondary)] mb-2">
                 Type <span className="font-bold">{confirmWord}</span> to confirm:
               </label>
               <input
@@ -163,7 +163,7 @@ export function ConfirmDialog({
           {/* Checklist mode */}
           {confirmMode === "checklist" && checklistItems.length > 0 && (
             <div className={cn("rounded-lg border p-4 space-y-3", config.border, config.bg)}>
-              <p className="text-sm font-medium text-slate-700 mb-2">
+              <p className="text-sm font-medium text-[color:var(--text-secondary)] mb-2">
                 Please confirm each item:
               </p>
               {checklistItems.map((item, index) => (
@@ -182,7 +182,7 @@ export function ConfirmDialog({
                   />
                   <span className={cn(
                     "text-sm",
-                    checkedItems.has(index) ? "text-[color:var(--ink)]" : "text-slate-700"
+                    checkedItems.has(index) ? "text-[color:var(--ink)]" : "text-[color:var(--text-secondary)]"
                   )}>
                     {item}
                   </span>

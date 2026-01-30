@@ -89,7 +89,7 @@ export function DialogTitle({ className, children, ...props }: HTMLAttributes<HT
 
 export function DialogDescription({ className, children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-sm text-slate-700", className)} {...props}>
+    <p className={cn("text-sm text-[color:var(--text-secondary)]", className)} {...props}>
       {children}
     </p>
   );

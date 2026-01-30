@@ -17,20 +17,39 @@ export async function POST(request: Request) {
   const signature = request.headers.get("x-retell-signature");
 
   // Verify signature
-  if (!verifyRetellSignature(rawBody, signature)) {
+  const isValidSignature = verifyRetellSignature(rawBody, signature);
+  if (!isValidSignature) {
+    console.error("[retell/webhook] ❌ REJECTED - Invalid signature:", {
+      has_signature: !!signature,
+      has_secret: !!process.env.RETELL_WEBHOOK_SECRET,
+      timestamp: new Date().toISOString(),
+    });
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
+
+  console.log("[retell/webhook] ✅ Signature verified successfully");
 
   // Parse the event
   let event: RetellWebhookEvent;
   try {
     event = JSON.parse(rawBody);
   } catch {
+    console.error("[retell/webhook] Failed to parse JSON from webhook body");
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const { event_type, call_id } = event;
-  console.log("[retell/webhook] Received event:", { event_type, call_id });
+  console.log("[retell/webhook] ✅ Received event:", {
+    event_type,
+    call_id,
+    timestamp: new Date().toISOString(),
+    has_signature: !!signature,
+  });
+
+  // Log full payload in development for debugging
+  if (process.env.NODE_ENV === "development") {
+    console.log("[retell/webhook] Full payload:", JSON.stringify(event, null, 2));
+  }
 
   try {
     switch (event_type) {

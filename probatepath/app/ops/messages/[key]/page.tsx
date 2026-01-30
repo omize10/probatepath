@@ -288,7 +288,7 @@ export default function TemplateEditorPage({ params }: { params: Promise<{ key: 
                 rows={4}
                 disabled={!smsEnabled}
                 className={`w-full rounded-lg border border-[color:var(--border-muted)] px-3 py-2 ${
-                  !smsEnabled ? 'bg-gray-100 text-slate-700 cursor-not-allowed' : ''
+                  !smsEnabled ? 'bg-gray-100 text-[color:var(--text-secondary)] cursor-not-allowed' : ''
                 }`}
                 placeholder={smsEnabled ? 'Enter SMS message...' : 'Enable SMS to edit'}
               />

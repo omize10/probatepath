@@ -153,7 +153,7 @@ export default function ResetPassword() {
 
         {!resetToken ? (
           <form onSubmit={handleVerifyCode} className="space-y-4">
-            <p className="text-sm text-slate-700">
+            <p className="text-sm text-[color:var(--text-secondary)]">
               Enter the 6-digit code we emailed to <span className="font-medium">{emailParam}</span>.
             </p>
             <div>
@@ -197,7 +197,7 @@ export default function ResetPassword() {
                   required
                   className="w-full"
                 />
-                <p className="text-xs text-slate-600 mt-1">
+                <p className="text-xs text-[color:var(--text-tertiary)] mt-1">
                   Must be at least 8 characters
                 </p>
               </div>
@@ -245,7 +245,7 @@ export default function ResetPassword() {
               required
               className="w-full"
             />
-            <p className="text-xs text-slate-600 mt-1">
+            <p className="text-xs text-[color:var(--text-tertiary)] mt-1">
               Must be at least 8 characters
             </p>
           </div>
@@ -270,7 +270,7 @@ export default function ResetPassword() {
           {loading ? 'Updating...' : 'Set new password'}
         </Button>
 
-        <p className="text-center text-sm text-slate-600">
+        <p className="text-center text-sm text-[color:var(--text-tertiary)]">
           Remember your password?{' '}
           <a href="/login" className="text-[color:var(--brand)] hover:underline">
             Sign in

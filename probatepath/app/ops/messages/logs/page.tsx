@@ -236,7 +236,7 @@ export default function MessageLogsPage() {
                         Failed
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-[color:var(--text-secondary)]">
                         {log.status}
                       </span>
                     )}

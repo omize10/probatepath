@@ -371,7 +371,7 @@ export default function PortalSchedulePage() {
                     value={selectedTime}
                     onChange={(e) => setSelectedTime(e.target.value)}
                     disabled={!selectedDate}
-                    className="flex h-12 w-full rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] px-4 py-2 text-base text-[color:var(--ink)] focus:border-[color:var(--brand)] focus:outline-none focus:ring-2 focus:ring-[color:var(--brand)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-12 w-full rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] px-4 py-2 text-base text-[color:var(--ink)] focus:border-[color:var(--brand)] focus:outline-none focus:ring-2 focus:ring-[color:var(--brand)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <option value="">
                       {!selectedDate

@@ -34,7 +34,7 @@ export function CourtFileNumberForm({ caseId, existingFileNumber }: CourtFileNum
     >
       <input type="hidden" name="caseId" value={caseId} />
       <div className="flex-1">
-        <label htmlFor="courtFileNumber" className="block text-xs font-medium text-slate-700 mb-1">
+        <label htmlFor="courtFileNumber" className="block text-xs font-medium text-[color:var(--text-secondary)] mb-1">
           Court file number
         </label>
         <input
@@ -50,7 +50,7 @@ export function CourtFileNumberForm({ caseId, existingFileNumber }: CourtFileNum
       <button
         type="submit"
         disabled={isPending || !fileNumber.trim()}
-        className="inline-flex items-center justify-center rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="inline-flex items-center justify-center rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-700 disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {isPending ? "Saving..." : "Save file number"}
       </button>

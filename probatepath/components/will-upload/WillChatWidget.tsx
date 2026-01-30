@@ -56,7 +56,7 @@ export function WillChatWidget({ extractionId, currentStep }: { extractionId: st
 
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
+      <div className="border-b border-[color:var(--border-subtle)] bg-gray-50 px-4 py-3">
         <h3 className="text-sm font-semibold text-[color:var(--ink)]">Will &amp; Probate Helper</h3>
       </div>
 
@@ -71,11 +71,11 @@ export function WillChatWidget({ extractionId, currentStep }: { extractionId: st
             <p className="whitespace-pre-wrap">{message.content}</p>
           </div>
         ))}
-        {loading ? <div className="text-sm text-slate-700">Thinking...</div> : null}
+        {loading ? <div className="text-sm text-[color:var(--text-secondary)]">Thinking...</div> : null}
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="border-t border-gray-200 p-3">
+      <div className="border-t border-[color:var(--border-subtle)] p-3">
         <div className="flex gap-2">
           <input
             type="text"
@@ -99,7 +99,7 @@ export function WillChatWidget({ extractionId, currentStep }: { extractionId: st
             Send
           </button>
         </div>
-        <p className="mt-2 text-xs text-slate-600">AI can answer general BC probate questions. Not legal advice.</p>
+        <p className="mt-2 text-xs text-[color:var(--text-tertiary)]">AI can answer general BC probate questions. Not legal advice.</p>
       </div>
     </div>
   );

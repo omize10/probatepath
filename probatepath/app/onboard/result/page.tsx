@@ -353,7 +353,7 @@ export default function OnboardResultPage() {
 
         {/* Disclaimer */}
         <div className="rounded-lg border border-[color:var(--border-muted)] bg-slate-50 p-4 space-y-1">
-          <p className="text-xs font-medium text-slate-600">Service Eligibility Note</p>
+          <p className="text-xs font-medium text-[color:var(--text-tertiary)]">Service Eligibility Note</p>
           <p className="text-xs text-slate-500">
             If after payment we determine your estate cannot be served at your selected tier due to complexity, you will have two options: receive a full refund, or upgrade to a tier that can accommodate your needs. No hidden fees or surprises.
           </p>
@@ -383,7 +383,7 @@ export default function OnboardResultPage() {
   const recommendedTierInfo = TIER_INFO[recommendedTier];
 
   return (
-    <div className="space-y-6 pb-24 md:pb-8">
+    <div className="space-y-4 pb-24 md:pb-8">
       {/* Header Section */}
       <motion.div
         className="space-y-2 text-center"
@@ -490,6 +490,22 @@ export default function OnboardResultPage() {
             )}
           </Button>
         </div>
+      </motion.div>
+
+      {/* Continue Button - Primary Action */}
+      <motion.div
+        variants={otherOptionsVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <Button
+          onClick={handleContinue}
+          size="lg"
+          className="w-full h-14 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 transition-all hover:scale-[1.02]"
+        >
+          Continue with {tierInfo.name} - ${tierInfo.price.toLocaleString()}
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
       </motion.div>
 
       {/* Modify / Other Options Toggle */}
@@ -630,13 +646,13 @@ export default function OnboardResultPage() {
             className="rounded-xl bg-slate-100 p-5"
           >
             <div className="mb-4">
-              <p className="text-sm font-medium text-slate-600">
+              <p className="text-sm font-medium text-[color:var(--text-tertiary)]">
                 Traditional Lawyer
               </p>
               <p className="text-2xl font-bold text-slate-800">
                 $5,000 - $10,000+
               </p>
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-[color:var(--text-tertiary)]">
                 (and that&apos;s just the start)
               </p>
             </div>
@@ -651,7 +667,7 @@ export default function OnboardResultPage() {
                   custom={index}
                 >
                   <X className="h-4 w-4 flex-shrink-0 text-red-500" />
-                  <span className="text-sm text-slate-700">{item}</span>
+                  <span className="text-sm text-[color:var(--text-secondary)]">{item}</span>
                 </motion.div>
               ))}
             </div>
@@ -703,7 +719,7 @@ export default function OnboardResultPage() {
         </div>
 
         {/* Disclaimer */}
-        <p className="text-center text-xs text-slate-600">
+        <p className="text-center text-xs text-[color:var(--text-tertiary)]">
           *Lawyer fees based on industry surveys of BC probate services. Actual
           costs vary. ProbateDesk pricing is fixed with no hidden fees.
         </p>
@@ -711,22 +727,10 @@ export default function OnboardResultPage() {
 
       {/* Service Eligibility Disclaimer */}
       <div className="rounded-lg border border-[color:var(--border-muted)] bg-slate-50 p-4 space-y-1">
-        <p className="text-xs font-medium text-slate-600">Service Eligibility Note</p>
+        <p className="text-xs font-medium text-[color:var(--text-tertiary)]">Service Eligibility Note</p>
         <p className="text-xs text-slate-500">
           If after payment we determine your estate cannot be served at your selected tier due to complexity, you will have two options: receive a full refund, or upgrade to a tier that can accommodate your needs. No hidden fees or surprises.
         </p>
-      </div>
-
-      {/* Continue Button */}
-      <div>
-        <Button
-          onClick={handleContinue}
-          size="lg"
-          className="w-full h-14 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 transition-all hover:scale-[1.02]"
-        >
-          Continue with {tierInfo.name} - ${tierInfo.price.toLocaleString()}
-          <ArrowRight className="ml-2 h-5 w-5" />
-        </Button>
       </div>
 
       {/* Sticky CTA for Mobile */}
@@ -801,7 +805,7 @@ export default function OnboardResultPage() {
           >
             <button
               onClick={dismissPopup}
-              className="absolute right-2 top-2 text-slate-500 hover:text-slate-700"
+              className="absolute right-2 top-2 text-slate-500 hover:text-[color:var(--text-secondary)]"
             >
               <X className="h-4 w-4" />
             </button>

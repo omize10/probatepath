@@ -15,7 +15,7 @@ const statusColors: Record<CallbackStatus, string> = {
   scheduled: "bg-blue-100 text-blue-800 border-blue-200",
   call_in_progress: "bg-yellow-100 text-yellow-800 border-yellow-200",
   call_complete: "bg-green-100 text-green-800 border-green-200",
-  intake_complete: "bg-gray-100 text-gray-800 border-gray-200",
+  intake_complete: "bg-gray-100 text-gray-800 border-[color:var(--border-subtle)]",
   cancelled: "bg-red-100 text-red-800 border-red-200",
   no_show: "bg-orange-100 text-orange-800 border-orange-200",
 };
@@ -31,7 +31,7 @@ export function CallbackStatusBadge({ status }: { status: CallbackStatus }) {
 }
 
 const tierColors: Record<Tier, string> = {
-  basic: "bg-gray-100 text-slate-700 border-gray-200",
+  basic: "bg-gray-100 text-[color:var(--text-secondary)] border-[color:var(--border-subtle)]",
   standard: "bg-blue-50 text-blue-700 border-blue-200",
   premium: "bg-yellow-100 text-yellow-800 border-yellow-300",
 };

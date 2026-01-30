@@ -63,9 +63,9 @@ export function OperationalTransparency({
                 </div>
               )}
               <span className={`text-xs ${
-                step.done ? "text-slate-600" :
+                step.done ? "text-[color:var(--text-tertiary)]" :
                 isActive ? "text-[color:var(--ink)] font-medium" :
-                "text-slate-600"
+                "text-[color:var(--text-tertiary)]"
               }`}>
                 {step.label}
               </span>

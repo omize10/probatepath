@@ -38,7 +38,7 @@ export default function OnboardPricingPage() {
         <p className="text-sm text-slate-500 uppercase tracking-wide font-medium">
           Typical Lawyer Fees
         </p>
-        <p className="text-3xl font-bold text-slate-700">$8,000 - $15,000</p>
+        <p className="text-3xl font-bold text-[color:var(--text-secondary)]">$8,000 - $15,000</p>
         <p className="text-sm text-slate-500">
           Hourly billing. Surprise invoices. Weeks of back-and-forth.
         </p>

@@ -140,7 +140,7 @@ export function ExtractionResults({ extraction }: { extraction: ExtractionResult
         <div className="rounded-lg border-l-4 border-red-400 bg-red-50 px-4 py-3 text-sm text-[color:var(--ink)]">
           <p className="font-semibold">⚠️ Potential issues detected</p>
           <p className="mt-1 whitespace-pre-wrap text-gray-800">{issues}</p>
-          <p className="mt-2 text-xs text-slate-700">These might cause problems at court. Consider talking to a BC lawyer.</p>
+          <p className="mt-2 text-xs text-[color:var(--text-secondary)]">These might cause problems at court. Consider talking to a BC lawyer.</p>
         </div>
       ) : null}
 

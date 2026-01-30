@@ -4,7 +4,7 @@
 export type LegacyTier = 'basic' | 'standard' | 'premium';
 
 // New tier names
-export type NewTier = 'essentials' | 'guided' | 'full_service';
+export type NewTier = 'essentials' | 'guided' | 'full_service' | 'white_glove';
 
 // Combined tier type (supports both)
 export type Tier = LegacyTier | NewTier;
@@ -14,13 +14,14 @@ export const TIER_NAME_MAP: Record<NewTier, LegacyTier> = {
   essentials: 'basic',
   guided: 'standard',
   full_service: 'premium',
+  white_glove: 'premium',
 };
 
 // Map legacy to new names for display
 export const LEGACY_TO_NEW_MAP: Record<LegacyTier, NewTier> = {
   basic: 'essentials',
   standard: 'guided',
-  premium: 'full_service',
+  premium: 'white_glove',
 };
 
 export type CallbackStatus =
@@ -192,20 +193,22 @@ export const TIER_PRICES: Record<Tier, number> = {
   essentials: 799,
   guided: 1499,
   full_service: 2499,
+  white_glove: 2499,
 };
 
 export const TIER_DISPLAY_NAMES: Record<Tier, string> = {
-  basic: 'Essentials',
-  standard: 'Guided',
-  premium: 'Full Service',
-  essentials: 'Essentials',
-  guided: 'Guided',
-  full_service: 'Full Service',
+  basic: 'Basic',
+  standard: 'Premium',
+  premium: 'White Glove',
+  essentials: 'Basic',
+  guided: 'Premium',
+  full_service: 'White Glove',
+  white_glove: 'White Glove',
 };
 
 export const TIER_CONFIGS: TierConfig[] = [
   {
-    name: 'Essentials',
+    name: 'Basic',
     price: 799,
     description: 'You file, we guide',
     recommended: false,
@@ -222,12 +225,12 @@ export const TIER_CONFIGS: TierConfig[] = [
     cta: 'Get Started',
   },
   {
-    name: 'Guided',
+    name: 'Premium',
     price: 1499,
     description: 'We check, you file',
     recommended: true,
     features: [
-      { name: 'Everything in Essentials', included: true },
+      { name: 'Everything in Basic', included: true },
       { name: 'Human review of all documents', included: true },
       { name: 'Phone/video support (scheduled calls)', included: true },
       { name: 'Free notarization in Vancouver', included: true, note: 'or $50 credit elsewhere' },
@@ -239,12 +242,12 @@ export const TIER_CONFIGS: TierConfig[] = [
     cta: 'Get Started',
   },
   {
-    name: 'Full Service',
+    name: 'White Glove',
     price: 2499,
     description: 'We handle everything',
     recommended: false,
     features: [
-      { name: 'Everything in Guided', included: true },
+      { name: 'Everything in Premium', included: true },
       { name: 'One 30-min call with our lawyer', included: true },
       { name: 'Dedicated case coordinator', included: true },
       { name: 'Unlimited requisition assistance', included: true },

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   getOnboardState,
   saveOnboardState,
+  savePendingIntake,
   calculateResult,
   shouldRedirectToSpecialist,
   type FitAnswers,
@@ -66,9 +67,9 @@ export default function OnboardScreeningPage() {
 
   useEffect(() => {
     const state = getOnboardState();
-    // Allow continuing from call-choice page
-    if (!state.phone) {
-      router.push("/onboard/phone");
+    // Require email+phone (combined step) and call-choice
+    if (!state.email || !state.phone) {
+      router.push("/onboard/email");
       return;
     }
     if (state.scheduledCall === undefined) {
@@ -85,15 +86,16 @@ export default function OnboardScreeningPage() {
     setAnswers(updated);
     saveOnboardState({ fitAnswers: updated });
 
-    // Check for immediate red flags
+    // Progressive save to server (fire-and-forget)
+    savePendingIntake({ quizAnswers: updated });
+
+    // Check for immediate Open Door Law triggers
     if (key === "potentialDisputes" && value === "yes") {
-      // Redirect to specialist immediately
       saveOnboardState({ fitAnswers: updated, redirectedToSpecialist: true });
       router.push("/onboard/specialist");
       return;
     }
     if (key === "assetsOutsideBC" && value === "international") {
-      // Redirect to specialist immediately
       saveOnboardState({ fitAnswers: updated, redirectedToSpecialist: true });
       router.push("/onboard/specialist");
       return;
@@ -164,6 +166,16 @@ export default function OnboardScreeningPage() {
         recommendedTier: result.recommendedTier,
         redFlags: result.redFlags,
         fitCheckPassed: result.fitCheckPassed,
+        showGrantOfAdministration: result.showGrantOfAdministration,
+        recommendationReason: result.recommendationReason,
+      });
+
+      // Save recommendation to server
+      savePendingIntake({
+        quizAnswers: finalAnswers,
+        recommendedTier: result.recommendedTier,
+        grantType: result.grantType,
+        redFlags: result.redFlags,
       });
 
       router.push("/onboard/result");

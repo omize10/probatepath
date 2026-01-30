@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Eye, EyeOff, Loader2, CheckCircle2, Lock, Mail } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Eye, EyeOff, Loader2, Lock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getOnboardState, saveOnboardState, TIER_INFO } from "@/lib/onboard/state";
+import { getOnboardState, saveOnboardState, savePendingIntake, TIER_INFO } from "@/lib/onboard/state";
 import { signIn } from "next-auth/react";
 
 export default function OnboardCreateAccountPage() {
@@ -17,12 +18,13 @@ export default function OnboardCreateAccountPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
+  const [existingAccount, setExistingAccount] = useState(false);
 
   useEffect(() => {
     const state = getOnboardState();
 
     // Must have email and selected tier
-    if (!state.email) {
+    if (!state.email || !state.phone) {
       router.push("/onboard/email");
       return;
     }
@@ -36,11 +38,22 @@ export default function OnboardCreateAccountPage() {
     setSelectedTier(state.selectedTier);
   }, [router]);
 
+  const isValidEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setExistingAccount(false);
 
     // Validation
+    if (!name.trim() || name.trim().length < 2) {
+      setError("Please enter your full legal name");
+      return;
+    }
+    if (!email.trim() || !isValidEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
     if (password.length < 8) {
       setError("Password must be at least 8 characters");
       return;
@@ -53,13 +66,21 @@ export default function OnboardCreateAccountPage() {
     setIsLoading(true);
 
     try {
+      // If email was changed, update localStorage and server
+      const state = getOnboardState();
+      const normalizedEmail = email.trim().toLowerCase();
+      if (normalizedEmail !== state.email) {
+        saveOnboardState({ email: normalizedEmail });
+        savePendingIntake({ email: normalizedEmail });
+      }
+
       // Create account
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name || email.split("@")[0],
-          email,
+          name: name.trim(),
+          email: normalizedEmail,
           password,
         }),
       });
@@ -67,23 +88,58 @@ export default function OnboardCreateAccountPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 409) {
+          setExistingAccount(true);
+          setIsLoading(false);
+          return;
+        }
         throw new Error(data.error || "Failed to create account");
       }
 
       // Auto sign in
       const signInResult = await signIn("credentials", {
-        email,
+        email: normalizedEmail,
         password,
         redirect: false,
       });
 
       if (signInResult?.error) {
         console.error("Auto sign-in failed:", signInResult.error);
-        // Continue anyway - they can sign in later
+      }
+
+      // Complete onboarding — create TierSelection + LeadSource
+      const completeState = getOnboardState();
+      await fetch("/api/onboard/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: normalizedEmail,
+          phone: completeState.phone || "",
+          tier: completeState.selectedTier || "premium",
+          grantType: completeState.grantType || "probate",
+          aiCallId: completeState.aiCallId,
+          screening: completeState.fitAnswers || {},
+          redFlags: completeState.redFlags || [],
+        }),
+      }).catch((err) => {
+        console.error("[create-account] onboard/complete failed:", err);
+      });
+
+      // Mark PendingIntake as converted (fire-and-forget)
+      if (completeState.email) {
+        fetch("/api/onboard/pending-intake", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: normalizedEmail,
+            status: "converted_to_account",
+          }),
+        }).catch(() => {});
       }
 
       // Save account created state
-      saveOnboardState({ accountCreated: true });
+      saveOnboardState({ accountCreated: true, name: name.trim() });
 
       // Proceed to payment
       router.push(`/pay?tier=${selectedTier}`);
@@ -103,38 +159,62 @@ export default function OnboardCreateAccountPage() {
           Create your account
         </h1>
         <p className="text-[color:var(--muted-ink)]">
-          Set a password to secure your account. You&apos;ll use this to track your case.
+          Almost there. Let&apos;s set up your account so you can access your
+          personalized probate pathway.
         </p>
       </div>
 
-      {/* Email display */}
-      <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
-            <Mail className="h-5 w-5 text-emerald-600" />
-          </div>
-          <div>
-            <p className="text-sm text-emerald-700">Your account email</p>
-            <p className="font-medium text-emerald-900">{email}</p>
-          </div>
-          <CheckCircle2 className="ml-auto h-5 w-5 text-emerald-500" />
-        </div>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Name (optional) */}
+        {/* Email (editable) */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-[color:var(--brand)] mb-1">
-            Your name (optional)
+          <label htmlFor="email" className="block text-sm font-medium text-[color:var(--brand)] mb-1">
+            Email address
           </label>
           <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Full name"
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError(null);
+              setExistingAccount(false);
+            }}
+            required
             className="w-full rounded-xl border border-[color:var(--border-muted)] px-4 py-3 text-[color:var(--brand)] placeholder:text-gray-400 focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
           />
+        </div>
+
+        {/* Existing account warning */}
+        {existingAccount && (
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
+            <p>
+              Looks like you already have an account with this email.{" "}
+              <Link href="/login" className="font-semibold underline hover:text-amber-900">
+                Log in instead
+              </Link>{" "}
+              or use a different email.
+            </p>
+          </div>
+        )}
+
+        {/* Full legal name (required) */}
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-[color:var(--brand)] mb-1">
+            Full legal name
+          </label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your full legal name"
+              required
+              minLength={2}
+              className="w-full rounded-xl border border-[color:var(--border-muted)] pl-10 pr-4 py-3 text-[color:var(--brand)] placeholder:text-gray-400 focus:border-[color:var(--brand)] focus:outline-none focus:ring-1 focus:ring-[color:var(--brand)]"
+            />
+          </div>
         </div>
 
         {/* Password */}
@@ -203,7 +283,7 @@ export default function OnboardCreateAccountPage() {
         <Button
           type="submit"
           size="lg"
-          disabled={isLoading || !password || !confirmPassword}
+          disabled={isLoading || !password || !confirmPassword || !name.trim()}
           className="w-full h-14 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700"
         >
           {isLoading ? (
@@ -212,7 +292,7 @@ export default function OnboardCreateAccountPage() {
               Creating account...
             </>
           ) : (
-            "Create Account & Continue to Payment"
+            "Create Account"
           )}
         </Button>
       </form>

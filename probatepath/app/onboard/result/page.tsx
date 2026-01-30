@@ -11,17 +11,19 @@ import {
   ArrowRight,
   Star,
   MessageCircle,
+  AlertTriangle,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   getOnboardState,
   saveOnboardState,
+  savePendingIntake,
   TIER_INFO,
-  type GrantType,
   type Tier,
 } from "@/lib/onboard/state";
 
-// Animation variants (using as const for proper typing)
+// Animation variants
 const headerVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -121,11 +123,14 @@ const probateDeskBenefits = [
 export default function OnboardResultPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [grantType, setGrantType] = useState<GrantType>("probate");
-  const [recommendedTier, setRecommendedTier] = useState<Tier>("guided");
-  const [selectedTier, setSelectedTier] = useState<Tier>("guided");
+  const [grantType, setGrantType] = useState<"probate" | "administration">("probate");
+  const [recommendedTier, setRecommendedTier] = useState<Tier>("premium");
+  const [selectedTier, setSelectedTier] = useState<Tier>("premium");
   const [showOtherOptions, setShowOtherOptions] = useState(false);
   const [showInactivityPopup, setShowInactivityPopup] = useState(false);
+  const [showDowngradeWarning, setShowDowngradeWarning] = useState(false);
+  const [pendingDowngradeTier, setPendingDowngradeTier] = useState<Tier | null>(null);
+  const [showGrantOfAdmin, setShowGrantOfAdmin] = useState(false);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const comparisonRef = useRef<HTMLDivElement>(null);
   const comparisonInView = useInView(comparisonRef, { once: true, amount: 0.3 });
@@ -147,8 +152,9 @@ export default function OnboardResultPage() {
     }
 
     setGrantType(state.grantType || "probate");
-    setRecommendedTier(state.recommendedTier || "guided");
-    setSelectedTier(state.recommendedTier || "guided");
+    setRecommendedTier(state.recommendedTier || "premium");
+    setSelectedTier(state.recommendedTier || "premium");
+    setShowGrantOfAdmin(state.showGrantOfAdministration || false);
 
     // Brief loading state for smooth transition
     setTimeout(() => {
@@ -165,14 +171,14 @@ export default function OnboardResultPage() {
 
     inactivityTimerRef.current = setTimeout(() => {
       setShowInactivityPopup(true);
-    }, 30000); // 30 seconds
+    }, 30000);
   }, []);
 
   useEffect(() => {
     resetInactivityTimer();
 
     const handleActivity = () => {
-      if (showInactivityPopup) return; // Don't reset if popup is already showing
+      if (showInactivityPopup) return;
       resetInactivityTimer();
     };
 
@@ -191,13 +197,36 @@ export default function OnboardResultPage() {
   }, [resetInactivityTimer, showInactivityPopup]);
 
   const handleSelectTier = (tier: Tier) => {
+    // If downgrading to basic when recommended is higher, show warning
+    if (
+      tier === "basic" &&
+      recommendedTier !== "basic"
+    ) {
+      setPendingDowngradeTier(tier);
+      setShowDowngradeWarning(true);
+      return;
+    }
     setSelectedTier(tier);
     saveOnboardState({ selectedTier: tier });
   };
 
+  const confirmDowngrade = () => {
+    if (pendingDowngradeTier) {
+      setSelectedTier(pendingDowngradeTier);
+      saveOnboardState({ selectedTier: pendingDowngradeTier });
+    }
+    setShowDowngradeWarning(false);
+    setPendingDowngradeTier(null);
+  };
+
+  const cancelDowngrade = () => {
+    setShowDowngradeWarning(false);
+    setPendingDowngradeTier(null);
+  };
+
   const handleContinue = () => {
     saveOnboardState({ selectedTier });
-    // Go to create account first, then payment
+    savePendingIntake({ selectedTier });
     router.push("/onboard/create-account");
   };
 
@@ -218,11 +247,143 @@ export default function OnboardResultPage() {
     );
   }
 
+  // ─── Grant of Administration Screen ───
+  // When user has no will, show special screen locked to White Glove
+  if (showGrantOfAdmin) {
+    const whiteGloveInfo = TIER_INFO.white_glove;
+    return (
+      <div className="space-y-8 pb-24 md:pb-8">
+        <motion.div
+          className="space-y-3 text-center"
+          variants={headerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <div className="mx-auto w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+            <FileText className="w-8 h-8 text-[color:var(--brand)]" />
+          </div>
+          <h1 className="font-serif text-3xl font-semibold text-[color:var(--brand)] sm:text-4xl">
+            You don&apos;t need probate
+          </h1>
+          <p className="text-[color:var(--muted-ink)] text-lg">
+            Looks like you need a{" "}
+            <span className="font-semibold text-[color:var(--brand)]">
+              Grant of Administration
+            </span>
+            . Good news: we handle that too.
+          </p>
+          <p className="text-sm text-[color:var(--muted-ink)]">
+            When there&apos;s no will, the court needs to appoint an administrator. This is a bit more involved than standard probate, so we recommend our full-service option.
+          </p>
+        </motion.div>
+
+        {/* White Glove Card - Only option */}
+        <motion.div
+          className="relative rounded-2xl border-2 border-emerald-500 bg-white p-6 shadow-lg shadow-emerald-500/10"
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div
+            className="absolute -top-3 left-4 flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white"
+            variants={badgeVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <Star className="h-3 w-3 fill-current" />
+            YOUR PLAN
+          </motion.div>
+
+          <div className="mt-2 space-y-4">
+            <div>
+              <h2 className="text-2xl font-bold text-[color:var(--brand)]">
+                {whiteGloveInfo.name}
+              </h2>
+              <p className="text-sm text-[color:var(--muted-ink)]">
+                {whiteGloveInfo.tagline}
+              </p>
+            </div>
+
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-bold text-[color:var(--brand)]">
+                ${whiteGloveInfo.price.toLocaleString()}
+              </span>
+              <span className="text-sm text-[color:var(--muted-ink)]">
+                Fixed price. No surprises.
+              </span>
+            </div>
+
+            <div className="space-y-2 pt-2">
+              {whiteGloveInfo.features.map((feature, index) => (
+                <motion.div
+                  key={feature}
+                  className="flex items-start gap-3"
+                  variants={featureVariants}
+                  initial="hidden"
+                  animate="visible"
+                  custom={index}
+                >
+                  <motion.div
+                    variants={checkVariants}
+                    initial="hidden"
+                    animate="visible"
+                    custom={index}
+                  >
+                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+                  </motion.div>
+                  <span className="text-sm text-[color:var(--ink)]">{feature}</span>
+                </motion.div>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => {
+                setSelectedTier("white_glove");
+                saveOnboardState({ selectedTier: "white_glove" });
+                handleContinue();
+              }}
+              size="lg"
+              className="w-full h-12 text-base font-semibold bg-emerald-600 hover:bg-emerald-700"
+            >
+              Continue with {whiteGloveInfo.name} - ${whiteGloveInfo.price.toLocaleString()}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Disclaimer */}
+        <div className="rounded-lg border border-[color:var(--border-muted)] bg-slate-50 p-4 space-y-1">
+          <p className="text-xs font-medium text-slate-600">Service Eligibility Note</p>
+          <p className="text-xs text-slate-500">
+            If after payment we determine your estate cannot be served at your selected tier due to complexity, you will have two options: receive a full refund, or upgrade to a tier that can accommodate your needs. No hidden fees or surprises.
+          </p>
+        </div>
+
+        {/* Sticky CTA for Mobile */}
+        <div className="fixed bottom-0 left-0 right-0 border-t border-[color:var(--border-muted)] bg-white p-4 md:hidden">
+          <Button
+            onClick={() => {
+              setSelectedTier("white_glove");
+              saveOnboardState({ selectedTier: "white_glove" });
+              handleContinue();
+            }}
+            size="lg"
+            className="w-full h-12 font-semibold bg-emerald-600 hover:bg-emerald-700"
+          >
+            Continue - ${whiteGloveInfo.price.toLocaleString()}
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Standard Result Page ───
   const tierInfo = TIER_INFO[selectedTier];
   const recommendedTierInfo = TIER_INFO[recommendedTier];
 
   return (
-    <div className="space-y-8 pb-24 md:pb-8">
+    <div className="space-y-6 pb-24 md:pb-8">
       {/* Header Section */}
       <motion.div
         className="space-y-2 text-center"
@@ -306,7 +467,7 @@ export default function OnboardResultPage() {
             ))}
           </div>
 
-          {/* Select Button */}
+          {/* Select Button - directly beneath features */}
           <Button
             onClick={() => handleSelectTier(recommendedTier)}
             size="lg"
@@ -331,7 +492,7 @@ export default function OnboardResultPage() {
         </div>
       </motion.div>
 
-      {/* Other Options Toggle */}
+      {/* Modify / Other Options Toggle */}
       <motion.div
         variants={otherOptionsVariants}
         initial="hidden"
@@ -348,14 +509,14 @@ export default function OnboardResultPage() {
             </>
           ) : (
             <>
-              See other options
+              Modify selection
               <ChevronDown className="h-4 w-4" />
             </>
           )}
         </button>
       </motion.div>
 
-      {/* Other Options Expanded - Selected tier appears first */}
+      {/* Other Options Expanded */}
       <AnimatePresence>
         {showOtherOptions && (
           <motion.div
@@ -366,7 +527,6 @@ export default function OnboardResultPage() {
             className="overflow-hidden"
           >
             <div className="grid gap-4 md:grid-cols-3">
-              {/* Sort tiers: selected first, then recommended, then others */}
               {(Object.keys(TIER_INFO) as Tier[])
                 .sort((a, b) => {
                   if (a === selectedTier) return -1;
@@ -449,7 +609,7 @@ export default function OnboardResultPage() {
       </AnimatePresence>
 
       {/* Price Comparison Section */}
-      <div ref={comparisonRef} className="mt-8 space-y-4">
+      <div ref={comparisonRef} className="space-y-4">
         <motion.h3
           initial={{ opacity: 0 }}
           animate={comparisonInView ? { opacity: 1 } : { opacity: 0 }}
@@ -549,8 +709,16 @@ export default function OnboardResultPage() {
         </p>
       </div>
 
+      {/* Service Eligibility Disclaimer */}
+      <div className="rounded-lg border border-[color:var(--border-muted)] bg-slate-50 p-4 space-y-1">
+        <p className="text-xs font-medium text-slate-600">Service Eligibility Note</p>
+        <p className="text-xs text-slate-500">
+          If after payment we determine your estate cannot be served at your selected tier due to complexity, you will have two options: receive a full refund, or upgrade to a tier that can accommodate your needs. No hidden fees or surprises.
+        </p>
+      </div>
+
       {/* Continue Button */}
-      <div className="pt-4">
+      <div>
         <Button
           onClick={handleContinue}
           size="lg"
@@ -572,6 +740,54 @@ export default function OnboardResultPage() {
           <ArrowRight className="ml-2 h-5 w-5" />
         </Button>
       </div>
+
+      {/* Downgrade Warning Modal */}
+      <AnimatePresence>
+        {showDowngradeWarning && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="max-w-md rounded-2xl bg-white p-6 shadow-2xl space-y-4"
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+            >
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[color:var(--brand)]">
+                    Are you sure?
+                  </h3>
+                  <p className="mt-1 text-sm text-[color:var(--muted-ink)]">
+                    Based on your answers, your situation may be more complex than what Basic covers. If we cannot accommodate your estate on the Basic tier, you will need to upgrade or receive a refund. Do you want to continue with Basic anyway?
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={confirmDowngrade}
+                >
+                  Yes, continue with Basic
+                </Button>
+                <Button
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                  onClick={cancelDowngrade}
+                >
+                  No, keep {TIER_INFO[recommendedTier].name}
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Inactivity Popup */}
       <AnimatePresence>

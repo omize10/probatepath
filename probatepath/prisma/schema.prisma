@@ -1054,6 +1054,28 @@ model LeadSource {
 }
 
 // ========================================
+// PENDING INTAKE (pre-account quiz data)
+// ========================================
+
+model PendingIntake {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  phone           String?
+  quizAnswers     Json?
+  recommendedTier String?
+  selectedTier    String?
+  grantType       String?
+  redFlags        Json?
+  status          String   @default("in_progress")
+  convertedUserId String?  @map("converted_user_id")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+}
+
+// ========================================
 // EMAIL & SMS MANAGEMENT
 // ========================================
 

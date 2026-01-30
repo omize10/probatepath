@@ -7,12 +7,10 @@ import { getProgress } from "@/lib/onboard/state";
 const STEPS = [
   { path: "/onboard/executor", label: "Start" },
   { path: "/onboard/relationship", label: "About You" },
-  { path: "/onboard/email", label: "Email" },
-  { path: "/onboard/phone", label: "Phone" },
+  { path: "/onboard/email", label: "Save Progress" },
   { path: "/onboard/call-choice", label: "Options" },
   { path: "/onboard/screening", label: "Questions" },
   { path: "/onboard/result", label: "Result" },
-  { path: "/onboard/pricing", label: "Pricing" },
   { path: "/onboard/create-account", label: "Account" },
 ];
 

@@ -7,7 +7,7 @@ import { CreditCard, Rocket, Loader2, CheckCircle2, Phone, ArrowLeft } from "luc
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { PROVINCES, TIER_PRICES, TIER_DISPLAY_NAMES, type Tier, type NewTier } from "@/types/pricing";
+import { PROVINCES, TIER_PRICES, TIER_DISPLAY_NAMES, type Tier } from "@/types/pricing";
 import { getOnboardState, clearOnboardState, type Tier as OnboardTier } from "@/lib/onboard/state";
 
 interface PrefillData {
@@ -19,8 +19,15 @@ interface PrefillData {
   fromAiCall?: boolean;
 }
 
-// Map onboard tiers to Tier type
-const mapOnboardTier = (tier: OnboardTier): NewTier => tier;
+// Map onboard tiers to pricing Tier type
+const mapOnboardTier = (tier: OnboardTier): Tier => {
+  switch (tier) {
+    case "basic": return "basic";
+    case "premium": return "guided";       // onboard "premium" ($1,499) = pricing "guided" ($1,499)
+    case "white_glove": return "white_glove";
+    default: return "guided";
+  }
+};
 
 export default function PayPage() {
   const router = useRouter();
@@ -37,7 +44,7 @@ export default function PayPage() {
   const [grantType, setGrantType] = useState<string | null>(null);
 
   // Form state
-  const [selectedTier, setSelectedTier] = useState<Tier>("guided");
+  const [selectedTier, setSelectedTier] = useState<Tier>("standard");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvc, setCvc] = useState("");
@@ -186,15 +193,16 @@ export default function PayPage() {
   };
 
   const getNextRoute = (tier: Tier): string => {
-    // Map to new tier names if needed
-    const normalizedTier = tier === "basic" ? "essentials" : tier === "standard" ? "guided" : tier === "premium" ? "full_service" : tier;
-
-    switch (normalizedTier) {
+    switch (tier) {
+      case "basic":
       case "essentials":
         return "/portal/intake";
+      case "standard":
       case "guided":
         return "/portal/schedule";
+      case "premium":
       case "full_service":
+      case "white_glove":
         return "/portal/confirmed";
       default:
         return "/portal";

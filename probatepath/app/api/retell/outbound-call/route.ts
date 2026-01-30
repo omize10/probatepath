@@ -61,71 +61,108 @@ export async function POST(request: Request) {
     // Create AI call record first (if prisma enabled)
     let aiCallId: string | undefined;
     if (prismaEnabled) {
-      const aiCall = await prisma.aiCall.create({
-        data: {
-          phoneNumber: formattedPhone,
-          status: AI_CALL_STATUS.INITIATED,
-          collectedData: {
+      try {
+        const aiCall = await prisma.aiCall.create({
+          data: {
+            phoneNumber: formattedPhone,
+            status: AI_CALL_STATUS.INITIATED,
+            collectedData: {
+              name,
+              email,
+              ...metadata,
+            },
+          },
+        });
+        aiCallId = aiCall.id;
+      } catch (dbErr) {
+        console.error("[retell/outbound-call] DB error creating AiCall:", dbErr);
+        // Continue without DB record - call can still proceed
+      }
+    }
+
+    // Trigger outbound call via Retell API with timeout
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
+    let retellResponse: Response;
+    try {
+      retellResponse = await fetch("https://api.retellai.com/v2/create-phone-call", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${RETELL_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          from_number: RETELL_PHONE_NUMBER,
+          to_number: formattedPhone,
+          agent_id: RETELL_AGENT_ID,
+          metadata: {
+            ai_call_id: aiCallId,
             name,
             email,
             ...metadata,
           },
-        },
+          retell_llm_dynamic_variables: {
+            caller_name: name || "there",
+          },
+        }),
       });
-      aiCallId = aiCall.id;
-    }
-
-    // Trigger outbound call via Retell API
-    const retellResponse = await fetch("https://api.retellai.com/v2/create-phone-call", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${RETELL_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from_number: RETELL_PHONE_NUMBER,
-        to_number: formattedPhone,
-        agent_id: RETELL_AGENT_ID,
-        metadata: {
-          ai_call_id: aiCallId,
-          name,
-          email,
-          ...metadata,
-        },
-        // Optional: Override agent settings for this call
-        retell_llm_dynamic_variables: {
-          caller_name: name || "there",
-        },
-      }),
-    });
-
-    if (!retellResponse.ok) {
-      const errorData = await retellResponse.json().catch(() => ({}));
-      console.error("[retell/outbound-call] Retell API error:", errorData);
+    } catch (fetchErr) {
+      clearTimeout(timeout);
+      const isTimeout = fetchErr instanceof DOMException && fetchErr.name === "AbortError";
+      console.error("[retell/outbound-call] Retell fetch failed:", isTimeout ? "timeout" : fetchErr);
 
       // Update AI call status if we created one
       if (aiCallId && prismaEnabled) {
         await prisma.aiCall.update({
           where: { id: aiCallId },
           data: { status: AI_CALL_STATUS.FAILED },
-        });
+        }).catch(() => {});
       }
 
       return NextResponse.json(
-        { error: "Failed to initiate call", details: errorData },
+        { error: isTimeout ? "Call service timed out" : "Unable to reach call service", fallback: true },
+        { status: 502 }
+      );
+    }
+    clearTimeout(timeout);
+
+    if (!retellResponse.ok) {
+      const errorData = await retellResponse.text().then(t => {
+        try { return JSON.parse(t); } catch { return { raw: t }; }
+      });
+      console.error("[retell/outbound-call] Retell API error:", retellResponse.status, errorData);
+
+      if (aiCallId && prismaEnabled) {
+        await prisma.aiCall.update({
+          where: { id: aiCallId },
+          data: { status: AI_CALL_STATUS.FAILED },
+        }).catch(() => {});
+      }
+
+      return NextResponse.json(
+        { error: "Failed to initiate call", details: errorData, fallback: true },
         { status: 502 }
       );
     }
 
-    const retellData = await retellResponse.json();
-    const retellCallId = retellData.call_id;
+    // Parse Retell success response safely
+    let retellData: Record<string, unknown> = {};
+    try {
+      const text = await retellResponse.text();
+      retellData = text ? JSON.parse(text) : {};
+    } catch {
+      console.warn("[retell/outbound-call] Could not parse Retell response body");
+    }
+    const retellCallId = retellData.call_id as string | undefined;
 
     // Update AI call with Retell call ID
     if (aiCallId && prismaEnabled && retellCallId) {
       await prisma.aiCall.update({
         where: { id: aiCallId },
         data: { retellCallId },
-      });
+      }).catch(() => {});
     }
 
     console.log("[retell/outbound-call] Call initiated:", {
@@ -143,7 +180,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("[retell/outbound-call] Error:", error);
     return NextResponse.json(
-      { error: "Failed to initiate call" },
+      { error: "Failed to initiate call", fallback: true },
       { status: 500 }
     );
   }

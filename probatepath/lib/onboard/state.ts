@@ -3,6 +3,8 @@
  * Stores progress in localStorage with URL param backup
  */
 
+import { getRecommendation } from "../tier-recommendation";
+
 // Relationship to deceased options
 export type RelationshipType =
   | 'parent'
@@ -30,7 +32,7 @@ export interface FitAnswers {
 }
 
 export type GrantType = "probate" | "administration";
-export type Tier = "essentials" | "guided" | "full_service";
+export type Tier = "basic" | "premium" | "white_glove";
 
 // Referral source (moved to payment, but keep for backwards compatibility)
 export type ReferralSource = "funeral_home" | "google" | "friend" | "other" | null;
@@ -63,6 +65,11 @@ export interface OnboardState {
   redFlags?: string[];
   redirectedToSpecialist?: boolean;
   fitCheckPassed?: boolean;
+  showGrantOfAdministration?: boolean;
+  recommendationReason?: string;
+
+  // PendingIntake server record
+  pendingIntakeId?: string;
 
   // Account creation
   accountCreated?: boolean;
@@ -141,14 +148,13 @@ export function clearOnboardState(): void {
 }
 
 /**
- * Check if user should be redirected to specialist
+ * Check if user should be redirected to specialist (Open Door Law)
+ * Triggers: disputes = yes, OR international assets
  */
 export function shouldRedirectToSpecialist(fitAnswers: FitAnswers): boolean {
-  // Disputes = YES is a red flag
   if (fitAnswers.potentialDisputes === 'yes') {
     return true;
   }
-  // International assets is a red flag
   if (fitAnswers.assetsOutsideBC === 'international') {
     return true;
   }
@@ -156,17 +162,19 @@ export function shouldRedirectToSpecialist(fitAnswers: FitAnswers): boolean {
 }
 
 /**
- * Calculate grant type and tier from fit answers
+ * Calculate grant type and tier from fit answers using the recommendation engine
  */
 export function calculateResult(fitAnswers: FitAnswers): {
   grantType: GrantType;
   recommendedTier: Tier;
   redFlags: string[];
   fitCheckPassed: boolean;
+  showGrantOfAdministration: boolean;
+  recommendationReason: string;
 } {
-  const redFlags: string[] = [];
+  const recommendation = getRecommendation(fitAnswers);
 
-  // Check for red flags (route to specialist)
+  const redFlags: string[] = [];
   if (fitAnswers.potentialDisputes === 'yes') {
     redFlags.push("dispute");
   }
@@ -174,50 +182,35 @@ export function calculateResult(fitAnswers: FitAnswers): {
     redFlags.push("international_assets");
   }
 
-  // If there are red flags, they shouldn't proceed
-  const fitCheckPassed = redFlags.length === 0;
+  // Open Door Law cases should have been redirected before reaching here,
+  // but handle defensively
+  const fitCheckPassed = recommendation.tier !== "open_door_law";
 
-  // Determine grant type based on will
   const hasWill = fitAnswers.hasWill === 'yes';
   const grantType: GrantType = hasWill ? "probate" : "administration";
 
-  // Calculate recommended tier based on complexity
-  let recommendedTier: Tier = "essentials";
+  // Map open_door_law to white_glove as fallback (shouldn't reach here)
+  const recommendedTier: Tier =
+    recommendation.tier === "open_door_law"
+      ? "white_glove"
+      : recommendation.tier;
 
-  // Administration (no will) is more complex - recommend guided
-  if (grantType === "administration") {
-    recommendedTier = "guided";
-  }
-
-  // No original will - recommend guided for the extra support
-  if (hasWill && !fitAnswers.hasOriginalWill) {
-    recommendedTier = "guided";
-  }
-
-  // Will issues (not properly witnessed or not BC) - recommend guided
-  if (hasWill) {
-    if (fitAnswers.willProperlyWitnessed === 'no' || fitAnswers.willProperlyWitnessed === 'not_sure') {
-      recommendedTier = "guided";
-    }
-    if (fitAnswers.willPreparedInBC === 'no') {
-      recommendedTier = "guided";
-    }
-  }
-
-  // Assets in other provinces adds complexity
-  if (fitAnswers.assetsOutsideBC === 'other_provinces') {
-    recommendedTier = "guided";
-  }
-
-  return { grantType, recommendedTier, redFlags, fitCheckPassed };
+  return {
+    grantType,
+    recommendedTier,
+    redFlags,
+    fitCheckPassed,
+    showGrantOfAdministration: recommendation.showGrantOfAdministration,
+    recommendationReason: recommendation.reason,
+  };
 }
 
 /**
  * Tier details for display
  */
 export const TIER_INFO = {
-  essentials: {
-    name: "Essentials",
+  basic: {
+    name: "Basic",
     price: 799,
     tagline: "You file, we guide",
     features: [
@@ -228,8 +221,8 @@ export const TIER_INFO = {
     ],
     bestFor: "Confident people who want to save money",
   },
-  guided: {
-    name: "Guided",
+  premium: {
+    name: "Premium",
     price: 1499,
     tagline: "We check, you file",
     features: [
@@ -241,8 +234,8 @@ export const TIER_INFO = {
     ],
     bestFor: "Most people - peace of mind without the cost",
   },
-  full_service: {
-    name: "Full Service",
+  white_glove: {
+    name: "White Glove",
     price: 2499,
     tagline: "We handle everything",
     features: [
@@ -268,13 +261,10 @@ export function getNextStep(state: OnboardState): string {
   // Step 2: Relationship
   if (!state.relationshipToDeceased) return "/onboard/relationship";
 
-  // Step 3: Email
-  if (!state.email) return "/onboard/email";
+  // Step 3: Email + Phone (combined step)
+  if (!state.email || !state.phone) return "/onboard/email";
 
-  // Step 4: Phone
-  if (!state.phone) return "/onboard/phone";
-
-  // Step 5: Call choice (calls happen instantly via Retell API, no scheduling)
+  // Step 4: Call choice (calls happen instantly via Retell API, no scheduling)
   if (state.scheduledCall === undefined) return "/onboard/call-choice";
 
   // Fit questions
@@ -283,9 +273,8 @@ export function getNextStep(state: OnboardState): string {
   // Check if redirected to specialist
   if (state.redirectedToSpecialist) return "/onboard/specialist";
 
-  // Results
-  if (!state.recommendedTier) return "/onboard/result";
-  if (!state.selectedTier) return "/onboard/pricing";
+  // Results + tier selection
+  if (!state.recommendedTier || !state.selectedTier) return "/onboard/result";
 
   // Account creation
   if (!state.accountCreated) return "/onboard/create-account";
@@ -321,13 +310,16 @@ export function getProgress(currentStep: string): number {
     "/onboard/executor",
     "/onboard/relationship",
     "/onboard/email",
-    "/onboard/phone",
     "/onboard/call-choice",
     "/onboard/screening",
     "/onboard/result",
-    "/onboard/pricing",
+    "/onboard/create-account",
     "/pay",
   ];
+
+  // Map legacy routes
+  if (currentStep === "/onboard/phone") return getProgress("/onboard/email");
+  if (currentStep === "/onboard/pricing") return getProgress("/onboard/result");
 
   const index = steps.indexOf(currentStep);
   if (index === -1) return 0;
@@ -349,3 +341,30 @@ export const RELATIONSHIP_LABELS: Record<RelationshipType, string> = {
   friend: "Friend",
   other: "Other",
 };
+
+/**
+ * Fire-and-forget save to server PendingIntake.
+ * Reads email from localStorage, POSTs update to API.
+ * Non-blocking — errors are silently caught.
+ */
+export function savePendingIntake(
+  data: Record<string, unknown>,
+): void {
+  if (typeof window === "undefined") return;
+
+  const state = getOnboardState();
+  if (!state.email) return;
+
+  fetch("/api/onboard/pending-intake", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: state.email, ...data }),
+  })
+    .then((res) => res.json())
+    .then((result) => {
+      if (result.id && !state.pendingIntakeId) {
+        saveOnboardState({ pendingIntakeId: result.id });
+      }
+    })
+    .catch(() => {});
+}

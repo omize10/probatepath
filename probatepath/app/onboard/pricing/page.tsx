@@ -8,7 +8,7 @@ import { getOnboardState, saveOnboardState, TIER_INFO, type Tier, type GrantType
 
 export default function OnboardPricingPage() {
   const router = useRouter();
-  const [recommendedTier, setRecommendedTier] = useState<Tier>("guided");
+  const [recommendedTier, setRecommendedTier] = useState<Tier>("premium");
   const [grantType, setGrantType] = useState<GrantType>("probate");
   const [expandedTier, setExpandedTier] = useState<Tier | null>(null);
 
@@ -94,10 +94,10 @@ export default function OnboardPricingPage() {
       </div>
 
       {/* Administration upsell */}
-      {grantType === "administration" && recommendedTier === "essentials" && (
+      {grantType === "administration" && recommendedTier === "basic" && (
         <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
           <p>
-            Most people doing Administration choose <strong>Guided</strong> to avoid delays from
+            Most people doing Administration choose <strong>Premium</strong> to avoid delays from
             mistakes.
           </p>
         </div>
@@ -107,7 +107,7 @@ export default function OnboardPricingPage() {
       <div className="space-y-3">
         <p className="text-sm text-center text-[color:var(--muted-ink)]">Other options</p>
 
-        {(["essentials", "guided", "full_service"] as Tier[])
+        {(["basic", "premium", "white_glove"] as Tier[])
           .filter((tier) => tier !== recommendedTier)
           .map((tier) => (
             <div

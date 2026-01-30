@@ -1,23 +1,39 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { WarningCallout } from "@/components/ui/warning-callout";
-import { getOnboardState, saveOnboardState } from "@/lib/onboard/state";
+import { getOnboardState, saveOnboardState, type FitAnswers } from "@/lib/onboard/state";
 
-export default function OnboardEmailPage() {
+interface PendingIntakeData {
+  id: string;
+  quizAnswers: FitAnswers | null;
+  recommendedTier: string | null;
+  selectedTier: string | null;
+  grantType: string | null;
+  redFlags: string[] | null;
+  status: string;
+  phone: string | null;
+}
+
+export default function OnboardEmailPhonePage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Returning user state
+  const [resumeData, setResumeData] = useState<PendingIntakeData | null>(null);
+  const [showResumeBanner, setShowResumeBanner] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+
   useEffect(() => {
     const state = getOnboardState();
-    // Check previous steps
     if (state.isExecutor === undefined) {
       router.push("/onboard/executor");
       return;
@@ -29,13 +45,113 @@ export default function OnboardEmailPage() {
     if (state.email) {
       setEmail(state.email);
     }
+    if (state.phone) {
+      const digits = state.phone.replace(/\D/g, "").slice(-10);
+      setPhone(formatPhone(digits));
+    }
   }, [router]);
 
-  const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
   };
 
-  const handleContinue = () => {
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(formatPhone(e.target.value));
+    setError("");
+  };
+
+  const isValidEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  const isValidPhone = (val: string) => val.replace(/\D/g, "").length === 10;
+  const emailsMatch =
+    email.trim().toLowerCase() === confirmEmail.trim().toLowerCase();
+
+  // Check for returning user when confirm email matches
+  const checkReturningUser = useCallback(async (emailToCheck: string) => {
+    if (!emailToCheck || !isValidEmail(emailToCheck)) return;
+    setCheckingEmail(true);
+    try {
+      const res = await fetch(
+        `/api/onboard/pending-intake?email=${encodeURIComponent(emailToCheck.toLowerCase())}`,
+      );
+      const data = await res.json();
+      if (
+        data.found &&
+        data.pendingIntake?.quizAnswers &&
+        Object.keys(data.pendingIntake.quizAnswers).length > 0
+      ) {
+        setResumeData(data.pendingIntake);
+        setShowResumeBanner(true);
+        // Pre-fill phone if we have it
+        if (data.pendingIntake.phone && !phone) {
+          const digits = data.pendingIntake.phone.replace(/\D/g, "").slice(-10);
+          setPhone(formatPhone(digits));
+        }
+      } else {
+        setResumeData(null);
+        setShowResumeBanner(false);
+      }
+    } catch {
+      // Silently fail — server check is best-effort
+    } finally {
+      setCheckingEmail(false);
+    }
+  }, [phone]);
+
+  // Trigger check when emails match
+  useEffect(() => {
+    if (emailsMatch && email && isValidEmail(email) && confirmEmail) {
+      checkReturningUser(email);
+    } else {
+      setShowResumeBanner(false);
+    }
+  }, [email, confirmEmail, emailsMatch, checkReturningUser]);
+
+  const handleResume = () => {
+    if (!resumeData) return;
+
+    // Restore quiz state from server to localStorage
+    const restoreData: Record<string, unknown> = {};
+    if (resumeData.quizAnswers)
+      restoreData.fitAnswers = resumeData.quizAnswers;
+    if (resumeData.recommendedTier)
+      restoreData.recommendedTier = resumeData.recommendedTier;
+    if (resumeData.selectedTier)
+      restoreData.selectedTier = resumeData.selectedTier;
+    if (resumeData.grantType) restoreData.grantType = resumeData.grantType;
+    if (resumeData.redFlags) restoreData.redFlags = resumeData.redFlags;
+
+    const rawPhone = "+1" + phone.replace(/\D/g, "");
+    saveOnboardState({
+      email: email.trim().toLowerCase(),
+      phone: rawPhone,
+      pendingIntakeId: resumeData.id,
+      ...restoreData,
+    });
+
+    // Navigate to the furthest step they reached
+    if (resumeData.selectedTier) {
+      router.push("/onboard/create-account");
+    } else if (resumeData.recommendedTier) {
+      router.push("/onboard/result");
+    } else if (
+      resumeData.quizAnswers &&
+      Object.keys(resumeData.quizAnswers).length > 0
+    ) {
+      router.push("/onboard/screening");
+    } else {
+      router.push("/onboard/call-choice");
+    }
+  };
+
+  const handleStartOver = () => {
+    setShowResumeBanner(false);
+    setResumeData(null);
+  };
+
+  const handleContinue = async () => {
     if (!email.trim()) {
       setError("Please enter your email");
       return;
@@ -44,21 +160,53 @@ export default function OnboardEmailPage() {
       setError("Please enter a valid email address");
       return;
     }
-    if (email.trim().toLowerCase() !== confirmEmail.trim().toLowerCase()) {
+    if (!emailsMatch) {
       setError("Email addresses don't match. Please try again.");
+      return;
+    }
+    if (!phone.trim()) {
+      setError("Please enter your phone number");
+      return;
+    }
+    if (!isValidPhone(phone)) {
+      setError("Please enter a 10-digit phone number");
       return;
     }
 
     setIsLoading(true);
     setError("");
-    saveOnboardState({ email: email.trim().toLowerCase() });
-    router.push("/onboard/phone");
+
+    const rawPhone = "+1" + phone.replace(/\D/g, "");
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Save to localStorage
+    saveOnboardState({ email: normalizedEmail, phone: rawPhone });
+
+    // Fire-and-forget: save to server
+    fetch("/api/onboard/pending-intake", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: normalizedEmail, phone: rawPhone }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.id) {
+          saveOnboardState({ pendingIntakeId: data.id });
+        }
+      })
+      .catch(() => {});
+
+    router.push("/onboard/call-choice");
   };
 
-  const emailsMatch = email.trim().toLowerCase() === confirmEmail.trim().toLowerCase();
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && email.trim() && confirmEmail.trim() && emailsMatch) {
+    if (
+      e.key === "Enter" &&
+      email.trim() &&
+      confirmEmail.trim() &&
+      emailsMatch &&
+      isValidPhone(phone)
+    ) {
       handleContinue();
     }
   };
@@ -67,20 +215,54 @@ export default function OnboardEmailPage() {
     <div className="space-y-8">
       <div className="space-y-2 text-center">
         <h1 className="font-serif text-3xl font-semibold text-[color:var(--brand)] sm:text-4xl">
-          Welcome
+          Let&apos;s save your progress
         </h1>
         <p className="text-[color:var(--muted-ink)]">
-          Please provide your email address. We use email as our primary way of communicating updates about your case.
+          Before we continue, let&apos;s make sure you don&apos;t lose your
+          answers. Enter your email and phone number so we can save your progress
+          and reach you if needed.
         </p>
       </div>
 
+      {/* Returning user banner */}
+      {showResumeBanner && resumeData && (
+        <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 space-y-3">
+          <div className="flex items-start gap-3">
+            <RefreshCw className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-blue-900">Welcome back!</p>
+              <p className="text-sm text-blue-700">
+                We saved your progress. Want to continue where you left off?
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleResume}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Continue where I left off
+            </Button>
+            <Button onClick={handleStartOver} size="sm" variant="outline">
+              Start over
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         <WarningCallout severity="warning">
-          We&apos;ll send important legal documents to this email. Make sure you can access it and check it regularly.
+          We&apos;ll send important legal documents to this email. Make sure you
+          can access it and check it regularly.
         </WarningCallout>
 
+        {/* Email */}
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-[color:var(--brand)]">
+          <label
+            htmlFor="email"
+            className="text-sm font-medium text-[color:var(--brand)]"
+          >
             Email address
           </label>
           <Input
@@ -98,8 +280,12 @@ export default function OnboardEmailPage() {
           />
         </div>
 
+        {/* Confirm email */}
         <div className="space-y-2">
-          <label htmlFor="confirm-email" className="text-sm font-medium text-[color:var(--brand)]">
+          <label
+            htmlFor="confirm-email"
+            className="text-sm font-medium text-[color:var(--brand)]"
+          >
             Confirm email address
           </label>
           <Input
@@ -117,16 +303,41 @@ export default function OnboardEmailPage() {
           {confirmEmail && !emailsMatch && (
             <p className="text-sm text-red-600">Emails don&apos;t match</p>
           )}
-          {confirmEmail && emailsMatch && email && (
+          {confirmEmail && emailsMatch && email && !checkingEmail && (
             <p className="text-sm text-green-600">Emails match</p>
           )}
+        </div>
+
+        {/* Phone */}
+        <div className="space-y-2">
+          <label
+            htmlFor="phone"
+            className="text-sm font-medium text-[color:var(--brand)]"
+          >
+            Phone number
+          </label>
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="(604) 555-1234"
+            value={phone}
+            onChange={handlePhoneChange}
+            onKeyDown={handleKeyDown}
+            className="h-14 text-lg"
+          />
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
         <Button
           onClick={handleContinue}
-          disabled={!email.trim() || !confirmEmail.trim() || !emailsMatch || isLoading}
+          disabled={
+            !email.trim() ||
+            !confirmEmail.trim() ||
+            !emailsMatch ||
+            !isValidPhone(phone) ||
+            isLoading
+          }
           size="lg"
           className="w-full h-14 text-lg"
         >
@@ -143,6 +354,10 @@ export default function OnboardEmailPage() {
           Back
         </Button>
       </div>
+
+      <p className="text-center text-xs text-[color:var(--muted-ink)]">
+        We&apos;ll never share your information or use it for marketing.
+      </p>
     </div>
   );
 }

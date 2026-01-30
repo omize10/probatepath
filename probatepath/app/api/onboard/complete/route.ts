@@ -1,23 +1,36 @@
 import { NextResponse } from "next/server";
 import { prisma, prismaEnabled } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 const CompleteOnboardSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   phone: z.string().min(10),
-  tier: z.enum(["essentials", "guided", "full_service"]),
+  tier: z.enum(["basic", "premium", "white_glove", "essentials", "guided", "full_service"]),
   grantType: z.enum(["probate", "administration"]),
   aiCallId: z.string().optional(),
-  screening: z.object({
-    hasWill: z.boolean().optional(),
-    hasOriginal: z.boolean().optional(),
-    expectsDispute: z.boolean().optional(),
-    foreignAssets: z.boolean().optional(),
-    estateValue: z.string().optional(),
-  }).optional(),
+  screening: z.record(z.string(), z.unknown()).optional(),
   redFlags: z.array(z.string()).optional(),
 });
+
+/** Map any tier name to the Prisma Tier enum (basic | standard | premium) */
+function toDbTier(tier: string): "basic" | "standard" | "premium" {
+  switch (tier) {
+    case "basic":
+    case "essentials":
+      return "basic";
+    case "premium":
+    case "guided":
+    case "standard":
+      return "standard";
+    case "white_glove":
+    case "full_service":
+      return "premium";
+    default:
+      return "standard";
+  }
+}
 
 /**
  * Complete onboarding and create user/lead record
@@ -44,6 +57,7 @@ export async function POST(request: Request) {
   }
 
   const { name, email, phone, tier, grantType, aiCallId, screening, redFlags } = parsed.data;
+  const dbTier = toDbTier(tier);
 
   try {
     // Check if user already exists
@@ -93,7 +107,7 @@ export async function POST(request: Request) {
           where: { id: aiCallId },
           data: {
             userId: user.id,
-            recommendedTier: tier,
+            recommendedTier: dbTier,
             grantType,
           },
         });
@@ -104,13 +118,23 @@ export async function POST(request: Request) {
     const tierSelection = await prisma.tierSelection.create({
       data: {
         userId: user.id,
-        selectedTier: tier,
-        tierPrice: tier === "essentials" ? 799 : tier === "guided" ? 1499 : 2499,
+        selectedTier: dbTier,
+        tierPrice: dbTier === "basic" ? 799 : dbTier === "standard" ? 1499 : 2499,
         screeningFlags: redFlags || [],
         grantType,
-        screeningData: screening || {},
+        screeningData: (screening || {}) as Prisma.InputJsonValue,
       },
     });
+
+    // Mark PendingIntake as converted
+    try {
+      await prisma.pendingIntake.updateMany({
+        where: { email, status: "in_progress" },
+        data: { status: "converted_to_account", convertedUserId: user.id },
+      });
+    } catch {
+      // PendingIntake may not exist (e.g. legacy flow) — ignore
+    }
 
     console.log("[onboard/complete] Onboarding completed:", {
       userId: user.id,

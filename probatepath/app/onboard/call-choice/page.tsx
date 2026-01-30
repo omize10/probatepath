@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Phone, FileText, Star, Loader2, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Phone, FileText, Star, Loader2, CheckCircle2, PhoneForwarded } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getOnboardState, saveOnboardState } from "@/lib/onboard/state";
 
@@ -10,6 +10,7 @@ export default function OnboardCallChoicePage() {
   const router = useRouter();
   const [calling, setCalling] = useState(false);
   const [callInitiated, setCallInitiated] = useState(false);
+  const [callFallback, setCallFallback] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -41,16 +42,29 @@ export default function OnboardCallChoicePage() {
         }),
       });
 
-      const data = await response.json();
+      // Parse response safely - handle empty or non-JSON bodies
+      const text = await response.text();
+      let data: Record<string, unknown> = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        // Server returned non-JSON (likely an HTML error page or empty body)
+        console.error("Non-JSON response from call API:", text.slice(0, 200));
+        throw new Error("call_service_unavailable");
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to initiate call");
+        // If the API says fallback is available, treat as soft failure
+        if (data.fallback) {
+          throw new Error("call_service_unavailable");
+        }
+        throw new Error((data.error as string) || "Failed to initiate call");
       }
 
       // Save call info to state
       saveOnboardState({
         scheduledCall: true,
-        aiCallId: data.ai_call_id || data.call_id,
+        aiCallId: (data.ai_call_id || data.call_id) as string,
       });
 
       setCallInitiated(true);
@@ -61,8 +75,17 @@ export default function OnboardCallChoicePage() {
       }, 3000);
     } catch (err) {
       console.error("Call error:", err);
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setCalling(false);
+      const message = err instanceof Error ? err.message : "Something went wrong";
+
+      if (message === "call_service_unavailable") {
+        // Soft failure - save that user wanted a call and let them proceed
+        saveOnboardState({ scheduledCall: true });
+        setCallFallback(true);
+        setCalling(false);
+      } else {
+        setError(message);
+        setCalling(false);
+      }
     }
   };
 
@@ -70,6 +93,34 @@ export default function OnboardCallChoicePage() {
     saveOnboardState({ scheduledCall: false });
     router.push("/onboard/screening");
   };
+
+  // Show fallback state - call service unavailable but user can proceed
+  if (callFallback) {
+    return (
+      <div className="space-y-8 text-center py-12">
+        <div className="mx-auto w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center">
+          <PhoneForwarded className="w-10 h-10 text-amber-600" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold text-[color:var(--brand)]">
+            We&apos;ll call you back shortly
+          </h2>
+          <p className="text-[color:var(--muted-ink)]">
+            Our calling service is temporarily busy. A team member will call you back within 30 minutes during business hours.
+          </p>
+          <p className="text-sm text-[color:var(--muted-ink)]">
+            In the meantime, you can continue with the questionnaire below.
+          </p>
+        </div>
+        <Button
+          onClick={() => router.push("/onboard/screening")}
+          className="px-8"
+        >
+          Continue to Questionnaire
+        </Button>
+      </div>
+    );
+  }
 
   // Show calling state
   if (calling || callInitiated) {

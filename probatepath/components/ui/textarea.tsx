@@ -13,8 +13,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         ref={ref}
         rows={rows}
         className={cn(
-          "w-full rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] px-4 py-3 text-sm text-[color:var(--ink)] shadow-sm transition",
-          "placeholder:text-[rgba(68,82,102,0.8)] hover:border-[rgba(15,26,42,0.35)] focus:border-[color:var(--brand)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(15,26,42,0.2)]",
+          "w-full rounded-2xl border border-[color:var(--border-input)] bg-[color:var(--bg-surface)] px-4 py-3 text-sm text-[color:var(--ink)] shadow-sm transition",
+          "placeholder:text-[color:var(--text-placeholder)] hover:border-[rgba(15,26,42,0.35)] focus:border-[color:var(--brand)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--focus-ring)]",
           className
         )}
         {...props}

@@ -11,23 +11,61 @@ export const contentType = 'image/png'
 export default function Icon() {
   return new ImageResponse(
     (
-      // ImageResponse JSX element
+      // Document icon with folded corner
       <div
         style={{
-          fontSize: 20,
-          background: '#059669', // emerald-600
+          background: '#FFFFFF',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'white',
-          fontWeight: 700,
-          fontFamily: 'sans-serif',
           borderRadius: '6px',
         }}
       >
-        PD
+        <div
+          style={{
+            width: '20px',
+            height: '24px',
+            background: '#FFFFFF',
+            border: '2px solid #000000',
+            borderRadius: '1px',
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '3px',
+            gap: '2px',
+          }}
+        >
+          {/* Document text lines */}
+          <div style={{ width: '100%', height: '1.5px', background: '#000000', opacity: 0.6 }} />
+          <div style={{ width: '100%', height: '1.5px', background: '#000000', opacity: 0.6 }} />
+          <div style={{ width: '70%', height: '1.5px', background: '#000000', opacity: 0.6 }} />
+
+          {/* Folded corner */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '-2px',
+              right: '-2px',
+              width: '0',
+              height: '0',
+              borderLeft: '6px solid transparent',
+              borderTop: '6px solid #000000',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: '-1px',
+              right: '-1px',
+              width: '0',
+              height: '0',
+              borderLeft: '5px solid transparent',
+              borderTop: '5px solid #FFFFFF',
+            }}
+          />
+        </div>
       </div>
     ),
     // ImageResponse options

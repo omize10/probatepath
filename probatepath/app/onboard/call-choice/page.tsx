@@ -11,19 +11,17 @@ export default function OnboardCallChoicePage() {
   const [calling, setCalling] = useState(false);
   const [callInitiated, setCallInitiated] = useState(false);
   const [callFallback, setCallFallback] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const state = getOnboardState();
-    if (!state.phone) {
-      router.push("/onboard/phone");
+    if (!state.email || !state.phone) {
+      router.push("/onboard/email");
       return;
     }
   }, [router]);
 
   const handleCallMeNow = async () => {
     setCalling(true);
-    setError(null);
 
     const state = getOnboardState();
 
@@ -54,11 +52,8 @@ export default function OnboardCallChoicePage() {
       }
 
       if (!response.ok) {
-        // If the API says fallback is available, treat as soft failure
-        if (data.fallback) {
-          throw new Error("call_service_unavailable");
-        }
-        throw new Error((data.error as string) || "Failed to initiate call");
+        // All call API errors are soft failures — let user proceed
+        throw new Error("call_service_unavailable");
       }
 
       // Save call info to state
@@ -75,17 +70,10 @@ export default function OnboardCallChoicePage() {
       }, 3000);
     } catch (err) {
       console.error("Call error:", err);
-      const message = err instanceof Error ? err.message : "Something went wrong";
-
-      if (message === "call_service_unavailable") {
-        // Soft failure - save that user wanted a call and let them proceed
-        saveOnboardState({ scheduledCall: true });
-        setCallFallback(true);
-        setCalling(false);
-      } else {
-        setError(message);
-        setCalling(false);
-      }
+      // All call failures are soft — save that user wanted a call and let them proceed
+      saveOnboardState({ scheduledCall: true });
+      setCallFallback(true);
+      setCalling(false);
     }
   };
 
@@ -173,12 +161,6 @@ export default function OnboardCallChoicePage() {
         </p>
       </div>
 
-      {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-800">
-          {error}
-        </div>
-      )}
-
       <div className="space-y-4">
         {/* Option A: Call Me Now (LARGER, recommended) */}
         <button
@@ -233,7 +215,7 @@ export default function OnboardCallChoicePage() {
         </button>
       </div>
 
-      <Button variant="ghost" onClick={() => router.push("/onboard/phone")} className="w-full">
+      <Button variant="ghost" onClick={() => router.push("/onboard/email")} className="w-full">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
       </Button>

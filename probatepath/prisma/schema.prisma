@@ -550,6 +550,8 @@ model TierSelection {
   selectedTier   Tier
   tierPrice      Int
   screeningFlags Json               @default("[]")
+  grantType      String?
+  screeningData  Json?
   createdAt      DateTime           @default(now())
   user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   betaPayments   BetaPayment[]

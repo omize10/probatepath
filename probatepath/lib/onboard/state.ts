@@ -287,6 +287,9 @@ export function getNextStep(state: OnboardState): string {
   if (!state.recommendedTier) return "/onboard/result";
   if (!state.selectedTier) return "/onboard/pricing";
 
+  // Account creation
+  if (!state.accountCreated) return "/onboard/create-account";
+
   return "/pay";
 }
 

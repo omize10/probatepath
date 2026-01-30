@@ -13,6 +13,7 @@ const STEPS = [
   { path: "/onboard/screening", label: "Questions" },
   { path: "/onboard/result", label: "Result" },
   { path: "/onboard/pricing", label: "Pricing" },
+  { path: "/onboard/create-account", label: "Account" },
 ];
 
 export default function OnboardLayout({ children }: { children: React.ReactNode }) {

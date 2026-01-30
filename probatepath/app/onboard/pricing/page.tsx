@@ -24,7 +24,7 @@ export default function OnboardPricingPage() {
 
   const handleSelectTier = (tier: Tier) => {
     saveOnboardState({ selectedTier: tier });
-    router.push(`/pay?tier=${tier}`);
+    router.push("/onboard/create-account");
   };
 
   const toggleExpand = (tier: Tier) => {

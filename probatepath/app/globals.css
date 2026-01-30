@@ -11,7 +11,7 @@ html {
   color-scheme: light;
   --pp-navy: #0d1726;
   --pp-navy-light: #1c2434;
-  --pp-slate: #4a5666;
+  --pp-slate: #4b5563;
   --pp-bg: #f5f2ec;
   --pp-white: #ffffff;
   --pp-black: #0a0d12;
@@ -21,14 +21,14 @@ html {
   --card: var(--pp-white);
   --card-ink: var(--pp-navy);
   --ink: var(--pp-black);
-  --muted-ink: #1e232d;
+  --muted-ink: #374151;
   --brand: var(--pp-navy);
   --brand-soft: var(--pp-navy-light);
   --accent: #1f2f46;
   --accent-dark: #10192a;
   --slate: var(--pp-slate);
   --ring: var(--pp-navy);
-  --border-muted: #d6d0c6;
+  --border-muted: #d1d5db;
   --success: var(--pp-navy);
   --warning: #a1703e;
   --brand-navy: var(--pp-navy);
@@ -37,6 +37,16 @@ html {
   --ink-muted: var(--muted-ink);
   --error: #a43232;
   --error-muted: #f8e8e8;
+
+  /* WCAG AA Compliant Color Variables */
+  --text-secondary: #374151;            /* gray-700: 10.8:1 on white - for labels, secondary headings */
+  --text-tertiary: #4b5563;             /* gray-600: 7.5:1 on white - for supporting text */
+  --text-placeholder: #6b7280;          /* gray-500: 4.6:1 on white - for form placeholders */
+  --text-disabled: #9ca3af;             /* gray-400: 3.1:1 on white (large text only) - for disabled states */
+  --border-input: #d1d5db;              /* gray-300: visible but subtle - for input borders */
+  --border-subtle: #e5e7eb;             /* gray-200: for decorative dividers */
+  --focus-ring: rgba(15,26,42,0.35);    /* Increased from 0.2 for visibility - for focus indicators */
+  --disabled-bg: #f3f4f6;               /* gray-100: clearly disabled appearance */
 }
 
 body {

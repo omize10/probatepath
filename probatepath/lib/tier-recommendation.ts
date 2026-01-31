@@ -21,7 +21,7 @@ export interface Recommendation {
  * Complicated answer definitions (for count-based tier logic):
  * - Will not signed by 2 witnesses (No or Not sure)
  * - Will not prepared in BC (No or Not sure)
- * - No original will
+ * - No original will or can get it later
  * - Beneficiaries not fully aware
  * - Unsure about disputes
  * - Assets in other Canadian provinces
@@ -45,7 +45,8 @@ function countComplicatedAnswers(answers: FitAnswers): number {
     count++;
   }
 
-  if (answers.hasOriginalWill === false) {
+  // Count both false (no original) and 'can_get_it' as complicated
+  if (answers.hasOriginalWill === false || answers.hasOriginalWill === 'can_get_it') {
     count++;
   }
 
@@ -121,6 +122,7 @@ export function getRecommendation(answers: FitAnswers): Recommendation {
     );
   }
 
+  // Only false (no copy) triggers white glove, not 'can_get_it'
   if (answers.hasOriginalWill === false) {
     whiteGloveTriggers.push(
       "Without the original will, additional court steps are needed."
@@ -153,6 +155,13 @@ export function getRecommendation(answers: FitAnswers): Recommendation {
 
   // ─── 3. Premium (third priority) ───
   const premiumTriggers: string[] = [];
+
+  // 'can_get_it' triggers Premium (portal displays as Standard)
+  if (answers.hasOriginalWill === 'can_get_it') {
+    premiumTriggers.push(
+      "You'll need to retrieve the original will for court filing."
+    );
+  }
 
   if (
     answers.willPreparedInBC === "no" ||

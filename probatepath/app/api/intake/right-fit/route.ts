@@ -1,37 +1,63 @@
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import type { Prisma, RightFitStatus } from "@prisma/client";
+import type { Prisma, RightFitStatus, Tier, GrantType } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { resolvePortalMatter } from "@/lib/portal/server";
 import { getNextCaseCode } from "@/lib/cases";
-import { evaluateEligibility, type EligibilityAnswers } from "@/lib/intake/eligibility";
 import { initializeMatterStepProgress } from "@/lib/portal/step-progress";
 
-const answerSchema = z.object({
-  estateInBC: z.enum(["yes", "no", "unsure"] as const),
-  isExecutor: z.enum(["yes", "no", "unsure", "helper"] as const),
-  willStraightforward: z.enum(["yes", "no", "no-will"] as const),
-  assetsCommon: z.enum(["yes", "no", "unsure"] as const),
-  complexAssetsNotes: z.string().optional().default(""),
+// New schema for tier recommendation answers
+const fitAnswersSchema = z.object({
+  hasWill: z.enum(["yes", "no", "not_sure"]).optional(),
+  willProperlyWitnessed: z.enum(["yes", "no", "not_sure"]).optional(),
+  willPreparedInBC: z.enum(["yes", "no", "not_sure"]).optional(),
+  hasOriginalWill: z.union([z.boolean(), z.literal("can_get_it")]).optional(),
+  beneficiariesAware: z.enum(["yes", "no", "partial"]).optional(),
+  potentialDisputes: z.enum(["yes", "no", "not_sure"]).optional(),
+  assetsOutsideBC: z.enum(["none", "other_provinces", "international"]).optional(),
+});
+
+const recommendationSchema = z.object({
+  tier: z.enum(["basic", "premium", "white_glove", "open_door_law"]),
+  reason: z.string(),
+  grantType: z.enum(["probate", "administration"]),
 });
 
 const payloadSchema = z.object({
-  answers: answerSchema,
+  answers: fitAnswersSchema,
+  recommendation: recommendationSchema.optional(),
 });
 
-function toJson(answers: EligibilityAnswers): Prisma.JsonObject {
+function toJson(answers: z.infer<typeof fitAnswersSchema>): Prisma.JsonObject {
   return {
-    estateInBC: answers.estateInBC,
-    isExecutor: answers.isExecutor,
-    willStraightforward: answers.willStraightforward,
-    assetsCommon: answers.assetsCommon,
-    complexAssetsNotes: answers.complexAssetsNotes ?? "",
+    hasWill: answers.hasWill,
+    willProperlyWitnessed: answers.willProperlyWitnessed,
+    willPreparedInBC: answers.willPreparedInBC,
+    hasOriginalWill: answers.hasOriginalWill,
+    beneficiariesAware: answers.beneficiariesAware,
+    potentialDisputes: answers.potentialDisputes,
+    assetsOutsideBC: answers.assetsOutsideBC,
   } satisfies Prisma.JsonObject;
 }
 
-async function upsertRightFitMatter(userId: string, status: RightFitStatus, answers: EligibilityAnswers) {
+// Map tier recommendation to database tier enum
+function mapTierToDB(recommendedTier: "basic" | "premium" | "white_glove"): Tier {
+  // Map tier-recommendation.ts tiers to database Tier enum
+  // basic → basic, premium → standard, white_glove → premium
+  if (recommendedTier === "basic") return "basic";
+  if (recommendedTier === "premium") return "standard";
+  if (recommendedTier === "white_glove") return "premium";
+  return "basic"; // fallback
+}
+
+async function upsertRightFitMatter(
+  userId: string,
+  status: RightFitStatus,
+  answers: z.infer<typeof fitAnswersSchema>,
+  recommendation?: z.infer<typeof recommendationSchema>
+) {
   const matter = await resolvePortalMatter(userId);
 
   const needsNewMatter = !matter || Boolean(matter.draft?.submittedAt ?? false);
@@ -45,6 +71,12 @@ async function upsertRightFitMatter(userId: string, status: RightFitStatus, answ
         rightFitStatus: status,
         rightFitCompletedAt: new Date(),
         rightFitAnswers: toJson(answers),
+        // Add tier recommendation fields
+        recommendedTier: recommendation?.tier && recommendation.tier !== "open_door_law"
+          ? mapTierToDB(recommendation.tier)
+          : undefined,
+        tierRecommendationReason: recommendation?.reason,
+        grantType: recommendation?.grantType,
       },
       select: { id: true },
     });
@@ -58,6 +90,12 @@ async function upsertRightFitMatter(userId: string, status: RightFitStatus, answ
       rightFitStatus: status,
       rightFitCompletedAt: new Date(),
       rightFitAnswers: toJson(answers),
+      // Add tier recommendation fields
+      recommendedTier: recommendation?.tier && recommendation.tier !== "open_door_law"
+        ? mapTierToDB(recommendation.tier)
+        : undefined,
+      tierRecommendationReason: recommendation?.reason,
+      grantType: recommendation?.grantType,
     },
     select: { id: true },
   });
@@ -81,19 +119,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid answers." }, { status: 400 });
   }
 
-  const answers: EligibilityAnswers = parsed.data.answers;
-  const decision = evaluateEligibility(answers);
-  const status: RightFitStatus = decision.status === "eligible" ? "ELIGIBLE" : "NOT_FIT";
+  const { answers, recommendation } = parsed.data;
+
+  // Determine right fit status
+  let status: RightFitStatus;
+  if (recommendation?.tier === "open_door_law") {
+    status = "NOT_FIT"; // Open Door Law referral
+  } else if (recommendation) {
+    status = "RECOMMENDED"; // Has tier recommendation
+  } else {
+    // Backward compatibility: no recommendation provided
+    status = "ELIGIBLE";
+  }
 
   try {
-    const matterId = await upsertRightFitMatter(userId, status, answers);
-    const normalizedDecision =
-      decision.status === "eligible"
-        ? { status: "eligible", reasons: decision.reasons }
-        : { status: "not_fit" as const, reasons: decision.reasons };
+    const matterId = await upsertRightFitMatter(userId, status, answers, recommendation);
+
     return NextResponse.json({
       matterId,
-      decision: normalizedDecision,
+      recommendation: recommendation ? {
+        tier: recommendation.tier,
+        reason: recommendation.reason,
+        grantType: recommendation.grantType,
+      } : undefined,
     });
   } catch (error) {
     console.error("[right-fit] Failed to persist decision", error);

@@ -25,7 +25,7 @@ export interface FitAnswers {
   hasWill?: 'yes' | 'no' | 'not_sure';
   willProperlyWitnessed?: 'yes' | 'no' | 'not_sure';
   willPreparedInBC?: 'yes' | 'no' | 'not_sure';
-  hasOriginalWill?: boolean;
+  hasOriginalWill?: boolean | 'can_get_it'; // boolean for backward compatibility, 'can_get_it' for new option
   beneficiariesAware?: 'yes' | 'no' | 'partial';
   potentialDisputes?: 'yes' | 'no' | 'not_sure';
   assetsOutsideBC?: 'none' | 'other_provinces' | 'international';

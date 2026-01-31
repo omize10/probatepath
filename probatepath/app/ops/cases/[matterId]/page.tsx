@@ -407,6 +407,13 @@ export default async function CaseDetailPage({ params, searchParams }: CaseDetai
         <div className="space-y-4">
           <IntakeSnapshot intake={intake} />
           <WillFilesCard files={willFiles} />
+          <ScreeningAnswersCard
+            rightFitAnswers={record.rightFitAnswers}
+            recommendedTier={record.recommendedTier}
+            tierRecommendationReason={record.tierRecommendationReason}
+            grantType={record.grantType}
+            rightFitStatus={record.rightFitStatus}
+          />
         </div>
 
         <div className="space-y-6">
@@ -1104,6 +1111,145 @@ function FormsGenerationCard({ recordId }: { recordId: string }) {
           <li>Word documents (.docx) are court-ready and match official BC Supreme Court forms</li>
         </ul>
       </div>
+    </div>
+  );
+}
+
+type ScreeningAnswersCardProps = {
+  rightFitAnswers: any;
+  recommendedTier?: string | null;
+  tierRecommendationReason?: string | null;
+  grantType?: string | null;
+  rightFitStatus: string;
+};
+
+function ScreeningAnswersCard({
+  rightFitAnswers,
+  recommendedTier,
+  tierRecommendationReason,
+  grantType,
+  rightFitStatus,
+}: ScreeningAnswersCardProps) {
+  if (!rightFitAnswers || rightFitStatus === "UNKNOWN") {
+    return null;
+  }
+
+  const answers = rightFitAnswers as Record<string, any>;
+
+  const formatAnswer = (key: string, value: any): string => {
+    if (value === null || value === undefined) return "Not answered";
+    
+    // Boolean values
+    if (typeof value === "boolean") return value ? "Yes" : "No";
+    
+    // Special formatting for specific fields
+    switch (key) {
+      case "hasWill":
+        if (value === "yes") return "Yes";
+        if (value === "no") return "No";
+        if (value === "not_sure") return "Not sure";
+        break;
+      case "willProperlyWitnessed":
+      case "willPreparedInBC":
+      case "potentialDisputes":
+        if (value === "yes") return "Yes";
+        if (value === "no") return "No";
+        if (value === "not_sure") return "Not sure";
+        break;
+      case "hasOriginalWill":
+        if (value === true) return "Yes, I have the original";
+        if (value === false) return "No, I only have a copy";
+        if (value === "can_get_it") return "Not right now, but I can get it";
+        break;
+      case "beneficiariesAware":
+        if (value === "yes") return "Yes, everyone knows";
+        if (value === "no") return "No, I haven't shared it yet";
+        if (value === "partial") return "Some know, some don't";
+        break;
+      case "assetsOutsideBC":
+        if (value === "none") return "No, all assets are in BC";
+        if (value === "other_provinces") return "Yes, in other Canadian provinces";
+        if (value === "international") return "Yes, outside of Canada";
+        break;
+    }
+    
+    return String(value);
+  };
+
+  const tierDisplayNames: Record<string, string> = {
+    basic: "Basic ($799)",
+    standard: "Standard ($1,499)",
+    premium: "Premium ($2,499)",
+  };
+
+  const hasRecommendation = rightFitStatus === "RECOMMENDED" && recommendedTier;
+
+  return (
+    <div className="space-y-3 rounded-2xl border border-[color:var(--border-muted)] bg-white p-4 shadow-sm">
+      <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--ink-muted)]">Screening Answers</p>
+      
+      <div className="space-y-2 text-sm">
+        {answers.hasWill !== undefined && (
+          <InfoRow label="Has will?" value={formatAnswer("hasWill", answers.hasWill)} />
+        )}
+        
+        {answers.willProperlyWitnessed !== undefined && (
+          <InfoRow label="Properly witnessed?" value={formatAnswer("willProperlyWitnessed", answers.willProperlyWitnessed)} />
+        )}
+        
+        {answers.willPreparedInBC !== undefined && (
+          <InfoRow label="Prepared in BC?" value={formatAnswer("willPreparedInBC", answers.willPreparedInBC)} />
+        )}
+        
+        {answers.hasOriginalWill !== undefined && (
+          <InfoRow label="Has original?" value={formatAnswer("hasOriginalWill", answers.hasOriginalWill)} />
+        )}
+        
+        {answers.beneficiariesAware !== undefined && (
+          <InfoRow label="Beneficiaries aware?" value={formatAnswer("beneficiariesAware", answers.beneficiariesAware)} />
+        )}
+        
+        {answers.potentialDisputes !== undefined && (
+          <InfoRow label="Potential disputes?" value={formatAnswer("potentialDisputes", answers.potentialDisputes)} />
+        )}
+        
+        {answers.assetsOutsideBC !== undefined && (
+          <InfoRow label="Assets outside BC?" value={formatAnswer("assetsOutsideBC", answers.assetsOutsideBC)} />
+        )}
+      </div>
+
+      {hasRecommendation && (
+        <>
+          <div className="my-3 border-t border-[color:var(--border-muted)]" />
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                Recommended: {tierDisplayNames[recommendedTier] || recommendedTier}
+              </span>
+              {grantType && (
+                <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
+                  {grantType === "probate" ? "Probate" : "Administration"}
+                </span>
+              )}
+            </div>
+            {tierRecommendationReason && (
+              <p className="text-xs text-[color:var(--ink-muted)]">{tierRecommendationReason}</p>
+            )}
+          </div>
+        </>
+      )}
+
+      {rightFitStatus === "NOT_FIT" && (
+        <>
+          <div className="my-3 border-t border-[color:var(--border-muted)]" />
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
+            <p className="text-xs font-semibold text-amber-900">Open Door Law Referral</p>
+            <p className="mt-1 text-xs text-amber-800">
+              {tierRecommendationReason || "This case was referred to Open Door Law for full legal representation."}
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }

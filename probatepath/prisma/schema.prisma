@@ -47,6 +47,10 @@ model Matter {
   rightFitStatus              RightFitStatus         @default(UNKNOWN)
   rightFitCompletedAt         DateTime?
   rightFitAnswers             Json?
+  // Tier recommendation fields
+  recommendedTier             Tier?
+  tierRecommendationReason    String?
+  grantType                   GrantType?
   p1Mailed                    Boolean                @default(false)
   p1MailedAt                  DateTime?
   p1NoticesReady              Boolean                @default(false)
@@ -486,8 +490,9 @@ enum ScheduleKind {
 
 enum RightFitStatus {
   UNKNOWN
-  ELIGIBLE
-  NOT_FIT
+  ELIGIBLE      // Legacy - kept for backward compatibility
+  NOT_FIT       // Open Door Law referrals
+  RECOMMENDED   // New tier recommendation system
 }
 
 enum Role {
@@ -528,6 +533,11 @@ enum Tier {
   basic
   standard
   premium
+}
+
+enum GrantType {
+  probate         // Estate with will
+  administration  // Estate without will (intestate)
 }
 
 enum CallbackStatus {

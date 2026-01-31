@@ -147,7 +147,7 @@ export default function PortalPricingClient({
   };
 
   // Determine which tier is recommended for this user
-  const tierDisplayNames: Record<Tier, string> = {
+  const tierDisplayNames: Partial<Record<Tier, string>> = {
     basic: "Basic",
     standard: "Standard",
     premium: "Premium",
@@ -159,7 +159,7 @@ export default function PortalPricingClient({
         <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">Pick what matches your comfort level</h1>
         {recommendedTier && (
           <p className="mx-auto max-w-2xl text-base text-[color:var(--muted-ink)]">
-            Based on your answers, we recommend the <strong>{tierDisplayNames[recommendedTier]} plan</strong> for your situation.
+            Based on your answers, we recommend the <strong>{tierDisplayNames[recommendedTier] ?? recommendedTier} plan</strong> for your situation.
           </p>
         )}
         {!recommendedTier && (

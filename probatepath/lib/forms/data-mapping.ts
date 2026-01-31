@@ -331,21 +331,29 @@ function buildChildren(intakeChildren: any[], dbBeneficiaries: Beneficiary[]): E
 }
 
 function buildBeneficiaries(intakePeople: any[], dbBeneficiaries: Beneficiary[]): EstateData["beneficiaries"] {
-  if (intakePeople.length > 0) {
-    return intakePeople.map((p: any) => ({
-      name: buildFullName(p.name || {}),
-      relationship: p.relationship || undefined,
-      status: "surviving" as const,
-    }));
-  }
-
-  // Fallback to DB (non-spouse, non-child)
-  const others = dbBeneficiaries.filter(
+  const otherDbBens = dbBeneficiaries.filter(
     (b) => b.type !== "SPOUSE" && b.type !== "CHILD" && b.type !== "STEPCHILD"
   );
-  return others.map((b) => ({
+
+  if (intakePeople.length > 0) {
+    return intakePeople.map((p: any) => {
+      const name = buildFullName(p.name || {});
+      // Cross-reference DB to get relationshipLabel
+      const dbMatch = otherDbBens.find(
+        (b) => b.fullName.toLowerCase() === name.toLowerCase()
+      );
+      return {
+        name,
+        relationship: p.relationship || dbMatch?.relationshipLabel || undefined,
+        status: "surviving" as const,
+      };
+    });
+  }
+
+  // Fallback to DB
+  return otherDbBens.map((b) => ({
     name: b.fullName,
-    relationship: b.type ? b.type.toLowerCase() : undefined,
+    relationship: b.relationshipLabel || (b.type ? formatRelationshipLabel(b.type.toLowerCase()) : undefined),
     status: b.status === "ALIVE" ? "surviving" as const : "deceased" as const,
   }));
 }

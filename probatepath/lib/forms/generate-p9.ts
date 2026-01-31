@@ -18,16 +18,12 @@ export async function generateP9(data: EstateData): Promise<Buffer> {
   const applicant = data.applicants[0];
   const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName);
   const applicantAddress = formatAddress(applicant.address);
-  const submissionDate = data.submissionDate
-    ? new Date(data.submissionDate)
-    : new Date();
-  const formattedSubmissionDate = !isNaN(submissionDate.getTime())
-    ? submissionDate.toLocaleDateString("en-CA", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
-    : "________________________";
+  const formattedSubmissionDate = data.submissionDate ||
+    new Date().toLocaleDateString("en-CA", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
 
   const willDocument = data.will?.exists
     ? "a copy of the will"

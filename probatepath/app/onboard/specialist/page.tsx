@@ -101,16 +101,15 @@ export default function OnboardSpecialistPage() {
           Your situation needs specialized expertise
         </h1>
         <p className="text-[color:var(--muted-ink)]">
-          Our services are designed for straightforward, undisputed estates with assets in Canada.
+          Our services are tailor-made for undisputed wills. We work with local
+          law firms at preferred discounted prices to help ensure you get
+          professional legal advice.
         </p>
         <p className="text-[color:var(--muted-ink)]">
-          Based on your answers, we recommend working with an experienced estates lawyer who can provide personalized legal advice.
+          Based on your answers, we recommend working with an experienced estates
+          lawyer who can provide personalized guidance for your situation.
         </p>
       </div>
-
-      <p className="text-center text-[color:var(--muted-ink)]">
-        We work with local law firms at preferred rates to ensure you get professional support.
-      </p>
 
       <div className="text-center">
         <p className="font-medium text-[color:var(--brand)]">

@@ -6,7 +6,7 @@ import { ArrowRight, ArrowLeft, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { WarningCallout } from "@/components/ui/warning-callout";
-import { getOnboardState, saveOnboardState, type FitAnswers } from "@/lib/onboard/state";
+import { getOnboardState, saveOnboardState, type FitAnswers, type CommunicationPreference } from "@/lib/onboard/state";
 
 interface PendingIntakeData {
   id: string;
@@ -26,6 +26,8 @@ export default function OnboardEmailPhonePage() {
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [communicationPreference, setCommunicationPreference] = useState<CommunicationPreference>("email");
+  const [referralFuneralHome, setReferralFuneralHome] = useState("");
 
   // Returning user state
   const [resumeData, setResumeData] = useState<PendingIntakeData | null>(null);
@@ -48,6 +50,12 @@ export default function OnboardEmailPhonePage() {
     if (state.phone) {
       const digits = state.phone.replace(/\D/g, "").slice(-10);
       setPhone(formatPhone(digits));
+    }
+    if (state.communicationPreference) {
+      setCommunicationPreference(state.communicationPreference);
+    }
+    if (state.referralFuneralHome) {
+      setReferralFuneralHome(state.referralFuneralHome);
     }
   }, [router]);
 
@@ -180,7 +188,12 @@ export default function OnboardEmailPhonePage() {
     const normalizedEmail = email.trim().toLowerCase();
 
     // Save to localStorage
-    saveOnboardState({ email: normalizedEmail, phone: rawPhone });
+    saveOnboardState({
+      email: normalizedEmail,
+      phone: rawPhone,
+      communicationPreference,
+      referralFuneralHome: referralFuneralHome || undefined,
+    });
 
     // Fire-and-forget: save to server
     fetch("/api/onboard/pending-intake", {
@@ -215,12 +228,11 @@ export default function OnboardEmailPhonePage() {
     <div className="space-y-8">
       <div className="space-y-2 text-center">
         <h1 className="font-serif text-3xl font-semibold text-[color:var(--brand)] sm:text-4xl">
-          Let&apos;s save your progress
+          Welcome
         </h1>
         <p className="text-[color:var(--muted-ink)]">
-          Before we continue, let&apos;s make sure you don&apos;t lose your
-          answers. Enter your email and phone number so we can save your progress
-          and reach you if needed.
+          Please provide your email and phone number. We use email as our primary
+          means of communicating updates and sharing important documents with you.
         </p>
       </div>
 
@@ -263,7 +275,7 @@ export default function OnboardEmailPhonePage() {
             htmlFor="email"
             className="text-sm font-medium text-[color:var(--brand)]"
           >
-            Email address
+            Please provide your email
           </label>
           <Input
             id="email"
@@ -325,6 +337,63 @@ export default function OnboardEmailPhonePage() {
             onKeyDown={handleKeyDown}
             className="h-14 text-lg"
           />
+        </div>
+
+        {/* Communication preference */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-[color:var(--brand)]">
+            Do you prefer text or email for communications?
+          </label>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setCommunicationPreference("email")}
+              className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors ${
+                communicationPreference === "email"
+                  ? "border-[color:var(--brand)] bg-blue-50 text-[color:var(--brand)]"
+                  : "border-[color:var(--border-muted)] text-[color:var(--muted-ink)] hover:border-[color:var(--brand)]"
+              }`}
+            >
+              Email
+            </button>
+            <button
+              type="button"
+              onClick={() => setCommunicationPreference("text")}
+              className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors ${
+                communicationPreference === "text"
+                  ? "border-[color:var(--brand)] bg-blue-50 text-[color:var(--brand)]"
+                  : "border-[color:var(--border-muted)] text-[color:var(--muted-ink)] hover:border-[color:var(--brand)]"
+              }`}
+            >
+              Text
+            </button>
+          </div>
+        </div>
+
+        {/* Funeral home referral (optional) */}
+        <div className="space-y-2">
+          <label
+            htmlFor="referral"
+            className="text-sm font-medium text-[color:var(--brand)]"
+          >
+            Were you referred by a funeral home or service provider?{" "}
+            <span className="font-normal text-[color:var(--muted-ink)]">(optional)</span>
+          </label>
+          <select
+            id="referral"
+            value={referralFuneralHome}
+            onChange={(e) => setReferralFuneralHome(e.target.value)}
+            className="flex h-14 w-full rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] px-4 py-2 text-base text-[color:var(--ink)] focus:border-[color:var(--brand)] focus:outline-none focus:ring-2 focus:ring-[color:var(--brand)] focus:ring-offset-2"
+          >
+            <option value="">Select one (optional)</option>
+            <option value="none">No referral</option>
+            <option value="first_memorial">First Memorial Funeral Services</option>
+            <option value="mountain_view">Mountain View Funeral Home</option>
+            <option value="forest_lawn">Forest Lawn Funeral Home</option>
+            <option value="victory">Victory Memorial Park Funeral Centre</option>
+            <option value="ocean_view">Ocean View Burial Park</option>
+            <option value="other">Other</option>
+          </select>
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}

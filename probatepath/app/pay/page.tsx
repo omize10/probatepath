@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PROVINCES, TIER_PRICES, TIER_DISPLAY_NAMES, type Tier } from "@/types/pricing";
-import { getOnboardState, clearOnboardState, type Tier as OnboardTier } from "@/lib/onboard/state";
+import { getOnboardState, clearOnboardState, saveOnboardState, type Tier as OnboardTier, type ReferralSource } from "@/lib/onboard/state";
 
 interface PrefillData {
   tier?: Tier;
@@ -55,6 +55,8 @@ export default function PayPage() {
   const [city, setCity] = useState("");
   const [province, setProvince] = useState("BC");
   const [postalCode, setPostalCode] = useState("");
+  const [referralSource, setReferralSource] = useState<ReferralSource>(null);
+  const [showReferral, setShowReferral] = useState(false);
 
   // Load from onboard state or URL params
   useEffect(() => {
@@ -76,9 +78,17 @@ export default function PayPage() {
           setPhone(`(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`);
         }
       }
+      // Show referral question if no funeral home was specified during onboard
+      if (!onboardState.referralFuneralHome || onboardState.referralFuneralHome === "none") {
+        setShowReferral(true);
+      }
+      if (onboardState.referralSource) {
+        setReferralSource(onboardState.referralSource);
+      }
     } else if (tierParam) {
       // Coming from URL param (e.g., from old flow or direct link)
       setSelectedTier(tierParam);
+      setShowReferral(true);
     }
 
     setIsLoading(false);
@@ -511,6 +521,35 @@ export default function PayPage() {
                     Skip for now
                   </Button>
                 </div>
+
+                {/* How did you find us? (only if no funeral home referral) */}
+                {showReferral && (
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="referralSource"
+                      className="text-sm font-semibold text-[color:var(--brand)]"
+                    >
+                      How did you hear about ProbateDesk?{" "}
+                      <span className="font-normal text-[color:var(--muted-ink)]">(optional)</span>
+                    </label>
+                    <select
+                      id="referralSource"
+                      value={referralSource || ""}
+                      onChange={(e) => {
+                        const val = (e.target.value || null) as ReferralSource;
+                        setReferralSource(val);
+                        saveOnboardState({ referralSource: val });
+                      }}
+                      className="flex h-12 w-full rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-surface)] px-4 py-2 text-base text-[color:var(--ink)] focus:border-[color:var(--brand)] focus:outline-none focus:ring-2 focus:ring-[color:var(--brand)] focus:ring-offset-2"
+                    >
+                      <option value="">Select one (optional)</option>
+                      <option value="google">Google Search</option>
+                      <option value="funeral_home">Funeral Home Referral</option>
+                      <option value="friend">Friend or Family</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                )}
 
                 <p className="text-center text-xs text-[color:var(--muted-ink)]">
                   By continuing, you agree to our Terms of Service and Privacy Policy.

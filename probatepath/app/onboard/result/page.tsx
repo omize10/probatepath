@@ -395,12 +395,12 @@ export default function OnboardResultPage() {
           Good news!
         </h1>
         <p className="text-[color:var(--muted-ink)]">
-          Based on your answers, we can help. Here&apos;s what we recommend to get
-          your{" "}
+          Based on your responses, we recommend the following to reduce your
+          cost and ensure your{" "}
           <span className="font-medium text-[color:var(--brand)]">
             {grantType === "probate" ? "probate" : "administration"}
           </span>{" "}
-          done quickly and affordably.
+          is done promptly.
         </p>
       </motion.div>
 

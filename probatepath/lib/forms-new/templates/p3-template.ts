@@ -14,7 +14,7 @@ import {
 } from '../utils/formatters';
 
 export function generateP3HTML(data: P3Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
   const hasWill = data.grantType === 'probate' || data.grantType === 'admin_with_will';
   const isProbate = data.grantType === 'probate';

@@ -166,7 +166,7 @@ export function generateP29HTML(data: P29Data): string {
 <div class="take-notice">TAKE NOTICE THAT</div>
 
 <div class="paragraph">
-  I, <span class="field-value">${data.disputantName || ''}</span> (the "disputant"), oppose the taking of any action in relation to the estate of the deceased identified below who died on <span class="field-line">${data.deceased.dateOfDeath}</span> .
+  I, <span class="field-value">${data.disputantName || ''}</span> (the "disputant"), oppose the taking of any action in relation to the estate of the deceased identified below who died on <span class="field-line">${data.deceased?.dateOfDeath || ''}</span> .
 </div>
 
 <div class="paragraph">
@@ -179,9 +179,9 @@ export function generateP29HTML(data: P29Data): string {
   Other names in which the deceased held or may have held an interest in property:
 </div>
 <div style="margin-left: 36pt;">
-  <div>1. ${data.deceased.aliases[0] || ''}</div>
-  <div>2. ${data.deceased.aliases[1] || ''}</div>
-  <div>3. ${data.deceased.aliases[2] || 'etc.'}</div>
+  <div>1. ${data.deceased?.aliases?.[0] || ''}</div>
+  <div>2. ${data.deceased?.aliases?.[1] || ''}</div>
+  <div>3. ${data.deceased?.aliases?.[2] || 'etc.'}</div>
 </div>
 
 <div class="instruction">[Check whichever one of the immediately following 2 boxes is correct and provide any required information.]</div>

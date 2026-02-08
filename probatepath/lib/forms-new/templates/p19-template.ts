@@ -170,7 +170,7 @@ export function generateP19HTML(data: P19Data): string {
   ${data.applicants.length > 1 ? 'have' : 'has'} applied to the Supreme Court of British Columbia
   for ${grantTypeText.toLowerCase()} in relation to the estate of 
   <span class="field-value">${formatFullNameCaps(data.deceased)}</span>,
-  deceased, who died on <span class="field-value">${data.deceased.dateOfDeath}</span>.
+  deceased, who died on <span class="field-value">${data.deceased?.dateOfDeath || ''}</span>.
 </div>
 
 ${hasWill && data.will ? `

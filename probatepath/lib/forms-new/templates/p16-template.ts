@@ -14,7 +14,7 @@ import {
 } from '../utils/formatters';
 
 export function generateP16HTML(data: P16Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
 
   return `<!DOCTYPE html>

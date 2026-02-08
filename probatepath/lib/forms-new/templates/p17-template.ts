@@ -13,7 +13,8 @@ import {
 } from '../utils/formatters';
 
 export function generateP17HTML(data: P17Data): string {
-  const executorName = formatFullName(data.executor);
+  const executor = data.executor || { firstName: '', lastName: '', address: { city: '', province: '' } };
+  const executorName = formatFullName(executor);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -135,8 +136,8 @@ export function generateP17HTML(data: P17Data): string {
 
 <!-- Renunciation Statement -->
 <div class="renunciation-text">
-  I, <span class="field-value">${executorName}</span>, of <span class="field-value">${formatAddress(data.executor.address)}</span>,
-  acknowledge that I was named as an executor in the will dated <span class="field-value">${data.willDate}</span>
+  I, <span class="field-value">${executorName}</span>, of <span class="field-value">${formatAddress(executor.address)}</span>,
+  acknowledge that I was named as an executor in the will dated <span class="field-value">${data.willDate || ''}</span>
   of <span class="field-value">${formatFullNameCaps(data.deceased)}</span> (the "deceased").
 </div>
 

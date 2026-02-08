@@ -15,7 +15,7 @@ import {
 } from '../utils/formatters';
 
 export function generateP26HTML(data: P26Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
 
   // Calculate totals for supplemental assets
@@ -220,7 +220,7 @@ export function generateP26HTML(data: P26Data): string {
 
 <!-- Paragraph 1 -->
 <div class="paragraph">
-  1 I am an applicant for the resealing of a grant issued by the <span class="field-line">${data.foreignGrant?.courtName || underline(30)}</span> on <span class="field-line">${data.foreignGrant?.dateIssued || underline(15)}</span> in relation to the estate of <span class="field-line">${formatFullNameCaps(data.deceased)}</span>, also known as <span class="field-line">${data.deceased.aliases.join(', ') || underline(30)}</span> (the "deceased").
+  1 I am an applicant for the resealing of a grant issued by the <span class="field-line">${data.foreignGrant?.courtName || underline(30)}</span> on <span class="field-line">${data.foreignGrant?.dateIssued || underline(15)}</span> in relation to the estate of <span class="field-line">${formatFullNameCaps(data.deceased)}</span>, also known as <span class="field-line">${data.deceased?.aliases?.join(', ') || underline(30)}</span> (the "deceased").
 </div>
 
 <!-- Paragraph 2 -->
@@ -300,9 +300,9 @@ export function generateP26HTML(data: P26Data): string {
     Other names in which the deceased held or may have held an interest in property:
   </div>
   <div class="instruction">[Include all names that have been listed in Form P21.]</div>
-  <div class="sub-paragraph">1. ${data.deceased.aliases[0] || ''}</div>
-  <div class="sub-paragraph">2. ${data.deceased.aliases[1] || ''}</div>
-  <div class="sub-paragraph">3. ${data.deceased.aliases[2] || 'etc.'}</div>
+  <div class="sub-paragraph">1. ${data.deceased?.aliases?.[0] || ''}</div>
+  <div class="sub-paragraph">2. ${data.deceased?.aliases?.[1] || ''}</div>
+  <div class="sub-paragraph">3. ${data.deceased?.aliases?.[2] || 'etc.'}</div>
   
   <!-- Supplemental Assets -->
   <div style="margin-top: 18pt; font-weight: bold;">Supplemental Property within British Columbia</div>

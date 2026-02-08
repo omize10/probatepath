@@ -15,12 +15,12 @@ import {
 } from '../utils/formatters';
 
 export function generateP8HTML(data: P8Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
   const primaryAffidavit = data.primaryAffidavit || {
     form: 'P3',
     dateSworn: data.submissionDate,
-    swornBy: formatFullName(data.applicants[0]),
+    swornBy: formatFullName(data.applicants?.[0] || { firstName: '', lastName: '' }),
   };
 
   return `<!DOCTYPE html>

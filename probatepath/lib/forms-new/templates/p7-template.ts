@@ -15,7 +15,7 @@ import {
 } from '../utils/formatters';
 
 export function generateP7HTML(data: P7Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
 
   return `<!DOCTYPE html>

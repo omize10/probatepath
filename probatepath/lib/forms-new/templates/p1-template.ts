@@ -216,7 +216,7 @@ export function generateP1HTML(data: P1Data): string {
 The applicant(s) <span class="field-value">${applicantNames}</span> propose(s) to apply, in the 
 <span class="field-value">${data.registry}</span> court registry, for 
 <span class="field-value">${grantText}</span> in relation to the estate of the deceased described below 
-who died on <span class="field-value">${data.deceased.dateOfDeath}</span>.
+who died on <span class="field-value">${data.deceased?.dateOfDeath || ''}</span>.
 </div>
 
 <div class="paragraph">
@@ -232,7 +232,7 @@ who died on <span class="field-value">${data.deceased.dateOfDeath}</span>.
   <span class="field-label">Last residential address of the deceased:</span> 
   [Include street number or post office box, city/town, province, country and postal code.]
   <br>
-  <span class="field-line">${formatAddress(data.deceased.lastAddress)}</span>
+  <span class="field-line">${formatAddress(data.deceased?.lastAddress)}</span>
 </div>
 
 <div class="note">[Check whichever one of the immediately following 4 boxes is correct.]</div>

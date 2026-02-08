@@ -137,7 +137,7 @@ ${!data.fileNumber ? `
 <!-- Withdrawal Text -->
 <div class="withdrawal-text">
   <div class="paragraph">
-    I, <span class="field-value">${data.withdrawingPersonName || ''}</span> withdraw the notice of dispute filed by me with this court registry on <span class="field-line">${data.noticeOfDisputeDate || ''}</span> in relation to the estate of <span class="field-value">${formatFullNameCaps(data.deceased)}</span>, deceased, who died on <span class="field-line">${data.deceased.dateOfDeath}</span> .
+    I, <span class="field-value">${data.withdrawingPersonName || ''}</span> withdraw the notice of dispute filed by me with this court registry on <span class="field-line">${data.noticeOfDisputeDate || ''}</span> in relation to the estate of <span class="field-value">${formatFullNameCaps(data.deceased)}</span>, deceased, who died on <span class="field-line">${data.deceased?.dateOfDeath || ''}</span> .
   </div>
 </div>
 

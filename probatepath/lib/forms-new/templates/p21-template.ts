@@ -206,16 +206,16 @@ export function generateP21HTML(data: P21Data): string {
   <strong>Other names in which the deceased held or may have held an interest in property:</strong>
 </div>
 
-<div class="sub-paragraph">1. ${data.deceased.aliases[0] || ''}</div>
-<div class="sub-paragraph">2. ${data.deceased.aliases[1] || ''}</div>
-<div class="sub-paragraph">3. ${data.deceased.aliases[2] || 'etc.'}</div>
+<div class="sub-paragraph">1. ${data.deceased?.aliases?.[0] || ''}</div>
+<div class="sub-paragraph">2. ${data.deceased?.aliases?.[1] || ''}</div>
+<div class="sub-paragraph">3. ${data.deceased?.aliases?.[2] || 'etc.'}</div>
 
 <div class="paragraph">
-  <strong>Last residential address of the deceased:</strong> <span class="field-line">${formatAddress(data.deceased.lastAddress)}</span>
+  <strong>Last residential address of the deceased:</strong> <span class="field-line">${formatAddress(data.deceased?.lastAddress)}</span>
 </div>
 
 <div class="paragraph">
-  <strong>Deceased's date of death:</strong> <span class="field-line">${data.deceased.dateOfDeath}</span>
+  <strong>Deceased's date of death:</strong> <span class="field-line">${data.deceased?.dateOfDeath || ''}</span>
 </div>
 
 <!-- Part 2 -->

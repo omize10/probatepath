@@ -177,7 +177,7 @@ export function generateP27HTML(data: P27Data): string {
   <div class="take-notice">TAKE NOTICE THAT</div>
   
   <div class="paragraph">
-    1 <span class="field-value">${applicantNames}</span> has/have applied for the resealing of a grant issued by the <span class="field-line">${data.foreignGrant?.courtName || ''}</span> on <span class="field-line">${data.foreignGrant?.dateIssued || ''}</span> in relation to the estate of <span class="field-value">${formatFullNameCaps(data.deceased)}</span>, also known as <span class="field-line">${data.deceased.aliases.join(', ') || ''}</span> (the "deceased"), whose last residential address was <span class="field-line">${formatAddress(data.deceased.lastAddress)}</span> .
+    1 <span class="field-value">${applicantNames}</span> has/have applied for the resealing of a grant issued by the <span class="field-line">${data.foreignGrant?.courtName || ''}</span> on <span class="field-line">${data.foreignGrant?.dateIssued || ''}</span> in relation to the estate of <span class="field-value">${formatFullNameCaps(data.deceased)}</span>, also known as <span class="field-line">${data.deceased?.aliases?.join(', ') || ''}</span> (the "deceased"), whose last residential address was <span class="field-line">${formatAddress(data.deceased?.lastAddress)}</span> .
   </div>
   
   <div class="paragraph">

@@ -325,36 +325,36 @@ export function generateP2HTML(data: P2Data): string {
   </div>
   
   <div class="paragraph">Other names in which the deceased held or may have held an interest in property:</div>
-  <div class="sub-paragraph">1. ${data.deceased.aliases[0] || ''}</div>
-  <div class="sub-paragraph">2. ${data.deceased.aliases[1] || ''}</div>
-  <div class="sub-paragraph">3. ${data.deceased.aliases[2] || 'etc.'}</div>
+  <div class="sub-paragraph">1. ${data.deceased?.aliases?.[0] || ''}</div>
+  <div class="sub-paragraph">2. ${data.deceased?.aliases?.[1] || ''}</div>
+  <div class="sub-paragraph">3. ${data.deceased?.aliases?.[2] || 'etc.'}</div>
   
   <div class="paragraph">Last residential address of the deceased:</div>
-  <div class="sub-paragraph">Street number and street name: <span class="field-line">${data.deceased.lastAddress.streetNumber || ''} ${data.deceased.lastAddress.streetName || ''}</span></div>
+  <div class="sub-paragraph">Street number and street name: <span class="field-line">${data.deceased?.lastAddress?.streetNumber || ''} ${data.deceased?.lastAddress?.streetName || ''}</span></div>
   <div class="sub-paragraph">&nbsp;&nbsp;[OR]</div>
-  <div class="sub-paragraph">Post office box: <span class="field-line">${data.deceased.lastAddress.poBox || ''}</span></div>
-  <div class="sub-paragraph">City/Town: <span class="field-line">${data.deceased.lastAddress.city}</span></div>
-  <div class="sub-paragraph">Province: <span class="field-line">${data.deceased.lastAddress.province}</span></div>
-  <div class="sub-paragraph">Country: <span class="field-line">${data.deceased.lastAddress.country}</span></div>
-  <div class="sub-paragraph">Postal Code: <span class="field-line">${data.deceased.lastAddress.postalCode}</span></div>
+  <div class="sub-paragraph">Post office box: <span class="field-line">${data.deceased?.lastAddress?.poBox || ''}</span></div>
+  <div class="sub-paragraph">City/Town: <span class="field-line">${data.deceased?.lastAddress?.city || ''}</span></div>
+  <div class="sub-paragraph">Province: <span class="field-line">${data.deceased?.lastAddress?.province || ''}</span></div>
+  <div class="sub-paragraph">Country: <span class="field-line">${data.deceased?.lastAddress?.country || ''}</span></div>
+  <div class="sub-paragraph">Postal Code: <span class="field-line">${data.deceased?.lastAddress?.postalCode || ''}</span></div>
   
-  <div class="paragraph">Deceased's date of death: <span class="field-line">${data.deceased.dateOfDeath}</span></div>
+  <div class="paragraph">Deceased's date of death: <span class="field-line">${data.deceased?.dateOfDeath || ''}</span></div>
   
   <div class="instruction">[Check whichever one of the immediately following 3 boxes is correct and provide any required information.]</div>
   
   <div class="checkbox-item">
-    <span class="checkbox">${checkbox(!data.deceased.nisgaaCitizen && !data.deceased.treatyFirstNation)}</span>
+    <span class="checkbox">${checkbox(!data.deceased?.nisgaaCitizen && !data.deceased?.treatyFirstNation)}</span>
     <span>The deceased was neither a Nisga'a citizen nor a member of a treaty first nation.</span>
   </div>
   
   <div class="checkbox-item">
-    <span class="checkbox">${checkbox(data.deceased.nisgaaCitizen)}</span>
+    <span class="checkbox">${checkbox(data.deceased?.nisgaaCitizen)}</span>
     <span>The deceased was a Nisga'a citizen.</span>
   </div>
   
   <div class="checkbox-item">
-    <span class="checkbox">${checkbox(!!data.deceased.treatyFirstNation)}</span>
-    <span>The deceased was a member of the <span class="field-line">${data.deceased.treatyFirstNation || ''}</span> treaty first nation.</span>
+    <span class="checkbox">${checkbox(!!data.deceased?.treatyFirstNation)}</span>
+    <span>The deceased was a member of the <span class="field-line">${data.deceased?.treatyFirstNation || ''}</span> treaty first nation.</span>
   </div>
 </div>
 

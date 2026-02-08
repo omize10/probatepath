@@ -156,7 +156,7 @@ export function generateP32HTML(data: P32Data): string {
 </div>
 
 <div class="paragraph">
-  <span class="field-value">${formatFullNameCaps(data.deceased)}</span> (the "deceased"), who died on <span class="field-line">${data.deceased.dateOfDeath}</span> .
+  <span class="field-value">${formatFullNameCaps(data.deceased)}</span> (the "deceased"), who died on <span class="field-line">${data.deceased?.dateOfDeath || ''}</span> .
 </div>
 
 <div class="paragraph">

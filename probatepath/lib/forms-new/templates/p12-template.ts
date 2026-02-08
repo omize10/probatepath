@@ -12,9 +12,9 @@ import {
 } from '../utils/formatters';
 
 export function generateP12HTML(data: P12Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
-  const translator = data.translator;
+  const translator = data.translator || { name: '', address: { city: '', province: '' }, occupation: '' };
 
   return `<!DOCTYPE html>
 <html lang="en">

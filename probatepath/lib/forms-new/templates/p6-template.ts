@@ -15,7 +15,7 @@ import {
 } from '../utils/formatters';
 
 export function generateP6HTML(data: P6Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
   const isAncillaryProbate = data.grantType === 'ancillary_probate';
 

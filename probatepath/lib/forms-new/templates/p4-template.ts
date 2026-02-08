@@ -15,7 +15,7 @@ import {
 } from '../utils/formatters';
 
 export function generateP4HTML(data: P4Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
   const isProbate = data.grantType === 'probate';
   const hasWillExecutionIssues = data.willExecutionIssues && 

@@ -14,7 +14,7 @@ import {
 } from '../utils/formatters';
 
 export function generateP22HTML(data: P22Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
 
   return `<!DOCTYPE html>

@@ -14,7 +14,7 @@ import {
 } from '../utils/formatters';
 
 export function generateP34HTML(data: P34Data): string {
-  const citor = data.applicants[data.applicantIndex];
+  const citor = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const citorName = formatFullName(citor);
 
   return `<!DOCTYPE html>

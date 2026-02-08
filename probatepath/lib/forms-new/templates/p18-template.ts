@@ -153,7 +153,7 @@ export function generateP18HTML(data: P18Data): string {
   </div>
   
   <div style="text-align: left; margin-bottom: 12pt;">
-    who died on: <span class="field-value">${data.deceased.dateOfDeath}</span>
+    who died on: <span class="field-value">${data.deceased?.dateOfDeath || ''}</span>
   </div>
   
   <div style="text-align: left;">

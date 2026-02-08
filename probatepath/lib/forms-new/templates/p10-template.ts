@@ -15,7 +15,7 @@ import {
 } from '../utils/formatters';
 
 export function generateP10HTML(data: P10Data): string {
-  const applicant = data.applicants[data.applicantIndex];
+  const applicant = data.applicants?.[data.applicantIndex] || { firstName: '', lastName: '', address: { city: '', province: '' } };
   const applicantName = formatFullName(applicant);
   
   // Determine grant type text
@@ -361,9 +361,9 @@ export function generateP10HTML(data: P10Data): string {
     Other names in which the deceased held or may have held an interest in property:
   </div>
   <div class="instruction">[Include all names that have been listed in Form P2.]</div>
-  <div class="sub-paragraph">1. ${data.deceased.aliases[0] || ''}</div>
-  <div class="sub-paragraph">2. ${data.deceased.aliases[1] || ''}</div>
-  <div class="sub-paragraph">3. ${data.deceased.aliases[2] || 'etc.'}</div>
+  <div class="sub-paragraph">1. ${data.deceased?.aliases?.[0] || ''}</div>
+  <div class="sub-paragraph">2. ${data.deceased?.aliases?.[1] || ''}</div>
+  <div class="sub-paragraph">3. ${data.deceased?.aliases?.[2] || 'etc.'}</div>
   
   <!-- Part I - Real Property BC -->
   <div style="margin-top: 18pt; font-weight: bold;">Part I Real Property within British Columbia (including mortgages and vendors' and purchasers' interests in agreements for sale)</div>
@@ -525,9 +525,9 @@ ${data.hasPropertyOutsideBC ? `
     Other names in which the deceased held or may have held an interest in property:
   </div>
   <div class="instruction">[Include all names that have been listed in Form P2.]</div>
-  <div class="sub-paragraph">1. ${data.deceased.aliases[0] || ''}</div>
-  <div class="sub-paragraph">2. ${data.deceased.aliases[1] || ''}</div>
-  <div class="sub-paragraph">3. ${data.deceased.aliases[2] || 'etc.'}</div>
+  <div class="sub-paragraph">1. ${data.deceased?.aliases?.[0] || ''}</div>
+  <div class="sub-paragraph">2. ${data.deceased?.aliases?.[1] || ''}</div>
+  <div class="sub-paragraph">3. ${data.deceased?.aliases?.[2] || 'etc.'}</div>
   
   <!-- Part I - Real Property Outside BC -->
   <div style="margin-top: 18pt; font-weight: bold;">Part I Real Property outside British Columbia (including mortgages and vendors' and purchasers' interests in agreements for sale)</div>

@@ -72,6 +72,49 @@ export const FORM_GENERATORS: Record<string, (data: NewEstateData) => Promise<Bu
 };
 
 /**
+ * Validate estate data and return detailed error messages
+ */
+export function validateEstateDataDetailed(data: any): { valid: boolean; errors: string[]; warnings: string[] } {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  // Check deceased info
+  if (!data.deceased?.firstName?.trim()) {
+    errors.push('Missing deceased first name');
+  }
+  if (!data.deceased?.lastName?.trim()) {
+    errors.push('Missing deceased last name');
+  }
+  if (!data.deceased?.dateOfDeath?.trim()) {
+    errors.push('Missing deceased date of death');
+  }
+  if (!data.deceased?.lastAddress?.city?.trim()) {
+    warnings.push('Missing deceased city');
+  }
+
+  // Check applicants
+  if (!data.applicants || data.applicants.length === 0) {
+    errors.push('No applicants found');
+  } else {
+    data.applicants.forEach((app: any, idx: number) => {
+      if (!app.firstName?.trim()) {
+        errors.push(`Applicant ${idx + 1}: Missing first name`);
+      }
+      if (!app.lastName?.trim()) {
+        errors.push(`Applicant ${idx + 1}: Missing last name`);
+      }
+    });
+  }
+
+  // Check registry
+  if (!data.registry?.trim()) {
+    errors.push('Missing court registry');
+  }
+
+  return { valid: errors.length === 0, errors, warnings };
+}
+
+/**
  * Generate a form by ID
  */
 export async function generateForm(formId: string, data: NewEstateData): Promise<Buffer> {
@@ -79,6 +122,13 @@ export async function generateForm(formId: string, data: NewEstateData): Promise
   if (!generator) {
     throw new Error(`Form ${formId} not available. Available forms: ${Object.keys(FORM_GENERATORS).join(', ')}`);
   }
+
+  // Validate data before generation
+  const validation = validateEstateDataDetailed(data);
+  if (!validation.valid) {
+    throw new Error(`Validation errors: ${validation.errors.join(', ')}`);
+  }
+
   return generator(data);
 }
 
@@ -100,31 +150,31 @@ export function getAvailableForms(): string[] {
  * Transform old format EstateData to new format
  */
 export function transformEstateData(oldData: any): NewEstateData {
-  // Default structure
+  // Default structure with safe fallbacks
   const newData: NewEstateData = {
-    registry: oldData.registry || '',
-    fileNumber: oldData.fileNumber,
+    registry: oldData?.registry || oldData?.courtRegistry || 'Vancouver',
+    fileNumber: oldData?.fileNumber || oldData?.courtFileNumber,
     deceased: {
-      firstName: oldData.deceased?.firstName || oldData.decFirstName || '',
-      middleName: oldData.deceased?.middleName || oldData.decMiddleName,
-      lastName: oldData.deceased?.lastName || oldData.decLastName || '',
-      aliases: oldData.deceased?.aliases || oldData.decAliases || [],
-      dateOfDeath: oldData.deceased?.dateOfDeath || oldData.decDateOfDeath || '',
+      firstName: oldData?.deceased?.firstName || oldData?.decFirstName || oldData?.deceasedName?.split(' ')[0] || '',
+      middleName: oldData?.deceased?.middleName || oldData?.decMiddleName,
+      lastName: oldData?.deceased?.lastName || oldData?.decLastName || oldData?.deceasedName?.split(' ').slice(1).join(' ') || '',
+      aliases: oldData?.deceased?.aliases || oldData?.decAliases || [],
+      dateOfDeath: oldData?.deceased?.dateOfDeath || oldData?.decDateOfDeath || oldData?.dateOfDeath || '',
       lastAddress: {
-        streetNumber: oldData.deceased?.lastAddress?.streetNumber || '',
-        streetName: oldData.deceased?.lastAddress?.streetName || '',
-        poBox: oldData.deceased?.lastAddress?.poBox,
-        city: oldData.deceased?.lastAddress?.city || oldData.decCity || '',
-        province: oldData.deceased?.lastAddress?.province || oldData.decProvince || 'British Columbia',
-        country: oldData.deceased?.lastAddress?.country || 'Canada',
-        postalCode: oldData.deceased?.lastAddress?.postalCode || oldData.decPostalCode || '',
+        streetNumber: oldData?.deceased?.lastAddress?.streetNumber || oldData?.streetNumber || '',
+        streetName: oldData?.deceased?.lastAddress?.streetName || oldData?.streetName || '',
+        poBox: oldData?.deceased?.lastAddress?.poBox,
+        city: oldData?.deceased?.lastAddress?.city || oldData?.decCity || oldData?.city || 'Vancouver',
+        province: oldData?.deceased?.lastAddress?.province || oldData?.decProvince || 'British Columbia',
+        country: oldData?.deceased?.lastAddress?.country || 'Canada',
+        postalCode: oldData?.deceased?.lastAddress?.postalCode || oldData?.decPostalCode || '',
       },
-      domiciledInBC: oldData.deceased?.domiciledInBC ?? true,
-      nisgaaCitizen: oldData.deceased?.nisgaaCitizen ?? false,
-      treatyFirstNation: oldData.deceased?.treatyFirstNation,
+      domiciledInBC: oldData?.deceased?.domiciledInBC ?? oldData?.domiciledInBC ?? true,
+      nisgaaCitizen: oldData?.deceased?.nisgaaCitizen ?? false,
+      treatyFirstNation: oldData?.deceased?.treatyFirstNation,
     },
-    grantType: oldData.grantType || 'probate',
-    will: oldData.will ? {
+    grantType: oldData?.grantType || oldData?.applicationType || 'probate',
+    will: oldData?.will ? {
       exists: oldData.will.exists ?? oldData.hadWill ?? false,
       date: oldData.will.date,
       isElectronic: oldData.will.isElectronic ?? false,
@@ -135,69 +185,69 @@ export function transformEstateData(oldData: any): NewEstateData {
       hasOrdersAffecting: oldData.will.hasOrdersAffecting ?? false,
       refersToDocuments: oldData.will.refersToDocuments ?? false,
     } : undefined,
-    foreignGrant: oldData.foreignGrant,
-    applicants: (oldData.applicants || []).map((a: any) => ({
-      firstName: a.firstName || a.firstname || '',
-      middleName: a.middleName || a.middlename,
-      lastName: a.lastName || a.lastname || '',
+    foreignGrant: oldData?.foreignGrant,
+    applicants: (oldData?.applicants || oldData?.executors || []).map((a: any) => ({
+      firstName: a?.firstName || a?.firstname || a?.name?.split(' ')[0] || '',
+      middleName: a?.middleName || a?.middlename,
+      lastName: a?.lastName || a?.lastname || a?.name?.split(' ').slice(1).join(' ') || '',
       address: {
-        streetNumber: a.address?.streetNumber || '',
-        streetName: a.address?.streetName || '',
-        poBox: a.address?.poBox,
-        city: a.address?.city || '',
-        province: a.address?.province || 'British Columbia',
-        country: a.address?.country || 'Canada',
-        postalCode: a.address?.postalCode || '',
+        streetNumber: a?.address?.streetNumber || '',
+        streetName: a?.address?.streetName || '',
+        poBox: a?.address?.poBox,
+        city: a?.address?.city || 'Vancouver',
+        province: a?.address?.province || 'British Columbia',
+        country: a?.address?.country || 'Canada',
+        postalCode: a?.address?.postalCode || '',
       },
-      isIndividual: a.isIndividual ?? true,
-      namedInWill: a.namedInWill ?? false,
-      relationship: a.relationship,
-      organizationTitle: a.organizationTitle,
+      isIndividual: a?.isIndividual ?? true,
+      namedInWill: a?.namedInWill ?? false,
+      relationship: a?.relationship,
+      organizationTitle: a?.organizationTitle,
     })),
-    otherExecutors: oldData.otherExecutors || [],
-    executorsWithReservedRights: oldData.executorsWithReservedRights || [],
-    lawyer: oldData.lawyer,
+    otherExecutors: oldData?.otherExecutors || [],
+    executorsWithReservedRights: oldData?.executorsWithReservedRights || [],
+    lawyer: oldData?.lawyer,
     addressForService: {
-      street: oldData.addressForService?.street || '',
-      fax: oldData.addressForService?.fax,
-      email: oldData.addressForService?.email,
-      phone: oldData.addressForService?.phone || '',
+      street: oldData?.addressForService?.street || oldData?.serviceAddress || '',
+      fax: oldData?.addressForService?.fax,
+      email: oldData?.addressForService?.email,
+      phone: oldData?.addressForService?.phone || oldData?.phone || '',
     },
     affidavit: {
-      form: oldData.affidavit?.form || 'P3',
-      isJoint: oldData.affidavit?.isJoint ?? false,
-      hasP8Affidavits: oldData.affidavit?.hasP8Affidavits ?? false,
-      p8Count: oldData.affidavit?.p8Count,
+      form: oldData?.affidavit?.form || 'P3',
+      isJoint: oldData?.affidavit?.isJoint ?? false,
+      hasP8Affidavits: oldData?.affidavit?.hasP8Affidavits ?? false,
+      p8Count: oldData?.affidavit?.p8Count,
     },
-    affidavitsOfDelivery: oldData.affidavitsOfDelivery || [],
-    noDeliveryRequired: oldData.noDeliveryRequired ?? false,
-    allDocumentsInEnglish: oldData.allDocumentsInEnglish ?? true,
-    translatorAffidavit: oldData.translatorAffidavit,
-    additionalDocuments: oldData.additionalDocuments || [],
+    affidavitsOfDelivery: oldData?.affidavitsOfDelivery || [],
+    noDeliveryRequired: oldData?.noDeliveryRequired ?? false,
+    allDocumentsInEnglish: oldData?.allDocumentsInEnglish ?? true,
+    translatorAffidavit: oldData?.translatorAffidavit,
+    additionalDocuments: oldData?.additionalDocuments || [],
     certifiedCopies: {
-      estateGrant: oldData.certifiedCopies?.estateGrant || 1,
-      authToObtainInfo: oldData.certifiedCopies?.authToObtainInfo || 0,
-      affidavitDomiciled: oldData.certifiedCopies?.affidavitDomiciled || 0,
-      affidavitNonDomiciled: oldData.certifiedCopies?.affidavitNonDomiciled || 0,
+      estateGrant: oldData?.certifiedCopies?.estateGrant ?? 1,
+      authToObtainInfo: oldData?.certifiedCopies?.authToObtainInfo ?? 0,
+      affidavitDomiciled: oldData?.certifiedCopies?.affidavitDomiciled ?? 0,
+      affidavitNonDomiciled: oldData?.certifiedCopies?.affidavitNonDomiciled ?? 0,
     },
-    submittingAffidavitOfAssets: oldData.submittingAffidavitOfAssets ?? true,
+    submittingAffidavitOfAssets: oldData?.submittingAffidavitOfAssets ?? true,
     spouse: {
-      status: oldData.spouse?.status || 'never_married',
-      name: oldData.spouse?.name,
-      survivingName: oldData.spouse?.survivingName,
+      status: oldData?.spouse?.status || 'never_married',
+      name: oldData?.spouse?.name,
+      survivingName: oldData?.spouse?.survivingName,
     },
-    children: oldData.children || [],
-    beneficiaries: oldData.beneficiaries || [],
-    intestateSuccessors: oldData.intestateSuccessors || [],
-    creditors: oldData.creditors || [],
-    citors: oldData.citors || [],
-    attorneyGeneralNotice: oldData.attorneyGeneralNotice ?? false,
-    submissionDate: oldData.submissionDate || new Date().toISOString().split('T')[0],
-    assets: oldData.assets,
-    deliveries: oldData.deliveries,
-    publicGuardianDelivery: oldData.publicGuardianDelivery,
-    electronicWillDemanded: oldData.electronicWillDemanded,
-    electronicWillProvidedTo: oldData.electronicWillProvidedTo,
+    children: oldData?.children || [],
+    beneficiaries: oldData?.beneficiaries || [],
+    intestateSuccessors: oldData?.intestateSuccessors || [],
+    creditors: oldData?.creditors || [],
+    citors: oldData?.citors || [],
+    attorneyGeneralNotice: oldData?.attorneyGeneralNotice ?? false,
+    submissionDate: oldData?.submissionDate || new Date().toISOString().split('T')[0],
+    assets: oldData?.assets,
+    deliveries: oldData?.deliveries,
+    publicGuardianDelivery: oldData?.publicGuardianDelivery,
+    electronicWillDemanded: oldData?.electronicWillDemanded,
+    electronicWillProvidedTo: oldData?.electronicWillProvidedTo,
   };
 
   return newData;

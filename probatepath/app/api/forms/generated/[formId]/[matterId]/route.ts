@@ -4,22 +4,24 @@ import { getServerAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin/auth";
 import { generateForm } from "@/lib/forms/generator";
-import { generateP1 } from "@/lib/forms/generate-p1";
-import { generateP2 } from "@/lib/forms/generate-p2";
-import { generateP3 } from "@/lib/forms/generate-p3";
-import { generateP5 } from "@/lib/forms/generate-p5";
-import { generateP9 } from "@/lib/forms/generate-p9";
-import { generateP10 } from "@/lib/forms/generate-p10";
+// New PDF-based form generators (pixel-perfect court forms)
 import {
-  generateNotaryCoverLetter,
-  generateCourtCoverLetter,
-  generateFilingChecklist,
-} from "@/lib/forms/generate-cover-letters";
+  generateP1,
+  generateP2,
+  generateP3,
+  generateP5,
+  generateP9,
+  generateP10,
+  transformEstateData,
+} from "@/lib/forms-new";
+import { generateNotaryCoverLetter, generateCourtCoverLetter, generateFilingChecklist } from "@/lib/forms/generate-cover-letters";
 import { mapToEstateData } from "@/lib/forms/data-mapping";
 import { HandlerContext, resolveContextParams } from "@/lib/server/params";
 
-// Forms that use the new docx generator
-const DOCX_FORMS = new Set(["P1", "P2", "P3", "P5", "P9", "P10", "NOTARY-COVER", "COURT-COVER", "FILING-CHECKLIST"]);
+// Forms that use the new PDF generator (pixel-perfect court forms)
+const PDF_FORMS = new Set(["P1", "P2", "P3", "P5", "P9", "P10"]);
+// Cover letters still use DOCX
+const DOCX_FORMS = new Set(["NOTARY-COVER", "COURT-COVER", "FILING-CHECKLIST"]);
 
 // Forms that are coming soon (not yet implemented)
 const COMING_SOON_FORMS = new Set(["P4", "P6", "P7", "P8", "P11", "P16", "P17", "P20", "P22", "P23", "P25"]);
@@ -95,9 +97,10 @@ export async function GET(
     const downloadParam = request.nextUrl.searchParams.get("download");
     const disposition = downloadParam === "1" ? "attachment" : "inline";
 
-    // Use new docx generators for supported forms
-    if (DOCX_FORMS.has(formIdUpper)) {
-      const estateData = mapToEstateData(matter);
+    // Use new PDF generators for court forms (P1-P10)
+    if (PDF_FORMS.has(formIdUpper)) {
+      const oldEstateData = mapToEstateData(matter);
+      const estateData = transformEstateData(oldEstateData);
 
       // Track missing data for warning headers
       const missingData: string[] = [];
@@ -111,28 +114,53 @@ export async function GET(
       switch (formIdUpper) {
         case "P1":
           buffer = await generateP1(estateData);
-          filename = `P1-Notice-${lastName}.docx`;
+          filename = `P1-Notice-${lastName}.pdf`;
           break;
         case "P2":
           buffer = await generateP2(estateData);
-          filename = `P2-Submission-${lastName}.docx`;
+          filename = `P2-Submission-${lastName}.pdf`;
           break;
         case "P3":
-          buffer = await generateP3(estateData);
-          filename = `P3-Affidavit-${lastName}.docx`;
+          buffer = await generateP3({ ...estateData, applicantIndex: 0 });
+          filename = `P3-Affidavit-${lastName}.pdf`;
           break;
         case "P5":
-          buffer = await generateP5(estateData);
-          filename = `P5-Administration-Affidavit-${lastName}.docx`;
+          buffer = await generateP5({ ...estateData, applicantIndex: 0 });
+          filename = `P5-Administration-Affidavit-${lastName}.pdf`;
           break;
         case "P9":
-          buffer = await generateP9(estateData);
-          filename = `P9-Delivery-${lastName}.docx`;
+          buffer = await generateP9({ ...estateData, applicantIndex: 0, affidavitNumber: 2 });
+          filename = `P9-Delivery-${lastName}.pdf`;
           break;
         case "P10":
-          buffer = await generateP10(estateData);
-          filename = `P10-Assets-${lastName}.docx`;
+          buffer = await generateP10({ ...estateData, applicantIndex: 0, affidavitNumber: 3 });
+          filename = `P10-Assets-${lastName}.pdf`;
           break;
+        default:
+          return NextResponse.json({ error: "Unknown form type" }, { status: 400 });
+      }
+
+      const responseHeaders: Record<string, string> = {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `${disposition}; filename="${filename}"`,
+      };
+      if (missingData.length > 0) {
+        responseHeaders["X-Missing-Data"] = missingData.join(", ");
+      }
+
+      return new Response(new Uint8Array(buffer), {
+        headers: responseHeaders,
+      });
+    }
+
+    // Cover letters and checklists still use DOCX
+    if (DOCX_FORMS.has(formIdUpper)) {
+      const estateData = mapToEstateData(matter);
+      let buffer: Buffer;
+      let filename: string;
+      const lastName = estateData.deceased.lastName || "Estate";
+
+      switch (formIdUpper) {
         case "NOTARY-COVER":
           buffer = await generateNotaryCoverLetter(estateData);
           filename = `Notary-Cover-Letter-${lastName}.docx`;
@@ -149,17 +177,11 @@ export async function GET(
           return NextResponse.json({ error: "Unknown form type" }, { status: 400 });
       }
 
-      const responseHeaders: Record<string, string> = {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "Content-Disposition": `${disposition}; filename="${filename}"`,
-      };
-      if (missingData.length > 0) {
-        responseHeaders["X-Missing-Data"] = missingData.join(", ");
-      }
-
       return new Response(new Uint8Array(buffer), {
-        headers: responseHeaders,
+        headers: {
+          "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "Content-Disposition": `${disposition}; filename="${filename}"`,
+        },
       });
     }
 

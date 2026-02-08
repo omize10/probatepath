@@ -1,0 +1,303 @@
+/**
+ * Form P5 - Affidavit of Applicant for Grant of Administration without Will Annexed
+ * Template matches BC Supreme Court Civil Rules exactly
+ */
+
+import { P5Data } from '../types';
+import {
+  formatFullName,
+  formatFullNameCaps,
+  formatAddress,
+  checkbox,
+  underline,
+  getOrdinal,
+} from '../utils/formatters';
+
+export function generateP5HTML(data: P5Data): string {
+  const applicant = data.applicants[data.applicantIndex];
+  const applicantName = formatFullName(applicant);
+  
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form P5 - Affidavit of Applicant for Grant of Administration without Will Annexed</title>
+  <style>
+    @page {
+      size: 8.5in 11in;
+      margin: 0.5in 0.75in;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 11pt;
+      line-height: 1.3;
+      color: #000;
+    }
+    
+    .form-header {
+      margin-bottom: 12pt;
+    }
+    
+    .form-number {
+      font-weight: bold;
+    }
+    
+    .affidavit-header {
+      margin-bottom: 18pt;
+    }
+    
+    .affidavit-number {
+      margin-bottom: 6pt;
+    }
+    
+    .style-of-proceeding {
+      text-align: center;
+      font-style: italic;
+      margin-bottom: 12pt;
+    }
+    
+    .form-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 11pt;
+      margin-bottom: 6pt;
+      text-transform: uppercase;
+    }
+    
+    .rule-note {
+      text-align: center;
+      font-style: italic;
+      font-size: 10pt;
+      margin-bottom: 12pt;
+    }
+    
+    .affiant-block {
+      margin-bottom: 12pt;
+    }
+    
+    .field-line {
+      border-bottom: 1px solid #000;
+      display: inline-block;
+      min-width: 100pt;
+    }
+    
+    .field-value {
+      border-bottom: 1px solid #000;
+      min-width: 150pt;
+      display: inline-block;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    .checkbox-item {
+      margin-left: 18pt;
+      margin-bottom: 3pt;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .checkbox {
+      font-family: "Courier New", monospace;
+      margin-right: 6pt;
+      flex-shrink: 0;
+    }
+    
+    .instruction {
+      font-size: 9pt;
+      font-style: italic;
+      margin: 6pt 0;
+    }
+    
+    .paragraph {
+      margin-bottom: 6pt;
+    }
+    
+    .sub-paragraph {
+      margin-left: 36pt;
+      margin-bottom: 3pt;
+    }
+    
+    .jurat-block {
+      margin-top: 36pt;
+      border-left: 1px solid #000;
+      padding-left: 12pt;
+    }
+    
+    .jurat-line {
+      margin-bottom: 6pt;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    td {
+      vertical-align: top;
+      padding: 3pt 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Form Header -->
+<div class="form-header">
+  <div class="form-number">Form P5 (Rule 25-3 (2))</div>
+</div>
+
+<div class="affidavit-header">
+  <div class="affidavit-number">This is the <span class="field-line">${getOrdinal(data.affidavitNumber)}</span> affidavit of <span class="field-line">${applicantName}</span> in this case and was made on <span class="field-line">${data.submissionDate}</span></div>
+</div>
+
+<div class="style-of-proceeding">[Style of Proceeding]</div>
+
+<div class="form-title">Affidavit of Applicant for Grant of Administration without Will Annexed</div>
+<div class="rule-note">[Rule 22-3 of the Supreme Court Civil Rules applies to all forms.]</div>
+
+<!-- Affiant Statement -->
+<div class="affiant-block">
+  I, <span class="field-line">${applicantName}</span>, of <span class="field-line">${formatAddress(applicant.address)}</span>, <span class="field-line">${applicant.isIndividual ? 'occupation' : applicant.organizationTitle || 'occupation'}</span>, SWEAR (OR AFFIRM) THAT:
+</div>
+
+<!-- Paragraph 1 -->
+<div class="paragraph">
+  1 I am the applicant/one of the applicants referred to in the submission for estate grant in relation to the estate of <span class="field-line">${formatFullNameCaps(data.deceased)}</span> (the "deceased") and am applying for a grant of administration without will annexed.
+</div>
+
+<!-- Paragraph 2 -->
+<div class="paragraph">
+  2 <span class="instruction">[Check one of the immediately following 6 boxes and provide the required information.]</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(applicant.isIndividual && applicant.wesaParagraph)}</span>
+  <span>I am a person referred to in paragraph <span class="field-line">${applicant.wesaParagraph || ''}</span> [select (a), (b), (d), (e), (f) or (g)] of section 130 of the Wills, Estates and Succession Act.</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(false)}</span>
+  <span>I am a person nominated under paragraph <span class="field-line">${underline(10)}</span> [select (a), (c) or (e.1)] of section 130 of the Wills, Estates and Succession Act.</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(applicant.isIndividual && applicant.relationship)}</span>
+  <span>My relationship to the deceased is <span class="field-line">${applicant.relationship || ''}</span></span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(!applicant.isIndividual)}</span>
+  <span>[name of organization] is a person referred to in paragraph (g) of section 130 of the Wills, Estates and Succession Act. I am the [organizational title] of [name of organization] and I am authorized by [name of organization] to swear this affidavit on [name of organization]'s behalf as applicant.</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(false)}</span>
+  <span>[name of organization] is a person nominated under paragraph <span class="field-line">${underline(10)}</span> [select (a), (c) or (e.1)] of section 130 of the Wills, Estates and Succession Act. I am the [organizational title] of [name of organization] and I am authorized by [name of organization] to swear this affidavit on [name of organization]'s behalf as applicant.</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(false)}</span>
+  <span>[name of organization]'s relationship to the deceased is <span class="field-line">${underline(25)}</span>. I am the [organizational title] of [name of organization] and I am authorized by [name of organization] to swear this affidavit on the [name of organization]'s behalf as applicant.</span>
+</div>
+
+<!-- Paragraph 3 -->
+<div class="paragraph">
+  3 <span class="instruction">[Check whichever one of the immediately following 2 boxes is correct.]</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(!data.publicGuardianDelivery)}</span>
+  <span>I am not obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee.</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(!!data.publicGuardianDelivery)}</span>
+  <span>I am obliged under Rule 25-3 (11) to deliver a filed copy of this submission for estate grant to the Public Guardian and Trustee.</span>
+</div>
+
+<!-- Paragraph 4 -->
+<div class="paragraph">
+  4 I am satisfied that a diligent search for a testamentary document of the deceased has been made in each place that could reasonably be considered to be a place where a testamentary document may be found, including, without limitation, in all places, both physical and electronic, where the deceased usually kept the deceased's important documents and
+</div>
+
+<div class="instruction">[Check whichever one of the immediately following 2 boxes is correct and provide any required information.]</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(!data.will?.exists)}</span>
+  <span>no testamentary document of the deceased has been found.</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(data.will?.exists)}</span>
+  <span>one or more testamentary documents have been found. A copy of the testamentary document(s) is attached as an exhibit to the affidavit. I believe that the testamentary document(s) is/are invalid or otherwise not relevant to this application for the following reasons: <span class="field-line">${data.will?.invalidReason || ''}</span></span>
+</div>
+
+<!-- Paragraph 5 -->
+<div class="paragraph">
+  5 I believe that there is no will of the deceased.
+</div>
+
+<!-- Paragraph 6 -->
+<div class="paragraph">
+  6 <span class="instruction">[Check whichever one of the immediately following 3 boxes is correct and provide any required information.]</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(true)}</span>
+  <span>I am not aware of there being any application for a grant of probate or administration, or any grant of probate or administration, or equivalent, having been issued, in relation to the deceased, in British Columbia or in any other jurisdiction.</span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(false)}</span>
+  <span>The following grant(s) of probate or administration, or equivalent, has/have been issued in relation to the deceased in British Columbia or in another jurisdiction: <span class="field-line">${underline(40)}</span>. I believe that that grant is/those grants are not relevant to this application for the following reasons: <span class="field-line">${underline(40)}</span></span>
+</div>
+
+<div class="checkbox-item">
+  <span class="checkbox">${checkbox(false)}</span>
+  <span>The following person(s) has/have also applied for a grant of probate or administration: <span class="field-line">${underline(30)}</span></span>
+</div>
+
+<!-- Paragraph 7 -->
+<div class="paragraph">
+  7 I have read the submission for estate grant and the other documents referred to in that document and I believe that the information contained in that submission for estate grant and those documents is correct and complete.
+</div>
+
+<!-- Paragraph 8 -->
+<div class="paragraph">
+  8 I will administer according to law all of the deceased's estate, I will prepare an accounting as to how the estate was administered and I acknowledge that, in doing this, I will be subject to the legal responsibility of a personal representative.
+</div>
+
+<!-- Jurat -->
+<div class="jurat-block">
+  <table>
+    <tr>
+      <td style="width: 60%;">
+        <div class="jurat-line">SWORN (OR AFFIRMED) BEFORE</div>
+        <div class="jurat-line">)</div>
+        <div class="jurat-line">ME at <span class="field-line">${underline(20)}</span>, British Columbia</div>
+        <div class="jurat-line">)</div>
+        <div class="jurat-line">on <span class="field-line">${data.submissionDate}</span> .</div>
+        <div class="jurat-line">)</div>
+        <div style="margin-top: 24pt; border-bottom: 1px solid #000; min-width: 200pt;">&nbsp;</div>
+        <div style="margin-top: 12pt;">&nbsp;</div>
+        <div style="border-bottom: 1px solid #000; min-width: 200pt; display: inline-block;">&nbsp;</div>
+        <div>A commissioner for taking</div>
+        <div>affidavits for British Columbia</div>
+        <div><span class="field-line">${underline(30)}</span></div>
+        <div style="font-size: 9pt;">[print name or affix stamp of commissioner]</div>
+      </td>
+      <td style="width: 40%;"></td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>`;
+}

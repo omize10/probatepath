@@ -1,16 +1,10 @@
 /**
- * PDF Generation Service using Puppeteer
+ * PDF Generation Service using Playwright
  * Generates pixel-perfect court forms from HTML templates
- * Optimized for Vercel serverless environment
+ * Works on Vercel serverless environment
  */
 
-import puppeteer from 'puppeteer-core';
-
-// chrome-aws-lambda is only available in production
-let chromium: any;
-if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
-  chromium = require('chrome-aws-lambda');
-}
+import { chromium } from 'playwright';
 
 export interface PDFGenerationOptions {
   width?: string;
@@ -22,7 +16,6 @@ export interface PDFGenerationOptions {
     left?: string;
   };
   printBackground?: boolean;
-  preferCSSPageSize?: boolean;
 }
 
 const DEFAULT_OPTIONS: PDFGenerationOptions = {
@@ -35,11 +28,10 @@ const DEFAULT_OPTIONS: PDFGenerationOptions = {
     left: '0.75in',
   },
   printBackground: true,
-  preferCSSPageSize: false,
 };
 
 /**
- * Generate PDF from HTML content
+ * Generate PDF from HTML content using Playwright
  * Works in both local dev and Vercel serverless environments
  */
 export async function generatePDF(
@@ -50,39 +42,16 @@ export async function generatePDF(
   
   let browser;
   try {
-    // Check if we're in production (Vercel)
-    const isProduction = process.env.NODE_ENV === 'production';
-    const isVercel = process.env.VERCEL === '1';
-    
-    if ((isProduction || isVercel) && chromium) {
-      // Use chrome-aws-lambda for serverless environments
-      browser = await puppeteer.launch({
-        args: chromium.args,
-        executablePath: await chromium.executablePath,
-        headless: chromium.headless,
-      });
-    } else {
-      // Use local Chrome for development
-      browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
-        ],
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || 
-          (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' :
-           process.platform === 'win32' ? 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe' :
-           '/usr/bin/google-chrome'),
-      });
-    }
+    // Launch browser - Playwright automatically handles serverless environments
+    browser = await chromium.launch({
+      headless: true,
+    });
 
     const page = await browser.newPage();
     
     // Set content
     await page.setContent(html, {
-      waitUntil: ['networkidle0', 'domcontentloaded'],
+      waitUntil: 'networkidle',
       timeout: 30000,
     });
 
@@ -95,7 +64,6 @@ export async function generatePDF(
       height: opts.height,
       margin: opts.margin,
       printBackground: opts.printBackground,
-      preferCSSPageSize: opts.preferCSSPageSize,
     });
 
     return Buffer.from(pdfBuffer);
@@ -119,32 +87,12 @@ export async function generatePDFWithHeaderFooter(
   
   let browser;
   try {
-    const isProduction = process.env.NODE_ENV === 'production';
-    const isVercel = process.env.VERCEL === '1';
-    
-    if ((isProduction || isVercel) && chromium) {
-      browser = await puppeteer.launch({
-        args: chromium.args,
-        executablePath: await chromium.executablePath,
-        headless: chromium.headless,
-      });
-    } else {
-      browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-        ],
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH ||
-          (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' :
-           process.platform === 'win32' ? 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe' :
-           '/usr/bin/google-chrome'),
-      });
-    }
+    browser = await chromium.launch({
+      headless: true,
+    });
 
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    await page.setContent(html, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
 
     const pdfOptions: any = {
@@ -154,14 +102,10 @@ export async function generatePDFWithHeaderFooter(
       printBackground: opts.printBackground,
     };
 
-    if (headerHtml) {
+    if (headerHtml || footerHtml) {
       pdfOptions.displayHeaderFooter = true;
-      pdfOptions.headerTemplate = headerHtml;
-    }
-
-    if (footerHtml) {
-      pdfOptions.displayHeaderFooter = true;
-      pdfOptions.footerTemplate = footerHtml;
+      if (headerHtml) pdfOptions.headerTemplate = headerHtml;
+      if (footerHtml) pdfOptions.footerTemplate = footerHtml;
     }
 
     const pdfBuffer = await page.pdf(pdfOptions);

@@ -1,10 +1,10 @@
 /**
- * PDF Generation Service using Playwright
- * Generates pixel-perfect court forms from HTML templates
- * Works on Vercel serverless environment
+ * PDF Generation Service
+ * Uses puppeteer-core with @sparticuz/chromium for Vercel compatibility
  */
 
-import { chromium } from 'playwright';
+import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 
 export interface PDFGenerationOptions {
   width?: string;
@@ -31,8 +31,8 @@ const DEFAULT_OPTIONS: PDFGenerationOptions = {
 };
 
 /**
- * Generate PDF from HTML content using Playwright
- * Works in both local dev and Vercel serverless environments
+ * Generate PDF from HTML content
+ * Works on Vercel using @sparticuz/chromium
  */
 export async function generatePDF(
   html: string,
@@ -42,23 +42,22 @@ export async function generatePDF(
   
   let browser;
   try {
-    // Launch browser - Playwright automatically handles serverless environments
-    browser = await chromium.launch({
-      headless: true,
+    // Launch with @sparticuz/chromium (works on Vercel)
+    browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
     });
 
     const page = await browser.newPage();
     
-    // Set content
     await page.setContent(html, {
-      waitUntil: 'networkidle',
+      waitUntil: 'networkidle0',
       timeout: 30000,
     });
 
-    // Wait for fonts to load
     await page.evaluate(() => document.fonts.ready);
 
-    // Generate PDF
     const pdfBuffer = await page.pdf({
       width: opts.width,
       height: opts.height,
@@ -75,55 +74,10 @@ export async function generatePDF(
 }
 
 /**
- * Generate PDF with header/footer
- */
-export async function generatePDFWithHeaderFooter(
-  html: string,
-  headerHtml?: string,
-  footerHtml?: string,
-  options: PDFGenerationOptions = {}
-): Promise<Buffer> {
-  const opts = { ...DEFAULT_OPTIONS, ...options };
-  
-  let browser;
-  try {
-    browser = await chromium.launch({
-      headless: true,
-    });
-
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle' });
-    await page.evaluate(() => document.fonts.ready);
-
-    const pdfOptions: any = {
-      width: opts.width,
-      height: opts.height,
-      margin: opts.margin,
-      printBackground: opts.printBackground,
-    };
-
-    if (headerHtml || footerHtml) {
-      pdfOptions.displayHeaderFooter = true;
-      if (headerHtml) pdfOptions.headerTemplate = headerHtml;
-      if (footerHtml) pdfOptions.footerTemplate = footerHtml;
-    }
-
-    const pdfBuffer = await page.pdf(pdfOptions);
-    return Buffer.from(pdfBuffer);
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
-  }
-}
-
-/**
  * Merge multiple PDFs into one
- * Note: Requires pdf-lib
  */
 export async function mergePDFs(pdfs: Buffer[]): Promise<Buffer> {
   const { PDFDocument } = await import('pdf-lib');
-  
   const mergedDoc = await PDFDocument.create();
   
   for (const pdf of pdfs) {

@@ -7,11 +7,5 @@
     "app/api/forms/generated/**/*.ts": {
       "maxDuration": 30
     }
-  },
-  "build": {
-    "env": {
-      "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true",
-      "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/chromium"
-    }
   }
 }

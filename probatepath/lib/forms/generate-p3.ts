@@ -10,7 +10,7 @@ import {
   WidthType,
   BorderStyle,
 } from "docx";
-import { p, checkbox, fullName, spacer, grantTypeText, checkboxP, formatAddress } from "./docx-utils";
+import { p, checkbox, fullName, spacer, grantTypeText, checkboxP, formatAddress, EMPTY_APPLICANT } from "./docx-utils";
 import type { EstateData } from "./types";
 
 const noBorders = {
@@ -52,8 +52,8 @@ function buildOtherExecutorsSection(data: EstateData): Paragraph[] {
 }
 
 export async function generateP3(data: EstateData): Promise<Buffer> {
-  const applicant = data.applicants[0];
-  const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName);
+  const applicant = data.applicants[0] || EMPTY_APPLICANT;
+  const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName) || "________________________";
   const deceasedName = fullName(data.deceased.firstName, data.deceased.middleName, data.deceased.lastName);
   const deceasedNameUpper = deceasedName.toUpperCase();
   const applicantAddress = formatAddress(applicant.address);

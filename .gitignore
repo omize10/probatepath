@@ -17,3 +17,6 @@ public/uploads/
 probatepath/node_modules/
 probatepath/.next/
 probatepath/public/uploads/
+
+# AI documentation and context (for AI models only)
+ai-docs/

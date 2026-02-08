@@ -98,6 +98,12 @@ export async function GET(
     // Use new docx generators for supported forms
     if (DOCX_FORMS.has(formIdUpper)) {
       const estateData = mapToEstateData(matter);
+
+      // Track missing data for warning headers
+      const missingData: string[] = [];
+      if (estateData.applicants.length === 0) missingData.push("applicant");
+      if (!estateData.deceased.firstName) missingData.push("deceased name");
+
       let buffer: Buffer;
       let filename: string;
       const lastName = estateData.deceased.lastName || "Estate";
@@ -143,12 +149,17 @@ export async function GET(
           return NextResponse.json({ error: "Unknown form type" }, { status: 400 });
       }
 
+      const responseHeaders: Record<string, string> = {
+        "Content-Type":
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "Content-Disposition": `${disposition}; filename="${filename}"`,
+      };
+      if (missingData.length > 0) {
+        responseHeaders["X-Missing-Data"] = missingData.join(", ");
+      }
+
       return new Response(new Uint8Array(buffer), {
-        headers: {
-          "Content-Type":
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "Content-Disposition": `${disposition}; filename="${filename}"`,
-        },
+        headers: responseHeaders,
       });
     }
 

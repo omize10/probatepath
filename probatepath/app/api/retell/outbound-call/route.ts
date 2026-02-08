@@ -21,7 +21,19 @@ const OutboundCallSchema = z.object({
 export async function POST(request: Request) {
   // Validate Retell is configured
   if (!RETELL_API_KEY || !RETELL_AGENT_ID) {
-    console.warn("[retell/outbound-call] Retell not configured - returning mock response");
+    console.error("[retell/outbound-call] ❌ Retell not configured properly:", {
+      has_api_key: !!RETELL_API_KEY,
+      has_agent_id: !!RETELL_AGENT_ID,
+      has_phone_number: !!RETELL_PHONE_NUMBER,
+      env: process.env.NODE_ENV,
+    });
+    // Return error in production, mock in development
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json({
+        error: "Call service not configured",
+        fallback: true,
+      }, { status: 503 });
+    }
     // Return mock response for development
     return NextResponse.json({
       success: true,

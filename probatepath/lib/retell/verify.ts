@@ -12,9 +12,22 @@ const RETELL_WEBHOOK_SECRET = process.env.RETELL_WEBHOOK_SECRET;
  * @returns true if signature is valid
  */
 export function verifyRetellSignature(payload: string, signature: string | null): boolean {
-  if (!RETELL_WEBHOOK_SECRET) {
-    console.warn("[retell] RETELL_WEBHOOK_SECRET not configured, skipping signature verification");
-    return true; // Allow in dev mode
+  // Check if secret is missing or empty
+  if (!RETELL_WEBHOOK_SECRET || RETELL_WEBHOOK_SECRET.trim() === "") {
+    const isProduction = process.env.NODE_ENV === "production";
+    console.warn("[retell] ⚠️ RETELL_WEBHOOK_SECRET not configured", {
+      is_production: isProduction,
+      secret_exists: RETELL_WEBHOOK_SECRET !== undefined,
+      secret_empty: RETELL_WEBHOOK_SECRET === "" || RETELL_WEBHOOK_SECRET?.trim() === "",
+    });
+    // In production, reject if no secret
+    if (isProduction) {
+      console.error("[retell] ❌ REJECTING webhook in production due to missing secret");
+      return false;
+    }
+    // In development, allow with warning
+    console.warn("[retell] ✅ Allowing webhook in development without secret");
+    return true;
   }
 
   if (!signature) {

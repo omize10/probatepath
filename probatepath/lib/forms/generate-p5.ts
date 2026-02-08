@@ -10,7 +10,7 @@ import {
   WidthType,
   BorderStyle,
 } from "docx";
-import { p, checkbox, fullName, spacer, checkboxP, formatAddress } from "./docx-utils";
+import { p, checkbox, fullName, spacer, checkboxP, formatAddress, EMPTY_APPLICANT } from "./docx-utils";
 import type { EstateData } from "./types";
 
 const noBorders = {
@@ -37,7 +37,7 @@ function relationshipText(relationship?: string): string {
 // Build the section about priority and renunciations
 function buildPrioritySection(data: EstateData): Paragraph[] {
   const paragraphs: Paragraph[] = [];
-  const applicant = data.applicants[0];
+  const applicant = data.applicants[0] || EMPTY_APPLICANT;
   const relationship = applicant.relationship || "";
 
   // Check if applicant is spouse
@@ -106,8 +106,8 @@ function buildSuccessorsSection(data: EstateData): Paragraph[] {
 }
 
 export async function generateP5(data: EstateData): Promise<Buffer> {
-  const applicant = data.applicants[0];
-  const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName);
+  const applicant = data.applicants[0] || EMPTY_APPLICANT;
+  const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName) || "________________________";
   const deceasedName = fullName(data.deceased.firstName, data.deceased.middleName, data.deceased.lastName);
   const deceasedNameUpper = deceasedName.toUpperCase();
   const applicantAddress = formatAddress(applicant.address);

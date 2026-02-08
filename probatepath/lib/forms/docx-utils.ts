@@ -300,6 +300,17 @@ export function isAncillary(grantType: string): boolean {
   return grantType.startsWith("ancillary_");
 }
 
+// Fallback applicant for incomplete intakes — generates blanks instead of crashing
+export const EMPTY_APPLICANT = {
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  address: { streetNumber: "", streetName: "", poBox: "", city: "", province: "", country: "", postalCode: "" },
+  isIndividual: true as const,
+  namedInWill: false,
+  relationship: "",
+};
+
 // Empty paragraph for spacing
 export function spacer(points: number = 200): Paragraph {
   return new Paragraph({ children: [], spacing: { after: points } });

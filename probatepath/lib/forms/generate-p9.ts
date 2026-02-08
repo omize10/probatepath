@@ -10,13 +10,13 @@ import {
   WidthType,
   BorderStyle,
 } from "docx";
-import { p, checkbox, fullName, formatAddress, spacer } from "./docx-utils";
+import { p, checkbox, fullName, formatAddress, spacer, EMPTY_APPLICANT } from "./docx-utils";
 import { EstateData } from "./types";
 
 export async function generateP9(data: EstateData): Promise<Buffer> {
   const deceasedName = fullName(data.deceased.firstName, data.deceased.middleName, data.deceased.lastName).toUpperCase();
-  const applicant = data.applicants[0];
-  const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName);
+  const applicant = data.applicants[0] || EMPTY_APPLICANT;
+  const applicantName = fullName(applicant.firstName, applicant.middleName, applicant.lastName) || "________________________";
   const applicantAddress = formatAddress(applicant.address);
   const formattedSubmissionDate = data.submissionDate ||
     new Date().toLocaleDateString("en-CA", {

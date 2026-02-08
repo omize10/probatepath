@@ -3,43 +3,13 @@ import { cookies } from "next/headers";
 import { getServerAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin/auth";
-import { generateForm } from "@/lib/forms/generator";
-// New PDF-based form generators (pixel-perfect court forms)
-import {
-  generateP1,
-  generateP2,
-  generateP3,
-  generateP5,
-  generateP9,
-  generateP10,
-  transformEstateData,
-} from "@/lib/forms-new";
 import { generateNotaryCoverLetter, generateCourtCoverLetter, generateFilingChecklist } from "@/lib/forms/generate-cover-letters";
 import { mapToEstateData } from "@/lib/forms/data-mapping";
 import { HandlerContext, resolveContextParams } from "@/lib/server/params";
+import { generateForm, transformEstateData, isFormAvailable } from "@/lib/forms-new/integration";
 
-// Forms that use the new PDF generator (pixel-perfect court forms)
-const PDF_FORMS = new Set(["P1", "P2", "P3", "P5", "P9", "P10"]);
-// Cover letters still use DOCX
+// Cover letters still use DOCX (not PDF)
 const DOCX_FORMS = new Set(["NOTARY-COVER", "COURT-COVER", "FILING-CHECKLIST"]);
-
-// Forms that are coming soon (not yet implemented)
-const COMING_SOON_FORMS = new Set(["P4", "P6", "P7", "P8", "P11", "P16", "P17", "P20", "P22", "P23", "P25"]);
-
-// Form names for coming soon message
-const FORM_NAMES: Record<string, string> = {
-  P4: "Affidavit of Applicant (Long Form)",
-  P6: "Ancillary Grant Application",
-  P7: "Ancillary Grant Affidavit",
-  P8: "Renunciation by Person Entitled to Apply",
-  P11: "Assets & Liabilities (Non-Domiciled)",
-  P16: "Affidavit of Translator",
-  P17: "Renunciation / Consent",
-  P20: "Affidavit of Condition of Will",
-  P22: "Certificate of Pending Litigation",
-  P23: "Statutory Declaration",
-  P25: "Appointment of Lawyer",
-};
 
 export async function GET(
   request: NextRequest,
@@ -63,21 +33,6 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if form is coming soon
-    if (COMING_SOON_FORMS.has(formIdUpper)) {
-      const formName = FORM_NAMES[formIdUpper] || formIdUpper;
-      return NextResponse.json(
-        {
-          error: "Coming Soon",
-          message: `Form ${formIdUpper} (${formName}) is not yet available. This form will be implemented in a future update.`,
-          formId: formIdUpper,
-          formName,
-          status: "coming_soon",
-        },
-        { status: 501 }
-      );
-    }
-
     // Fetch matter with all relations
     const matter = await prisma.matter.findFirst({
       where: admin || opsAllowed ? { id: matterId } : { id: matterId, userId },
@@ -97,8 +52,8 @@ export async function GET(
     const downloadParam = request.nextUrl.searchParams.get("download");
     const disposition = downloadParam === "1" ? "attachment" : "inline";
 
-    // Use new PDF generators for court forms (P1-P10)
-    if (PDF_FORMS.has(formIdUpper)) {
+    // Use new PDF generators for ALL probate forms (P1-P46)
+    if (isFormAvailable(formIdUpper)) {
       const oldEstateData = mapToEstateData(matter);
       const estateData = transformEstateData(oldEstateData);
 
@@ -107,38 +62,9 @@ export async function GET(
       if (estateData.applicants.length === 0) missingData.push("applicant");
       if (!estateData.deceased.firstName) missingData.push("deceased name");
 
-      let buffer: Buffer;
-      let filename: string;
+      const pdf = await generateForm(formIdUpper, estateData);
       const lastName = estateData.deceased.lastName || "Estate";
-
-      switch (formIdUpper) {
-        case "P1":
-          buffer = await generateP1(estateData);
-          filename = `P1-Notice-${lastName}.pdf`;
-          break;
-        case "P2":
-          buffer = await generateP2(estateData);
-          filename = `P2-Submission-${lastName}.pdf`;
-          break;
-        case "P3":
-          buffer = await generateP3({ ...estateData, applicantIndex: 0 });
-          filename = `P3-Affidavit-${lastName}.pdf`;
-          break;
-        case "P5":
-          buffer = await generateP5({ ...estateData, applicantIndex: 0 });
-          filename = `P5-Administration-Affidavit-${lastName}.pdf`;
-          break;
-        case "P9":
-          buffer = await generateP9({ ...estateData, applicantIndex: 0, affidavitNumber: 2 });
-          filename = `P9-Delivery-${lastName}.pdf`;
-          break;
-        case "P10":
-          buffer = await generateP10({ ...estateData, applicantIndex: 0, affidavitNumber: 3 });
-          filename = `P10-Assets-${lastName}.pdf`;
-          break;
-        default:
-          return NextResponse.json({ error: "Unknown form type" }, { status: 400 });
-      }
+      const filename = `${formIdUpper}-${lastName}.pdf`;
 
       const responseHeaders: Record<string, string> = {
         "Content-Type": "application/pdf",
@@ -148,12 +74,12 @@ export async function GET(
         responseHeaders["X-Missing-Data"] = missingData.join(", ");
       }
 
-      return new Response(new Uint8Array(buffer), {
+      return new Response(new Uint8Array(pdf), {
         headers: responseHeaders,
       });
     }
 
-    // Cover letters and checklists still use DOCX
+    // Cover letters still use DOCX
     if (DOCX_FORMS.has(formIdUpper)) {
       const estateData = mapToEstateData(matter);
       let buffer: Buffer;
@@ -185,15 +111,15 @@ export async function GET(
       });
     }
 
-    // Fallback to old Puppeteer PDF generator for other forms (P4, P5, P11, etc.)
-    const pdfBytes = await generateForm(formIdUpper, matter);
-
-    return new Response(new Uint8Array(pdfBytes), {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `${disposition}; filename="${formIdUpper}-generated.pdf"`,
+    // Form not available
+    return NextResponse.json(
+      { 
+        error: "Form Not Available", 
+        message: `Form ${formIdUpper} is not available.`,
+        availableForms: Object.keys(isFormAvailable).filter(f => isFormAvailable(f))
       },
-    });
+      { status: 404 }
+    );
   } catch (error: any) {
     console.error("Error generating form:", error);
     return NextResponse.json(

@@ -1045,23 +1045,64 @@ function RemindersCard({ recordId, reminders, noticeReminder }: RemindersCardPro
 }
 
 function FormsGenerationCard({ recordId }: { recordId: string }) {
+  // All 46 BC Probate Forms (P1-P46) - Kimi Dynamically Generated
   const forms = [
-    // Core probate forms
-    { id: "P1", name: "Notice of Proposed Application", available: true, docx: true, updated: false, comingSoon: false },
-    { id: "P2", name: "Submission for Estate Grant", available: true, docx: true, updated: true, comingSoon: false },
-    { id: "P3", name: "Affidavit of Applicant (Short Form)", available: true, docx: true, updated: true, comingSoon: false },
-    { id: "P5", name: "Administration Affidavit (Intestate)", available: true, docx: true, updated: true, comingSoon: false },
-    { id: "P9", name: "Affidavit of Delivery", available: true, docx: true, updated: true, comingSoon: false },
-    { id: "P10", name: "Assets & Liabilities (Domiciled)", available: true, docx: true, updated: true, comingSoon: false },
-    // Cover letters
-    { id: "NOTARY-COVER", name: "Notary Cover Letter", available: true, docx: true, updated: true, comingSoon: false },
-    { id: "COURT-COVER", name: "Court Cover Letter", available: true, docx: true, updated: true, comingSoon: false },
-    { id: "FILING-CHECKLIST", name: "Filing Checklist", available: true, docx: true, updated: true, comingSoon: false },
-    // Coming soon forms
-    { id: "P4", name: "Affidavit of Applicant (Long Form)", available: false, docx: false, updated: false, comingSoon: true },
-    { id: "P11", name: "Assets & Liabilities (Non-Domiciled)", available: false, docx: false, updated: false, comingSoon: true },
-    { id: "P17", name: "Renunciation / Consent", available: false, docx: false, updated: false, comingSoon: true },
-    { id: "P20", name: "Affidavit of Condition of Will", available: false, docx: false, updated: false, comingSoon: true },
+    // Core Estate Grant Forms (P1-P10)
+    { id: "P1", name: "Notice of Proposed Application", available: true, pdf: true },
+    { id: "P2", name: "Submission for Estate Grant", available: true, pdf: true },
+    { id: "P3", name: "Affidavit of Applicant (Short Form)", available: true, pdf: true },
+    { id: "P4", name: "Affidavit of Applicant (Long Form)", available: true, pdf: true },
+    { id: "P5", name: "Administration Affidavit (Intestate)", available: true, pdf: true },
+    { id: "P6", name: "Ancillary Grant (with Will)", available: true, pdf: true },
+    { id: "P7", name: "Ancillary Grant (without Will)", available: true, pdf: true },
+    { id: "P8", name: "Affidavit in Support", available: true, pdf: true },
+    { id: "P9", name: "Affidavit of Delivery", available: true, pdf: true },
+    { id: "P10", name: "Assets & Liabilities (Domiciled)", available: true, pdf: true },
+    { id: "P11", name: "Assets & Liabilities (Non-Domiciled)", available: true, pdf: true },
+    // Supporting Forms (P12-P20)
+    { id: "P12", name: "Affidavit of Translator", available: true, pdf: true },
+    { id: "P13", name: "Direction of Public Guardian", available: true, pdf: true },
+    { id: "P14", name: "Supplemental Assets (Domiciled)", available: true, pdf: true },
+    { id: "P15", name: "Supplemental Assets (Non-Domiciled)", available: true, pdf: true },
+    { id: "P16", name: "Affidavit of Alteration", available: true, pdf: true },
+    { id: "P17", name: "Notice of Renunciation", available: true, pdf: true },
+    { id: "P18", name: "Authorization for Estate Info", available: true, pdf: true },
+    { id: "P19", name: "Estate Grant", available: true, pdf: true },
+    { id: "P20", name: "Correction Record", available: true, pdf: true },
+    { id: "P20.1", name: "Correction Record (Style)", available: true, pdf: true },
+    // Resealing Forms (P21-P28)
+    { id: "P21", name: "Submission for Resealing", available: true, pdf: true },
+    { id: "P22", name: "Affidavit for Resealing (with Will)", available: true, pdf: true },
+    { id: "P23", name: "Affidavit for Resealing (no Will)", available: true, pdf: true },
+    { id: "P24", name: "Affidavit in Support of Resealing", available: true, pdf: true },
+    { id: "P25", name: "Assets & Liabilities (Resealing)", available: true, pdf: true },
+    { id: "P26", name: "Supplemental Assets (Resealing)", available: true, pdf: true },
+    { id: "P27", name: "Authorization for Resealing Info", available: true, pdf: true },
+    { id: "P28", name: "Certificate of Resealing", available: true, pdf: true },
+    // Dispute Forms (P29-P35)
+    { id: "P29", name: "Notice of Dispute", available: true, pdf: true },
+    { id: "P30", name: "Withdrawal of Notice of Dispute", available: true, pdf: true },
+    { id: "P31", name: "Order for Removal of Dispute", available: true, pdf: true },
+    { id: "P32", name: "Citation", available: true, pdf: true },
+    { id: "P33", name: "Answer to Citation", available: true, pdf: true },
+    { id: "P34", name: "Affidavit of Deemed Renunciation", available: true, pdf: true },
+    { id: "P35", name: "Requisition for Subpoena", available: true, pdf: true },
+    // Court Forms (P36-P46)
+    { id: "P36", name: "Warrant After Subpoena", available: true, pdf: true },
+    { id: "P37", name: "Subpoena", available: true, pdf: true },
+    { id: "P38", name: "Affidavit to Pass Accounts", available: true, pdf: true },
+    { id: "P39", name: "Certificate", available: true, pdf: true },
+    { id: "P40", name: "Statement of Account Affidavit", available: true, pdf: true },
+    { id: "P41", name: "Requisition — Estates", available: true, pdf: true },
+    { id: "P42", name: "Notice of Application (Spousal)", available: true, pdf: true },
+    { id: "P43", name: "Petition to Court", available: true, pdf: true },
+    { id: "P44", name: "Notice of Withdrawal", available: true, pdf: true },
+    { id: "P45", name: "Affidavit of Electronic Will", available: true, pdf: true },
+    { id: "P46", name: "Demand for Electronic Will", available: true, pdf: true },
+    // Cover letters (DOCX)
+    { id: "NOTARY-COVER", name: "Notary Cover Letter", available: true, docx: true },
+    { id: "COURT-COVER", name: "Court Cover Letter", available: true, docx: true },
+    { id: "FILING-CHECKLIST", name: "Filing Checklist", available: true, docx: true },
   ];
 
   const getFormUrl = (form: { id: string }) => {

@@ -5,7 +5,12 @@
  */
 
 import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium-min';
+
+// chrome-aws-lambda is only available in production
+let chromium: any;
+if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
+  chromium = require('chrome-aws-lambda');
+}
 
 export interface PDFGenerationOptions {
   width?: string;
@@ -49,11 +54,11 @@ export async function generatePDF(
     const isProduction = process.env.NODE_ENV === 'production';
     const isVercel = process.env.VERCEL === '1';
     
-    if (isProduction || isVercel) {
-      // Use @sparticuz/chromium for serverless environments
+    if ((isProduction || isVercel) && chromium) {
+      // Use chrome-aws-lambda for serverless environments
       browser = await puppeteer.launch({
         args: chromium.args,
-        executablePath: await chromium.executablePath(),
+        executablePath: await chromium.executablePath,
         headless: chromium.headless,
       });
     } else {
@@ -66,7 +71,10 @@ export async function generatePDF(
           '--disable-dev-shm-usage',
           '--disable-gpu',
         ],
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || 
+          (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' :
+           process.platform === 'win32' ? 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe' :
+           '/usr/bin/google-chrome'),
       });
     }
 
@@ -114,10 +122,10 @@ export async function generatePDFWithHeaderFooter(
     const isProduction = process.env.NODE_ENV === 'production';
     const isVercel = process.env.VERCEL === '1';
     
-    if (isProduction || isVercel) {
+    if ((isProduction || isVercel) && chromium) {
       browser = await puppeteer.launch({
         args: chromium.args,
-        executablePath: await chromium.executablePath(),
+        executablePath: await chromium.executablePath,
         headless: chromium.headless,
       });
     } else {
@@ -128,7 +136,10 @@ export async function generatePDFWithHeaderFooter(
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
         ],
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH ||
+          (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' :
+           process.platform === 'win32' ? 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe' :
+           '/usr/bin/google-chrome'),
       });
     }
 

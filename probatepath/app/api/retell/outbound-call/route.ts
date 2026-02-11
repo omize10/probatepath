@@ -9,9 +9,9 @@ const RETELL_PHONE_NUMBER = process.env.RETELL_PHONE_NUMBER; // The number Retel
 
 const OutboundCallSchema = z.object({
   phone_number: z.string().min(10, "Phone number required"),
-  name: z.string().optional(),
-  email: z.string().email().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  name: z.optional(z.string()),
+  email: z.optional(z.string().email()),
+  metadata: z.optional(z.record(z.unknown())),
 });
 
 /**

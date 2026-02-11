@@ -1,0 +1,8 @@
+[     673ms] [WARNING] [DEPRECATED] Default export is deprecated. Instead use `import { create } from 'zustand'`. @ https://dashboard.retellai.com/_next/static/chunks/6140-61531211a430cb7b.js:0
+[     937ms] [ERROR] [LC Tracking ERROR] Required data-tracking-id attribute not found @ https://go.retellai.com/js/external-tracking.js:0
+[     937ms] [ERROR] [LC Tracking ERROR] Please add data-tracking-id="your-tracking-id" to the script tag @ https://go.retellai.com/js/external-tracking.js:0
+[     937ms] [ERROR] [LC Tracking ERROR] Failed to initialize: invalid or missing script attributes @ https://go.retellai.com/js/external-tracking.js:0
+[     937ms] [ERROR] [LC Tracking ERROR] External Tracking failed to initialize @ https://go.retellai.com/js/external-tracking.js:0
+[     937ms] [ERROR] [LC Tracking ERROR] Make sure to include data-tracking-id in your script tag @ https://go.retellai.com/js/external-tracking.js:0
+[    1923ms] [WARNING] An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing. @ https://cdn.announcekit.app/widget-v2.js:0
+[    2152ms] [ERROR] Attestation check for Attribution Reporting on https://www.google-analytics.com failed. @ https://dashboard.retellai.com/settings/webhooks:0

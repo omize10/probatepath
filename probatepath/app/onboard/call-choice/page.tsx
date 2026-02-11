@@ -139,7 +139,7 @@ export default function OnboardCallChoicePage() {
             Call service temporarily unavailable
           </h2>
           <p className="text-[color:var(--muted-ink)]">
-            Our AI calling assistant is currently unavailable. You can continue with the questionnaire below.
+            Our calling assistant is currently unavailable. You can continue with the questionnaire below.
           </p>
           <p className="text-sm text-[color:var(--muted-ink)]">
             We&apos;ll follow up via email if we need to connect.

@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   if (!isValidSignature) {
     console.error("[retell/webhook] ❌ REJECTED - Invalid signature:", {
       has_signature: !!signature,
-      has_secret: !!process.env.RETELL_WEBHOOK_SECRET,
+      has_api_key: !!process.env.RETELL_API_KEY,
       timestamp: new Date().toISOString(),
     });
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });

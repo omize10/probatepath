@@ -1,18 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma, prismaEnabled } from "@/lib/prisma";
-import { z } from "zod";
 import { AI_CALL_STATUS } from "@/lib/retell/types";
 
 const RETELL_API_KEY = process.env.RETELL_API_KEY;
 const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID;
 const RETELL_PHONE_NUMBER = process.env.RETELL_PHONE_NUMBER; // The number Retell calls from
-
-const OutboundCallSchema = z.object({
-  phone_number: z.string().min(10, "Phone number required"),
-  name: z.optional(z.string()),
-  email: z.optional(z.string().email()),
-  metadata: z.optional(z.record(z.unknown())),
-});
 
 /**
  * Trigger an outbound call via Retell AI
@@ -43,22 +35,24 @@ export async function POST(request: Request) {
     });
   }
 
-  let body: unknown;
+  let body: Record<string, unknown>;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const parsed = OutboundCallSchema.safeParse(body);
-  if (!parsed.success) {
+  const phone_number = typeof body.phone_number === "string" ? body.phone_number : "";
+  const name = typeof body.name === "string" ? body.name : undefined;
+  const email = typeof body.email === "string" ? body.email : undefined;
+  const metadata = body.metadata && typeof body.metadata === "object" ? body.metadata as Record<string, unknown> : undefined;
+
+  if (!phone_number || phone_number.replace(/\D/g, "").length < 10) {
     return NextResponse.json(
-      { error: "Invalid payload", details: parsed.error.flatten() },
+      { error: "Phone number required (min 10 digits)" },
       { status: 400 }
     );
   }
-
-  const { phone_number, name, email, metadata } = parsed.data;
 
   // Format phone number for Retell (needs E.164 format)
   const formattedPhone = formatPhoneNumber(phone_number);

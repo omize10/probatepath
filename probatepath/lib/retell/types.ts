@@ -2,18 +2,33 @@
  * Types for Retell AI integration
  */
 
-export interface RetellWebhookEvent {
-  event_type: "call_started" | "call_ended" | "function_call" | "transcript_update";
+/**
+ * Retell webhook payload structure (per docs.retellai.com/features/webhook-overview)
+ * Top-level: { event: string, call: { ...call fields } }
+ */
+export interface RetellWebhookPayload {
+  event: "call_started" | "call_ended" | "call_analyzed" | string;
+  call: RetellCallObject;
+}
+
+export interface RetellCallObject {
   call_id: string;
-  timestamp?: string;
-  // For function_call events
-  function_name?: string;
-  arguments?: Record<string, unknown>;
-  // For call_ended events
-  duration_seconds?: number;
-  recording_url?: string;
+  call_type?: string;
+  from_number?: string;
+  to_number?: string;
+  direction?: string;
+  agent_id?: string;
+  call_status?: string;
+  metadata?: Record<string, unknown>;
+  retell_llm_dynamic_variables?: Record<string, unknown>;
+  start_timestamp?: number;
+  end_timestamp?: number;
+  disconnection_reason?: string;
   transcript?: string;
-  end_reason?: string;
+  transcript_object?: unknown[];
+  transcript_with_tool_calls?: unknown[];
+  opt_out_sensitive_data_storage?: boolean;
+  call_analysis?: Record<string, unknown>;
 }
 
 export interface RetellFunctionResponse {

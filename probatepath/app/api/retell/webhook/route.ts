@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { verifyRetellSignature } from "@/lib/retell/verify";
-import { RetellWebhookEvent, AI_CALL_STATUS, NO_ANSWER_REASONS } from "@/lib/retell/types";
+import { RetellWebhookPayload, AI_CALL_STATUS, NO_ANSWER_REASONS } from "@/lib/retell/types";
 
 /**
  * Main Retell webhook router
@@ -29,45 +29,38 @@ export async function POST(request: Request) {
 
   console.log("[retell/webhook] ✅ Signature verified successfully");
 
-  // Parse the event
-  let event: RetellWebhookEvent;
+  // Parse the payload
+  let payload: RetellWebhookPayload;
   try {
-    event = JSON.parse(rawBody);
+    payload = JSON.parse(rawBody);
   } catch {
     console.error("[retell/webhook] Failed to parse JSON from webhook body");
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { event_type, call_id } = event;
+  const eventType = payload.event;
+  const callId = payload.call?.call_id;
   console.log("[retell/webhook] ✅ Received event:", {
-    event_type,
-    call_id,
+    event: eventType,
+    call_id: callId,
     timestamp: new Date().toISOString(),
-    has_signature: !!signature,
   });
 
-  // Log full payload in development for debugging
-  if (process.env.NODE_ENV === "development") {
-    console.log("[retell/webhook] Full payload:", JSON.stringify(event, null, 2));
-  }
-
   try {
-    switch (event_type) {
+    switch (eventType) {
       case "call_started":
-        return handleCallStarted(event);
+        return handleCallStarted(payload);
 
       case "call_ended":
-        return handleCallEnded(event);
+        return handleCallEnded(payload);
 
-      case "function_call":
-        return handleFunctionCall(event);
-
-      case "transcript_update":
-        // Just acknowledge - we don't need to process transcript updates
+      case "call_analyzed":
+        // Acknowledge - analysis data is in payload.call.call_analysis
+        console.log("[retell/webhook] Call analyzed:", callId);
         return NextResponse.json({ success: true });
 
       default:
-        console.warn("[retell/webhook] Unknown event type:", event_type);
+        console.warn("[retell/webhook] Unknown event type:", eventType);
         return NextResponse.json({ success: true });
     }
   } catch (error) {
@@ -76,111 +69,92 @@ export async function POST(request: Request) {
   }
 }
 
-async function handleCallStarted(event: RetellWebhookEvent) {
-  const { call_id } = event;
+async function handleCallStarted(payload: RetellWebhookPayload) {
+  const call = payload.call;
+  const callId = call.call_id;
 
   // Create or update AI call record
   await prisma.aiCall.upsert({
-    where: { retellCallId: call_id },
+    where: { retellCallId: callId },
     create: {
-      retellCallId: call_id,
+      retellCallId: callId,
       status: AI_CALL_STATUS.CONNECTED,
+      phoneNumber: call.to_number,
     },
     update: {
       status: AI_CALL_STATUS.CONNECTED,
     },
   });
 
-  console.log("[retell/webhook] Call started:", call_id);
+  console.log("[retell/webhook] ✅ Call started:", callId);
   return NextResponse.json({ success: true });
 }
 
-async function handleCallEnded(event: RetellWebhookEvent) {
-  const { call_id, duration_seconds, recording_url, transcript, end_reason } = event;
+async function handleCallEnded(payload: RetellWebhookPayload) {
+  const call = payload.call;
+  const callId = call.call_id;
+  const disconnectionReason = call.disconnection_reason;
+  const transcript = call.transcript;
 
-  console.log("[retell/webhook] handleCallEnded called:", { call_id, end_reason, duration_seconds });
-
-  // Determine the appropriate status based on end_reason
-  let status: string;
-  if (end_reason === "error") {
-    status = AI_CALL_STATUS.FAILED;
-  } else if (NO_ANSWER_REASONS.includes(end_reason as typeof NO_ANSWER_REASONS[number])) {
-    // User didn't pick up (no_answer, busy, voicemail, timeout, machine_detected)
-    status = AI_CALL_STATUS.NO_ANSWER;
-  } else {
-    // Normal completion (user_hangup, agent_hangup, or undefined)
-    status = AI_CALL_STATUS.COMPLETED;
+  // Compute duration from timestamps if available
+  let durationSeconds: number | undefined;
+  if (call.start_timestamp && call.end_timestamp) {
+    durationSeconds = Math.round((call.end_timestamp - call.start_timestamp) / 1000);
   }
 
-  console.log("[retell/webhook] Call status determined:", { call_id, status });
+  console.log("[retell/webhook] handleCallEnded:", { callId, disconnectionReason, durationSeconds });
+
+  // Determine the appropriate status based on disconnection_reason
+  let status: string;
+  if (disconnectionReason === "error_inbound_webhook" || disconnectionReason === "error_llm_websocket_open" || disconnectionReason?.startsWith("error")) {
+    status = AI_CALL_STATUS.FAILED;
+  } else if (NO_ANSWER_REASONS.includes(disconnectionReason as typeof NO_ANSWER_REASONS[number])) {
+    status = AI_CALL_STATUS.NO_ANSWER;
+  } else {
+    // Normal completion (user_hangup, agent_hangup, call_transfer, etc.)
+    status = AI_CALL_STATUS.COMPLETED;
+  }
 
   // Update AI call record
   try {
     const updated = await prisma.aiCall.update({
-      where: { retellCallId: call_id },
+      where: { retellCallId: callId },
       data: {
         status,
-        durationSeconds: duration_seconds,
-        recordingUrl: recording_url,
+        durationSeconds,
         transcript,
         endedAt: new Date(),
       },
     });
-    console.log("[retell/webhook] ✅ SUCCESS - Call ended - updated by retellCallId:", { call_id, status, duration_seconds, end_reason, recordId: updated.id });
+    console.log("[retell/webhook] ✅ Call ended:", { callId, status, durationSeconds, recordId: updated.id });
   } catch (e) {
-    // If no record with retellCallId, try to find by internal ID in metadata
-    console.warn("[retell/webhook] ⚠️ Could not find call by retellCallId:", call_id, "error:", e);
+    console.warn("[retell/webhook] ⚠️ Could not find call by retellCallId:", callId);
 
     // Try to find by looking at recent initiated calls
     const recentCall = await prisma.aiCall.findFirst({
       where: {
         status: { in: [AI_CALL_STATUS.INITIATED, AI_CALL_STATUS.RINGING, AI_CALL_STATUS.CONNECTED] },
-        createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) }, // Last hour
+        createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) },
       },
       orderBy: { createdAt: "desc" },
     });
 
     if (recentCall) {
-      const updated = await prisma.aiCall.update({
+      await prisma.aiCall.update({
         where: { id: recentCall.id },
         data: {
-          retellCallId: call_id,
+          retellCallId: callId,
           status,
-          durationSeconds: duration_seconds,
-          recordingUrl: recording_url,
+          durationSeconds,
           transcript,
           endedAt: new Date(),
         },
       });
-      console.log("[retell/webhook] ✅ SUCCESS - Call ended - found and updated recent call:", {
-        internalId: recentCall.id,
-        call_id,
-        status,
-        end_reason
-      });
+      console.log("[retell/webhook] ✅ Call ended (matched recent):", { internalId: recentCall.id, callId, status });
     } else {
-      console.error("[retell/webhook] ❌ FAILED - No recent call found to update. Call may not have been initialized.", { call_id, end_reason });
+      console.error("[retell/webhook] ❌ No call record found:", { callId, disconnectionReason });
     }
   }
 
   return NextResponse.json({ success: true });
-}
-
-async function handleFunctionCall(event: RetellWebhookEvent) {
-  const { call_id, function_name, arguments: args } = event;
-
-  if (!function_name) {
-    return NextResponse.json({ error: "Missing function_name" }, { status: 400 });
-  }
-
-  console.log("[retell/webhook] Function call:", { call_id, function_name });
-
-  // Route to the appropriate function handler
-  // The actual function implementations are in separate route files
-  // This webhook just acknowledges the function call
-  // Retell will call the function endpoints directly
-  return NextResponse.json({
-    success: true,
-    message: `Function ${function_name} acknowledged`,
-  });
 }

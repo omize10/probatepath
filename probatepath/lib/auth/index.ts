@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     maxAge: 60 * 60,        // 1 hour
   },
-  pages: { signIn: "/signin" },
+  pages: { signIn: "/login" },
   providers: [
     CredentialsProvider({
       name: "Email and password",
@@ -126,11 +126,44 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      // Always allow OAuth sign-ins (Google, Microsoft)
+      if (account?.provider === "google" || account?.provider === "azure-ad") {
+        // Ensure user has email
+        if (!user?.email) {
+          return false;
+        }
+
+        // Check if user exists in database
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+
+        // If user doesn't exist, create them
+        if (!existingUser) {
+          await prisma.user.create({
+            data: {
+              email: user.email,
+              name: user.name ?? null,
+              role: "USER",
+              createdVia: "oauth",
+            },
+          });
+        }
+
+        return true; // Allow sign-in
+      }
+
+      // Allow credentials provider (handled by authorize function)
+      return true;
+    },
+    async jwt({ token, user, account }) {
       if (user) {
         const userRole: Role = (user as { role?: Role }).role ?? "USER";
         token.sub = user.id as string;
         token.role = userRole;
+        token.email = user.email;
+        token.name = user.name;
       }
       return token;
     },

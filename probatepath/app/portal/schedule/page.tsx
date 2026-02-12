@@ -262,7 +262,7 @@ export default function PortalSchedulePage() {
           <p className="text-center text-sm text-[color:var(--muted-ink)]">
             Need to reschedule?{" "}
             <a
-              href="mailto:support@probatedesk.ca"
+              href="mailto:support@probatedesk.com"
               className="font-medium text-[color:var(--brand)] underline hover:no-underline"
             >
               Contact us
@@ -332,7 +332,7 @@ export default function PortalSchedulePage() {
               <p className="mt-1 text-sm text-yellow-700">
                 We're fully booked at the moment. Please check back later or{" "}
                 <a
-                  href="mailto:support@probatedesk.ca"
+                  href="mailto:support@probatedesk.com"
                   className="font-medium underline hover:no-underline"
                 >
                   contact us

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "BC Probate Fee Calculator 2026 | Free Instant Estimate",
     description: "Enter your estate value and instantly calculate BC probate court fees. Includes filing fee + probate fee breakdown by bracket.",
-    url: "https://probatedesk.ca/info/calculators/probate-fees",
+    url: "https://probatedesk.com/info/calculators/probate-fees",
     type: "website",
   },
 };
@@ -77,7 +77,7 @@ const webAppSchema = {
   "@type": "WebApplication",
   name: "BC Probate Fee Calculator",
   description: "Free calculator to estimate probate court costs in British Columbia based on estate value",
-  url: "https://probatedesk.ca/info/calculators/probate-fees",
+  url: "https://probatedesk.com/info/calculators/probate-fees",
   applicationCategory: "FinanceApplication",
   operatingSystem: "Any",
   offers: {
@@ -88,7 +88,7 @@ const webAppSchema = {
   author: {
     "@type": "Organization",
     name: "ProbateDesk",
-    url: "https://probatedesk.ca",
+    url: "https://probatedesk.com",
   },
 };
 

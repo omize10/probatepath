@@ -44,7 +44,7 @@ const schema = articleSchema({
   description: "Complete guide to BC probate forms P1 through P25",
   datePublished: "2025-01-01",
   dateModified: "2026-01-24",
-  url: "https://probatedesk.ca/info/guides/bc-probate-forms",
+  url: "https://probatedesk.com/info/guides/bc-probate-forms",
 });
 
 export default function BCProbateFormsPage() {

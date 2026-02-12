@@ -377,7 +377,7 @@ export default function CallbackSchedulePage() {
                 <p className="mt-1 text-sm text-yellow-700">
                   We're fully booked at the moment. Please check back later or{" "}
                   <a
-                    href="mailto:support@probatedesk.ca"
+                    href="mailto:support@probatedesk.com"
                     className="font-medium underline hover:no-underline"
                   >
                     contact us
@@ -636,10 +636,10 @@ export default function CallbackSchedulePage() {
             <div className="rounded-xl border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] p-3 text-center text-sm text-[color:var(--muted-ink)]">
               Questions? Email us at{" "}
               <a
-                href="mailto:support@probatedesk.ca"
+                href="mailto:support@probatedesk.com"
                 className="font-medium text-[color:var(--brand)]"
               >
-                support@probatedesk.ca
+                support@probatedesk.com
               </a>
             </div>
           </div>

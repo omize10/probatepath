@@ -49,10 +49,10 @@ export function Footer() {
           <p>
             Email:{" "}
             <a
-              href="mailto:hello@probatedesk.ca"
+              href="mailto:hello@probatedesk.com"
               className="text-[color:var(--brand)] underline-offset-4 hover:underline"
             >
-              hello@probatedesk.ca
+              hello@probatedesk.com
             </a>
           </p>
           <div className="flex flex-wrap gap-3 pt-2">

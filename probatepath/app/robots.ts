@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/portal/", "/ops/", "/intake/", "/login", "/create-account"],
       },
     ],
-    sitemap: "https://probatedesk.ca/sitemap.xml",
+    sitemap: "https://probatedesk.com/sitemap.xml",
   };
 }

@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import { NextAuthOptions, getServerSession, type Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import EmailProvider from "next-auth/providers/email";
+import GoogleProvider from "next-auth/providers/google";
+import AzureADProvider from "next-auth/providers/azure-ad";
 import { prisma } from "@/lib/prisma";
 import { sendMessage } from "@/lib/messaging/service";
 import { logAuthEvent } from "@/lib/auth/log-auth-event";
@@ -90,6 +92,27 @@ export const authOptions: NextAuthOptions = {
       maxAge: 10 * 60,
       sendVerificationRequest: async ({ identifier, url }) => {
         await sendMagicLinkEmail({ identifier, url });
+      },
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+    }),
+    AzureADProvider({
+      clientId: process.env.AZURE_AD_CLIENT_ID ?? "",
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET ?? "",
+      tenantId: process.env.AZURE_AD_TENANT_ID ?? "common",
+      authorization: {
+        params: {
+          scope: "openid profile email User.Read",
+        },
       },
     }),
   ],

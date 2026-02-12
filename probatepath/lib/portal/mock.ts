@@ -127,7 +127,7 @@ export const portalChecklistItems: PortalChecklistDefinition[] = [
     id: "assemble",
     title: "Assemble packet",
     description: "Print, tab, and stage every form before meeting the commissioner.",
-    learnMoreHref: "https://probatedesk.ca/how-it-works",
+    learnMoreHref: "https://probatedesk.com/how-it-works",
     route: "/portal/how-to-assemble",
     media: {
       image: "/portal/assemble-1.jpg",

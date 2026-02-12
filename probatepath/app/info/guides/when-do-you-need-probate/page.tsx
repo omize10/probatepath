@@ -46,7 +46,7 @@ const schema = articleSchema({
   description: "Learn when probate is required in British Columbia and when you can skip it",
   datePublished: "2025-01-01",
   dateModified: "2026-01-24",
-  url: "https://probatedesk.ca/info/guides/when-do-you-need-probate",
+  url: "https://probatedesk.com/info/guides/when-do-you-need-probate",
 });
 
 export default function WhenNeedProbatePage() {

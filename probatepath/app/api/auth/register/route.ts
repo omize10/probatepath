@@ -25,12 +25,27 @@ export async function POST(request: Request) {
     const existing = await prisma.user.findFirst({
       where: { email: { equals: email, mode: "insensitive" } },
     });
+
+    // If user exists with password, reject
     if (existing?.passwordHash) {
-      return NextResponse.json({ error: "An account with that email already exists." }, { status: 409 });
+      return NextResponse.json({ error: "An account with that email already exists. Please sign in instead." }, { status: 409 });
     }
 
     const passwordHash = await bcrypt.hash(parsed.data.password, 12);
-    const user = await prisma.user.create({
+
+    // If existing user without password (OAuth user), allow them to add password
+    let user;
+    if (existing) {
+      user = await prisma.user.update({
+        where: { id: existing.id },
+        data: { passwordHash, name: parsed.data.name },
+      });
+      // Don't send welcome email for existing OAuth users adding password
+      return NextResponse.json({ success: true, id: user.id, email: user.email }, { status: 200 });
+    }
+
+    // Create new user
+    user = await prisma.user.create({
       data: {
         name: parsed.data.name,
         email,

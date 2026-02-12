@@ -60,7 +60,7 @@ const sections: HelpSection[] = [
     title: "Need a human?",
     body: [
       "We respond within one business day. We can clarify portal steps and connect you with partner counsel if the estate becomes contested.",
-      "Email hello@probatedesk.ca or visit the Contact page for a callback request.",
+      "Email hello@probatedesk.com or visit the Contact page for a callback request.",
     ],
   },
 ];
@@ -84,8 +84,8 @@ export default function HelpPage() {
             ))}
             {section.id === "support" ? (
               <div className="pt-2">
-                <Link href="mailto:hello@probatedesk.ca" className="text-lg font-semibold text-[color:var(--brand-navy)]">
-                  hello@probatedesk.ca
+                <Link href="mailto:hello@probatedesk.com" className="text-lg font-semibold text-[color:var(--brand-navy)]">
+                  hello@probatedesk.com
                 </Link>
               </div>
             ) : null}

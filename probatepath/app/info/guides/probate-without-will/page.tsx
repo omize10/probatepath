@@ -41,7 +41,7 @@ const schema = articleSchema({
   description: "How intestacy works when someone dies without a will in British Columbia",
   datePublished: "2025-01-01",
   dateModified: "2026-01-24",
-  url: "https://probatedesk.ca/info/guides/probate-without-will",
+  url: "https://probatedesk.com/info/guides/probate-without-will",
 });
 
 export default function ProbateWithoutWillPage() {

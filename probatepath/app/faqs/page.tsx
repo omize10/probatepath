@@ -75,7 +75,7 @@ export default function FAQsPage() {
         </Badge>
         <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">Probate questions, answered plainly</h1>
         <p className="mx-auto max-w-3xl text-base text-[#333333]">
-          If you don’t see your question below, email hello@probatedesk.ca and we’ll respond within one business day.
+          If you don’t see your question below, email hello@probatedesk.com and we’ll respond within one business day.
         </p>
       </header>
 

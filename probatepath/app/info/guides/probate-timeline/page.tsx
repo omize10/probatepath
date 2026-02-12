@@ -43,7 +43,7 @@ const schema = articleSchema({
   description: "How long each phase of BC probate takes",
   datePublished: "2025-01-01",
   dateModified: "2026-01-24",
-  url: "https://probatedesk.ca/info/guides/probate-timeline",
+  url: "https://probatedesk.com/info/guides/probate-timeline",
 });
 
 export default function ProbateTimelinePage() {

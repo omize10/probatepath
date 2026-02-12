@@ -22,8 +22,9 @@ const sections = [
     label: "Privacy",
     body: [
       "We collect only the personal information needed to deliver intake, drafting, and support. Data is encrypted in transit and at rest on Canadian infrastructure.",
+      "When you sign in with Google or Microsoft, we collect your name, email address, and profile information to create and authenticate your account. We do not access any other data from your Google or Microsoft account. Your OAuth tokens are stored securely and used only for authentication purposes.",
       "Access is limited to team members involved in preparing your documents. Files remain available in your secure vault for twelve months unless you request deletion sooner.",
-      "Contact privacy@probatedesk.ca to request access, correction, or deletion of your information.",
+      "Contact privacy@probatedesk.com to request access, correction, or deletion of your information.",
     ],
   },
   {

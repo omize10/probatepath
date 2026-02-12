@@ -41,7 +41,7 @@ const schema = articleSchema({
   description: "Understanding the different types of estate grants in British Columbia",
   datePublished: "2025-01-01",
   dateModified: "2026-01-24",
-  url: "https://probatedesk.ca/info/guides/grant-types",
+  url: "https://probatedesk.com/info/guides/grant-types",
 });
 
 export default function GrantTypesPage() {

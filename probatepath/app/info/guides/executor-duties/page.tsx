@@ -43,7 +43,7 @@ const schema = articleSchema({
   description: "Complete guide to executor responsibilities in British Columbia",
   datePublished: "2025-01-01",
   dateModified: "2026-01-24",
-  url: "https://probatedesk.ca/info/guides/executor-duties",
+  url: "https://probatedesk.com/info/guides/executor-duties",
 });
 
 export default function ExecutorDutiesPage() {

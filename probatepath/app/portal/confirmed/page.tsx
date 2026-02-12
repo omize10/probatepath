@@ -200,10 +200,10 @@ export default function PortalConfirmedPage() {
         <p className="text-center text-sm text-[color:var(--muted-ink)]">
           Questions?{" "}
           <a
-            href="mailto:support@probatedesk.ca"
+            href="mailto:support@probatedesk.com"
             className="font-medium text-[color:var(--brand)] underline hover:no-underline"
           >
-            support@probatedesk.ca
+            support@probatedesk.com
           </a>
           {" "}or call{" "}
           <a

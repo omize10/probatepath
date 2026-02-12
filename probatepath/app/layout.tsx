@@ -11,7 +11,7 @@ import { PasswordGate } from "@/components/password-gate";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://probatedesk.ca"),
+  metadataBase: new URL("https://probatedesk.com"),
   title: {
     default: "ProbateDesk — BC probate documents in hours",
     template: "%s | ProbateDesk",

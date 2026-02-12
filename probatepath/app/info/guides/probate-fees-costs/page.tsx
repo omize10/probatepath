@@ -43,7 +43,7 @@ const schema = articleSchema({
   description: "Complete breakdown of probate costs in British Columbia including free calculator",
   datePublished: "2025-01-01",
   dateModified: "2026-01-24",
-  url: "https://probatedesk.ca/info/guides/probate-fees-costs",
+  url: "https://probatedesk.com/info/guides/probate-fees-costs",
 });
 
 export default function ProbateFeesCostsPage() {

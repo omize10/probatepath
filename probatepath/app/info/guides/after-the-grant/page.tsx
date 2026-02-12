@@ -42,7 +42,7 @@ const schema = articleSchema({
   description: "What happens after you receive the grant of probate in British Columbia",
   datePublished: "2025-01-01",
   dateModified: "2026-01-24",
-  url: "https://probatedesk.ca/info/guides/after-the-grant",
+  url: "https://probatedesk.com/info/guides/after-the-grant",
 });
 
 export default function AfterTheGrantPage() {

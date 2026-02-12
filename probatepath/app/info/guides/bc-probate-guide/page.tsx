@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "BC Probate Guide 2026 | ProbateDesk",
     description: "The complete guide to probate in British Columbia for executors.",
-    url: "https://probatedesk.ca/info/guides/bc-probate-guide",
+    url: "https://probatedesk.com/info/guides/bc-probate-guide",
     type: "article",
   },
 };
@@ -58,7 +58,7 @@ const schema = articleSchema({
   description: "Everything BC executors need to know about probate",
   datePublished: "2025-01-01",
   dateModified: "2026-01-24",
-  url: "https://probatedesk.ca/info/guides/bc-probate-guide",
+  url: "https://probatedesk.com/info/guides/bc-probate-guide",
 });
 
 export default function BCProbateGuidePage() {

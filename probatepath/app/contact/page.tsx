@@ -28,8 +28,8 @@ export default function ContactPage() {
             <p className="font-semibold text-[color:var(--brand)]">Prefer email?</p>
             <p className="mt-2">
               Email{" "}
-              <a href="mailto:hello@probatedesk.ca" className="text-[color:var(--brand)] underline-offset-4 hover:underline">
-                hello@probatedesk.ca
+              <a href="mailto:hello@probatedesk.com" className="text-[color:var(--brand)] underline-offset-4 hover:underline">
+                hello@probatedesk.com
               </a>{" "}
               and include the estate name and where you’ll be filing.
             </p>

@@ -1,0 +1,11 @@
+[    2247ms] Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at r1 (https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:47544)
+    at iE (https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:101351)
+    at sH (https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:142127)
+    at https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:141972
+    at sV (https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:141980)
+    at sO (https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:137037)
+    at cm (https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:171772)
+    at cs (https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:169675)
+    at s4 (https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:167822)
+    at https://vercel.com/_next/static/chunks/d1bda55a95fd578c.js?dpl=dpl_DJMWN5NdXJi1affYPMFHd2thmL7V:73:159019

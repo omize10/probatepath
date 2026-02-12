@@ -11,7 +11,7 @@ Calls are being created but users never receive them because **webhooks are not 
 1. Log into [Retell Dashboard](https://dashboard.retellai.com)
 2. Navigate to **Settings** → **Webhooks** (or similar)
 3. Add a new webhook endpoint:
-   - **URL:** `https://probatedesk.ca/api/retell/webhook`
+   - **URL:** `https://probatedesk.com/api/retell/webhook`
    - **Events to enable:**
      - `call_started`
      - `call_ended`
@@ -38,7 +38,7 @@ RETELL_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxx
 
 ### Step 3: Test
 
-1. Visit `https://probatedesk.ca/onboard/call-choice`
+1. Visit `https://probatedesk.com/onboard/call-choice`
 2. Click "Call Me Now"
 3. You should receive a call within 5-10 seconds
 4. Check server logs to verify webhooks are being received:
@@ -81,7 +81,7 @@ LIMIT 5;
 ### Webhooks not being received
 
 1. **Check webhook URL in Retell:**
-   - Must be `https://probatedesk.ca/api/retell/webhook`
+   - Must be `https://probatedesk.com/api/retell/webhook`
    - Must use HTTPS (not HTTP)
    - Must be publicly accessible
 

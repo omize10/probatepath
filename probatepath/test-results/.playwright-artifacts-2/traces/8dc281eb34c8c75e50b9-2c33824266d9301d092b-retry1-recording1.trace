@@ -1,0 +1,20 @@
+{"version":8,"type":"context-options","origin":"library","browserName":"","playwrightVersion":"1.58.2","options":{},"platform":"linux","wallTime":1770854292434,"monotonicTime":48304.305,"sdkLanguage":"javascript","contextId":"request-context@6696f23b0eee8694b195513534c30edf","title":"portal-dashboard.spec.ts:4 › Portal Dashboard - Status States › empty portal shows no active case message"}
+{"type":"before","callId":"call@13","startTime":48308.026,"class":"APIRequestContext","method":"fetch","params":{"url":"https://www.probatedesk.com/api/auth/register","method":"POST","jsonData":"{\"name\":\"Test User 1770854292435\",\"email\":\"test+1770854292435@probatedesk-e2e.test\",\"password\":\"TestPassword123!\"}","timeout":30000},"stepId":"pw:api@38"}
+{"type":"log","callId":"call@13","time":48319.912,"message":"→ POST https://www.probatedesk.com/api/auth/register"}
+{"type":"log","callId":"call@13","time":48319.962,"message":"  user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.7632.6 Safari/537.36"}
+{"type":"log","callId":"call@13","time":48319.985,"message":"  accept: */*"}
+{"type":"log","callId":"call@13","time":48320.01,"message":"  accept-encoding: gzip,deflate,br"}
+{"type":"log","callId":"call@13","time":48320.038,"message":"  content-type: application/json"}
+{"type":"log","callId":"call@13","time":48320.053,"message":"  content-length: 114"}
+{"type":"log","callId":"call@13","time":48956.711,"message":"← 201 Created"}
+{"type":"log","callId":"call@13","time":48956.746,"message":"  cache-control: public, max-age=0, must-revalidate"}
+{"type":"log","callId":"call@13","time":48956.758,"message":"  content-type: application/json"}
+{"type":"log","callId":"call@13","time":48956.832,"message":"  date: Wed, 11 Feb 2026 23:58:13 GMT"}
+{"type":"log","callId":"call@13","time":48956.846,"message":"  server: Vercel"}
+{"type":"log","callId":"call@13","time":48956.853,"message":"  strict-transport-security: max-age=63072000"}
+{"type":"log","callId":"call@13","time":48956.86,"message":"  vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"}
+{"type":"log","callId":"call@13","time":48956.865,"message":"  x-matched-path: /api/auth/register"}
+{"type":"log","callId":"call@13","time":48956.871,"message":"  x-vercel-cache: MISS"}
+{"type":"log","callId":"call@13","time":48956.877,"message":"  x-vercel-id: pdx1::iad1::qr4bc-1770854292513-2a411d94614d"}
+{"type":"log","callId":"call@13","time":48956.883,"message":"  transfer-encoding: chunked"}
+{"type":"after","callId":"call@13","endTime":48959.124,"result":{"response":{"url":"https://www.probatedesk.com/api/auth/register","status":201,"statusText":"Created","headers":[{"name":"Cache-Control","value":"public, max-age=0, must-revalidate"},{"name":"Content-Type","value":"application/json"},{"name":"Date","value":"Wed, 11 Feb 2026 23:58:13 GMT"},{"name":"Server","value":"Vercel"},{"name":"Strict-Transport-Security","value":"max-age=63072000"},{"name":"Vary","value":"rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"},{"name":"X-Matched-Path","value":"/api/auth/register"},{"name":"X-Vercel-Cache","value":"MISS"},{"name":"X-Vercel-Id","value":"pdx1::iad1::qr4bc-1770854292513-2a411d94614d"},{"name":"Transfer-Encoding","value":"chunked"}],"fetchUid":"4b20c6bbd3b631ff79e2edfef71fcc85"}}}

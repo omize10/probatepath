@@ -1,0 +1,97 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e3]:
+    - banner "Primary" [ref=e4]:
+      - generic [ref=e5]:
+        - link "ProbateDesk home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]:
+            - generic [ref=e8]: ProbateDesk.com
+            - generic [ref=e9]: Done
+        - navigation "Main" [ref=e10]:
+          - link "How it works" [ref=e11] [cursor=pointer]:
+            - /url: /how-it-works
+          - link "Pricing tiers" [ref=e12] [cursor=pointer]:
+            - /url: /pricing
+          - link "About probate" [ref=e13] [cursor=pointer]:
+            - /url: /info
+          - link "FAQs" [ref=e14] [cursor=pointer]:
+            - /url: /faqs
+          - link "Legal" [ref=e15] [cursor=pointer]:
+            - /url: /legal
+          - link "Contact" [ref=e16] [cursor=pointer]:
+            - /url: /contact
+        - link "My Desk" [ref=e18] [cursor=pointer]:
+          - /url: /login?next=%2Fportal
+    - main [ref=e19]:
+      - generic [ref=e20]:
+        - link "ProbateDesk" [ref=e23] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e24]: ProbateDesk
+        - main [ref=e29]:
+          - generic [ref=e31]:
+            - generic [ref=e32]:
+              - heading "Are you the executor?" [level=1] [ref=e33]
+              - paragraph [ref=e34]: The executor is the person named in the will to manage the estate.
+            - generic [ref=e35]:
+              - button "Yes, I am the executor" [ref=e36]
+              - button "No, I am not the executor" [ref=e37]
+            - button "What if I'm not sure?" [ref=e39]:
+              - img [ref=e40]
+              - text: What if I'm not sure?
+        - paragraph [ref=e45]:
+          - text: Questions? Call
+          - link "(604) 670-3534" [ref=e46] [cursor=pointer]:
+            - /url: tel:+16046703534
+    - contentinfo [ref=e47]:
+      - generic [ref=e48]:
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - generic [ref=e51]: ProbateDesk.com
+            - generic [ref=e52]: Done
+          - paragraph [ref=e53]: BC probate document preparation starting at $799 with flexible service tiers and modern intake experience.
+          - paragraph [ref=e54]:
+            - text: "Email:"
+            - link "hello@probatedesk.ca" [ref=e55] [cursor=pointer]:
+              - /url: mailto:hello@probatedesk.ca
+          - generic [ref=e56]:
+            - link "Create account" [ref=e57] [cursor=pointer]:
+              - /url: /create-account
+            - link "My portal" [ref=e58] [cursor=pointer]:
+              - /url: /portal
+          - button "Report a problem" [ref=e60]
+        - generic [ref=e61]:
+          - paragraph [ref=e62]: Explore
+          - list [ref=e63]:
+            - listitem [ref=e64]:
+              - link "How it works" [ref=e65] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e66]:
+              - link "Pricing" [ref=e67] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e68]:
+              - link "FAQs" [ref=e69] [cursor=pointer]:
+                - /url: /faqs
+            - listitem [ref=e70]:
+              - link "Start intake" [ref=e71] [cursor=pointer]:
+                - /url: /create-account
+        - generic [ref=e72]:
+          - paragraph [ref=e73]: Legal
+          - list [ref=e74]:
+            - listitem [ref=e75]:
+              - link "Terms" [ref=e76] [cursor=pointer]:
+                - /url: /legal#terms
+            - listitem [ref=e77]:
+              - link "Privacy" [ref=e78] [cursor=pointer]:
+                - /url: /legal#privacy
+            - listitem [ref=e79]:
+              - link "Disclaimer" [ref=e80] [cursor=pointer]:
+                - /url: /legal#disclaimer
+      - generic [ref=e81]:
+        - paragraph [ref=e82]: © 2026 ProbateDesk Technologies Inc. All rights reserved.
+        - paragraph [ref=e84]: ProbateDesk provides document preparation support and general information. We do not provide legal advice; executors remain self-represented.
+      - button "Ops" [ref=e86]
+```

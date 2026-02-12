@@ -1,0 +1,110 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e3]:
+    - banner "Primary" [ref=e4]:
+      - generic [ref=e5]:
+        - link "ProbateDesk home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]:
+            - generic [ref=e8]: ProbateDesk.com
+            - generic [ref=e9]: Done
+        - navigation "Main" [ref=e10]:
+          - link "How it works" [ref=e11] [cursor=pointer]:
+            - /url: /how-it-works
+          - link "Pricing tiers" [ref=e12] [cursor=pointer]:
+            - /url: /pricing
+          - link "About probate" [ref=e13] [cursor=pointer]:
+            - /url: /info
+          - link "FAQs" [ref=e14] [cursor=pointer]:
+            - /url: /faqs
+          - link "Legal" [ref=e15] [cursor=pointer]:
+            - /url: /legal
+          - link "Contact" [ref=e16] [cursor=pointer]:
+            - /url: /contact
+        - generic [ref=e17]:
+          - button "Sign out" [ref=e18]
+          - link "My Desk" [ref=e19] [cursor=pointer]:
+            - /url: /portal
+    - main [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]:
+          - generic [ref=e24]:
+            - link "ProbateDesk.com Done" [ref=e25] [cursor=pointer]:
+              - /url: /
+              - generic [ref=e26]: ProbateDesk.com
+              - generic [ref=e27]: Done
+            - generic [ref=e28]:
+              - paragraph [ref=e29]: Portal
+              - paragraph [ref=e30]: Your guided probate workspace
+          - navigation [ref=e31]:
+            - link "Home" [ref=e32] [cursor=pointer]:
+              - /url: /portal
+            - link "Documents" [ref=e33] [cursor=pointer]:
+              - /url: /portal/documents
+            - link "Help" [ref=e34] [cursor=pointer]:
+              - /url: /portal/help
+            - button "Notifications" [ref=e36]:
+              - img [ref=e37]
+        - main [ref=e39]:
+          - generic [ref=e40]:
+            - generic [ref=e42]:
+              - generic [ref=e43]:
+                - generic [ref=e44]: Client portal
+                - generic [ref=e45]:
+                  - heading "We’ll guide you step by step." [level=1] [ref=e46]
+                  - paragraph [ref=e47]: Start intake to create your case. We’ll keep your documents and progress here.
+              - link "Start intake" [ref=e49] [cursor=pointer]:
+                - /url: /start
+            - generic [ref=e51]: We couldn’t find an active case. Start the intake to get your personalized steps.
+    - contentinfo [ref=e52]:
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - generic [ref=e56]: ProbateDesk.com
+            - generic [ref=e57]: Done
+          - paragraph [ref=e58]: BC probate document preparation starting at $799 with flexible service tiers and modern intake experience.
+          - paragraph [ref=e59]:
+            - text: "Email:"
+            - link "hello@probatedesk.ca" [ref=e60] [cursor=pointer]:
+              - /url: mailto:hello@probatedesk.ca
+          - generic [ref=e61]:
+            - link "Create account" [ref=e62] [cursor=pointer]:
+              - /url: /create-account
+            - link "My portal" [ref=e63] [cursor=pointer]:
+              - /url: /portal
+          - button "Report a problem" [ref=e65]
+        - generic [ref=e66]:
+          - paragraph [ref=e67]: Explore
+          - list [ref=e68]:
+            - listitem [ref=e69]:
+              - link "How it works" [ref=e70] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e71]:
+              - link "Pricing" [ref=e72] [cursor=pointer]:
+                - /url: /pricing
+            - listitem [ref=e73]:
+              - link "FAQs" [ref=e74] [cursor=pointer]:
+                - /url: /faqs
+            - listitem [ref=e75]:
+              - link "Start intake" [ref=e76] [cursor=pointer]:
+                - /url: /create-account
+        - generic [ref=e77]:
+          - paragraph [ref=e78]: Legal
+          - list [ref=e79]:
+            - listitem [ref=e80]:
+              - link "Terms" [ref=e81] [cursor=pointer]:
+                - /url: /legal#terms
+            - listitem [ref=e82]:
+              - link "Privacy" [ref=e83] [cursor=pointer]:
+                - /url: /legal#privacy
+            - listitem [ref=e84]:
+              - link "Disclaimer" [ref=e85] [cursor=pointer]:
+                - /url: /legal#disclaimer
+      - generic [ref=e86]:
+        - paragraph [ref=e87]: © 2026 ProbateDesk Technologies Inc. All rights reserved.
+        - paragraph [ref=e89]: ProbateDesk provides document preparation support and general information. We do not provide legal advice; executors remain self-represented.
+      - button "Ops" [ref=e91]
+```

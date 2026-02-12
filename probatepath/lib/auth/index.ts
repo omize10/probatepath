@@ -4,24 +4,11 @@ import type { Role } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { NextAuthOptions, getServerSession, type Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { prisma } from "@/lib/prisma";
-import { sendMessage } from "@/lib/messaging/service";
 import { logAuthEvent } from "@/lib/auth/log-auth-event";
 import { logSecurityAudit } from "@/lib/audit";
-
-const fromEmail = process.env.RESEND_FROM ?? "notifications@example.com";
-
-async function sendMagicLinkEmail(params: { identifier: string; url: string }) {
-  const { identifier, url } = params;
-  await sendMessage({
-    templateKey: "magic_link",
-    to: { email: identifier },
-    variables: { url },
-  });
-}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -85,13 +72,6 @@ export const authOptions: NextAuthOptions = {
           req: req as unknown as Request | undefined,
         });
         return { id: user.id, email: user.email, name: user.name ?? undefined, role: user.role };
-      },
-    }),
-    EmailProvider({
-      from: fromEmail,
-      maxAge: 10 * 60,
-      sendVerificationRequest: async ({ identifier, url }) => {
-        await sendMagicLinkEmail({ identifier, url });
       },
     }),
     GoogleProvider({

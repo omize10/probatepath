@@ -15,7 +15,12 @@ ProbateDesk (formerly ProbatePath) is a BC-only probate document preparation pla
 ## What's Built and Working
 
 ### Core Systems (All Complete)
-- Authentication (NextAuth + bcrypt + password reset)
+- **Authentication System (Restructured):**
+  - Account creation ONLY via onboard flow (`/onboard/create-account`) or OAuth
+  - Standalone `/register` and `/create-account` redirect to onboard
+  - Sign-in methods: Email+password, OAuth (Google/Microsoft)
+  - Email verification codes (infrastructure ready, feature flagged OFF)
+  - Password reset with 6-digit codes (10min TTL, 5 attempts)
 - Multi-step intake wizard with autosave
 - Will upload integrated inline as an intake step (`will-upload-step.tsx`)
 - Will OCR extraction via Google Cloud Vision + Claude AI

@@ -123,6 +123,32 @@ export const DEFAULT_TEMPLATES: TemplateDefinition[] = [
     }
   },
   {
+    key: 'verification_code',
+    name: 'Email Verification Code',
+    description: 'Sent when user requests email code for sign-in or account verification',
+    category: 'auth',
+    emailSubject: 'Your ProbateDesk verification code',
+    emailHtml: `
+<p>Hi,</p>
+
+<p>Your verification code is:</p>
+
+<p style="font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #1e3a5f;">{{code}}</p>
+
+<p>This code expires in 10 minutes.</p>
+
+<p>If you didn't request this, you can safely ignore this email.</p>
+
+<p>Thanks,<br/>ProbateDesk</p>
+    `.trim(),
+    smsBody: undefined,
+    smsEnabled: false,
+    availableVariables: ['code'],
+    variableDescriptions: {
+      code: '6-digit verification code'
+    }
+  },
+  {
     key: 'magic_link',
     name: 'Magic Sign-in Link',
     description: 'Sent when user signs in via email',

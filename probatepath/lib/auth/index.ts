@@ -41,6 +41,100 @@ export const authOptions: NextAuthOptions = {
           } catch {}
           return null;
         }
+
+        // Check if this is an email code sign-in (signInToken)
+        const isSignInToken = /^[a-f0-9]{64}$/.test(password);
+        if (isSignInToken && process.env.ENABLE_EMAIL_CODE_AUTH === 'true') {
+          const user = await prisma.user.findFirst({
+            where: { email: { equals: email, mode: "insensitive" } },
+          });
+          if (!user) {
+            try {
+              await logSecurityAudit({
+                req: req as unknown as Request | undefined,
+                action: "auth.login_failed",
+                meta: { email, reason: "no_user_for_token" },
+              });
+            } catch {}
+            return null;
+          }
+
+          // Find recent email log with matching signInToken
+          const emailLog = await prisma.emailLog.findFirst({
+            where: {
+              to: user.email,
+              template: "verification-code",
+            },
+            orderBy: { createdAt: "desc" },
+          });
+
+          type EmailLogMeta = {
+            signInToken?: string;
+            signInTokenExpiresAt?: string;
+            signInTokenUsedAt?: string;
+          };
+
+          const meta = (emailLog?.meta ?? {}) as EmailLogMeta;
+          const signInToken = meta?.signInToken;
+          const expiresAt = meta?.signInTokenExpiresAt;
+          const usedAt = meta?.signInTokenUsedAt;
+
+          if (!signInToken || signInToken !== password) {
+            try {
+              await logSecurityAudit({
+                req: req as unknown as Request | undefined,
+                action: "auth.login_failed",
+                meta: { email, reason: "invalid_signin_token" },
+              });
+            } catch {}
+            return null;
+          }
+
+          if (usedAt) {
+            try {
+              await logSecurityAudit({
+                req: req as unknown as Request | undefined,
+                action: "auth.login_failed",
+                meta: { email, reason: "signin_token_already_used" },
+              });
+            } catch {}
+            return null;
+          }
+
+          const expiresAtDate = expiresAt ? new Date(expiresAt) : null;
+          if (!expiresAtDate || Date.now() > expiresAtDate.getTime()) {
+            try {
+              await logSecurityAudit({
+                req: req as unknown as Request | undefined,
+                action: "auth.login_failed",
+                meta: { email, reason: "signin_token_expired" },
+              });
+            } catch {}
+            return null;
+          }
+
+          // Mark token as used
+          await prisma.emailLog.update({
+            where: { id: emailLog.id },
+            data: {
+              meta: {
+                ...meta,
+                signInTokenUsedAt: new Date().toISOString(),
+              } as any,
+            },
+          });
+
+          await logAuthEvent({
+            action: "LOGIN",
+            userId: user.id,
+            email: user.email ?? undefined,
+            req: req as unknown as Request | undefined,
+          });
+
+          return { id: user.id, email: user.email, name: user.name ?? undefined, role: user.role };
+        }
+
+        // Regular password authentication
         const user = await prisma.user.findFirst({
           where: { email: { equals: email, mode: "insensitive" } },
         });

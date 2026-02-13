@@ -259,7 +259,7 @@ export const authOptions: NextAuthOptions = {
           userId: user?.id,
         });
 
-        // PrismaAdapter automatically creates users for OAuth providers
+        // Manually handle OAuth user creation to catch errors
         if (account?.provider === "google" || account?.provider === "azure-ad") {
           if (!user?.email) {
             console.error("[auth] OAuth sign-in failed: no email provided", {
@@ -270,12 +270,75 @@ export const authOptions: NextAuthOptions = {
             });
             return false;
           }
-          console.log("[auth] OAuth sign-in successful", {
-            provider: account.provider,
-            email: user.email,
-            userId: user.id,
-          });
-          return true;
+
+          try {
+            // Check if user exists
+            let dbUser = await prisma.user.findUnique({
+              where: { email: user.email },
+            });
+
+            // Create user if doesn't exist
+            if (!dbUser) {
+              console.log("[auth] Creating new OAuth user:", user.email);
+              dbUser = await prisma.user.create({
+                data: {
+                  email: user.email,
+                  name: user.name || null,
+                  image: user.image || null,
+                  emailVerified: new Date(), // OAuth emails are pre-verified
+                },
+              });
+              console.log("[auth] User created successfully:", dbUser.id);
+            }
+
+            // Check if account link exists
+            const existingAccount = await prisma.account.findUnique({
+              where: {
+                provider_providerAccountId: {
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                },
+              },
+            });
+
+            // Link account if doesn't exist
+            if (!existingAccount) {
+              console.log("[auth] Linking account for user:", dbUser.id);
+              await prisma.account.create({
+                data: {
+                  userId: dbUser.id,
+                  type: account.type,
+                  provider: account.provider,
+                  providerAccountId: account.providerAccountId,
+                  refresh_token: account.refresh_token,
+                  access_token: account.access_token,
+                  expires_at: account.expires_at,
+                  token_type: account.token_type,
+                  scope: account.scope,
+                  id_token: account.id_token,
+                  session_state: account.session_state,
+                },
+              });
+              console.log("[auth] Account linked successfully");
+            }
+
+            // Update user.id to database ID for JWT
+            user.id = dbUser.id;
+
+            console.log("[auth] OAuth sign-in successful", {
+              provider: account.provider,
+              email: user.email,
+              userId: dbUser.id,
+            });
+            return true;
+          } catch (error) {
+            console.error("[auth] MANUAL OAuth user/account creation FAILED:", error);
+            console.error("[auth] Error details:", {
+              message: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
+            return false;
+          }
         }
 
         // Allow credentials provider (handled by authorize function)

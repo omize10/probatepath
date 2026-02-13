@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ScrollFade } from "@/components/scroll-fade";
@@ -12,27 +13,29 @@ export const metadata: Metadata = {
 export default function GetStartedPage() {
   return (
     <div className="space-y-0">
-      {/* ── ZONE 1: Continuous dark background (Hero + Not a Law Firm) ── */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#080f1c] -mt-12 sm:-mt-16">
-        {/* Subtle gradient overlay for depth */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 50% at 50% 40%, rgba(30, 40, 60, 0.3) 0%, transparent 60%)",
-          }}
+      {/* ── SECTION 1: Hero with background image ── */}
+      <section className="relative isolate left-1/2 w-screen -translate-x-1/2 overflow-hidden -mt-12 sm:-mt-16">
+        <Image
+          src="/images/Main_Image_Header.png"
+          alt="Executor preparing probate documents"
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 -z-20 h-full w-full object-cover object-right lg:object-right"
         />
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 -z-10 bg-black/50" />
 
         {/* Hero content */}
-        <div className="relative z-10 mx-auto max-w-[680px] px-6 pt-32 pb-8 text-center sm:pt-36 lg:pt-44">
+        <div className="relative z-10 mx-auto max-w-[680px] px-6 pt-32 pb-20 text-center sm:pt-36 sm:pb-24 lg:pt-44 lg:pb-28">
           <ScrollFade>
-            <h1 className="font-serif text-5xl leading-tight text-white sm:text-6xl lg:text-7xl">
+            <h1 className="font-serif text-5xl leading-tight !text-white drop-shadow-[0_14px_36px_rgba(0,0,0,0.85)] sm:text-6xl lg:text-7xl">
               Probate, without the lawyer&apos;s bill.
             </h1>
           </ScrollFade>
 
           <ScrollFade delay={0.1}>
-            <p className="mt-5 text-xl text-white/90">
+            <p className="mt-5 text-xl !text-white drop-shadow-[0_10px_24px_rgba(0,0,0,0.65)]">
               Answer a few questions. We handle the paperwork.
             </p>
           </ScrollFade>
@@ -47,7 +50,7 @@ export default function GetStartedPage() {
           </ScrollFade>
 
           <ScrollFade delay={0.2}>
-            <p className="mt-5 text-sm text-white/50">
+            <p className="mt-5 text-sm !text-white/60 drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">
               From $799 · BC-specific · Fixed pricing · No legal jargon
             </p>
           </ScrollFade>
@@ -56,64 +59,19 @@ export default function GetStartedPage() {
           <ScrollFade delay={0.25}>
             <div className="mt-8 flex flex-col gap-6 text-center text-sm md:flex-row md:justify-center md:gap-12">
               <div className="space-y-1">
-                <p className="text-2xl font-semibold text-white">Starting at $799</p>
-                <p className="text-white/50">Flexible service tiers</p>
+                <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Starting at $799</p>
+                <p className="!text-white/60 drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Flexible service tiers</p>
               </div>
               <div className="space-y-1">
-                <p className="text-2xl font-semibold text-white">Court Ready in 3 Days</p>
-                <p className="text-white/50">After intake completion</p>
+                <p className="text-2xl font-semibold !text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">Court Ready in 3 Days</p>
+                <p className="!text-white/60 drop-shadow-[0_6px_16px_rgba(0,0,0,0.65)]">After intake completion</p>
               </div>
             </div>
           </ScrollFade>
         </div>
-
-        {/* "We're not a law firm" content — same dark zone, natural scroll down */}
-        <div className="relative z-10 mx-auto max-w-3xl px-6 pt-20 pb-20 text-center sm:pt-28 sm:pb-28">
-          <ScrollFade>
-            <h2 className="font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl tracking-tight">
-              <span className="text-white">We&apos;re not a law firm.</span>
-              <br />
-              <span className="text-gradient-animated">And that&apos;s the point.</span>
-            </h2>
-          </ScrollFade>
-
-          <ScrollFade delay={0.1}>
-            <p className="mt-5 text-lg leading-relaxed text-white/70 max-w-2xl mx-auto sm:text-xl">
-              No billable hours. No legal jargon. No $5,000 surprise invoices.
-              <br className="hidden sm:block" />
-              Just specialists who know BC probate inside and out, preparing your
-              documents for a fixed, transparent price.
-            </p>
-          </ScrollFade>
-
-          <ScrollFade delay={0.15}>
-            <div className="mt-10">
-              <Link href="/create-account?ref=landing" className="cta-clean-button">
-                Get Started Now
-                <ArrowRight className="ml-2 h-5 w-5" aria-hidden />
-              </Link>
-            </div>
-          </ScrollFade>
-
-          <ScrollFade delay={0.2}>
-            <p className="mt-5 text-sm text-white/40">
-              No payment required to check eligibility
-            </p>
-          </ScrollFade>
-        </div>
-
-        {/* Bottom gradient fade to light */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
-          style={{
-            background: "linear-gradient(to top, var(--bg-page) 0%, transparent 100%)",
-          }}
-        />
       </section>
 
-      {/* ── ZONE 2: Light background (Steps + FAQ) ── */}
-
-      {/* How It Works */}
+      {/* ── SECTION 2: How It Works (light background) ── */}
       <ScrollFade as="section" className="pt-12 pb-14 sm:pt-16 sm:pb-18">
         <div className="mx-auto max-w-5xl px-6">
           <p className="text-center text-sm font-semibold uppercase tracking-[0.3em] text-[color:var(--slate)]">
@@ -160,10 +118,20 @@ export default function GetStartedPage() {
               </ScrollFade>
             ))}
           </div>
+
+          {/* CTA below steps */}
+          <ScrollFade delay={0.3}>
+            <div className="mt-10 flex justify-center">
+              <Link href="/create-account?ref=landing" className="cta-clean-button !bg-[#111827] !text-white hover:!bg-[#1f2937]">
+                Get Started
+                <ArrowRight className="ml-2 h-5 w-5" aria-hidden />
+              </Link>
+            </div>
+          </ScrollFade>
         </div>
       </ScrollFade>
 
-      {/* Objection Killers — FAQ Style */}
+      {/* ── SECTION 3: FAQ / Objection Killers (light background) ── */}
       <ScrollFade as="section" className="pb-14 sm:pb-18">
         <div className="mx-auto max-w-4xl space-y-4 px-6">
           {[
@@ -195,15 +163,28 @@ export default function GetStartedPage() {
         </div>
       </ScrollFade>
 
-      {/* ── ZONE 3: Final CTA (dark) ── */}
+      {/* ── SECTION 4: "We're not a law firm" + Final CTA (dark, full-bleed) ── */}
       <ScrollFade
         as="section"
         className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#080f1c] py-16 sm:py-24"
       >
-        <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-          <h2 className="font-serif text-3xl text-white sm:text-4xl">
-            Find out in 2 minutes if ProbateDesk can help.
+        <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
+          <h2 className="font-serif text-4xl leading-tight sm:text-5xl lg:text-6xl tracking-tight">
+            <span className="text-white">We&apos;re not a law firm.</span>
+            <br />
+            <span className="text-gradient-animated">And that&apos;s the point.</span>
           </h2>
+
+          <p className="mt-5 text-lg leading-relaxed text-white/70 max-w-2xl mx-auto sm:text-xl">
+            No billable hours. No legal jargon. No $5,000 surprise invoices.
+            <br className="hidden sm:block" />
+            Just specialists who know BC probate inside and out, preparing your
+            documents for a fixed, transparent price.
+          </p>
+
+          <p className="mt-10 font-serif text-2xl text-white/90 sm:text-3xl">
+            Find out in 2 minutes if ProbateDesk can help.
+          </p>
 
           <div className="mt-8 flex justify-center">
             <Link href="/create-account?ref=landing" className="cta-clean-button">
@@ -216,7 +197,7 @@ export default function GetStartedPage() {
             No payment required to check eligibility.
           </p>
 
-          {/* Legal disclaimer — inside the dark zone */}
+          {/* Legal disclaimer */}
           <p className="mt-12 text-xs text-white/30 max-w-2xl mx-auto leading-relaxed">
             ProbateDesk is a document preparation service operated under Court Line
             Law. We are not a law firm and do not provide legal advice.

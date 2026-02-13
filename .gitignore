@@ -20,3 +20,4 @@ probatepath/public/uploads/
 
 # AI documentation and context (for AI models only)
 ai-docs/
+.vercel

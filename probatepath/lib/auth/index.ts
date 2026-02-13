@@ -11,6 +11,7 @@ import { logAuthEvent } from "@/lib/auth/log-auth-event";
 import { logSecurityAudit } from "@/lib/audit";
 
 export const authOptions: NextAuthOptions = {
+  debug: true,  // Enable debug logging to see OAuth errors
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",

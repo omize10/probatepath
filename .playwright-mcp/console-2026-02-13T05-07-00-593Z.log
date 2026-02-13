@@ -1,0 +1,3 @@
+[    2335ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://vercel.com/api/v0/deployments/dpl_yY4eDhVVRt8mq4fjxJBvP6WLnjMy/favicon?project=prj_SmIh4j0UhamwxzjgQDSd7Q752TSG&teamId=omar-ebrahims-projects-022b18ec&dpl=dpl_GnQMEEUxjGaCp3aqzYHu9uBdFHfF:0
+[    8338ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://vercel.com/api/v0/deployments/dpl_yY4eDhVVRt8mq4fjxJBvP6WLnjMy/favicon?project=prj_SmIh4j0UhamwxzjgQDSd7Q752TSG&teamId=omar-ebrahims-projects-022b18ec&dpl=dpl_GnQMEEUxjGaCp3aqzYHu9uBdFHfF:0
+[    8449ms] [WARNING] Deprecated API for given entry type. @ https://vercel.com/_next/static/chunks/effd6472624749bb.js?dpl=dpl_GnQMEEUxjGaCp3aqzYHu9uBdFHfF:18

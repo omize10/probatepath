@@ -20,6 +20,19 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     maxAge: 60 * 60,        // 1 hour
   },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production"
+        ? `__Secure-next-auth.session-token`
+        : `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === "production",
+      }
+    },
+  },
   pages: { signIn: "/login" },
   providers: [
     CredentialsProvider({
@@ -221,38 +234,69 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      // PrismaAdapter automatically creates users for OAuth providers
-      // Just validate and allow sign-in
-      if (account?.provider === "google" || account?.provider === "azure-ad") {
-        if (!user?.email) {
-          return false;
+      try {
+        // PrismaAdapter automatically creates users for OAuth providers
+        if (account?.provider === "google" || account?.provider === "azure-ad") {
+          if (!user?.email) {
+            console.error("[auth] OAuth sign-in failed: no email provided", {
+              provider: account.provider,
+              userId: user?.id,
+            });
+            return false;
+          }
+          console.log("[auth] OAuth sign-in successful", {
+            provider: account.provider,
+            email: user.email,
+            userId: user.id,
+          });
+          return true;
         }
-        return true;
-      }
 
-      // Allow credentials provider (handled by authorize function)
-      return true;
+        // Allow credentials provider (handled by authorize function)
+        return true;
+      } catch (error) {
+        console.error("[auth] signIn callback error:", error);
+        return false;
+      }
     },
     async jwt({ token, user, account }) {
-      if (user) {
-        const userRole: Role = (user as { role?: Role }).role ?? "USER";
-        token.sub = user.id as string;
-        token.role = userRole;
-        token.email = user.email;
-        token.name = user.name;
+      try {
+        if (user) {
+          const userRole: Role = (user as { role?: Role }).role ?? "USER";
+          token.sub = user.id as string;
+          token.role = userRole;
+          token.email = user.email;
+          token.name = user.name;
+
+          if (account?.provider) {
+            console.log("[auth] JWT token created for OAuth user", {
+              provider: account.provider,
+              email: user.email,
+              userId: user.id,
+            });
+          }
+        }
+        return token;
+      } catch (error) {
+        console.error("[auth] JWT callback error:", error);
+        return token;
       }
-      return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        if (token?.sub) {
-          (session.user as { id?: string }).id = token.sub;
+      try {
+        if (session.user) {
+          if (token?.sub) {
+            (session.user as { id?: string }).id = token.sub;
+          }
+          if (token?.role) {
+            (session.user as { role?: Role }).role = token.role as Role;
+          }
         }
-        if (token?.role) {
-          (session.user as { role?: Role }).role = token.role as Role;
-        }
+        return session;
+      } catch (error) {
+        console.error("[auth] Session callback error:", error);
+        return session;
       }
-      return session;
     },
   },
 };

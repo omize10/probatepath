@@ -12,7 +12,8 @@ import { logSecurityAudit } from "@/lib/audit";
 
 export const authOptions: NextAuthOptions = {
   debug: true,  // Enable debug logging to see OAuth errors
-  adapter: PrismaAdapter(prisma),
+  // TEMPORARILY DISABLED: adapter: PrismaAdapter(prisma),
+  // Testing if OAuth works without database adapter (JWT-only mode)
   session: {
     strategy: "jwt",
     maxAge: 60 * 60,        // 1 hour session life

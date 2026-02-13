@@ -90,7 +90,7 @@ async function addTextLetterhead(
   let y = startY;
 
   // Brand name
-  page.drawText("ProbateDesk.Com", {
+  page.drawText("ProbateDesk", {
     x: margin,
     y,
     size: 20,
@@ -149,7 +149,7 @@ export async function createDocxLetterhead(options?: {
       new Paragraph({
         children: [
           new TextRun({
-            text: "ProbateDesk.Com",
+            text: "ProbateDesk",
             bold: true,
             size: 36,
             font: "Arial",

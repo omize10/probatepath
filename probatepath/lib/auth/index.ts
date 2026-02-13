@@ -189,6 +189,7 @@ export const authOptions: NextAuthOptions = {
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
+          scope: "openid email profile",
         },
       },
     }),
@@ -235,12 +236,21 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
       try {
+        console.log("[auth] signIn callback triggered", {
+          provider: account?.provider,
+          hasUser: !!user,
+          hasEmail: !!user?.email,
+          userId: user?.id,
+        });
+
         // PrismaAdapter automatically creates users for OAuth providers
         if (account?.provider === "google" || account?.provider === "azure-ad") {
           if (!user?.email) {
             console.error("[auth] OAuth sign-in failed: no email provided", {
               provider: account.provider,
               userId: user?.id,
+              user: JSON.stringify(user),
+              profile: JSON.stringify(profile),
             });
             return false;
           }
@@ -256,6 +266,10 @@ export const authOptions: NextAuthOptions = {
         return true;
       } catch (error) {
         console.error("[auth] signIn callback error:", error);
+        console.error("[auth] Error details:", {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
         return false;
       }
     },

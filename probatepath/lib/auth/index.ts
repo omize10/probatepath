@@ -18,6 +18,13 @@ if (!process.env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET === "Y
   console.error("[auth] CRITICAL: GOOGLE_CLIENT_SECRET not set or using placeholder value!");
 }
 
+// Test database connection
+prisma.$connect().then(() => {
+  console.log("[auth] ✓ Prisma database connected successfully");
+}).catch((err) => {
+  console.error("[auth] ✗ Prisma database connection FAILED:", err);
+});
+
 export const authOptions: NextAuthOptions = {
   debug: true,  // Enable debug logging to see OAuth errors
   adapter: PrismaAdapter(prisma),

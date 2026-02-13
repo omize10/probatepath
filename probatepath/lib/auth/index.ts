@@ -1,5 +1,5 @@
 import "server-only";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { Role } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { NextAuthOptions, getServerSession, type Session } from "next-auth";

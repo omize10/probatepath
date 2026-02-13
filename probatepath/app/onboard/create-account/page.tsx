@@ -311,9 +311,9 @@ export default function OnboardCreateAccountPage() {
       <div className="space-y-3">
         <button
           type="button"
-          onClick={async () => {
+          onClick={() => {
             setIsLoading(true);
-            await signIn("google", {
+            signIn("google", {
               callbackUrl: "/onboard/oauth-callback"
             });
           }}
@@ -331,9 +331,9 @@ export default function OnboardCreateAccountPage() {
 
         <button
           type="button"
-          onClick={async () => {
+          onClick={() => {
             setIsLoading(true);
-            await signIn("azure-ad", {
+            signIn("azure-ad", {
               callbackUrl: "/onboard/oauth-callback"
             });
           }}

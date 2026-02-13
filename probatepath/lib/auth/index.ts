@@ -20,8 +20,7 @@ if (!process.env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET === "Y
 
 export const authOptions: NextAuthOptions = {
   debug: true,  // Enable debug logging to see OAuth errors
-  // NO ADAPTER - testing without database storage
-  // adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
     maxAge: 60 * 60,        // 1 hour session life

@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
-    "@auth/prisma-adapter": "^2.11.1",
+    "@auth/prisma-adapter": "^2.4.2",
     "@google-cloud/vision": "^5.3.4",
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.0.1",

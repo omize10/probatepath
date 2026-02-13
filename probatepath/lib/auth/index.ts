@@ -10,6 +10,14 @@ import { prisma } from "@/lib/prisma";
 import { logAuthEvent } from "@/lib/auth/log-auth-event";
 import { logSecurityAudit } from "@/lib/audit";
 
+// Check OAuth credentials at startup
+if (!process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID === "YOUR_GOOGLE_CLIENT_ID_HERE") {
+  console.error("[auth] CRITICAL: GOOGLE_CLIENT_ID not set or using placeholder value!");
+}
+if (!process.env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET === "YOUR_GOOGLE_CLIENT_SECRET_HERE") {
+  console.error("[auth] CRITICAL: GOOGLE_CLIENT_SECRET not set or using placeholder value!");
+}
+
 export const authOptions: NextAuthOptions = {
   debug: true,  // Enable debug logging to see OAuth errors
   adapter: PrismaAdapter(prisma),

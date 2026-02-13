@@ -1,0 +1,4 @@
+[   96477ms] [WARNING] %c%s%c [next-auth][warn][DEBUG_ENABLED] background: #e6e6e6;background: light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.25));color: #000000;color: light-dark(#000000, #ffffff);border-radius: 2px  Server   
+https://next-auth.js.org/warnings#debug_enabled @ <anonymous>:0
+[  105453ms] [WARNING] %c%s%c [next-auth][warn][DEBUG_ENABLED] background: #e6e6e6;background: light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.25));color: #000000;color: light-dark(#000000, #ffffff);border-radius: 2px  Server   
+https://next-auth.js.org/warnings#debug_enabled @ <anonymous>:0

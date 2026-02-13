@@ -18,37 +18,10 @@ if (!process.env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET === "Y
   console.error("[auth] CRITICAL: GOOGLE_CLIENT_SECRET not set or using placeholder value!");
 }
 
-// Wrap adapter to catch and log errors
-const adapter = PrismaAdapter(prisma);
-const wrappedAdapter = {
-  ...adapter,
-  createUser: async (data: any) => {
-    console.error("[auth] adapter.createUser called with:", JSON.stringify(data));
-    try {
-      const result = await adapter.createUser!(data);
-      console.error("[auth] adapter.createUser SUCCESS:", JSON.stringify(result));
-      return result;
-    } catch (error) {
-      console.error("[auth] adapter.createUser FAILED:", error);
-      throw error;
-    }
-  },
-  linkAccount: async (data: any) => {
-    console.error("[auth] adapter.linkAccount called with:", JSON.stringify(data));
-    try {
-      const result = await adapter.linkAccount!(data);
-      console.error("[auth] adapter.linkAccount SUCCESS");
-      return result;
-    } catch (error) {
-      console.error("[auth] adapter.linkAccount FAILED:", error);
-      throw error;
-    }
-  },
-};
-
 export const authOptions: NextAuthOptions = {
   debug: true,  // Enable debug logging to see OAuth errors
-  adapter: wrappedAdapter as any,
+  // NO ADAPTER - testing without database storage
+  // adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
     maxAge: 60 * 60,        // 1 hour session life

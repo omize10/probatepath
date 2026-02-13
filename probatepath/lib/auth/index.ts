@@ -127,31 +127,13 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      // Always allow OAuth sign-ins (Google, Microsoft)
+      // PrismaAdapter automatically creates users for OAuth providers
+      // Just validate and allow sign-in
       if (account?.provider === "google" || account?.provider === "azure-ad") {
-        // Ensure user has email
         if (!user?.email) {
           return false;
         }
-
-        // Check if user exists in database
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email },
-        });
-
-        // If user doesn't exist, create them
-        if (!existingUser) {
-          await prisma.user.create({
-            data: {
-              email: user.email,
-              name: user.name ?? null,
-              role: "USER",
-              createdVia: "oauth",
-            },
-          });
-        }
-
-        return true; // Allow sign-in
+        return true;
       }
 
       // Allow credentials provider (handled by authorize function)

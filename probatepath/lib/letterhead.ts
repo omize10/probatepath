@@ -185,7 +185,7 @@ export async function createDocxLetterhead(options?: {
       new Paragraph({
         children: [
           new TextRun({
-            text: "www.probatedesk.com  |  support@probatedesk.com",
+            text: "ProbateDesk  |  support@probatedesk.com",
             size: 16,
             font: "Arial",
             color: "888888",
@@ -233,7 +233,7 @@ export function createDocxFooter(): Paragraph[] {
     new Paragraph({
       children: [
         new TextRun({
-          text: "Prepared by ProbateDesk.Com  |  www.probatedesk.com",
+          text: "Prepared by ProbateDesk",
           size: 16,
           font: "Arial",
           color: "888888",
@@ -267,7 +267,7 @@ export async function addPdfFooter(
   });
 
   // Footer text
-  const footerText = "Prepared by ProbateDesk.Com  |  www.probatedesk.com";
+  const footerText = "Prepared by ProbateDesk";
   const textWidth = font.widthOfTextAtSize(footerText, 8);
   page.drawText(footerText, {
     x: (width - textWidth) / 2,

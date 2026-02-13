@@ -47,7 +47,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
           {/* Logo/Brand */}
           <div className="mb-8 flex flex-col items-center">
             <h1 className="text-4xl font-bold tracking-tight" style={{ color: 'var(--brand)' }}>
-              ProbateDesk<span className="text-[#445266]">.com</span>
+              ProbateDesk
             </h1>
             <span className="mt-1 text-sm font-semibold uppercase tracking-[0.3em] text-[#445266]">
               Done

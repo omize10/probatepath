@@ -20,7 +20,7 @@ function Logo({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col items-start leading-none", className)}>
       <span className="text-2xl font-bold tracking-tight" style={{ color: 'var(--brand)' }}>
-        ProbateDesk<span className="text-[color:var(--text-tertiary)]">.com</span>
+        ProbateDesk
       </span>
       <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--text-tertiary)]">
         Done

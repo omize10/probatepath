@@ -39,7 +39,7 @@ export function Footer() {
         <div className="space-y-3">
           <div className="flex flex-col items-start leading-none">
             <span className="text-xl font-bold tracking-tight" style={{ color: 'var(--brand)' }}>
-              ProbateDesk<span className="text-[color:var(--text-tertiary)]">.com</span>
+              ProbateDesk
             </span>
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--text-tertiary)]">
               Done

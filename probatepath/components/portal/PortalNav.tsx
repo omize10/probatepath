@@ -32,7 +32,7 @@ export function PortalNav({ statusLabel, pathType = "probate" }: PortalNavProps)
         <div className="flex items-center gap-4">
           <Link href="/" className="flex flex-col items-start leading-none">
             <span className="text-xl font-bold tracking-tight sm:text-2xl" style={{ color: 'var(--brand)' }}>
-              ProbateDesk<span className="text-[#445266]">.com</span>
+              ProbateDesk
             </span>
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#445266]">
               Done

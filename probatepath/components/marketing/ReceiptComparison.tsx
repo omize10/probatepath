@@ -320,7 +320,6 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
               <span className="text-white font-bold text-xl tracking-normal">
                 ProbateDesk
               </span>
-              <span className="text-emerald-400 font-medium text-base ml-1 opacity-90">.com</span>
             </div>
           </motion.div>
 

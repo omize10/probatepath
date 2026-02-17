@@ -14,6 +14,18 @@ import { contactSectionConfig } from "./components/ContactSection";
 import { legalTabsConfig } from "./components/LegalTabs";
 
 export const puckConfig: Config = {
+  root: {
+    fields: {
+      metaTitle: {
+        type: "text",
+        label: "Page Title (SEO)",
+      },
+      metaDescription: {
+        type: "textarea",
+        label: "Meta Description (SEO)",
+      },
+    },
+  },
   components: {
     HeroSection: heroSectionConfig,
     CTASection: ctaSectionConfig,

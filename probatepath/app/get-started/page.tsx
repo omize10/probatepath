@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ScrollFade } from "@/components/scroll-fade";
+import { getPageContent } from "@/lib/page-content";
+import { PuckPage } from "@/lib/puck/render-page";
 
 export const metadata: Metadata = {
   title: "Get Started — BC Probate Help from $799",
@@ -10,7 +12,10 @@ export const metadata: Metadata = {
     "ProbateDesk prepares your BC probate filing package for a fixed fee. No lawyers, no surprise bills. Check if you qualify in 2 minutes.",
 };
 
-export default function GetStartedPage() {
+export default async function GetStartedPage() {
+  const puckData = await getPageContent("get-started");
+  if (puckData) return <PuckPage data={puckData} />;
+
   return (
     <div className="space-y-0">
       {/* ── SECTION 1: Hero with background image ── */}

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { testimonials } from "@/lib/testimonials";
 import { TestimonialsContent } from "./TestimonialsContent";
+import { getPageContent } from "@/lib/page-content";
+import { PuckPage } from "@/lib/puck/render-page";
 
 export const metadata: Metadata = {
   title: "Testimonials",
@@ -8,7 +10,10 @@ export const metadata: Metadata = {
     "Anonymised feedback from executors who used ProbateDesk to prepare BC probate documents with clear guidance and calm support.",
 };
 
-export default function TestimonialsPage() {
+export default async function TestimonialsPage() {
+  const puckData = await getPageContent("testimonials");
+  if (puckData) return <PuckPage data={puckData} />;
+
   return (
     <div className="space-y-14 pb-20 sm:space-y-16">
       <section className="space-y-4">

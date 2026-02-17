@@ -9,6 +9,8 @@ import { ReceiptComparison } from "@/components/marketing/ReceiptComparison";
 import { CinematicTimeline } from "@/components/marketing/CinematicTimeline";
 import { ScrollFade } from "@/components/scroll-fade";
 import { FAQAccordion } from "@/components/faq-accordion";
+import { getPageContent } from "@/lib/page-content";
+import { PuckPage } from "@/lib/puck/render-page";
 
 export const metadata: Metadata = {
   title: "BC probate documents in days",
@@ -41,7 +43,10 @@ const miniFaq = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const puckData = await getPageContent("home");
+  if (puckData) return <PuckPage data={puckData} />;
+
   return (
     <div className="space-y-16 pb-20 sm:space-y-20 sm:pb-24">
       {/* Hero */}

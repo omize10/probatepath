@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { ContactForm } from "@/components/contact-form";
+import { getPageContent } from "@/lib/page-content";
+import { PuckPage } from "@/lib/puck/render-page";
 
 export const metadata: Metadata = {
   title: "Contact",
   description: "Reach the ProbateDesk team with questions about eligibility, timelines, or onboarding.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const puckData = await getPageContent("contact");
+  if (puckData) return <PuckPage data={puckData} />;
+
   return (
     <div className="space-y-12 pb-16">
       <header className="space-y-4">

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { FAQAccordion } from "@/components/faq-accordion";
+import { getPageContent } from "@/lib/page-content";
+import { PuckPage } from "@/lib/puck/render-page";
 
 export const metadata: Metadata = {
   title: "Probate FAQs",
@@ -66,7 +68,10 @@ const faqs = [
   },
 ];
 
-export default function FAQsPage() {
+export default async function FAQsPage() {
+  const puckData = await getPageContent("faqs");
+  if (puckData) return <PuckPage data={puckData} />;
+
   return (
     <div className="space-y-10 pb-16">
       <header className="space-y-4 text-center">

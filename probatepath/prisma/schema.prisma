@@ -1149,6 +1149,20 @@ model MilestoneConfirmation {
 }
 
 // ========================================
+// PAGE CONTENT (Visual Editor / Puck)
+// ========================================
+
+model PageContent {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  data      Json
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([slug])
+}
+
+// ========================================
 // VOICEMAIL (Incoming Call Fallback)
 // ========================================
 

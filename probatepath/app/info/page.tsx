@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { InfoCard } from "@/components/info/InfoCard";
 import { RegistryCard } from "@/components/info/RegistryCard";
 import { BookOpen, HelpCircle, MapPin, FileText, Calculator } from "lucide-react";
+import { getPageContent } from "@/lib/page-content";
+import { PuckPage } from "@/lib/puck/render-page";
 
 export const metadata: Metadata = {
   title: "Info Center | BC Probate Help for Executors",
@@ -61,7 +63,10 @@ const registries = [
   { name: "Kelowna", address: "1355 Water St", phone: "250-470-6900", hours: "Mon-Fri 9-4", href: "/info/registries/kelowna" },
 ];
 
-export default function InfoCenterPage() {
+export default async function InfoCenterPage() {
+  const puckData = await getPageContent("info");
+  if (puckData) return <PuckPage data={puckData} />;
+
   return (
     <div className="space-y-20 pb-20">
       {/* Hero */}

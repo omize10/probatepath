@@ -5,6 +5,8 @@ import { ArrowRight, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollFade } from "@/components/scroll-fade";
+import { getPageContent } from "@/lib/page-content";
+import { PuckPage } from "@/lib/puck/render-page";
 
 export const metadata: Metadata = {
   title: "Pricing - ProbateDesk",
@@ -148,7 +150,10 @@ const comparisonFeatures = [
   },
 ];
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const puckData = await getPageContent("pricing");
+  if (puckData) return <PuckPage data={puckData} />;
+
   return (
     <div className="space-y-20 pb-28">
       <ScrollFade

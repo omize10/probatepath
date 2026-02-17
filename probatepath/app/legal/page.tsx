@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getPageContent } from "@/lib/page-content";
+import { PuckPage } from "@/lib/puck/render-page";
 
 export const metadata: Metadata = {
   title: "Legal",
@@ -38,7 +40,10 @@ const sections = [
   },
 ];
 
-export default function LegalPage() {
+export default async function LegalPage() {
+  const puckData = await getPageContent("legal");
+  if (puckData) return <PuckPage data={puckData} />;
+
   return (
     <div className="space-y-12 pb-16">
       <header className="space-y-4">

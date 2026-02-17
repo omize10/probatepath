@@ -5,6 +5,8 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollFade } from "@/components/scroll-fade";
+import { getPageContent } from "@/lib/page-content";
+import { PuckPage } from "@/lib/puck/render-page";
 
 export const metadata: Metadata = {
   title: "How ProbateDesk works",
@@ -78,7 +80,10 @@ const goodFit = [
 
 const notFit = ["Contested estates", "Complex trusts or multiple jurisdictions", "Situations requiring legal representation"];
 
-export default function HowItWorksPage() {
+export default async function HowItWorksPage() {
+  const puckData = await getPageContent("how-it-works");
+  if (puckData) return <PuckPage data={puckData} />;
+
   return (
     <div className="space-y-20 pb-28">
       <ScrollFade

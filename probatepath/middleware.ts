@@ -21,8 +21,15 @@ const EXCLUDED_PREFIXES = [
   "/dashboard/",
 ];
 
-/** Exact paths that should never be intercepted */
+/**
+ * Exact paths that should never be intercepted for Puck rewrite.
+ * Includes auth pages AND the 9 marketing pages that have their own
+ * getPageContent() + static fallback built into their page.tsx.
+ * Those pages render Puck content themselves via Prisma; the middleware
+ * rewrite is only needed for pages without a built-in Puck fallback.
+ */
 const EXCLUDED_EXACT = [
+  // Auth
   "/login",
   "/register",
   "/forgot-password",
@@ -31,6 +38,16 @@ const EXCLUDED_EXACT = [
   "/verify-pending",
   "/create-account",
   "/test-oauth",
+  // Marketing pages with their own Puck+static fallback in page.tsx
+  "/",
+  "/pricing",
+  "/faqs",
+  "/how-it-works",
+  "/get-started",
+  "/contact",
+  "/testimonials",
+  "/legal",
+  "/info",
 ];
 
 function isExcludedPath(pathname: string): boolean {

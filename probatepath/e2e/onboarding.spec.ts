@@ -1,11 +1,6 @@
 import { test, expect } from "./fixtures";
-import { bypassPasswordGate } from "./helpers/auth";
 
 test.describe("Onboarding Flow", () => {
-  test.beforeEach(async ({ page }) => {
-    await bypassPasswordGate(page);
-  });
-
   test("happy path: executor selects role and relationship", async ({
     page,
   }) => {

@@ -7,16 +7,11 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    // TEMPORARY BETA FIX: Allow requests without session for testing
-    // TODO: Remove this before production launch
-    let userId: string | undefined;
-    if (session?.user) {
-      userId = (session.user as { id?: string }).id;
-    } else {
-      // Use permanent beta user (exists in DB)
-      userId = "beta-user-permanent";
-      console.warn("[payment/beta] BETA MODE: Using permanent beta user");
+    if (!session?.user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
+
+    const userId = (session.user as { id?: string }).id;
 
     if (!userId) {
       return NextResponse.json({ error: "User ID not found" }, { status: 401 });
@@ -80,15 +75,13 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Update user's intake method based on tier (skip for beta user)
-      if (actualUserId !== "beta-user-permanent") {
-        await prisma.user.update({
-          where: { id: actualUserId },
-          data: {
-            intakeMethod: selectedTier === "basic" ? "manual" : "callback",
-          },
-        });
-      }
+      // Update user's intake method based on tier
+      await prisma.user.update({
+        where: { id: actualUserId },
+        data: {
+          intakeMethod: selectedTier === "basic" ? "manual" : "callback",
+        },
+      });
     }
 
     // Route based on tier

@@ -1,24 +1,8 @@
 import { test, expect } from "./fixtures";
-import { bypassPasswordGate } from "./helpers/auth";
 import { generateTestUser } from "./helpers/test-data";
 
 test.describe("Authentication Flow", () => {
-  test("password gate blocks access and accepts correct code", async ({
-    page,
-  }) => {
-    await page.goto("/");
-    await expect(page.getByText("Enter Password")).toBeVisible();
-    // Wrong password
-    await page.locator("input[type='password'], input[type='text']").first().fill("0000");
-    await page.getByRole("button", { name: /access/i }).click();
-    await expect(page.getByText(/incorrect/i)).toBeVisible();
-    // Correct password
-    await page.locator("input[type='password'], input[type='text']").first().fill("2929");
-    await page.getByRole("button", { name: /access/i }).click();
-    await expect(page.getByText("Enter Password")).not.toBeVisible({ timeout: 10_000 });
-  });
-
-  test("register a new account", async ({ gatelessPage: page }) => {
+  test("register a new account", async ({ page }) => {
     const user = generateTestUser();
     await page.goto("/register");
     await page.locator("#name").fill(user.name);
@@ -36,7 +20,7 @@ test.describe("Authentication Flow", () => {
   });
 
   test("login with valid credentials", async ({
-    gatelessPage: page,
+    page,
     testUser,
   }) => {
     await page.goto("/login");
@@ -50,7 +34,7 @@ test.describe("Authentication Flow", () => {
   });
 
   test("login with bad password shows error", async ({
-    gatelessPage: page,
+    page,
     testUser,
   }) => {
     await page.goto("/login");
@@ -65,7 +49,7 @@ test.describe("Authentication Flow", () => {
   });
 
   test("protected portal route redirects to login", async ({
-    gatelessPage: page,
+    page,
   }) => {
     await page.goto("/portal");
     await page.waitForURL((url) => url.pathname.includes("/login"), {
@@ -75,7 +59,7 @@ test.describe("Authentication Flow", () => {
   });
 
   test("forgot password flow initiates reset", async ({
-    gatelessPage: page,
+    page,
     testUser,
   }) => {
     await page.goto("/forgot-password");

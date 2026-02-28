@@ -6,7 +6,6 @@ import { Footer } from "@/components/footer";
 import { Providers } from "@/components/providers";
 import { auth } from "@/lib/auth";
 import { NavbarClient } from "@/components/navbar-client";
-import { PasswordGate } from "@/components/password-gate";
 
 import "./globals.css";
 
@@ -40,8 +39,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="bg-[color:var(--bg-page)] text-[color:var(--ink)]">
       <body className={cn("min-h-screen bg-[color:var(--bg-page)] text-[color:var(--ink)] antialiased", inter.variable, dmSerif.variable)}>
-        <PasswordGate>
-          <Providers session={session}>
+        <Providers session={session}>
             <div className="relative flex min-h-screen flex-col">
               <NavbarClient />
               <main
@@ -53,7 +51,6 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               <Footer />
             </div>
           </Providers>
-        </PasswordGate>
       </body>
     </html>
   );

@@ -2,13 +2,6 @@ import type { Page, APIRequestContext } from "@playwright/test";
 
 const BASE = process.env.TEST_BASE_URL || "https://www.probatedesk.com";
 
-/** Set localStorage flag so the PasswordGate component doesn't block the page */
-export async function bypassPasswordGate(page: Page) {
-  await page.addInitScript(() => {
-    localStorage.setItem("probate_desk_auth", "true");
-  });
-}
-
 /** Register a new user via the API (skipping the UI for speed) */
 export async function registerTestUser(
   request: APIRequestContext,
@@ -37,11 +30,10 @@ export async function loginAsUser(
   });
 }
 
-/** Convenience: bypass gate + login in one call */
+/** Convenience: login in one call */
 export async function setupAuthenticatedPage(
   page: Page,
   creds: { email: string; password: string }
 ) {
-  await bypassPasswordGate(page);
   await loginAsUser(page, creds);
 }

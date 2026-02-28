@@ -8,26 +8,13 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    // BETA MODE: Log session state for debugging
-    console.log("[tier/select] Session check:", {
-      hasSession: !!session,
-      hasUser: !!session?.user,
-      userId: (session?.user as { id?: string })?.id,
-    });
-
-    // TEMPORARY BETA FIX: Allow requests without session for testing
-    // TODO: Remove this before production launch
-    let userId: string | undefined;
-    if (session?.user) {
-      userId = (session.user as { id?: string }).id;
-    } else {
-      // Use permanent beta user (exists in DB with this exact ID)
-      userId = "beta-user-permanent";
-      console.warn("[tier/select] BETA MODE: Using permanent beta user");
+    if (!session?.user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
+    const userId = (session.user as { id?: string }).id;
+
     if (!userId) {
-      console.error("[tier/select] Failed to get user ID even with fallback");
       return NextResponse.json({ error: "User ID not found" }, { status: 401 });
     }
 
@@ -67,16 +54,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Update user's selected tier (skip for beta user)
-    if (userId !== "beta-user-permanent") {
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          selectedTier: dbTier,
-          isPremium: dbTier === "premium",
-        },
-      });
-    }
+    // Update user's selected tier
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        selectedTier: dbTier,
+        isPremium: dbTier === "premium",
+      },
+    });
 
     return NextResponse.json({
       tierSelectionId: tierSelection.id,

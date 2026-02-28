@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CreditCard, Rocket, Loader2 } from "lucide-react";
+import { CreditCard, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -100,26 +100,10 @@ export default function PaymentPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-12 sm:px-6 lg:px-8">
-      {/* Beta Banner */}
-      <div className="rounded-2xl border-2 border-blue-300 bg-blue-50 p-6">
-        <div className="flex items-start gap-4">
-          <Rocket className="h-8 w-8 flex-none text-blue-600" />
-          <div>
-            <h2 className="text-lg font-bold text-blue-900">BETA TESTING</h2>
-            <p className="mt-1 text-blue-800">
-              Payment information is <strong>optional</strong> during our beta period.
-            </p>
-            <p className="mt-2 text-sm text-blue-700">
-              Full launch in 21 days. Your card will not be charged.
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="space-y-4 text-center">
         <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">Payment Information</h1>
         <p className="mx-auto max-w-2xl text-base text-[color:var(--muted-ink)]">
-          Enter your payment details below, or skip for now during the beta period.
+          Enter your payment details below to continue.
         </p>
       </div>
 
@@ -137,7 +121,7 @@ export default function PaymentPage() {
               Payment details
             </CardTitle>
             <CardDescription className="text-sm text-[color:var(--muted-ink)]">
-              All fields are optional during beta
+              Enter your payment details to continue
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -269,16 +253,6 @@ export default function PaymentPage() {
                   )}
                 </Button>
 
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  className="w-full"
-                  disabled={isProcessing}
-                  onClick={() => handleSubmit(true)}
-                >
-                  Skip for now
-                </Button>
               </div>
 
               <p className="text-center text-xs text-[color:var(--muted-ink)]">
@@ -307,13 +281,6 @@ export default function PaymentPage() {
                   <span className="text-2xl font-bold text-[color:var(--brand)]">${tierPrice.toLocaleString()} CAD</span>
                 </div>
                 <p className="mt-1 text-xs text-[color:var(--muted-ink)]">plus GST/PST at checkout</p>
-              </div>
-
-              <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-xs text-blue-800">
-                <p className="font-semibold">Beta period - no charge</p>
-                <p className="mt-1">
-                  Your card will not be charged during the beta period. You can skip payment entirely if you prefer.
-                </p>
               </div>
 
               <div className="rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] p-4 text-xs text-[color:var(--muted-ink)]">

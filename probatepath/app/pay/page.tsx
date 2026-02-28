@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { CreditCard, Rocket, Loader2, CheckCircle2, Phone, ArrowLeft } from "lucide-react";
+import { CreditCard, Loader2, CheckCircle2, Phone, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -291,20 +291,6 @@ export default function PayPage() {
           </div>
         )}
 
-        {/* Beta Banner */}
-        <div className="rounded-2xl border-2 border-blue-300 bg-blue-50 p-6">
-          <div className="flex items-start gap-4">
-            <Rocket className="h-8 w-8 flex-none text-blue-600" />
-            <div>
-              <h2 className="text-lg font-bold text-blue-900">BETA TESTING</h2>
-              <p className="mt-1 text-blue-800">
-                Payment information is <strong>optional</strong> during our beta period.
-              </p>
-              <p className="mt-2 text-sm text-blue-700">Your card will not be charged.</p>
-            </div>
-          </div>
-        </div>
-
         <div className="space-y-4 text-center">
           <h1 className="font-serif text-4xl text-[color:var(--brand)] sm:text-5xl">
             Complete Your Order
@@ -330,7 +316,7 @@ export default function PayPage() {
                 Payment Details
               </CardTitle>
               <CardDescription className="text-sm text-[color:var(--muted-ink)]">
-                All fields are optional during beta
+                Enter your payment details to continue
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -510,16 +496,6 @@ export default function PayPage() {
                     )}
                   </Button>
 
-                  <Button
-                    type="button"
-                    size="lg"
-                    variant="outline"
-                    className="w-full"
-                    disabled={isProcessing}
-                    onClick={() => handleSubmit(true)}
-                  >
-                    Skip for now
-                  </Button>
                 </div>
 
                 {/* How did you find us? (only if no funeral home referral) */}
@@ -587,11 +563,6 @@ export default function PayPage() {
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-[color:var(--muted-ink)]">plus GST/PST at checkout</p>
-                </div>
-
-                <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-xs text-blue-800">
-                  <p className="font-semibold">Beta period - no charge</p>
-                  <p className="mt-1">Your card will not be charged during the beta period.</p>
                 </div>
 
                 <div className="rounded-2xl border border-[color:var(--border-muted)] bg-[color:var(--bg-muted)] p-4 text-xs text-[color:var(--muted-ink)]">

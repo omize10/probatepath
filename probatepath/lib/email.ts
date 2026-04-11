@@ -4,7 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const from = process.env.RESEND_FROM ?? "notifications@example.com";
+const from = process.env.RESEND_FROM ?? process.env.MAIL_FROM ?? "ProbateDesk <onboarding@resend.dev>";
+
+if (!process.env.RESEND_FROM && !process.env.MAIL_FROM) {
+  console.warn("[email] Neither RESEND_FROM nor MAIL_FROM is set — falling back to Resend sandbox sender. Configure a verified domain for production.");
+}
 
 export async function sendTemplateEmail({
   to,

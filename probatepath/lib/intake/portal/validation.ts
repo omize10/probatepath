@@ -203,6 +203,13 @@ const validators: Partial<Record<PortalStepId, Validator>> = {
     }
     return errors;
   },
+  "notice-review": (draft) => {
+    const errors: PortalStepErrors = {};
+    if (!draft.estateIntake.notice?.reviewAcknowledged) {
+      errors["notice.reviewAcknowledged"] = "Please confirm the notice list is complete before continuing.";
+    }
+    return errors;
+  },
   "filing-registry": (draft) => {
     const errors: PortalStepErrors = {};
     if (!required(draft.estateIntake.filing.registryLocation)) {

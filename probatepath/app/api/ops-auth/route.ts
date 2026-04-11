@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 
-const OPS_PASSWORD = process.env.OPS_PASSWORD ?? "123";
+const OPS_PASSWORD = process.env.OPS_PASSWORD;
 
 export async function POST(request: Request) {
+  if (!OPS_PASSWORD || OPS_PASSWORD.length < 8) {
+    console.error("[ops-auth] OPS_PASSWORD env var missing or too short — refusing all logins");
+    return NextResponse.json({ ok: false, error: "Ops auth not configured" }, { status: 503 });
+  }
+
   const body = await request.json().catch(() => ({}));
   const password = (body as { password?: string }).password ?? "";
 

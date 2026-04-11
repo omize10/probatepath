@@ -17,6 +17,13 @@ export const metadata: Metadata = {
   },
   description:
     "ProbateDesk prepares filing-ready probate documents for British Columbia executors starting at $799 CAD, with flexible service tiers.",
+  icons: {
+    icon: [
+      { url: "/icon", type: "image/png" },
+    ],
+    shortcut: "/icon",
+    apple: "/apple-icon",
+  },
 };
 
 const inter = Inter({

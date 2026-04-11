@@ -284,6 +284,12 @@ function renderStep(stepId: PortalStepId, context: RenderContext) {
       return <WillExecutors {...context} />;
     case "will-codicils":
       return <WillCodicils {...context} />;
+    case "will-issues":
+      return <WillIssues {...context} />;
+    case "notice-minors":
+      return <NoticeMinors {...context} />;
+    case "notice-review":
+      return <NoticeReview {...context} />;
     case "admin-applicants":
       return (
         <AdminApplicantsStep
@@ -1010,6 +1016,232 @@ function WillCodicils({ draft, updateEstate, errors }: RenderContext) {
       ) : null}
       {errors["will.codicils"] ? <ErrorText>{errors["will.codicils"]}</ErrorText> : null}
     </QuestionCard>
+  );
+}
+
+const WILL_ISSUE_OPTIONS: { value: string; label: string }[] = [
+  { value: "missing_pages", label: "Pages appear missing or out of order" },
+  { value: "damaged", label: "Will is torn, water-damaged, or hard to read" },
+  { value: "missing_signatures", label: "Missing signatures (testator or witnesses)" },
+  { value: "staples_or_binding", label: "Staples have been removed or pages re-bound" },
+  { value: "handwritten_changes", label: "Handwritten edits, crossings-out, or notes in the margins" },
+  { value: "uncertain_witnesses", label: "I'm not sure who the witnesses were" },
+];
+
+function WillIssues({ draft, updateEstate }: RenderContext) {
+  const will = draft.estateIntake.will;
+  const selected = will.knownIssues ?? [];
+
+  const toggle = (value: string) => {
+    updateEstate((estate) => {
+      const current = estate.will.knownIssues ?? [];
+      const next = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value];
+      return { ...estate, will: { ...estate.will, knownIssues: next } };
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      <QuestionCard
+        title="Are there any issues with the will?"
+        description="Tick anything that applies. We'll flag these for our reviewer so we can advise on next steps before filing."
+        why="Even small problems with the original will can cause the registry to reject an application."
+        where="Look at the original will carefully — front and back of every page."
+      >
+        <div className="grid gap-3">
+          {WILL_ISSUE_OPTIONS.map((option) => {
+            const checked = selected.includes(option.value);
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => toggle(option.value)}
+                className={`flex items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
+                  checked
+                    ? "border-[color:var(--brand)] bg-[color:var(--brand)]/5"
+                    : "border-[color:var(--border-muted)] hover:border-[color:var(--brand)]"
+                }`}
+              >
+                <span
+                  className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
+                    checked ? "border-[color:var(--brand)] bg-[color:var(--brand)] text-white" : "border-[color:var(--border-muted)]"
+                  }`}
+                  aria-hidden="true"
+                >
+                  {checked ? "✓" : ""}
+                </span>
+                <span className="text-sm font-medium text-[color:var(--ink)]">{option.label}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-4 text-xs text-[color:var(--ink-muted)]">
+          If none of these apply, leave them all unticked and continue.
+        </p>
+      </QuestionCard>
+
+      <QuestionCard
+        title="Anything else we should know?"
+        description="Optional. Tell us in your own words about anything unusual."
+      >
+        <Textarea
+          value={will.issuesNotes ?? ""}
+          onChange={(event) =>
+            updateEstate((estate) => ({
+              ...estate,
+              will: { ...estate.will, issuesNotes: event.target.value },
+            }))
+          }
+          rows={4}
+          placeholder="e.g., We found a second will dated later but it's only a photocopy."
+        />
+      </QuestionCard>
+    </div>
+  );
+}
+
+function NoticeMinors({ draft, updateEstate }: RenderContext) {
+  const minorChildren = draft.estateIntake.family.children.filter((c) => c.isMinor);
+  const minorBeneficiaries = draft.estateIntake.beneficiaries.people.filter((p) => p.isMinorOrIncapable);
+
+  return (
+    <div className="space-y-6">
+      <QuestionCard
+        title="People who need extra notice protection"
+        description="Minors and people who can't manage their own affairs need someone to receive notice on their behalf."
+        why="BC's probate rules require notice to a parent, guardian, or the Public Guardian and Trustee for these people."
+        where="Look at the list below — these are people you've already told us about who fall into this category."
+      >
+        {minorChildren.length === 0 && minorBeneficiaries.length === 0 ? (
+          <p className="text-sm text-[color:var(--ink-muted)]">
+            No minors or incapable beneficiaries on your list. You can continue.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {minorChildren.map((child) => (
+              <div key={child.id} className="rounded-2xl border border-[color:var(--border-muted)] p-3 text-sm">
+                <p className="font-semibold text-[color:var(--ink)]">
+                  {[child.name.first, child.name.last].filter(Boolean).join(" ") || "Unnamed child"}
+                </p>
+                <p className="text-xs text-[color:var(--ink-muted)]">Minor child</p>
+              </div>
+            ))}
+            {minorBeneficiaries.map((person) => (
+              <div key={person.id} className="rounded-2xl border border-[color:var(--border-muted)] p-3 text-sm">
+                <p className="font-semibold text-[color:var(--ink)]">
+                  {[person.name.first, person.name.last].filter(Boolean).join(" ") || "Unnamed beneficiary"}
+                </p>
+                <p className="text-xs text-[color:var(--ink-muted)]">Minor or incapable beneficiary</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </QuestionCard>
+
+      <QuestionCard
+        title="Who will receive notice on their behalf?"
+        description="A parent, court-appointed guardian, lawyer, or the Public Guardian and Trustee. Add the names and how to reach them. Our team will confirm this with you before notices go out."
+      >
+        <Textarea
+          value={draft.estateIntake.notice.minorRepDetails}
+          onChange={(event) =>
+            updateEstate((estate) => ({
+              ...estate,
+              notice: { ...estate.notice, minorRepDetails: event.target.value },
+            }))
+          }
+          rows={5}
+          placeholder="e.g., Sarah Lee (mother of Emma, age 10) — sarah@example.com, 604-555-0100"
+        />
+      </QuestionCard>
+    </div>
+  );
+}
+
+function NoticeReview({ draft, updateEstate }: RenderContext) {
+  const family = draft.estateIntake.family;
+  const beneficiaries = draft.estateIntake.beneficiaries;
+  const heirs = draft.estateIntake.administration.intestateHeirs ?? [];
+
+  const recipients: { label: string; sub?: string }[] = [];
+  if (family.hasSpouse === "yes") {
+    const fullName = [family.spouse.name.first, family.spouse.name.last].filter(Boolean).join(" ");
+    if (fullName) recipients.push({ label: fullName, sub: "Spouse" });
+  }
+  family.children.forEach((c) => {
+    const fullName = [c.name.first, c.name.last].filter(Boolean).join(" ");
+    if (fullName) recipients.push({ label: fullName, sub: c.isMinor ? "Child (minor)" : "Child" });
+  });
+  beneficiaries.people.forEach((p) => {
+    const fullName = [p.name.first, p.name.last].filter(Boolean).join(" ");
+    if (fullName) recipients.push({ label: fullName, sub: p.isMinorOrIncapable ? "Beneficiary (needs rep)" : "Beneficiary" });
+  });
+  beneficiaries.organizations.forEach((o) => {
+    if (o.legalName) recipients.push({ label: o.legalName, sub: "Organisation" });
+  });
+  heirs.forEach((h) => {
+    const fullName = [h.name?.first, h.name?.last].filter(Boolean).join(" ");
+    if (fullName) recipients.push({ label: fullName, sub: "Intestate heir" });
+  });
+
+  const ack = draft.estateIntake.notice.reviewAcknowledged;
+
+  return (
+    <div className="space-y-6">
+      <QuestionCard
+        title="Who will receive a P1 notice"
+        description="Below is everyone we'll prepare a notice for, based on your answers. Look it over and let us know if anyone is missing."
+        why="The court requires notice to every person with a possible interest. Missing someone is the most common reason for delay."
+        where="Cross-check this list against the will and your family tree."
+      >
+        {recipients.length === 0 ? (
+          <p className="text-sm text-[color:var(--ink-muted)]">
+            We don't have any notice recipients yet. Go back and add family members and beneficiaries first.
+          </p>
+        ) : (
+          <ul className="divide-y divide-[color:var(--border-muted)] rounded-2xl border border-[color:var(--border-muted)]">
+            {recipients.map((r, i) => (
+              <li key={`${r.label}-${i}`} className="flex items-center justify-between px-4 py-3 text-sm">
+                <span className="font-medium text-[color:var(--ink)]">{r.label}</span>
+                {r.sub ? <span className="text-xs text-[color:var(--ink-muted)]">{r.sub}</span> : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </QuestionCard>
+
+      <QuestionCard
+        title="Confirm the list"
+        description="Tick the box if this list is complete. If anyone is missing, go back and add them before continuing."
+      >
+        <button
+          type="button"
+          onClick={() =>
+            updateEstate((estate) => ({
+              ...estate,
+              notice: { ...estate.notice, reviewAcknowledged: !ack },
+            }))
+          }
+          className={`flex items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
+            ack ? "border-[color:var(--brand)] bg-[color:var(--brand)]/5" : "border-[color:var(--border-muted)] hover:border-[color:var(--brand)]"
+          }`}
+        >
+          <span
+            className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
+              ack ? "border-[color:var(--brand)] bg-[color:var(--brand)] text-white" : "border-[color:var(--border-muted)]"
+            }`}
+            aria-hidden="true"
+          >
+            {ack ? "✓" : ""}
+          </span>
+          <span className="text-sm font-medium text-[color:var(--ink)]">
+            Yes — this list is complete and I'm not missing anyone with a possible interest.
+          </span>
+        </button>
+      </QuestionCard>
+    </div>
   );
 }
 

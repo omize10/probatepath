@@ -6,7 +6,11 @@ import { processAbandonedCallReminders } from "@/lib/retell/recovery";
 export async function POST(request: Request) {
   const authHeader = request.headers.get("authorization");
   const secret = process.env.CRON_SECRET;
-  if (secret && authHeader !== `Bearer ${secret}`) {
+  if (!secret) {
+    console.error("[cron] CRON_SECRET not set — refusing to run");
+    return NextResponse.json({ error: "Cron not configured" }, { status: 503 });
+  }
+  if (authHeader !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

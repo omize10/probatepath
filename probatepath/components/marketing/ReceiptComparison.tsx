@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
@@ -116,10 +116,13 @@ function ReceiptLine({
 
 // Lawyer Receipt Component
 function LawyerReceipt({ isInView }: { isInView: boolean }) {
-  const currentMonth = new Date().toLocaleDateString("en-CA", {
-    month: "long",
-    year: "numeric",
-  });
+  // Compute date only after hydration to avoid SSR/CSR mismatch (React #418).
+  const [currentMonth, setCurrentMonth] = useState("");
+  useEffect(() => {
+    setCurrentMonth(
+      new Date().toLocaleDateString("en-CA", { month: "long", year: "numeric" }),
+    );
+  }, []);
 
   return (
     <motion.div
@@ -264,12 +267,18 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
 
 // ProbateDesk Receipt Component
 function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
-  const currentDate = new Date().toLocaleDateString("en-CA", {
-    month: "long",
-    year: "numeric",
-  });
-
-  const receiptNumber = `PD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000).padStart(5, '0')}`;
+  // Defer date + random receipt number to after hydration (React #418).
+  const [currentDate, setCurrentDate] = useState("");
+  const [receiptNumber, setReceiptNumber] = useState("");
+  useEffect(() => {
+    const now = new Date();
+    setCurrentDate(
+      now.toLocaleDateString("en-CA", { month: "long", year: "numeric" }),
+    );
+    setReceiptNumber(
+      `PD-${now.getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000).padStart(5, "0")}`,
+    );
+  }, []);
 
   return (
     <motion.div

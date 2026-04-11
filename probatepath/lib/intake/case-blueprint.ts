@@ -179,6 +179,8 @@ export type EstateIntake = {
       dateSigned: string;
       notes: string;
     }[];
+    knownIssues: string[];
+    issuesNotes: string;
   };
   willUpload: {
     hasFiles: boolean;
@@ -243,6 +245,10 @@ export type EstateIntake = {
     registryLocation: string;
     returnAddress: Address;
   };
+  notice: {
+    minorRepDetails: string;
+    reviewAcknowledged: boolean;
+  };
 };
 
 const emptyAddress: Address = {
@@ -293,6 +299,8 @@ export const emptyEstateIntake: EstateIntake = {
     namedExecutors: [],
     hasCodicils: "no",
     codicils: [],
+    knownIssues: [],
+    issuesNotes: "",
   },
   willUpload: {
     hasFiles: false,
@@ -349,6 +357,10 @@ export const emptyEstateIntake: EstateIntake = {
   filing: {
     registryLocation: "",
     returnAddress: emptyAddress,
+  },
+  notice: {
+    minorRepDetails: "",
+    reviewAcknowledged: false,
   },
 };
 

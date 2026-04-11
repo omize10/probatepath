@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
 const VALID_STATUSES = [
@@ -22,6 +23,11 @@ const VALID_STATUSES = [
 
 export async function POST(request: Request) {
   try {
+    const cookieStore = await cookies();
+    if (cookieStore.get("ops_auth")?.value !== "1") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { matterId, status } = await request.json();
 
     if (!matterId || !status) {

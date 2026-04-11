@@ -87,7 +87,12 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
       break;
     case "will_search_sent":
       nextUnlock = hasNoticesSent ? "Wait 21 days after notices" : "Prepare P1 notices";
-      primaryCta = { href: hasNoticesSent ? "/portal/p1-notices" : "/portal/p1-notices", label: hasNoticesSent ? "View notices status" : "Continue to notices" };
+      primaryCta = { href: "/portal/p1-notices", label: hasNoticesSent ? "View notices status" : "Continue to notices" };
+      break;
+    case "notices_in_progress":
+      displayStatus = portalStatusLabels[portalStatus] ?? displayStatus;
+      nextUnlock = hasNoticesSent ? "Wait 21 days after notices" : "Mail your P1 notices";
+      primaryCta = { href: "/portal/p1-notices", label: hasNoticesSent ? "View notices status" : "Continue to notices" };
       break;
     case "notices_waiting_21_days":
       if (hasNoticesSent && daysRemaining !== null) {

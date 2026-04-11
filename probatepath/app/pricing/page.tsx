@@ -184,8 +184,10 @@ export default async function PricingPage() {
                 }`}
               >
                 {tier.recommended && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="portal-badge">RECOMMENDED</span>
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                    <span className="inline-flex items-center rounded-full bg-[color:var(--brand)] px-4 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white shadow-[0_10px_30px_-12px_rgba(13,23,38,0.6)]">
+                      RECOMMENDED
+                    </span>
                   </div>
                 )}
                 <CardHeader className="space-y-4 pb-6">

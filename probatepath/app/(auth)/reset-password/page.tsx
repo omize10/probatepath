@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,22 +20,19 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // If the user landed here with no token/email (e.g., typed the URL, stale
+  // bookmark, or expired link), send them to the proper "forgot password"
+  // request form instead of showing a confusing "Invalid Reset Link" error.
+  useEffect(() => {
+    if (!token && !emailParam) {
+      router.replace('/forgot-password');
+    }
+  }, [token, emailParam, router]);
+
   if (!token && !emailParam) {
     return (
-      <div className="p-8 max-w-md mx-auto">
-        <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-4">
-          <h2 className="font-semibold text-yellow-800 mb-2">Invalid Reset Link</h2>
-          <p className="text-sm text-yellow-700 mb-4">
-            Please request a new password reset.
-          </p>
-          <Button
-            onClick={() => router.push('/forgot-password')}
-            variant="outline"
-            className="w-full"
-          >
-            Request Reset Code
-          </Button>
-        </div>
+      <div className="p-8 max-w-md mx-auto text-center">
+        <p className="text-sm text-[color:var(--ink-muted)]">Loading…</p>
       </div>
     );
   }

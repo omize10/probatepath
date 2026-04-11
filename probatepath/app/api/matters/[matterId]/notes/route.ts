@@ -19,9 +19,9 @@ export async function POST(
       return NextResponse.json({ error: "User ID not found" }, { status: 401 });
     }
 
-    // Verify matter exists
-    const matter = await prisma.matter.findUnique({
-      where: { id: matterId },
+    // Verify matter exists AND belongs to the signed-in user (IDOR guard).
+    const matter = await prisma.matter.findFirst({
+      where: { id: matterId, userId },
     });
 
     if (!matter) {
@@ -69,6 +69,19 @@ export async function GET(
     }
 
     const { matterId } = await params;
+    const userId = (session.user as { id?: string })?.id;
+    if (!userId) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 401 });
+    }
+
+    // IDOR guard: only return notes for matters the user owns.
+    const matter = await prisma.matter.findFirst({
+      where: { id: matterId, userId },
+      select: { id: true },
+    });
+    if (!matter) {
+      return NextResponse.json({ error: "Matter not found" }, { status: 404 });
+    }
 
     const notes = await prisma.matterNote.findMany({
       where: { matterId },

@@ -24,7 +24,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Database not configured" }, { status: 503 });
   }
 
-  // This endpoint can be called without auth (from Retell) or with auth (from internal)
+  // Auth model: either an authenticated user creates a token for themselves,
+  // OR the Retell webhook-handling path creates one for an ai_call_id it just
+  // processed (in which case we look up the call's user). Previously this
+  // accepted anonymous calls supplying arbitrary ai_call_id values (IDOR).
   const { session } = await getServerAuth();
   const userId = (session?.user as { id?: string })?.id;
 
@@ -45,19 +48,36 @@ export async function POST(request: Request) {
 
   const { ai_call_id, prefill_data, expires_in_days } = parsed.data;
 
+  // Reject anonymous calls that don't reference an ai_call_id. Anonymous
+  // callers must be the Retell path, which always passes ai_call_id.
+  if (!userId && !ai_call_id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     // Generate secure token
     const token = crypto.randomUUID().replace(/-/g, "");
     const expiresAt = new Date(Date.now() + expires_in_days * 24 * 60 * 60 * 1000);
 
-    // If ai_call_id provided, get the user from there
+    // Resolve the owning user. If signed in, use that user. Otherwise look up
+    // the ai_call and require it to exist (anonymous callers cannot invent
+    // arbitrary call IDs to generate payment links for other users).
     let tokenUserId: string | undefined = userId;
-    if (ai_call_id && !tokenUserId) {
+    if (ai_call_id) {
       const aiCall = await prisma.aiCall.findUnique({
         where: { id: ai_call_id },
-        select: { userId: true },
+        select: { userId: true, id: true },
       });
-      tokenUserId = aiCall?.userId ?? undefined;
+      if (!aiCall) {
+        return NextResponse.json({ error: "AI call not found" }, { status: 404 });
+      }
+      // Anonymous caller: must match the call's own user context.
+      // Authenticated caller: must own the call OR the call has no user yet.
+      if (!userId) {
+        tokenUserId = aiCall.userId ?? undefined;
+      } else if (aiCall.userId && aiCall.userId !== userId) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
     }
 
     const paymentToken = await prisma.paymentToken.create({

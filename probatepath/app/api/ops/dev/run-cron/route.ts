@@ -1,8 +1,21 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { sendReminder, sendGrantCheckInReminders, type ReminderWithRelations } from "@/lib/reminders";
 
-export async function POST() {
+export async function POST(request: Request) {
+  // Dual auth: accept either CRON_SECRET Bearer token OR ops_auth cookie.
+  // Never allow this endpoint to run anonymously — it processes reminders,
+  // hits outbound email, and mutates production DB.
+  const authHeader = request.headers.get("authorization");
+  const secret = process.env.CRON_SECRET;
+  const hasBearer = Boolean(secret) && authHeader === `Bearer ${secret}`;
+  const cookieStore = await cookies();
+  const hasOpsCookie = cookieStore.get("ops_auth")?.value === "1";
+  if (!hasBearer && !hasOpsCookie) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const now = new Date();
 

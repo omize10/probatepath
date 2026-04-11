@@ -50,6 +50,24 @@ This is the single source of truth for everything I find during visual/functiona
 
 ---
 
+## Round 2 — Visual + Security Vulnerabilities (post-vulnerability hunt)
+
+| ID | Issue | Severity | Status | Notes |
+|----|-------|----------|--------|-------|
+| V1-01 | `/pricing` RECOMMENDED badge punched a gap through the Standard card's top border | P2 | ✅ pushed (51678b3) + verified on new deploy | Brand-color pill, z-10, shadow. |
+| V1-02 | `/get-started` blank void between hero and footer (ScrollFade `amount:0.3` gate) | P1 | ✅ pushed (eca0cd4) + verified on new deploy | Rewrote ScrollFade to animate on mount, not on scroll. |
+| V1-03 | `/how-it-works` same blank void | P1 | ✅ pushed (eca0cd4) + verified on new deploy | Same fix as V1-02. |
+| V1-04 | 404 page served unbranded system-font fallback from `pages/404.tsx` | P1 | ✅ pushed (eca0cd4) + verified on new deploy | Rewrote 404.tsx + _error.tsx with branded inline HTML + recovery links. |
+| V1-05 | Crawlers/slow-JS clients saw opacity:0 content due to ScrollFade SSR gap | P1 | ✅ pushed (eca0cd4) | Pre-mount path now renders plain elements fully visible. |
+| V2-01 | `/api/ops/dev/run-cron` unprotected — any authed or even anonymous user could trigger cron | P0 | 🛠 fixed-local | Requires CRON_SECRET Bearer OR ops_auth cookie. |
+| V2-02 | `/api/matters/[matterId]/notes` GET+POST — IDOR, no ownership check | P1 | 🛠 fixed-local | Both now `findFirst({ id, userId })`. |
+| V2-03 | `/api/email/test` — any authed user could send mail to themselves | P1 | 🛠 fixed-local | Now ops_auth cookie required; rewrote to accept `to` param with validation. |
+| V2-04 | `/api/payment/token` — anonymous caller with arbitrary ai_call_id → IDOR | P1 | 🛠 fixed-local | Rejects anonymous + no ai_call_id; verifies ai_call exists and belongs to caller if signed in. |
+| V2-05 | `/api/auth/request-password-reset` — leaked `devCode` in JSON response in non-prod | P1 | 🛠 fixed-local | Dev code now goes to server console log only. |
+| V2-06 | `/api/health/db` leaked connection string prefix + error stack | P2 | 🛠 fixed-local | Returns `{status: "ok"\|"error", message}` only. |
+| V2-07 | `/api/auth/register` leaked `debug: { name, message }` on 500 | P2 | 🛠 fixed-local | Removed debug field. |
+| V2-08 | `/api/ops-auth` no rate limit — brute-forceable | P1 | 🛠 fixed-local | In-memory per-IP rate limit, 10 fails / 15 min, 429 after cap. |
+
 ## Rules for this log
 1. Every finding gets an ID and row immediately when discovered.
 2. Status moves forward only when verified (not when code is written).

@@ -23,7 +23,6 @@ export async function POST(request: Request) {
   }
 
   const email = parsed.data.email.trim().toLowerCase();
-  let devCode: string | undefined;
 
   if (!canSend(`password-reset:${email}`)) {
     return NextResponse.json({ ok: true });
@@ -63,9 +62,11 @@ export async function POST(request: Request) {
       variables: { code },
     });
 
-    // In dev mode without RESEND_API_KEY, return the code for testing
+    // Dev mode (no RESEND_API_KEY): log the code server-side ONLY so it
+    // never leaks to the response body. Previously the code was returned
+    // to any caller in non-production environments.
     if (process.env.NODE_ENV !== "production" && !process.env.RESEND_API_KEY) {
-      devCode = code;
+      console.log(`[auth/dev] password reset code for ${email}: ${code}`);
     }
 
     // Log email meta for password reset verification
@@ -86,5 +87,5 @@ export async function POST(request: Request) {
     console.error("[auth] Failed to request password reset", error);
   }
 
-  return NextResponse.json({ ok: true, ...(devCode ? { devCode } : {}) });
+  return NextResponse.json({ ok: true });
 }

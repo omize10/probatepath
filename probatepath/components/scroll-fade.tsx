@@ -24,7 +24,7 @@ type ScrollFadeProps = HTMLAttributes<HTMLElement> & {
   once?: boolean;
 };
 
-export function ScrollFade({ children, className, as = "div", delay = 0, once = false, ...rest }: ScrollFadeProps) {
+export function ScrollFade({ children, className, as = "div", delay = 0, ...rest }: ScrollFadeProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -34,7 +34,10 @@ export function ScrollFade({ children, className, as = "div", delay = 0, once = 
   const Component = elements[as] ?? elements.div;
   const forwarded = rest as Record<string, unknown>;
 
-  // Prevent hydration mismatch by skipping animations until client-side mount
+  // Before hydration (SSR, crawlers, or slow JS): render the plain element
+  // fully visible. This guarantees content is never stuck at opacity:0 just
+  // because the IntersectionObserver hasn't fired yet. Animations only kick
+  // in once JS is live on the client.
   if (!mounted) {
     const PlainComponent = as === "section" ? "section" : as === "li" ? "li" : as === "article" ? "article" : "div";
     return (
@@ -49,9 +52,8 @@ export function ScrollFade({ children, className, as = "div", delay = 0, once = 
       className={cn(className)}
       variants={variants}
       initial="hidden"
-      whileInView="visible"
+      animate="visible"
       transition={{ duration: 0.5, delay }}
-      viewport={{ once, amount: 0.3 }}
       {...forwarded}
     >
       {children}

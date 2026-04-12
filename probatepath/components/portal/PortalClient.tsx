@@ -164,7 +164,8 @@ export function PortalClient({ matter, empty = false }: { matter: PortalMatterVM
         actions={
           <Link
             href="/start"
-            className="inline-flex items-center rounded-full border border-[color:var(--brand)] px-4 py-2 text-sm font-semibold text-[color:var(--brand)] transition hover:bg-[color:var(--brand)] hover:text-white"
+            style={{ color: "var(--brand)", borderColor: "var(--brand)" }}
+            className="inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition hover:bg-[color:var(--brand)] hover:!text-white"
           >
             Start intake
           </Link>

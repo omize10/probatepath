@@ -97,12 +97,22 @@ export async function GET(
           headers: responseHeaders,
         });
       } catch (genError: any) {
-        console.error(`[Form Generation] Generation error:`, genError);
+        const msg = genError?.message || "";
+        // Distinguish "this form doesn't apply to this matter" (400) from a
+        // real generator crash (500). Forms like P6/P7 (foreign grants) and
+        // P8 (joint affidavit) require data that isn't always present.
+        const isNotApplicable =
+          /requires?\s+(foreign grant|primary affidavit|ancillary|multiple|joint)/i.test(msg) ||
+          /not\s+applicable/i.test(msg);
+        const status = isNotApplicable ? 400 : 500;
+        if (!isNotApplicable) {
+          console.error(`[Form Generation] Generation error:`, genError);
+        }
         return NextResponse.json({
-          error: "Failed to generate form",
-          message: genError.message,
+          error: isNotApplicable ? "Form not applicable to this matter" : "Failed to generate form",
+          message: msg,
           stack: process.env.NODE_ENV === 'development' ? genError.stack : undefined,
-        }, { status: 500 });
+        }, { status });
       }
     }
 

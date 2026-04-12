@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { rateLimit, ipFromRequest } from "@/lib/rate-limit";
 
 const RETELL_API_KEY = process.env.RETELL_API_KEY;
 const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID;
@@ -8,11 +9,11 @@ const AccessTokenSchema = z.object({
   agentId: z.string().optional(),
 });
 
-/**
- * Get a Retell access token for WebRTC calls
- * Called by the call page to initiate browser-based calls
- */
 export async function POST(request: Request) {
+  const rl = rateLimit(`retell-token:${ipFromRequest(request)}`, 5, 15 * 60 * 1000);
+  if (!rl.ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   if (!RETELL_API_KEY) {
     console.error("[retell/access-token] RETELL_API_KEY not configured");
     return NextResponse.json(

@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { rateLimit, ipFromRequest } from "@/lib/rate-limit";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const from = process.env.RESEND_FROM ?? "notifications@example.com";
 const to = "hello@probatedesk.com";
 
 export async function POST(request: NextRequest) {
+  const rl = rateLimit(`non-exec:${ipFromRequest(request)}`, 5, 60 * 60 * 1000);
+  if (!rl.ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   try {
     const body = await request.json();
     const { name, email, message } = body;

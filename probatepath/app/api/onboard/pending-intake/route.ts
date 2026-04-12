@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
+import { rateLimit, ipFromRequest } from "@/lib/rate-limit";
 
 const UpsertSchema = z.object({
   email: z.string().email(),
@@ -20,6 +21,11 @@ const UpsertSchema = z.object({
 export async function POST(request: Request) {
   if (!prismaEnabled) {
     return NextResponse.json({ id: null, status: "no_db" }, { status: 200 });
+  }
+
+  const rl = rateLimit(`pending-intake:${ipFromRequest(request)}`, 30, 15 * 60 * 1000);
+  if (!rl.ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
   let body: unknown;

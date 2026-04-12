@@ -38,20 +38,17 @@ export async function POST(request: NextRequest) {
     let selectedTier = "basic";
 
     if (prismaEnabled) {
-      // Verify tier selection exists
+      // Ownership-scoped lookup so a user can only attach payment to a tier
+      // selection they themselves created. Previously this trusted the body's
+      // tierSelectionId without verifying owner.
       const tierSelection = await prisma.tierSelection.findFirst({
-        where: {
-          id: tierSelectionId,
-        },
+        where: { id: tierSelectionId, userId },
       });
 
       if (!tierSelection) {
-        console.error("[payment/beta] Tier selection not found:", tierSelectionId);
         return NextResponse.json({ error: "Tier selection not found" }, { status: 404 });
       }
 
-      // BETA: Use the userId from the tier selection (the user was created there)
-      // This ensures we use the same user that was created during tier selection
       const actualUserId = tierSelection.userId;
       selectedTier = tierSelection.selectedTier;
 

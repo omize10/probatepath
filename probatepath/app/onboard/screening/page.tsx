@@ -455,7 +455,7 @@ export default function OnboardScreeningPage() {
   };
 
   const getTotalQuestions = (): number => {
-    return answers.hasWill === "yes" ? 7 : 5;
+    return answers.hasWill === "yes" ? 7 : 4;
   };
 
   return (

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
+import { verifyTwilioRequest } from "@/lib/twilio-verify";
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
@@ -24,9 +25,13 @@ const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER || "+16043321466";
  * 5. If Retell doesn't answer -> voicemail fallback
  */
 export async function POST(request: NextRequest) {
+  const raw = await request.text();
+  const verifyError = await verifyTwilioRequest(request, raw);
+  if (verifyError) {
+    return new NextResponse(verifyError, { status: 403 });
+  }
   const twiml = new VoiceResponse();
 
-  // Log incoming call for debugging
   console.log("[twilio.voice.incoming] New call received, generating IVR flow");
 
   // Welcome message

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
+import { verifyTwilioRequest } from "@/lib/twilio-verify";
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
@@ -10,7 +11,10 @@ const VoiceResponse = twilio.twiml.VoiceResponse;
  * If the call wasn't answered or failed, offer voicemail.
  */
 export async function POST(request: NextRequest) {
-  const formData = await request.formData();
+  const raw = await request.text();
+  const verifyError = await verifyTwilioRequest(request, raw);
+  if (verifyError) return new NextResponse(verifyError, { status: 403 });
+  const formData = new URLSearchParams(raw);
 
   // Twilio sends these parameters after a Dial completes
   const dialCallStatus = formData.get("DialCallStatus")?.toString();

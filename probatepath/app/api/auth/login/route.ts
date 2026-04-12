@@ -6,6 +6,25 @@ import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { logAuthEvent } from "@/lib/auth/log-auth-event";
 import { logSecurityAudit } from "@/lib/audit";
 
+// In-memory rate limit per IP+email combo to slow credential stuffing.
+// 10 failures per 15 minutes → 429.
+const FAIL_WINDOW_MS = 15 * 60 * 1000;
+const MAX_FAILS = 10;
+const failMap = new Map<string, { count: number; firstAt: number }>();
+function recordFail(key: string): boolean {
+  const now = Date.now();
+  const entry = failMap.get(key);
+  if (!entry || now - entry.firstAt > FAIL_WINDOW_MS) {
+    failMap.set(key, { count: 1, firstAt: now });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > MAX_FAILS;
+}
+function clearFails(key: string) {
+  failMap.delete(key);
+}
+
 export async function POST(request: Request) {
   try {
     const { email, password, rememberMe } = await request.json();
@@ -15,9 +34,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const ip =
+      (request.headers.get("x-forwarded-for") || "").split(",")[0].trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+    const rlKey = `${ip}|${String(email).toLowerCase()}`;
+    const limited = (failMap.get(rlKey)?.count ?? 0) > MAX_FAILS;
+    if (limited) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please try again in 15 minutes." },
+        { status: 429 },
+      );
+    }
+
     // Find user by email
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
+      recordFail(rlKey);
       try {
         await logSecurityAudit({ req: request, action: "auth.login_failed", meta: { email, reason: "no_user" } });
       } catch {}
@@ -27,17 +60,19 @@ export async function POST(request: Request) {
     // Check password
   const match = await verifyPassword(password, user.passwordHash || "");
       if (!match) {
+        recordFail(rlKey);
         try {
           await logSecurityAudit({ req: request, action: "auth.login_failed", meta: { email: user.email, reason: "invalid_password" } });
         } catch {}
-        await logAuthEvent({ 
-          action: AuthAuditType.LOGIN, 
+        await logAuthEvent({
+          action: AuthAuditType.LOGIN,
           userId: user.id,
           meta: { error: "invalid_password" }
         });
         return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
       }
 
+    clearFails(rlKey);
     // Successful login
     try {
       await logSecurityAudit({ req: request, action: "auth.sign_in", userId: user.id, meta: { success: true } });

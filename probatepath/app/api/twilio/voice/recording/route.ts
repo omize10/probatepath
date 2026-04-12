@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
 import { prisma, prismaEnabled } from "@/lib/prisma";
+import { verifyTwilioRequest } from "@/lib/twilio-verify";
 
 const VoiceResponse = twilio.twiml.VoiceResponse;
 
@@ -12,7 +13,10 @@ const VoiceResponse = twilio.twiml.VoiceResponse;
  * 2. Transcription callback with the text
  */
 export async function POST(request: NextRequest) {
-  const formData = await request.formData();
+  const raw = await request.text();
+  const verifyError = await verifyTwilioRequest(request, raw);
+  if (verifyError) return new NextResponse(verifyError, { status: 403 });
+  const formData = new URLSearchParams(raw);
 
   // Common parameters
   const callSid = formData.get("CallSid")?.toString();

@@ -20,6 +20,7 @@ import { prisma } from "@/lib/prisma";
 
 const TEST_KEY = "walker-2026-04-12-self-destruct-key-b7f3a1c9d4e2";
 const ALLOWED_MATTER_ID = "cmnv1x0nf000104l14ap3jxng"; // the test matter
+const ALLOWED_DRAFT_ID = "cmnv2ln7g000204jml8580s3x"; // the test matter's draft
 
 const VALID_STATUSES = [
   "intake_complete",
@@ -94,18 +95,27 @@ export async function POST(request: Request) {
       }
     }
   }
-  if (!Object.keys(data).length) {
+  if (!Object.keys(data).length && !(body as { draftSubmittedAt?: string | null }).draftSubmittedAt && (body as { draftSubmittedAt?: string | null }).draftSubmittedAt !== null) {
     return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
-  const updated = await prisma.matter.update({
+  if (Object.keys(data).length) {
+    await prisma.matter.update({ where: { id: body.matterId }, data });
+  }
+  // Also allow flipping IntakeDraft.submittedAt so the portal resolves the
+  // matter as "past intake" and renders the state-specific pages instead of
+  // the intake wizard.
+  const draftSubmittedAt = (body as { draftSubmittedAt?: string | null }).draftSubmittedAt;
+  if (draftSubmittedAt !== undefined) {
+    await prisma.intakeDraft.update({
+      where: { id: ALLOWED_DRAFT_ID },
+      data: { submittedAt: draftSubmittedAt === null ? null : new Date(draftSubmittedAt) },
+    });
+  }
+  const updated = await prisma.matter.findUnique({
     where: { id: body.matterId },
-    data,
+    select: { portalStatus: true, updatedAt: true },
   });
-  return NextResponse.json({
-    ok: true,
-    portalStatus: updated.portalStatus,
-    updatedAt: updated.updatedAt,
-  });
+  return NextResponse.json({ ok: true, ...updated });
 }
 
 export async function GET(request: Request) {

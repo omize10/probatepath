@@ -117,8 +117,11 @@ export default function OnboardScreeningPage() {
         if (value === "yes") {
           setQuestion("witnessed");
         } else {
-          // Skip will-specific questions
-          setQuestion("original");
+          // No will → skip all will-specific questions (witnessed, bc,
+          // original) and go straight to beneficiaries/heirs. Asking about
+          // "the original will" when someone just said there is no will is
+          // confusing and psychologically jarring for a grieving user.
+          setQuestion("beneficiaries");
         }
         break;
       case "witnessed":
@@ -204,7 +207,11 @@ export default function OnboardScreeningPage() {
         }
         break;
       case "beneficiaries":
-        setQuestion("original");
+        if (answers.hasWill === "yes") {
+          setQuestion("original");
+        } else {
+          setQuestion("will");
+        }
         break;
       case "dispute":
         setQuestion("beneficiaries");
@@ -341,7 +348,9 @@ export default function OnboardScreeningPage() {
       case "beneficiaries":
         return (
           <QuestionCard
-            title="Are the beneficiaries aware of what's in the will?"
+            title={answers.hasWill === "yes"
+              ? "Are the beneficiaries aware of what's in the will?"
+              : "Are the family members aware of the estate situation?"}
             helpKey="beneficiaries"
             showHelp={showHelp}
             setShowHelp={setShowHelp}
@@ -372,7 +381,9 @@ export default function OnboardScreeningPage() {
       case "dispute":
         return (
           <QuestionCard
-            title="Do you believe there may be any reason for someone to dispute the will?"
+            title={answers.hasWill === "yes"
+              ? "Do you believe there may be any reason for someone to dispute the will?"
+              : "Do you believe there may be any reason for someone to dispute the estate?"}
             helpKey="dispute"
             showHelp={showHelp}
             setShowHelp={setShowHelp}
@@ -439,7 +450,7 @@ export default function OnboardScreeningPage() {
   const getQuestionNumber = (): number => {
     const questionOrder: Question[] = answers.hasWill === "yes"
       ? ["will", "witnessed", "bc", "original", "beneficiaries", "dispute", "assets"]
-      : ["will", "original", "beneficiaries", "dispute", "assets"];
+      : ["will", "beneficiaries", "dispute", "assets"];
     return questionOrder.indexOf(question) + 1;
   };
 

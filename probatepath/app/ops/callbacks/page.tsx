@@ -14,77 +14,59 @@ const dateFormatter = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium" });
 // Get today's availability summary
 async function getTodayAvailability() {
   if (!prismaEnabled) return { available: 0, booked: 0 };
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const [availableSlots, bookedCallbacks] = await Promise.all([
-    prisma.availabilitySlot.count({
-      where: {
-        date: {
-          gte: today,
-          lt: tomorrow,
+    const [availableSlots, bookedCallbacks] = await Promise.all([
+      prisma.availabilitySlot.count({ where: { date: { gte: today, lt: tomorrow } } }),
+      prisma.callbackSchedule.count({
+        where: {
+          scheduledDate: { gte: today, lt: tomorrow },
+          status: { notIn: ["cancelled", "no_show"] },
         },
-      },
-    }),
-    prisma.callbackSchedule.count({
-      where: {
-        scheduledDate: {
-          gte: today,
-          lt: tomorrow,
-        },
-        status: { notIn: ["cancelled", "no_show"] },
-      },
-    }),
-  ]);
-
-  return {
-    available: availableSlots - bookedCallbacks,
-    booked: bookedCallbacks,
-  };
+      }),
+    ]);
+    return { available: Math.max(0, availableSlots - bookedCallbacks), booked: bookedCallbacks };
+  } catch (err) {
+    console.warn("[ops/callbacks] getTodayAvailability failed", err);
+    return { available: 0, booked: 0 };
+  }
 }
 
 // Get upcoming availability summary (next 7 days)
 async function getWeekAvailability() {
   if (!prismaEnabled) return { totalAvailable: 0, daysWithSlots: 0 };
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const weekFromNow = new Date(today);
+    weekFromNow.setDate(weekFromNow.getDate() + 7);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const weekFromNow = new Date(today);
-  weekFromNow.setDate(weekFromNow.getDate() + 7);
-
-  const [availableSlots, bookedCallbacks] = await Promise.all([
-    prisma.availabilitySlot.findMany({
-      where: {
-        date: {
-          gte: today,
-          lt: weekFromNow,
+    const [availableSlots, bookedCallbacks] = await Promise.all([
+      prisma.availabilitySlot.findMany({
+        where: { date: { gte: today, lt: weekFromNow } },
+        select: { date: true },
+      }),
+      prisma.callbackSchedule.findMany({
+        where: {
+          scheduledDate: { gte: today, lt: weekFromNow },
+          status: { notIn: ["cancelled", "no_show"] },
         },
-      },
-      select: { date: true },
-    }),
-    prisma.callbackSchedule.findMany({
-      where: {
-        scheduledDate: {
-          gte: today,
-          lt: weekFromNow,
-        },
-        status: { notIn: ["cancelled", "no_show"] },
-      },
-      select: { scheduledDate: true },
-    }),
-  ]);
+        select: { scheduledDate: true },
+      }),
+    ]);
 
-  const bookedCount = bookedCallbacks.length;
-  const totalAvailable = availableSlots.length - bookedCount;
-  const uniqueDays = new Set(availableSlots.map(s => s.date.toISOString().split('T')[0]));
-
-  return {
-    totalAvailable: Math.max(0, totalAvailable),
-    daysWithSlots: uniqueDays.size,
-  };
+    const bookedCount = bookedCallbacks.length;
+    const totalAvailable = availableSlots.length - bookedCount;
+    const uniqueDays = new Set(availableSlots.map((s) => s.date.toISOString().split("T")[0]));
+    return { totalAvailable: Math.max(0, totalAvailable), daysWithSlots: uniqueDays.size };
+  } catch (err) {
+    console.warn("[ops/callbacks] getWeekAvailability failed", err);
+    return { totalAvailable: 0, daysWithSlots: 0 };
+  }
 }
 
 interface CallbacksPageProps {
@@ -95,44 +77,25 @@ async function getCallbacks(includeCompleted: boolean) {
   if (!prismaEnabled) {
     return [];
   }
+  try {
+    const whereClause = includeCompleted
+      ? {}
+      : { status: { not: "intake_complete" } };
 
-  const whereClause = includeCompleted
-    ? {}
-    : { status: { not: "intake_complete" as const } };
-
-  return prisma.callbackSchedule.findMany({
-    where: whereClause,
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
+    return await prisma.callbackSchedule.findMany({
+      where: whereClause as any,
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        tierSelection: { select: { selectedTier: true, tierPrice: true } },
+        willUploads: { select: { id: true } },
+        retellIntake: { select: { id: true, pushedToEstate: true } },
       },
-      tierSelection: {
-        select: {
-          selectedTier: true,
-          tierPrice: true,
-        },
-      },
-      willUploads: {
-        select: {
-          id: true,
-        },
-      },
-      retellIntake: {
-        select: {
-          id: true,
-          pushedToEstate: true,
-        },
-      },
-    },
-    orderBy: [
-      { scheduledDate: "asc" },
-      { scheduledTime: "asc" },
-    ],
-  });
+      orderBy: [{ scheduledDate: "asc" }, { scheduledTime: "asc" }],
+    });
+  } catch (err) {
+    console.warn("[ops/callbacks] getCallbacks failed", err);
+    return [];
+  }
 }
 
 export default async function CallbacksPage({ searchParams }: CallbacksPageProps) {

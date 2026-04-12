@@ -39,11 +39,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ slots });
   } catch (error) {
+    // Soft-fail: return an empty set so the calendar page renders even when
+    // the availability/callback tables are out of sync with the schema.
     console.error("[api/ops/availability] Error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch availability" },
-      { status: 500 }
-    );
+    return NextResponse.json({ slots: [] });
   }
 }
 

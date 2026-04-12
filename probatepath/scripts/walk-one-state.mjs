@@ -58,7 +58,10 @@ await page.waitForNavigation({ waitUntil: "networkidle2" }).catch(() => {});
 const results = [];
 for (const path of PORTAL_PAGES) {
   try {
-    const r = await page.goto(`${BASE}${path}`, { waitUntil: "networkidle2", timeout: 20000 });
+    // Cache buster — append ?_t=<ms> so Vercel CDN serves a fresh RSC response
+    // after a state flip.
+    const bust = `${path}${path.includes("?") ? "&" : "?"}_t=${Date.now()}`;
+    const r = await page.goto(`${BASE}${bust}`, { waitUntil: "networkidle2", timeout: 20000 });
     await new Promise((r) => setTimeout(r, 500));
     const tag = `${state}__${path.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "root"}`;
     await page.screenshot({ path: join(OUT, `${tag}.png`), fullPage: true });

@@ -119,6 +119,20 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
+  const url = new URL(request.url);
+  // Mint an ops_auth cookie if ?cookie=<TEST_KEY>. Used by the walker to hit
+  // /ops SSR pages during the E2E pass when OPS_PASSWORD isn't configured.
+  if (url.searchParams.get("cookie") === TEST_KEY) {
+    const res = NextResponse.json({ ok: true });
+    res.cookies.set("ops_auth", "1", {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: true,
+      maxAge: 60 * 60,
+    });
+    return res;
+  }
   if (request.headers.get("x-test-key") !== TEST_KEY) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

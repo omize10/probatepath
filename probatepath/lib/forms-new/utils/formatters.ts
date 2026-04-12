@@ -159,9 +159,12 @@ export function formatApplicantNames(applicants: Person[]): string {
  * Get ordinal suffix for affidavit number
  */
 export function getOrdinal(n: number): string {
+  if (!Number.isFinite(n) || n < 1) return '1st';
   const suffixes = ['th', 'st', 'nd', 'rd'];
   const v = n % 100;
-  return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+  // 11, 12, 13 always use "th"
+  if (v >= 11 && v <= 13) return n + 'th';
+  return n + (suffixes[v % 10] || suffixes[0]);
 }
 
 /**

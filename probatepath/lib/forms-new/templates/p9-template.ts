@@ -196,7 +196,7 @@ export function generateP9HTML(data: P9Data): string {
 </div>
 ${mailDeliveries.length > 0 ? mailDeliveries.map(d => `
 <div class="delivery-entry"><span class="field-line">${d.recipientName}</span> on <span class="field-line">${d.deliveryDate}</span></div>
-`).join('') : '<div class="delivery-entry"><span class="field-line">${underline(30)}</span> on <span class="field-line">${underline(15)}</span></div>'}
+`).join('') : `<div class="delivery-entry"><span class="field-line">${underline(30)}</span> on <span class="field-line">${underline(15)}</span></div>`}
 
 <!-- Personal Delivery -->
 <div class="checkbox-item">
@@ -205,7 +205,7 @@ ${mailDeliveries.length > 0 ? mailDeliveries.map(d => `
 </div>
 ${personalDeliveries.length > 0 ? personalDeliveries.map(d => `
 <div class="delivery-entry"><span class="field-line">${d.recipientName}</span> on <span class="field-line">${d.deliveryDate}</span></div>
-`).join('') : '<div class="delivery-entry"><span class="field-line">${underline(30)}</span> on <span class="field-line">${underline(15)}</span></div>'}
+`).join('') : `<div class="delivery-entry"><span class="field-line">${underline(30)}</span> on <span class="field-line">${underline(15)}</span></div>`}
 
 <!-- Electronic Delivery -->
 <div class="checkbox-item">
@@ -214,7 +214,7 @@ ${personalDeliveries.length > 0 ? personalDeliveries.map(d => `
 </div>
 ${electronicDeliveries.length > 0 ? electronicDeliveries.map(d => `
 <div class="delivery-entry"><span class="field-line">${d.recipientName}</span> on <span class="field-line">${d.deliveryDate}</span></div>
-`).join('') : '<div class="delivery-entry"><span class="field-line">${underline(30)}</span> on <span class="field-line">${underline(15)}</span></div>'}
+`).join('') : `<div class="delivery-entry"><span class="field-line">${underline(30)}</span> on <span class="field-line">${underline(15)}</span></div>`}
 
 <!-- Electronic Delivery Acknowledgment Note -->
 <div class="instruction">[If you checked the third of the immediately preceding 3 boxes, check both of the immediately following boxes. If you cannot check both of the immediately following boxes in relation to any person to whom the notice was sent by e-mail, fax or other electronic means because the person has not provided the required acknowledgement, you must re-deliver the notice and Rule 25-2 (1.1) documents by mail or personal delivery and swear to that delivery under the first or second of the boxes in this section 2.]</div>

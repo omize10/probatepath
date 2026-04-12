@@ -297,7 +297,12 @@ function buildSpouse(intakeFamily: any, dbBeneficiaries: Beneficiary[]): EstateD
     };
   }
 
-  if (intakeFamily.hasSpouse === "no") {
+  if (intakeFamily.hasSpouse === "no" || intakeFamily.hasSpouse === false) {
+    // Use the marital status from the deceased section to distinguish
+    // widowed/divorced/never married — "no spouse" alone is ambiguous.
+    const marital = intakeFamily.maritalStatus || intakeFamily.deceased?.maritalStatus;
+    if (marital === "widowed") return { status: "deceased" };
+    if (marital === "divorced" || marital === "separated") return { status: "never_married" };
     return { status: "never_married" };
   }
 
@@ -372,10 +377,12 @@ function buildAssets(
   // BC real estate from intake
   const bcProperties: any[] = intakeAssets.bcProperties || [];
   for (const prop of bcProperties) {
+    const mv = parseFloat(prop.estimatedValue || prop.approxValue || prop.marketValue || prop.value || "0");
     realPropertyBC.push({
       description: prop.description || prop.address || "",
       owners: prop.owners,
-      marketValue: parseFloat(prop.approxValue || prop.marketValue || "0"),
+      value: mv,
+      marketValue: mv,
       securedDebt: prop.mortgage
         ? { creditor: prop.mortgage.lender || "", amount: parseFloat(prop.mortgage.amount || "0") }
         : undefined,
@@ -388,7 +395,7 @@ function buildAssets(
   for (const item of [...vehicles, ...valuableItems]) {
     tangiblePersonalPropertyBC.push({
       description: item.description || "",
-      value: parseFloat(item.approxValue || "0"),
+      value: parseFloat(item.estimatedValue || item.approxValue || item.value || "0"),
     });
   }
 
@@ -396,8 +403,8 @@ function buildAssets(
   const accounts: any[] = intakeAssets.accounts || [];
   for (const acct of accounts) {
     intangibleProperty.push({
-      description: acct.description || `${acct.institution || ""} ${acct.accountType || ""}`.trim(),
-      value: parseFloat(acct.approxValue || acct.balance || "0"),
+      description: acct.description || `${acct.institution || ""} ${acct.type || acct.accountType || ""}`.trim(),
+      value: parseFloat(acct.estimatedBalance || acct.approxValue || acct.balance || acct.value || "0"),
     });
   }
 

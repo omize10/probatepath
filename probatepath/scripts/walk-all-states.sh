@@ -9,7 +9,7 @@
 # /api/ops/dev/test-walker route (see CLAUDE.md).
 set -euo pipefail
 
-BASE="https://probatedesk.com"
+BASE="https://www.probatedesk.com"
 KEY="walker-2026-04-12-self-destruct-key-b7f3a1c9d4e2"
 MATTER="cmnv1x0nf000104l14ap3jxng"
 H="x-test-key: ${KEY}"

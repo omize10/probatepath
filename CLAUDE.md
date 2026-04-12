@@ -1,6 +1,97 @@
 # CLAUDE INFO - ProbateDesk Project Status
 
-**Last updated:** January 24, 2026
+**Last updated:** 2026-04-12 (launch-readiness E2E pass)
+
+---
+
+## ⚠️ Test data & operator scripts (2026-04-12 session)
+
+> **If you are reading this in a future session and any of the test-data
+> markers below are still present, they should be CLEANED UP. See the
+> "Restoration" block at the end of this section.**
+
+A full end-to-end launch-readiness pass was executed on 2026-04-12. It walked
+every portal state, every ops dashboard page, every branded email template,
+every P-form, a fresh signup, and the mobile layout of every public page. All
+of that required driving production state that the app doesn't normally
+expose. Here's exactly what was created, how it's marked, and how to undo it.
+
+### The test matter (durable — intentional)
+
+```
+user.id          = cmnuz7h62000905l5dwgrtkmk
+user.email       = omarkebrahim+pdwalk1775950692612@gmail.com
+user.password    = AirpodsCurry3005!
+matter.id        = cmnv1x0nf000104l14ap3jxng
+matter.caseCode  = 0008
+intakeDraft.id   = cmnv2ln7g000204jml8580s3x
+```
+
+The IntakeDraft row for that matter was populated with synthetic fields
+explicitly prefixed `TEST DATA - ...` so a grep for `TEST DATA` on the
+IntakeDraft table finds them. Values include:
+- `decFullName = "TEST DATA - Jane Sample Probate"`
+- `exFullName  = "TEST DATA - Omar Test"`
+- `specialCircumstances = "TEST DATA - synthetic probate case for end-to-end walkthrough, not real"`
+
+### Temporary endpoint: /api/ops/dev/test-walker ⚠️ DELETE
+
+This endpoint was added as a self-destructing backdoor for the walker. Key:
+```
+walker-2026-04-12-self-destruct-key-b7f3a1c9d4e2
+```
+
+What it does (scoped to the test matter only, no other matterId is accepted):
+- `POST` with `x-test-key` header and body `{matterId, status?, fields?, draftSubmittedAt?}`
+  → flips Matter.portalStatus and/or a whitelist of Matter date fields, and/or
+  IntakeDraft.submittedAt.
+- `GET` with same header → returns the matter's state fields.
+- `GET ?cookie=<key>` → mints an `ops_auth=1` cookie valid 1 hour, so
+  puppeteer can hit /ops SSR pages without knowing OPS_PASSWORD.
+
+**This file must be deleted before ship.** File header has a warning.
+
+### Operator scripts (under probatepath/scripts/)
+
+| Script | What it does |
+|---|---|
+| `walk-all-states.sh` | Drives test-walker to flip matter through all 13 portal statuses; between each flip, invokes walk-one-state.mjs |
+| `walk-one-state.mjs` | Logs in as the test user, screenshots every /portal page with cache-busting, reports white-on-white bugs |
+| `walk-ops.mjs` | Sets ops_auth cookie on the puppeteer browser directly and screenshots every /ops page |
+| `walk-signup-fresh.mjs` | Full-flow puppeteer signup from `/` → `/onboard/executor` → `/pay?tier=basic` → `/portal`, creates a new temp account |
+| `walk-portal.mjs` | Logged-in walk of every /portal subpage; no state flipping |
+| `walk-marketing.mjs` | Visits every marketing page (`/`, `/pricing`, `/how-it-works`, etc), checks for 5xx / white-on-white / horizontal-scroll |
+| `walk-intake.mjs` | Walks the intake wizard, auto-filling basic inputs and clicking Next |
+| `mobile-sweep-v2.mjs` | Single-browser iPhone 14 sweep of marketing + auth pages; flags horizontal scroll |
+| `send-all-emails.sh` | Fires one delivery of each of the 14 branded templates via `/api/ops/messages/test` |
+| `test-pforms.sh` | Generates P1/P2/P3/P5/P9/P10 PDFs against the test matter via `/api/forms/generated/...` |
+| `restore-test-matter.sh` | Resets the test matter to `intake_complete`, clears every date field, unsubmits the draft |
+
+### Ephemeral signup test accounts
+
+`walk-signup-fresh.mjs` creates a throwaway account each run with an email
+like `omarkebrahim+fresh<epoch-ms>@gmail.com`. These accumulate but contain
+no real data and are clearly identifiable by the `+fresh` label segment. They
+can be deleted with:
+
+```sql
+DELETE FROM "User" WHERE email LIKE 'omarkebrahim+fresh%@gmail.com';
+-- matters + drafts cascade
+```
+
+### Restoration (run this BEFORE considering the session done)
+
+1. Restore the test matter:
+   ```
+   bash probatepath/scripts/restore-test-matter.sh
+   ```
+2. Delete the temporary walker backdoor:
+   ```
+   rm -r probatepath/app/api/ops/dev/test-walker
+   git commit -m "remove temporary test-walker backdoor"
+   ```
+3. (Optional) Delete ephemeral `+fresh` signup accounts via the SQL above.
+4. Confirm: `curl -sS https://www.probatedesk.com/api/ops/dev/test-walker -H "x-test-key: walker-2026-04-12-self-destruct-key-b7f3a1c9d4e2"` should return 404.
 
 ---
 

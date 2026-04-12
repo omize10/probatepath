@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerAuth } from "@/lib/auth";
 import { uploadFileToBucket } from "@/lib/supabase";
+import { slugifyFilename, sniffKind, kindMatchesMime } from "@/lib/upload-validate";
 
 export async function GET(
   request: Request,
@@ -58,8 +59,16 @@ export async function POST(
 
     let fileUrl = "";
     if (file && file instanceof File) {
+      if (file.size > 10 * 1024 * 1024) {
+        return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
+      }
       const buffer = await file.arrayBuffer();
-      const key = `requisitions/${matterId}/${Date.now()}-${file.name}`;
+      const kind = sniffKind(buffer);
+      if (kind === "unknown" || !kindMatchesMime(kind, file.type)) {
+        return NextResponse.json({ error: "Unsupported or corrupt file." }, { status: 400 });
+      }
+      const safeName = slugifyFilename(file.name);
+      const key = `requisitions/${matterId}/${Date.now()}-${safeName}`;
       try {
         const { data } = await uploadFileToBucket({
           bucket: "requisitions",

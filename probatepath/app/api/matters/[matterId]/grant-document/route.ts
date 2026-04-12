@@ -4,6 +4,7 @@ import { getServerAuth } from "@/lib/auth";
 import { uploadFileToBucket } from "@/lib/supabase";
 import { isAdmin } from "@/lib/admin/auth";
 import { cookies } from "next/headers";
+import { slugifyFilename, sniffKind, kindMatchesMime } from "@/lib/upload-validate";
 
 export async function POST(
   request: Request,
@@ -46,7 +47,12 @@ export async function POST(
   }
 
   const buffer = await file.arrayBuffer();
-  const key = `grant-documents/${matterId}/${Date.now()}-${file.name}`;
+  const kind = sniffKind(buffer);
+  if (kind === "unknown" || !kindMatchesMime(kind, file.type)) {
+    return NextResponse.json({ error: "Unsupported or corrupt file." }, { status: 400 });
+  }
+  const safeName = slugifyFilename(file.name);
+  const key = `grant-documents/${matterId}/${Date.now()}-${safeName}`;
 
   let fileUrl = "";
   try {

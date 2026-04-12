@@ -167,9 +167,10 @@ export default function PayPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tierSelectionId,
-          cardNumber: skipped ? undefined : cardNumber,
-          expiryDate: skipped ? undefined : expiry,
-          cvc: skipped ? undefined : cvc,
+          // PCI: only last 4 of PAN ever leaves the browser. We don't
+          // actually charge the card in the beta flow, and we do not want
+          // full card numbers in server logs or the DB.
+          cardNumber: skipped ? undefined : cardNumber.replace(/\D/g, "").slice(-4),
           cardholderName: skipped ? undefined : cardholderName,
           billingAddress: skipped ? undefined : billingAddress,
           city: skipped ? undefined : city,

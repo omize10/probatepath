@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerAuth } from "@/lib/auth";
 import { uploadFileToBucket } from "@/lib/supabase";
+import { slugifyFilename, sniffKind, kindMatchesMime } from "@/lib/upload-validate";
 
 export async function POST(
   request: Request,
@@ -40,7 +41,12 @@ export async function POST(
   }
 
   const buffer = await file.arrayBuffer();
-  const key = `delivery-proofs/${matterId}/${mailingId}/${Date.now()}-${file.name}`;
+  const kind = sniffKind(buffer);
+  if (kind === "unknown" || !kindMatchesMime(kind, file.type)) {
+    return NextResponse.json({ error: "Unsupported or corrupt file." }, { status: 400 });
+  }
+  const safeName = slugifyFilename(file.name);
+  const key = `delivery-proofs/${matterId}/${mailingId}/${Date.now()}-${safeName}`;
 
   let fileUrl = "";
   try {

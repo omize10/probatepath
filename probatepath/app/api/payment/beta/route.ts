@@ -33,6 +33,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Tier selection ID is required" }, { status: 400 });
     }
 
+    // PCI: never accept a full PAN on our server. The beta flow only needs
+    // last-4 for display; reject anything longer so it can't be logged.
+    if (typeof cardNumber === "string" && cardNumber.replace(/\s+/g, "").length > 4) {
+      return NextResponse.json(
+        { error: "Only the last 4 digits of the card number should be sent." },
+        { status: 400 },
+      );
+    }
+
     // Determine next route based on tier
     let nextRoute = "/portal/intake"; // Default for basic tier
     let selectedTier = "basic";

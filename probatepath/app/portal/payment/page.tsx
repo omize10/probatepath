@@ -54,9 +54,8 @@ export default function PaymentPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tierSelectionId,
-          cardNumber: skipped ? undefined : cardNumber,
-          expiryDate: skipped ? undefined : expiry,
-          cvc: skipped ? undefined : cvc,
+          // PCI: only transmit last 4 of PAN.
+          cardNumber: skipped ? undefined : cardNumber.replace(/\D/g, "").slice(-4),
           cardholderName: skipped ? undefined : cardholderName,
           billingAddress: skipped ? undefined : billingAddress,
           city: skipped ? undefined : city,

@@ -14,6 +14,15 @@ export async function PATCH(request: Request, context: any) {
     if (!parsed.success) return NextResponse.json({ error: parsed.error.message }, { status: 400 });
 
     const targetId = context?.params?.id ?? (await context.params)?.id;
+    // Block self-role changes so an admin can't lock themselves out or
+    // accidentally demote themselves (or maliciously grant themselves
+    // higher privileges if super-admin ever diverges from admin).
+    if (targetId && session?.user?.id && targetId === session.user.id) {
+      return NextResponse.json(
+        { error: "You can't change your own role." },
+        { status: 400 },
+      );
+    }
     const updated = await prisma.user.update({ where: { id: targetId }, data: { role: parsed.data.role } });
 
     await prisma.auditLog.create({

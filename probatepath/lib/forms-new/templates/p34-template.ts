@@ -170,7 +170,7 @@ export function generateP34HTML(data: P34Data): string {
 
 <!-- Affiant Statement -->
 <div class="affiant-block">
-  I, <span class="field-line">${citorName}</span>, of <span class="field-line">${formatAddress(citor.address)}</span>, <span class="field-line">${citor.isIndividual ? 'occupation' : citor.organizationTitle || 'occupation'}</span>, SWEAR (OR AFFIRM) THAT:
+  I, <span class="field-line">${citorName}</span>, of <span class="field-line">${formatAddress(citor.address)}</span>, <span class="field-line">${(citor as any).occupation || citor.organizationTitle || underline(20)}</span>, SWEAR (OR AFFIRM) THAT:
 </div>
 
 <!-- Paragraph 1 -->

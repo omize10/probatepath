@@ -244,8 +244,8 @@ who died on <span class="field-value">${data.deceased?.dateOfDeath || ''}</span>
 
 <div class="checkbox-item">
   <span class="checkbox">${checkbox(hasPhysicalWill)}</span>
-  <span>This application relates to the physical will of the deceased dated 
-  <span class="field-line">${data.will?.date || underline(12)}</span>, 
+  <span>This application relates to the physical will of the deceased dated
+  <span class="field-line">${hasPhysicalWill ? (data.will?.date || underline(12)) : underline(12)}</span>,
   a copy of which will is provided with this notice.</span>
 </div>
 
@@ -253,9 +253,9 @@ who died on <span class="field-value">${data.deceased?.dateOfDeath || ''}</span>
 
 <div class="checkbox-item">
   <span class="checkbox">${checkbox(hasElectronicWill)}</span>
-  <span>This application relates to the electronic will of the deceased dated 
-  <span class="field-line">${data.will?.date || underline(12)}</span>, 
-  a copy of which will is provided with this notice. You are entitled to the will or access on demand 
+  <span>This application relates to the electronic will of the deceased dated
+  <span class="field-line">${hasElectronicWill ? (data.will?.date || underline(12)) : underline(12)}</span>,
+  a copy of which will is provided with this notice. You are entitled to the will or access on demand
   to the will in its original electronic form, using Form P46.</span>
 </div>
 

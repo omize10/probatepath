@@ -257,7 +257,7 @@ export function generateP10HTML(data: P10Data): string {
 
 <!-- Affiant Statement -->
 <div class="affiant-block">
-  I, <span class="field-line">${applicantName}</span>, of <span class="field-line">${formatAddress(applicant.address)}</span>, <span class="field-line">${applicant.isIndividual ? 'occupation' : applicant.organizationTitle || 'occupation'}</span>, SWEAR (OR AFFIRM) THAT:
+  I, <span class="field-line">${applicantName}</span>, of <span class="field-line">${formatAddress(applicant.address)}</span>, <span class="field-line">${(applicant as any).occupation || applicant.organizationTitle || underline(20)}</span>, SWEAR (OR AFFIRM) THAT:
 </div>
 
 <!-- Paragraph 1 -->
@@ -383,34 +383,27 @@ export function generateP10HTML(data: P10Data): string {
           Registered owners: [...the deceased...], as to an undivided 1/2 interest; [...legal name of co-owner...], as to an undivided 1/2 interest.
         </td>
       </tr>
+      ${(data.assets?.realPropertyBC && data.assets.realPropertyBC.length > 0)
+        ? data.assets.realPropertyBC.map(property => `
       <tr>
         <td>
-          <strong>PID</strong><br>
-          <strong>Legal Description</strong><br>
-          Market Value<br>
-          as per 2021 Assessment Notice<br>
-          <em>Less: Prime Mortgage Company —<br>
-          Mortgage registered under No. 23456</em>
+          <strong>PID:</strong> ${(property as any).pid || ''}<br>
+          <strong>Legal Description:</strong> ${(property as any).legalDescription || ''}<br>
+          ${(property as any).address || (property as any).description || ''}<br>
+          ${(property as any).owners ? `Registered owners: ${(property as any).owners}` : ''}
+          ${(property as any).securedDebt ? `<br><em>Less: ${(property as any).securedDebt.creditor} — ${(property as any).securedDebt.notes || ''}</em>` : ''}
         </td>
         <td class="value-col">
-          <br><br>
-          $1,000,000.00<br>
-          − $600,000.00
+          ${formatCurrency((property as any).value || (property as any).marketValue || 0)}
+          ${(property as any).securedDebt ? `<br>− ${formatCurrency((property as any).securedDebt.amount)}` : ''}
         </td>
       </tr>
-      ${data.assets?.realPropertyBC?.map(property => `
+      `).join('')
+        : `
       <tr>
-        <td>
-          ${property.address || property.description || ''}<br>
-          ${property.owners ? `Registered owners: ${property.owners}` : ''}
-          ${property.securedDebt ? `<br><em>Less: ${property.securedDebt.creditor}</em>` : ''}
-        </td>
-        <td class="value-col">
-          ${formatCurrency(property.value || 0)}<br>
-          ${property.securedDebt ? `- ${formatCurrency(property.securedDebt.amount)}` : ''}
-        </td>
+        <td colspan="2" style="font-style: italic; color: #888;">No real property within British Columbia disclosed.</td>
       </tr>
-      `).join('') || ''}
+      `}
       <tr class="total-row">
         <td>TOTAL REAL PROPERTY WITHIN BRITISH COLUMBIA</td>
         <td class="value-col">${formatCurrency(realPropertyBCTotal)}</td>

@@ -215,7 +215,7 @@ export function generateP26HTML(data: P26Data): string {
 
 <!-- Affiant Statement -->
 <div class="affiant-block">
-  I, <span class="field-line">${applicantName}</span>, of <span class="field-line">${formatAddress(applicant.address)}</span>, <span class="field-line">${applicant.isIndividual ? 'occupation' : applicant.organizationTitle || 'occupation'}</span>, SWEAR (OR AFFIRM) THAT:
+  I, <span class="field-line">${applicantName}</span>, of <span class="field-line">${formatAddress(applicant.address)}</span>, <span class="field-line">${(applicant as any).occupation || applicant.organizationTitle || underline(20)}</span>, SWEAR (OR AFFIRM) THAT:
 </div>
 
 <!-- Paragraph 1 -->

@@ -242,6 +242,7 @@ export function transformEstateData(oldData: any): NewEstateData {
       namedInWill: a?.namedInWill ?? false,
       relationship: a?.relationship,
       organizationTitle: a?.organizationTitle,
+      occupation: a?.occupation || oldData?.applicantOccupation || '',
     })),
     otherExecutors: oldData?.otherExecutors || [],
     executorsWithReservedRights: oldData?.executorsWithReservedRights || [],

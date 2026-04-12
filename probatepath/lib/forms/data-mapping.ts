@@ -98,7 +98,12 @@ export function mapToEstateData(matter: MatterWithRelations): EstateData {
         reason: e.isDeceased ? "deceased" as const : "renounced" as const,
       }));
 
-  // Build address for service from filing data or applicant
+  // Build address for service from filing data or applicant.
+  // Reject obviously bad placeholder values like "Test" so they don't end up
+  // on a court-filed document.
+  const looksValidPhone = (s?: string | null) => !!s && /\d/.test(s) && !/^test$/i.test(s.trim());
+  const looksValidEmail = (s?: string | null) => !!s && /@/.test(s) && !/^test$/i.test(s.trim());
+
   const addressForService: EstateData["addressForService"] = formData.addressForService || {
     street: [returnAddress.line1, returnAddress.line2, returnAddress.city, returnAddress.region, returnAddress.postalCode]
       .filter(Boolean)
@@ -106,12 +111,14 @@ export function mapToEstateData(matter: MatterWithRelations): EstateData {
       [appAddress.line1, appAddress.line2, appAddress.city, appAddress.region, appAddress.postalCode]
         .filter(Boolean)
         .join(", ") || "",
-    email: appContact.email || draft?.email || "",
-    phone: appContact.phone || draft?.exPhone || "",
+    email: looksValidEmail(appContact.email) ? appContact.email : (looksValidEmail(draft?.email) ? draft?.email : ""),
+    phone: looksValidPhone(appContact.phone) ? appContact.phone : (looksValidPhone(draft?.exPhone) ? draft?.exPhone : ""),
   };
 
-  // Build deliveries from beneficiaries + family
-  const deliveries = formData.deliveries || buildDeliveries(intakeFamily, intakePeople, matter.beneficiaries);
+  // Build deliveries from beneficiaries + family. Pass noticesMailedAt so the
+  // P9 affidavit of delivery can fill in the actual date the notices were sent
+  // instead of leaving the "on ___" field blank.
+  const deliveries = formData.deliveries || buildDeliveries(intakeFamily, intakePeople, matter.beneficiaries, matter.noticesMailedAt);
 
   return {
     registry: formData.registry || intakeFiling.registryLocation || matter.registryName || "Vancouver",
@@ -383,10 +390,16 @@ function buildAssets(
       owners: prop.owners,
       value: mv,
       marketValue: mv,
+      // Pass through PID and legal description if collected (currently the
+      // intake doesn't ask for these — they need to be entered manually after
+      // generation, so they'll render as blank lines on the P10).
+      pid: prop.pid || prop.parcelId || "",
+      legalDescription: prop.legalDescription || prop.legal || "",
+      address: prop.address || prop.description || "",
       securedDebt: prop.mortgage
         ? { creditor: prop.mortgage.lender || "", amount: parseFloat(prop.mortgage.amount || "0") }
         : undefined,
-    });
+    } as any);
   }
 
   // Vehicles + valuable items = tangible personal property
@@ -418,51 +431,46 @@ function buildAssets(
 function buildDeliveries(
   intakeFamily: any,
   intakePeople: any[],
-  dbBeneficiaries: Beneficiary[]
+  dbBeneficiaries: Beneficiary[],
+  noticesMailedAt?: Date | string | null
 ): EstateData["deliveries"] {
   const deliveries: NonNullable<EstateData["deliveries"]> = [];
+  const seen = new Set<string>();
+  const dateStr = noticesMailedAt
+    ? new Date(noticesMailedAt).toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "2-digit" })
+    : "";
+
+  const addOnce = (name: string) => {
+    const key = name.toLowerCase().trim();
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    deliveries.push({
+      recipientName: name,
+      deliveryMethod: "mail",
+      deliveryDate: dateStr,
+      acknowledgedReceipt: false,
+    });
+  };
 
   // Spouse
   if (intakeFamily.hasSpouse === "yes" && intakeFamily.spouse) {
-    const spName = intakeFamily.spouse.name || {};
-    deliveries.push({
-      recipientName: buildFullName(spName),
-      deliveryMethod: "mail",
-      deliveryDate: "",
-      acknowledgedReceipt: false,
-    });
+    addOnce(buildFullName(intakeFamily.spouse.name || {}));
   }
 
   // Children
-  const intakeChildren: any[] = intakeFamily.children || [];
-  for (const child of intakeChildren) {
-    deliveries.push({
-      recipientName: buildFullName(child.name || {}),
-      deliveryMethod: "mail",
-      deliveryDate: "",
-      acknowledgedReceipt: false,
-    });
+  for (const child of (intakeFamily.children || [])) {
+    addOnce(buildFullName(child.name || {}));
   }
 
-  // Other beneficiaries
+  // Other beneficiaries (deduplicated against children/spouse already added)
   for (const p of intakePeople) {
-    deliveries.push({
-      recipientName: buildFullName(p.name || {}),
-      deliveryMethod: "mail",
-      deliveryDate: "",
-      acknowledgedReceipt: false,
-    });
+    addOnce(buildFullName(p.name || {}));
   }
 
   // Fallback to DB beneficiaries
   if (deliveries.length === 0) {
     for (const b of dbBeneficiaries.filter((b) => b.status === "ALIVE")) {
-      deliveries.push({
-        recipientName: b.fullName,
-        deliveryMethod: "mail",
-        deliveryDate: "",
-        acknowledgedReceipt: false,
-      });
+      addOnce(b.fullName);
     }
   }
 

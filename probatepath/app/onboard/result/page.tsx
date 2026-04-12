@@ -263,17 +263,17 @@ export default function OnboardResultPage() {
             <FileText className="w-8 h-8 text-[color:var(--brand)]" />
           </div>
           <h1 className="font-serif text-3xl font-semibold text-[color:var(--brand)] sm:text-4xl">
-            You don&apos;t need probate
+            We can help with this
           </h1>
           <p className="text-[color:var(--muted-ink)] text-lg">
-            Looks like you need a{" "}
+            Without a will, you&apos;ll need a{" "}
             <span className="font-semibold text-[color:var(--brand)]">
               Grant of Administration
-            </span>
-            . Good news: we handle that too.
+            </span>{" "}
+            instead of a grant of probate. We prepare these the same way.
           </p>
           <p className="text-sm text-[color:var(--muted-ink)]">
-            When there&apos;s no will, the court needs to appoint an administrator. This is a bit more involved than standard probate, so we recommend our full-service option.
+            When there&apos;s no will, the court needs to appoint an administrator and follow the BC intestacy rules to distribute the estate. This is a bit more involved than a standard probate, so we recommend our most hands-on tier.
           </p>
         </motion.div>
 

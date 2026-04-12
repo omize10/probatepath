@@ -68,6 +68,29 @@ This is the single source of truth for everything I find during visual/functiona
 | V2-07 | `/api/auth/register` leaked `debug: { name, message }` on 500 | P2 | 🛠 fixed-local | Removed debug field. |
 | V2-08 | `/api/ops-auth` no rate limit — brute-forceable | P1 | 🛠 fixed-local | In-memory per-IP rate limit, 10 fails / 15 min, 429 after cap. |
 
+## Round 3 — CSS root cause + deeper vuln pass
+
+| ID | Issue | Severity | Status | Notes |
+|----|-------|----------|--------|-------|
+| V3-01 | `[class*="bg-[color:var(--brand)]"]` substring selectors in globals.css matched `hover:bg-*` variants → every pill-outline button (Start intake, Edit your answers, Download, Initialize tracking, Upload requisition, Get started…) painted permanently white-on-white | P1 | ✅ pushed (80611c8) + verified | Replaced with exact escaped class selectors wrapped in `:where()`. Re-walk of all 22 portal subpages now clean. |
+| V3-02 | `/api/editor/save` fully unauthenticated CMS write + GitHub commit (defacement / RCE via Puck) | P0 | ✅ pushed (a3e9360) + 401-verified | Now requires ops_auth cookie. |
+| V3-03 | `/api/ops/dev/list-cases` leaked all matter PII anonymously | P0 | ✅ pushed (a3e9360) + 401-verified | requireOps + dropped error.message from 500. |
+| V3-04 | `/api/ops/dev/check-env` leaked env presence + key prefixes anonymously | P0 | ✅ pushed (a3e9360) + 401-verified | requireOps. |
+| V3-05 | `/api/ops/dev/reset-password` could reset any user's password anonymously | P0 | ✅ pushed (a3e9360) | requireOps + dropped error leak. |
+| V3-06 | `/api/ops/dev/set-path-type` could mutate any matter anonymously | P0 | ✅ pushed (a3e9360) | requireOps + dropped error leak. |
+| V3-07 | `/api/ops/dev/test-email` & `test-sms` could spam via Resend/Twilio anonymously | P0 | ✅ pushed (a3e9360) | requireOps. |
+| V3-08 | `/api/debug/call-status` exposed last 2h of AI calls + phone numbers | P0 | ✅ pushed (a3e9360) | requireOps. |
+| V3-09 | `/api/retell/outbound-call` had no abuse cap → telco $ + harassment vector | P1 | ✅ pushed (a3e9360) | Per-IP (3/15min) and per-phone (1/5min) cooldown. |
+| V3-10 | `/api/matters/[id]/flags` GET/POST/PATCH/DELETE were authenticated but not ownership-checked → cross-tenant write | P1 | ✅ pushed (a3e9360) | Added `prisma.matter.findFirst({id, userId})` gate before each operation. |
+| V3-11 | `/api/matters/[id]/post-grant` updates/deletes used raw `id` from body without `matterId` scope → cross-matter mutation | P1 | ✅ pushed (8d0823c) | Switched to `updateMany`/`deleteMany` with `{id, matterId}`. |
+| V3-12 | `/api/availability` 500'd on /portal/schedule (likely model not migrated) | P2 | ✅ pushed (8d0823c) + verified | Now returns `{available: []}` on error so the page loads cleanly. |
+| V3-13 | `/api/auth/login` had no rate limit → credential stuffing | P1 | ✅ pushed (96b14cc) | 10 fails / IP+email / 15min → 429. |
+| V3-14 | Twilio voice/incoming, dial-status, recording webhooks did not verify X-Twilio-Signature | P1 | ✅ pushed (96b14cc) | New `lib/twilio-verify.ts` using `twilio.validateRequest`; bypassed only when TWILIO_AUTH_TOKEN unset. |
+| V3-15 | `/api/payment/beta` did not verify tier selection ownership → user could attach payment to someone else's tier selection | P1 | ✅ pushed (dc7b7bd) | tier lookup now `findFirst({id, userId})`. |
+| V3-16 | `/api/onboard/pending-intake` and `non-executor-contact` had no rate limit → spam vectors | P1 | ✅ pushed (dc7b7bd) | New `lib/rate-limit.ts` shared bucket. |
+| V3-17 | `/api/retell/access-token` had no rate limit → Retell quota burn | P1 | ✅ pushed (dc7b7bd) | 5 / IP / 15min. |
+| V3-18 | `/api/will-upload/upload` validated MIME but not magic bytes; user-supplied filename appended directly into storage path | P2 | ✅ pushed (e1e78a6) | Now sniffs %PDF / JPEG / PNG / WEBP signatures and slugifies filename. |
+
 ## Rules for this log
 1. Every finding gets an ID and row immediately when discovered.
 2. Status moves forward only when verified (not when code is written).

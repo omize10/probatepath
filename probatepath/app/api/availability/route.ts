@@ -83,10 +83,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ available });
   } catch (error) {
+    // Don't 500 the client portal — surface an empty schedule and log the
+    // underlying issue (most often a missing table in non-prod or a Prisma
+    // model that hasn't been migrated). The UI handles "no slots" gracefully.
     console.error("[api/availability] Error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch availability" },
-      { status: 500 }
-    );
+    return NextResponse.json({ available: [] });
   }
 }

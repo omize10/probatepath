@@ -60,8 +60,8 @@ export async function POST(
       return NextResponse.json({ asset });
     }
     if (action === "update" && id) {
-      const asset = await prisma.postGrantAsset.update({
-        where: { id },
+      const result = await prisma.postGrantAsset.updateMany({
+        where: { id, matterId },
         data: {
           ...(data.name !== undefined && { name: data.name }),
           ...(data.status !== undefined && { status: data.status }),
@@ -72,10 +72,13 @@ export async function POST(
           ...(data.notes !== undefined && { notes: data.notes }),
         },
       });
+      if (!result.count) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      const asset = await prisma.postGrantAsset.findFirst({ where: { id, matterId } });
       return NextResponse.json({ asset });
     }
     if (action === "delete" && id) {
-      await prisma.postGrantAsset.delete({ where: { id } });
+      const result = await prisma.postGrantAsset.deleteMany({ where: { id, matterId } });
+      if (!result.count) return NextResponse.json({ error: "Not found" }, { status: 404 });
       return NextResponse.json({ ok: true });
     }
   }
@@ -89,8 +92,8 @@ export async function POST(
       return NextResponse.json({ debt });
     }
     if (action === "update" && id) {
-      const debt = await prisma.postGrantDebt.update({
-        where: { id },
+      const result = await prisma.postGrantDebt.updateMany({
+        where: { id, matterId },
         data: {
           ...(data.status !== undefined && { status: data.status }),
           ...(data.verifiedAmount !== undefined && { verifiedAmount: data.verifiedAmount }),
@@ -100,10 +103,13 @@ export async function POST(
           ...(data.notes !== undefined && { notes: data.notes }),
         },
       });
+      if (!result.count) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      const debt = await prisma.postGrantDebt.findFirst({ where: { id, matterId } });
       return NextResponse.json({ debt });
     }
     if (action === "delete" && id) {
-      await prisma.postGrantDebt.delete({ where: { id } });
+      const result = await prisma.postGrantDebt.deleteMany({ where: { id, matterId } });
+      if (!result.count) return NextResponse.json({ error: "Not found" }, { status: 404 });
       return NextResponse.json({ ok: true });
     }
   }
@@ -117,8 +123,8 @@ export async function POST(
       return NextResponse.json({ distribution: dist });
     }
     if (action === "update" && id) {
-      const dist = await prisma.distribution.update({
-        where: { id },
+      const result = await prisma.distribution.updateMany({
+        where: { id, matterId },
         data: {
           ...(data.shareAmount !== undefined && { shareAmount: data.shareAmount }),
           ...(data.paidAt !== undefined && { paidAt: data.paidAt }),
@@ -126,10 +132,13 @@ export async function POST(
           ...(data.notes !== undefined && { notes: data.notes }),
         },
       });
+      if (!result.count) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      const dist = await prisma.distribution.findFirst({ where: { id, matterId } });
       return NextResponse.json({ distribution: dist });
     }
     if (action === "delete" && id) {
-      await prisma.distribution.delete({ where: { id } });
+      const result = await prisma.distribution.deleteMany({ where: { id, matterId } });
+      if (!result.count) return NextResponse.json({ error: "Not found" }, { status: 404 });
       return NextResponse.json({ ok: true });
     }
   }
@@ -143,8 +152,8 @@ export async function POST(
       return NextResponse.json({ release });
     }
     if (action === "update" && id) {
-      const release = await prisma.beneficiaryRelease.update({
-        where: { id },
+      const result = await prisma.beneficiaryRelease.updateMany({
+        where: { id, matterId },
         data: {
           ...(data.sentAt !== undefined && { sentAt: data.sentAt }),
           ...(data.signedAt !== undefined && { signedAt: data.signedAt }),
@@ -152,10 +161,13 @@ export async function POST(
           ...(data.notes !== undefined && { notes: data.notes }),
         },
       });
+      if (!result.count) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      const release = await prisma.beneficiaryRelease.findFirst({ where: { id, matterId } });
       return NextResponse.json({ release });
     }
     if (action === "delete" && id) {
-      await prisma.beneficiaryRelease.delete({ where: { id } });
+      const result = await prisma.beneficiaryRelease.deleteMany({ where: { id, matterId } });
+      if (!result.count) return NextResponse.json({ error: "Not found" }, { status: 404 });
       return NextResponse.json({ ok: true });
     }
   }

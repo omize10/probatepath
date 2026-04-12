@@ -20,7 +20,15 @@ export async function PATCH(
       return NextResponse.json({ error: "User ID not found" }, { status: 401 });
     }
 
-    // Verify flag exists and belongs to this matter
+    // Ownership check on the matter (IDOR fix)
+    const owned = await prisma.matter.findFirst({
+      where: { id: matterId, userId },
+      select: { id: true },
+    });
+    if (!owned) {
+      return NextResponse.json({ error: "Flag not found" }, { status: 404 });
+    }
+
     const existingFlag = await prisma.matterFlag.findFirst({
       where: { id: flagId, matterId },
     });
@@ -61,13 +69,21 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    const userId = (session?.user as { id?: string } | undefined)?.id;
+    if (!session?.user || !userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { matterId, flagId } = await params;
 
-    // Verify flag exists and belongs to this matter
+    const owned = await prisma.matter.findFirst({
+      where: { id: matterId, userId },
+      select: { id: true },
+    });
+    if (!owned) {
+      return NextResponse.json({ error: "Flag not found" }, { status: 404 });
+    }
+
     const existingFlag = await prisma.matterFlag.findFirst({
       where: { id: flagId, matterId },
     });

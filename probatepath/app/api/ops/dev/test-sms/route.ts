@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { sendSMS } from "@/lib/sms";
+import { requireOps } from "@/lib/ops-guard";
 
 export async function POST(request: Request) {
+  const guard = await requireOps();
+  if (guard) return guard;
   try {
     const { to } = await request.json();
     if (!to || typeof to !== "string") {

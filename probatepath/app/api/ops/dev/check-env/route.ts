@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
+import { requireOps } from "@/lib/ops-guard";
 
 export async function GET() {
+  const guard = await requireOps();
+  if (guard) return guard;
   const checks = {
     // Email (Resend)
     RESEND_API_KEY: {

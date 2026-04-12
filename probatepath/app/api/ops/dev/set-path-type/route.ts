@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireOps } from "@/lib/ops-guard";
 
 export async function POST(request: Request) {
+  const guard = await requireOps();
+  if (guard) return guard;
   try {
     const { matterId, pathType } = await request.json();
 
@@ -49,7 +52,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("[dev/set-path-type] Error:", error);
     return NextResponse.json(
-      { error: "Failed to update path type", details: String(error) },
+      { error: "Failed to update path type" },
       { status: 500 }
     );
   }

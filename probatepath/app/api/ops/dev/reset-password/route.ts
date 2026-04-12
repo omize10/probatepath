@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth/password";
+import { requireOps } from "@/lib/ops-guard";
 
 export async function POST(request: Request) {
+  const guard = await requireOps();
+  if (guard) return guard;
   try {
     const { email, newPassword } = await request.json();
 
@@ -42,7 +45,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("[dev/reset-password] Error:", error);
     return NextResponse.json(
-      { error: "Failed to reset password", details: String(error) },
+      { error: "Failed to reset password" },
       { status: 500 }
     );
   }

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireOps } from "@/lib/ops-guard";
 
 export async function GET() {
+  const guard = await requireOps();
+  if (guard) return guard;
   try {
     const cases = await prisma.matter.findMany({
       select: {
@@ -47,7 +50,7 @@ export async function GET() {
   } catch (error) {
     console.error("[dev/list-cases] Error:", error);
     return NextResponse.json(
-      { error: "Failed to list cases", details: String(error) },
+      { error: "Failed to list cases" },
       { status: 500 }
     );
   }

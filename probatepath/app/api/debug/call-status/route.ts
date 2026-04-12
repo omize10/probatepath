@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma, prismaEnabled } from '@/lib/prisma';
+import { requireOps } from '@/lib/ops-guard';
 
-/**
- * DEBUG ENDPOINT - Shows all recent AI calls in database
- * Use this to diagnose Issue #2 (button not enabling)
- * 
- * No auth required - dev endpoint
- */
 export async function GET(req: NextRequest) {
+  const guard = await requireOps();
+  if (guard) return guard;
 
   if (!prismaEnabled) {
     return NextResponse.json({ error: 'Database not enabled' }, { status: 503 });

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -6,6 +7,14 @@ const GITHUB_OWNER = process.env.GITHUB_OWNER || "omize10";
 const GITHUB_REPO = process.env.GITHUB_REPO || "probatepath";
 
 export async function POST(request: Request) {
+  // Require ops auth — without this, anyone could overwrite any PageContent
+  // row AND push commits to GitHub via the server-side token (full site
+  // defacement / RCE via Puck-rendered content).
+  const cookieStore = await cookies();
+  if (cookieStore.get("ops_auth")?.value !== "1") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { slug, data } = await request.json();
 
@@ -65,9 +74,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, committed });
   } catch (err) {
     console.error("Editor save error:", err);
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Save failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Save failed" }, { status: 500 });
   }
 }

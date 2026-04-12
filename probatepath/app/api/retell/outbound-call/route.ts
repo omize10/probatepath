@@ -6,10 +6,29 @@ const RETELL_API_KEY = process.env.RETELL_API_KEY;
 const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID;
 const RETELL_PHONE_NUMBER = process.env.RETELL_PHONE_NUMBER; // The number Retell calls from
 
-/**
- * Trigger an outbound call via Retell AI
- * User provides their phone number and Retell calls them
- */
+// Anti-abuse: cap outbound calls per IP and per destination phone.
+// This route must remain anonymous-callable (it's the onboarding "call me"
+// step) so the only mitigation is rate limiting + telco-cost caps.
+const ipBuckets = new Map<string, { count: number; firstAt: number }>();
+const phoneBuckets = new Map<string, number>();
+const IP_WINDOW_MS = 15 * 60 * 1000;
+const IP_MAX = 3;
+const PHONE_COOLDOWN_MS = 5 * 60 * 1000;
+function rateLimited(ip: string, phone: string): string | null {
+  const now = Date.now();
+  const ipB = ipBuckets.get(ip);
+  if (!ipB || now - ipB.firstAt > IP_WINDOW_MS) {
+    ipBuckets.set(ip, { count: 1, firstAt: now });
+  } else {
+    ipB.count += 1;
+    if (ipB.count > IP_MAX) return "Too many call attempts. Try again in a few minutes.";
+  }
+  const last = phoneBuckets.get(phone) ?? 0;
+  if (now - last < PHONE_COOLDOWN_MS) return "We just placed a call to that number. Please wait a few minutes before retrying.";
+  phoneBuckets.set(phone, now);
+  return null;
+}
+
 export async function POST(request: Request) {
   // Validate Retell is configured
   if (!RETELL_API_KEY || !RETELL_AGENT_ID) {
@@ -61,6 +80,15 @@ export async function POST(request: Request) {
       { error: "Invalid phone number format" },
       { status: 400 }
     );
+  }
+
+  const ip =
+    (request.headers.get("x-forwarded-for") || "").split(",")[0].trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+  const limited = rateLimited(ip, formattedPhone);
+  if (limited) {
+    return NextResponse.json({ error: limited }, { status: 429 });
   }
 
   try {

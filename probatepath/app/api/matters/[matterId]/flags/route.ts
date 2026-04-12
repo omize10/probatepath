@@ -27,15 +27,16 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    const userId = (session?.user as { id?: string } | undefined)?.id;
+    if (!session?.user || !userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { matterId } = await params;
 
-    // Verify matter exists
-    const matter = await prisma.matter.findUnique({
-      where: { id: matterId },
+    // Ownership check — IDOR fix
+    const matter = await prisma.matter.findFirst({
+      where: { id: matterId, userId },
     });
 
     if (!matter) {
@@ -76,11 +77,20 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    const userId = (session?.user as { id?: string } | undefined)?.id;
+    if (!session?.user || !userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { matterId } = await params;
+
+    const owned = await prisma.matter.findFirst({
+      where: { id: matterId, userId },
+      select: { id: true },
+    });
+    if (!owned) {
+      return NextResponse.json({ error: "Matter not found" }, { status: 404 });
+    }
 
     const flags = await prisma.matterFlag.findMany({
       where: { matterId },

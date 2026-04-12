@@ -3,6 +3,7 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { logSecurityAudit } from "@/lib/audit";
+import { rateLimit, ipFromRequest } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -39,6 +40,17 @@ export async function POST(request: Request) {
   const code = parsed.data.code.trim();
   const secret = process.env.NEXTAUTH_SECRET;
   if (!secret) return NextResponse.json({ error: "Misconfigured" }, { status: 500 });
+
+  // Defence against the "request new code to reset 5-attempt counter"
+  // bypass: per-IP and per-email IP-free rate limits that outlive the
+  // per-code counter.
+  const ip = ipFromRequest(request);
+  if (!rateLimit(`vcode-ip:${ip}`, 15, 15 * 60 * 1000).ok) {
+    return NextResponse.json({ error: "TooManyAttempts" }, { status: 429 });
+  }
+  if (!rateLimit(`vcode-email:${email}`, 10, 30 * 60 * 1000).ok) {
+    return NextResponse.json({ error: "TooManyAttempts" }, { status: 429 });
+  }
 
   const user = await prisma.user.findFirst({
     where: { email: { equals: email, mode: "insensitive" } },

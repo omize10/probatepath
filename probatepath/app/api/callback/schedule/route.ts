@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma, prismaEnabled } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +14,11 @@ export async function POST(request: NextRequest) {
     const userId = (session.user as { id?: string }).id;
     if (!userId) {
       return NextResponse.json({ error: "User ID not found" }, { status: 401 });
+    }
+
+    // One logged-in user shouldn't be able to grab dozens of callback slots.
+    if (!rateLimit(`callback-sched:${userId}`, 5, 60 * 60 * 1000).ok) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
     const body = await request.json();

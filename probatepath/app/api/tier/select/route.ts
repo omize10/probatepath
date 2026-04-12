@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma, prismaEnabled } from "@/lib/prisma";
 import { TIER_PRICES, TIER_NAME_MAP, type Tier, type NewTier, type LegacyTier } from "@/types/pricing";
+import { rateLimit, ipFromRequest } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,6 +17,11 @@ export async function POST(request: NextRequest) {
 
     if (!userId) {
       return NextResponse.json({ error: "User ID not found" }, { status: 401 });
+    }
+
+    // Rate limit so a logged-in user can't spam tier selections.
+    if (!rateLimit(`tier-select:${userId}`, 20, 60 * 60 * 1000).ok) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
     const body = await request.json();

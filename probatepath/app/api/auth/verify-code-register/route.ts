@@ -3,6 +3,7 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 import { logSecurityAudit } from "@/lib/audit";
+import { rateLimit, ipFromRequest } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -36,6 +37,14 @@ export async function POST(request: Request) {
   const code = parsed.data.code.trim();
   const secret = process.env.NEXTAUTH_SECRET;
   if (!secret) return NextResponse.json({ error: "Misconfigured" }, { status: 500 });
+
+  const ip = ipFromRequest(request);
+  if (!rateLimit(`vcode-reg-ip:${ip}`, 15, 15 * 60 * 1000).ok) {
+    return NextResponse.json({ error: "TooManyAttempts" }, { status: 429 });
+  }
+  if (!rateLimit(`vcode-reg-email:${email}`, 10, 30 * 60 * 1000).ok) {
+    return NextResponse.json({ error: "TooManyAttempts" }, { status: 429 });
+  }
 
   // Find user if exists (not required for registration verification)
   const user = await prisma.user.findFirst({

@@ -516,6 +516,34 @@ ${p(`— The ProbateDesk team`)}
       paymentUrl: 'Payment link with prefilled data',
     },
   },
+  {
+    key: 'payment_receipt',
+    name: 'Payment Receipt',
+    description: 'Sent immediately after a successful Stripe payment',
+    category: 'transactional',
+    emailSubject: 'Your ProbateDesk receipt',
+    emailHtml: wrap({
+      preheader: `Thank you for your payment — here's your receipt and what happens next.`,
+      body: `
+${h(2, 'Thank you for your payment.')}
+${p(`We've received your payment and your account is fully unlocked. You can sign in to your portal anytime to start (or continue) the intake.`)}
+${button('{{portalLink}}', 'Open my portal')}
+${h(3, `What happens next`)}
+${ol([
+  'Sign in to your portal and finish the intake questions if you haven\'t already.',
+  'We prepare your court-ready documents (typically within 3 business days).',
+  `We notify you the moment everything is ready to mail or file.`,
+])}
+${mutedP(`A separate Stripe receipt with the official line items has also been sent to this email address.`)}
+${p(`— The ProbateDesk team`)}
+`.trim(),
+    }),
+    smsEnabled: false,
+    availableVariables: ['portalLink'],
+    variableDescriptions: {
+      portalLink: 'Link to the user portal',
+    },
+  },
 ];
 
 /**

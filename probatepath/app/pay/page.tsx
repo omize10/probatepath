@@ -161,7 +161,30 @@ export default function PayPage() {
 
       const { tierSelectionId } = await tierResponse.json();
 
-      // Process payment
+      // Try Stripe Checkout first (only when STRIPE_SECRET_KEY is set in
+      // production). If unavailable, fall through to the no-charge beta flow
+      // so the site keeps working until billing is turned on.
+      if (!skipped) {
+        try {
+          const checkoutRes = await fetch("/api/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tier: selectedTier, tierSelectionId }),
+          });
+          if (checkoutRes.ok) {
+            const { url } = await checkoutRes.json();
+            if (url) {
+              window.location.href = url;
+              return;
+            }
+          }
+          // 503 means Stripe not configured — fall through to beta flow.
+        } catch (e) {
+          console.warn("[pay] Stripe checkout unavailable, falling back to beta:", e);
+        }
+      }
+
+      // Process beta payment (no charge — placeholder until Stripe is wired)
       const paymentResponse = await fetch("/api/payment/beta", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

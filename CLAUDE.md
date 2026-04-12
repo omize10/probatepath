@@ -147,6 +147,34 @@ intake_complete -> will_search_prepping -> will_search_ready -> will_search_sent
 - Cron job: `app/api/cron/daily/route.ts`
 - Auth: `app/api/auth/register/route.ts`, `lib/auth.ts`
 - Prisma schema: `prisma/schema.prisma`
+- Stripe client: `lib/stripe.ts`
+- Stripe checkout endpoint: `app/api/checkout/route.ts`
+- Stripe webhook: `app/api/webhooks/stripe/route.ts`
+
+---
+
+## Turning on real billing (Stripe)
+
+Everything is wired up — adding the API key flips the site from the
+no-charge beta flow to real Stripe Checkout. Steps:
+
+1. Create a Stripe account at https://dashboard.stripe.com
+2. In Vercel → Project → Settings → Environment Variables, add:
+   - `STRIPE_SECRET_KEY` = `sk_live_...` (or `sk_test_...` for testing)
+   - `STRIPE_WEBHOOK_SECRET` = `whsec_...` (created in step 4 below)
+3. Redeploy (Vercel does this automatically when env vars change).
+4. In Stripe Dashboard → Developers → Webhooks → Add endpoint:
+   - URL: `https://www.probatedesk.com/api/webhooks/stripe`
+   - Events: `checkout.session.completed`, `charge.refunded`
+   - Copy the signing secret into `STRIPE_WEBHOOK_SECRET` above.
+5. Test with Stripe's test card `4242 4242 4242 4242` (any future expiry,
+   any 3-digit CVC, any postal code).
+
+That's it. The `/pay` page will automatically use Stripe Checkout when
+`STRIPE_SECRET_KEY` is present, and fall back to the no-charge beta form
+when it isn't. Successful payments create a `Payment` row in Postgres,
+send a branded receipt email via Resend, and Stripe sends its own
+official receipt to the same address.
 
 ---
 

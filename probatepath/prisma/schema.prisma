@@ -34,6 +34,7 @@ model User {
   aiCalls             AiCall[]
   paymentTokens       PaymentToken[]
   leadSources         LeadSource[]
+  payments            Payment[]
 }
 
 model Matter {
@@ -587,6 +588,36 @@ model BetaPayment {
 
   @@index([userId])
   @@index([tierSelectionId])
+}
+
+// Real Stripe-backed payments. Activated automatically when STRIPE_SECRET_KEY
+// is set in the environment. Until then, the BetaPayment table is used.
+model Payment {
+  id                    String   @id @default(cuid())
+  userId                String
+  matterId              String?
+  tier                  String   // "basic" | "standard" | "premium" / new aliases
+  amountCents           Int      // 79900, 149900, 249900
+  currency              String   @default("cad")
+  status                String   @default("pending") // pending | paid | failed | refunded
+  provider              String   @default("stripe")
+  stripeSessionId       String?  @unique
+  stripePaymentIntentId String?  @unique
+  stripeCustomerId      String?
+  receiptUrl            String?
+  receiptEmail          String?
+  paidAt                DateTime?
+  refundedAt            DateTime?
+  refundedAmountCents   Int?
+  failureMessage        String?
+  metadata              Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([matterId])
+  @@index([status])
 }
 
 model CallbackSchedule {

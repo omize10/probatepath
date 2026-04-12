@@ -35,9 +35,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `File must be smaller than ${maxSizeMb}MB.` }, { status: 400 });
     }
 
-    const cleanName = file.name.replace(/\s+/g, "-");
-    const path = `${userId}/${Date.now()}-${cleanName}`;
+    // Magic-byte sniff so a renamed .exe / HTML can't pose as a PDF/image.
     const arrayBuffer = await file.arrayBuffer();
+    const head = new Uint8Array(arrayBuffer.slice(0, 12));
+    const startsWith = (sig: number[]) => sig.every((b, i) => head[i] === b);
+    const isRealPdf = startsWith([0x25, 0x50, 0x44, 0x46]); // %PDF
+    const isJpeg = startsWith([0xff, 0xd8, 0xff]);
+    const isPng = startsWith([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    const isWebp = startsWith([0x52, 0x49, 0x46, 0x46]) && head[8] === 0x57 && head[9] === 0x45;
+    if (isPdf && !isRealPdf) {
+      return NextResponse.json({ error: "File is not a valid PDF." }, { status: 400 });
+    }
+    if (isImage && !(isJpeg || isPng || isWebp)) {
+      return NextResponse.json({ error: "File is not a valid image." }, { status: 400 });
+    }
+
+    // Slugify file name to defeat path traversal / HTML execution from
+    // user-supplied names.
+    const safeName = file.name
+      .replace(/[^a-zA-Z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "upload";
+    const path = `${userId}/${Date.now()}-${safeName}`;
     const { data, error } = await uploadFileToBucket({
       bucket: BUCKET,
       path,

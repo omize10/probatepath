@@ -4,7 +4,7 @@
  */
 
 import { P40Data } from '../types';
-import { formatFullName, underline, getOrdinal } from '../utils/formatters';
+import { formatFullName, formatAddress, underline, getOrdinal } from '../utils/formatters';
 
 export function generateP40HTML(data: P40Data): string {
   const affiant = data.affiant;
@@ -137,7 +137,7 @@ export function generateP40HTML(data: P40Data): string {
 
 <!-- Affiant Statement -->
 <div class="affiant-block">
-  I, <span class="field-line">${affiantName}</span>, of <span class="field-line">${data.affiant?.address ? formatFullName(data.affiant.address) : underline(40)}</span>, 
+  I, <span class="field-line">${affiantName}</span>, of <span class="field-line">${data.affiant?.address ? formatAddress(data.affiant.address) : underline(40)}</span>,
   <span class="field-line">${data.affiant?.occupation || underline(20)}</span>, SWEAR (OR AFFIRM) THAT:
 </div>
 

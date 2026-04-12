@@ -21,13 +21,60 @@ import {
 export type { EstateData as NewEstateData } from './types';
 
 // All 46 form generators mapped by ID. Every generator gets a normalized
-// payload with safe defaults so a missing applicantIndex / affidavitNumber
-// can never produce a blank "I, ____" line on a court-filed document.
-const withDefaults = (data: any) => ({
-  ...data,
-  applicantIndex: data.applicantIndex ?? 0,
-  affidavitNumber: data.affidavitNumber ?? 1,
-});
+// payload with safe defaults so a missing applicantIndex / affidavitNumber /
+// affiant alias can never produce a blank "I, ____" line on a court-filed
+// document.
+const withDefaults = (data: any) => {
+  const primaryApplicant = data.applicants?.[0] ?? null;
+  // Some templates (P38, P40, P45 etc.) read data.affiant instead of
+  // data.applicants[applicantIndex]. Map the primary applicant onto affiant
+  // so the same intake data populates either shape.
+  const affiant = data.affiant ?? (primaryApplicant ? {
+    firstName: primaryApplicant.firstName,
+    middleName: primaryApplicant.middleName,
+    lastName: primaryApplicant.lastName,
+    address: primaryApplicant.address,
+    occupation: primaryApplicant.occupation || (primaryApplicant as any).occupation,
+    organizationTitle: primaryApplicant.organizationTitle,
+  } : null);
+
+  // Stringify beneficiaries / minors / creditors so they don't render as
+  // "[object Object]" if the template prints the array directly. We keep
+  // the original arrays/objects on the data object for templates that
+  // structure them themselves.
+  const stringifyList = (val: any): string | undefined => {
+    if (val == null) return undefined;
+    if (typeof val === "string") return val;
+    if (Array.isArray(val)) {
+      return val
+        .map((item) => {
+          if (typeof item === "string") return item;
+          if (item?.fullName) return item.fullName;
+          if (item?.name) {
+            const n = item.name;
+            return [n.first, n.middle1, n.middle2, n.last].filter(Boolean).join(" ").trim();
+          }
+          if (item?.firstName || item?.lastName) {
+            return `${item.firstName ?? ""} ${item.lastName ?? ""}`.trim();
+          }
+          return "";
+        })
+        .filter(Boolean)
+        .join(", ");
+    }
+    return String(val);
+  };
+
+  return {
+    ...data,
+    applicantIndex: data.applicantIndex ?? 0,
+    affidavitNumber: data.affidavitNumber ?? 1,
+    affiant,
+    beneficiariesText: stringifyList(data.beneficiaries),
+    minorsText: stringifyList(data.minors),
+    creditorsText: stringifyList(data.creditors),
+  };
+};
 
 export const FORM_GENERATORS: Record<string, (data: NewEstateData) => Promise<Buffer>> = {
   'P1': generateP1,

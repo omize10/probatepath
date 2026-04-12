@@ -160,12 +160,12 @@ export function generateP38HTML(data: P38Data): string {
 
 <!-- Paragraph 5 -->
 <div class="paragraph">
-  5 The persons interested in the administration of the estate as beneficiaries of the deceased are as follows: <span class="field-line">${data.beneficiaries || underline(50)}</span>, and all of them are of the full age of 19 years except <span class="field-line">${data.minors || underline(35)}</span>.
+  5 The persons interested in the administration of the estate as beneficiaries of the deceased are as follows: <span class="field-line">${(data as any).beneficiariesText || underline(50)}</span>, and all of them are of the full age of 19 years except <span class="field-line">${(data as any).minorsText || underline(35)}</span>.
 </div>
 
 <!-- Paragraph 6 -->
 <div class="paragraph">
-  6 I know of no creditors of the estate who still have unsettled claims against it that I consider to be valid except <span class="field-line">${data.creditors || underline(50)}</span>.
+  6 I know of no creditors of the estate who still have unsettled claims against it that I consider to be valid except <span class="field-line">${(data as any).creditorsText || underline(50)}</span>.
 </div>
 
 <!-- Paragraph 7 -->

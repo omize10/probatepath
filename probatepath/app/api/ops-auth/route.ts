@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
-const OPS_PASSWORD = process.env.OPS_PASSWORD;
+// ⚠️ PRE-LAUNCH ONLY: falls back to "123" when OPS_PASSWORD env var is unset.
+// Set OPS_PASSWORD in Vercel before going public — that value overrides this fallback.
+const OPS_PASSWORD = process.env.OPS_PASSWORD || "123";
 
 // Per-IP rate limit for ops login attempts. 10 failed attempts per 15 minutes.
 // This is a simple in-memory map — fine for a single-instance hot path.
@@ -39,11 +41,6 @@ function recordFail(ip: string) {
 }
 
 export async function POST(request: Request) {
-  if (!OPS_PASSWORD || OPS_PASSWORD.length < 8) {
-    console.error("[ops-auth] OPS_PASSWORD env var missing or too short — refusing all logins");
-    return NextResponse.json({ ok: false, error: "Ops auth not configured" }, { status: 503 });
-  }
-
   const ip = clientIp(request);
   if (isRateLimited(ip)) {
     return NextResponse.json(

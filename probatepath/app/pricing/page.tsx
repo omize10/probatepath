@@ -34,7 +34,7 @@ const tiers = [
     href: "/create-account",
   },
   {
-    name: "Standard",
+    name: "Premium",
     price: 1499,
     description: "Most executors choose this for peace of mind",
     recommended: true,
@@ -52,12 +52,12 @@ const tiers = [
     href: "/create-account",
   },
   {
-    name: "Premium",
+    name: "White Glove",
     price: 2499,
     description: "White-glove service for complex estates",
     recommended: false,
     features: [
-      { name: "Everything in Standard", included: true },
+      { name: "Everything in Premium", included: true },
       { name: "Priority support (same-day response)", included: true },
       { name: "Dedicated case coordinator", included: true },
       { name: "Unlimited requisition assistance", included: true },
@@ -249,12 +249,12 @@ export default async function PricingPage() {
                   <th className="px-6 py-4 text-left text-sm font-semibold text-[color:var(--brand)]">Feature</th>
                   <th className="px-6 py-4 text-center text-sm font-semibold text-[color:var(--brand)]">Basic</th>
                   <th className="px-6 py-4 text-center text-sm font-semibold text-[color:var(--brand)]">
-                    Standard
+                    Premium
                     <span className="ml-2 inline-flex items-center rounded-full bg-[#f0f3f7] px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-[color:var(--brand)]">
                       Recommended
                     </span>
                   </th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-[color:var(--brand)]">Premium</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-[color:var(--brand)]">White Glove</th>
                 </tr>
               </thead>
               <tbody>

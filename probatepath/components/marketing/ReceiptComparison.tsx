@@ -433,7 +433,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
 // Main Section Component
 export function ReceiptComparison() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+  const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
 
   return (
     <section
@@ -494,10 +494,10 @@ export function ReceiptComparison() {
       />
 
       <div className="mx-auto max-w-6xl px-6 relative z-20">
-        {/* Header */}
+        {/* Header — render visible by default so section never looks empty if JS/IO stalls */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          initial={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
@@ -520,9 +520,9 @@ export function ReceiptComparison() {
 
         {/* CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 4.2, duration: 0.5 }}
+          initial={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0, duration: 0.5 }}
           className="text-center mt-16"
         >
           <Button
@@ -539,9 +539,9 @@ export function ReceiptComparison() {
 
         {/* Disclaimer */}
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ delay: 4.4 }}
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0 }}
           className="text-center text-xs mt-8 max-w-xl mx-auto"
           style={{ color: 'rgba(255,255,255,0.7)' }}
         >

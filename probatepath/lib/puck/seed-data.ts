@@ -124,7 +124,7 @@ export const seedData: Record<string, Data> = {
               ],
             },
             {
-              name: "Standard", price: 1499, description: "Most executors choose this for peace of mind",
+              name: "Premium", price: 1499, description: "Most executors choose this for peace of mind",
               recommended: true, cta: "Get started", href: "/create-account",
               features: [
                 { name: "Everything in Basic", included: true },
@@ -138,10 +138,10 @@ export const seedData: Record<string, Data> = {
               ],
             },
             {
-              name: "Premium", price: 2499, description: "White-glove service for complex estates",
+              name: "White Glove", price: 2499, description: "White-glove service for complex estates",
               recommended: false, cta: "Get started", href: "/create-account",
               features: [
-                { name: "Everything in Standard", included: true },
+                { name: "Everything in Premium", included: true },
                 { name: "Priority support (same-day response)", included: true },
                 { name: "Dedicated case coordinator", included: true },
                 { name: "Unlimited requisition assistance", included: true },
@@ -194,12 +194,12 @@ export const seedData: Record<string, Data> = {
           description: "",
           items: JSON.stringify([
             { question: "Who is ProbateDesk built for?", answer: "Executors of straightforward BC estates with a valid will, Canadian assets, and no active disputes." },
-            { question: "How much does ProbateDesk cost?", answer: "We offer three service tiers: Basic ($799), Standard ($1,499), and Premium ($2,499). Choose based on the level of support you need." },
-            { question: "What\u2019s the difference between the tiers?", answer: "Basic includes automated form generation and email support. Standard adds human document review, phone support, free notarization in Vancouver, and one requisition response. Premium includes everything plus priority same-day support and a dedicated coordinator." },
-            { question: "Can I upgrade my tier later?", answer: "Yes. If you start with Basic or Standard and need additional support, contact us and we\u2019ll adjust your service level. You\u2019ll only pay the difference." },
+            { question: "How much does ProbateDesk cost?", answer: "We offer three service tiers: Basic ($799), Premium ($1,499), and White Glove ($2,499). Choose based on the level of support you need." },
+            { question: "What\u2019s the difference between the tiers?", answer: "Basic includes automated form generation and email support. Premium adds human document review, phone support, free notarization in Vancouver, and one requisition response. White Glove includes everything plus priority same-day support and a dedicated coordinator." },
+            { question: "Can I upgrade my tier later?", answer: "Yes. If you start with Basic or Premium and need additional support, contact us and we\u2019ll adjust your service level. You\u2019ll only pay the difference." },
             { question: "Do I still need to go to court?", answer: "You submit the application yourself. We prepare forms and instructions so your filing is organised." },
             { question: "How secure is my information?", answer: "Intake responses and documents are encrypted in transit and at rest, hosted in Canada, and never sold." },
-            { question: "How quickly will I receive documents?", answer: "Standard and Basic tiers: 5-7 business days. Premium tier: 3-5 business days priority. Add Rush Processing ($299) for 48-hour delivery." },
+            { question: "How quickly will I receive documents?", answer: "Basic and Premium tiers: 5-7 business days. White Glove tier: 3-5 business days priority. Add Rush Processing ($299) for 48-hour delivery." },
             { question: "What if I need legal advice?", answer: "ProbateDesk provides document preparation and general information. For legal advice, contact independent counsel." },
             { question: "Is my data stored in Canada?", answer: "Yes\u2014Canadian cloud infrastructure." },
             { question: "How long does the overall process take?", answer: "Intake takes ~15\u201325 minutes. Wills Notice search ~20 business days. Court processing varies by registry (weeks\u2013months)." },
@@ -249,7 +249,7 @@ export const seedData: Record<string, Data> = {
           headline: "",
           cards: JSON.stringify([
             { title: "What you\u2019ll need", description: "Gather these items to breeze through intake.", bullets: ["Government-issued ID for the executor", "Original will + any codicils", "Death certificate copy", "Snapshot of assets & liabilities", "Beneficiary names and contact info"] },
-            { title: "Service tiers", description: "Choose from Basic ($799), Standard ($1,499), or Premium ($2,499) based on your needs.", bullets: ["Guided intake with autosave + reminders", "BC court forms & notices", "PDF filing instructions", "Secure Canadian data hosting", "Flexible service tiers ($799 to $2,499)"] },
+            { title: "Service tiers", description: "Choose from Basic ($799), Premium ($1,499), or White Glove ($2,499) based on your needs.", bullets: ["Guided intake with autosave + reminders", "BC court forms & notices", "PDF filing instructions", "Secure Canadian data hosting", "Flexible service tiers ($799 to $2,499)"] },
           ]),
           columns: "2",
         },

@@ -92,7 +92,7 @@ function ReceiptLine({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -10 }}
+      initial={{ opacity: 1, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay, duration: 0.3 }}
       className={`flex justify-between font-mono text-sm ${
@@ -126,7 +126,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -100, rotate: -5 }}
+      initial={{ opacity: 1, x: 0, rotate: -2 }}
       animate={
         isInView
           ? { opacity: 1, x: 0, rotate: -2 }
@@ -156,7 +156,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
         <div className="relative space-y-4 text-[color:var(--text-secondary)]">
           {/* Header */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 0.3 }}
             className="text-center border-b border-gray-300 border-dashed pb-4"
@@ -171,7 +171,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
 
           {/* Invoice info */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 0.4 }}
             className="font-mono text-xs text-[color:var(--text-tertiary)] space-y-1"
@@ -199,7 +199,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
 
           {/* Divider */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 1.8 }}
             className="border-t border-gray-300 border-dashed"
@@ -220,7 +220,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
 
           {/* Divider */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 2.2 }}
             className="border-t-2 border-gray-400"
@@ -229,7 +229,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
           {/* Total */}
           {isInView && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 1, scale: 1 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 2.3, type: "spring", stiffness: 200 }}
               className="flex justify-between font-mono text-lg font-bold"
@@ -241,7 +241,7 @@ function LawyerReceipt({ isInView }: { isInView: boolean }) {
 
           {/* Fine print */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 2.5 }}
             className="pt-2 font-mono text-[10px] text-[color:var(--text-tertiary)] space-y-0.5"
@@ -282,7 +282,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 100, scale: 0.9 }}
+      initial={{ opacity: 1, x: 0, scale: 1 }}
       animate={
         isInView
           ? { opacity: 1, x: 0, scale: 1 }
@@ -320,7 +320,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
         <div className="relative p-6 space-y-5">
           {/* Logo/Header - ProbateDesk.com */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
             transition={{ delay: 3.0 }}
             className="text-center pb-4 border-b border-[color:var(--border-subtle)]"
@@ -334,7 +334,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
 
           {/* Receipt metadata */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 3.1 }}
             className="flex justify-between items-baseline"
@@ -355,7 +355,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
 
           {/* Main item */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ delay: 3.2 }}
             className="space-y-3"
@@ -388,7 +388,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
 
           {/* Total */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 1, scale: 1 }}
             animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
             transition={{ delay: 3.4, type: "spring", stiffness: 200 }}
             className="flex justify-between items-center py-2"
@@ -399,7 +399,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
 
           {/* Paid indicator - simple checkmark style */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
             transition={{ delay: 3.6 }}
             className="flex items-center justify-center gap-2 py-3 bg-emerald-50 rounded-lg border border-emerald-100"
@@ -417,7 +417,7 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
 
           {/* Footer */}
           <motion.p
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 3.8 }}
             className="text-center text-xs text-[color:var(--text-tertiary)] pt-2"
@@ -433,7 +433,10 @@ function ProbateDeskReceipt({ isInView }: { isInView: boolean }) {
 // Main Section Component
 export function ReceiptComparison() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
+  // Fade-in plays on mount (not on scroll) so content is always visible even
+  // when IntersectionObserver stalls — previously the receipts rendered as an
+  // empty black rectangle on slow networks and headless snapshots.
+  const isInView = true;
 
   return (
     <section

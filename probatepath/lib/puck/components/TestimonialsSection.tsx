@@ -26,7 +26,15 @@ export function PuckTestimonialsSection({ eyebrow, headline, items }: Testimonia
           <h2 className="mt-3 font-serif text-3xl text-[color:var(--brand)] sm:text-4xl">{headline}</h2>
         )}
       </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div
+        className={`grid gap-6 ${
+          parsed.length >= 3
+            ? "md:grid-cols-2 lg:grid-cols-3"
+            : parsed.length === 2
+            ? "mx-auto max-w-4xl md:grid-cols-2"
+            : "mx-auto max-w-2xl"
+        }`}
+      >
         {parsed.map((item, i) => (
           <div
             key={i}

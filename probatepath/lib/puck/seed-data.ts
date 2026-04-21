@@ -50,6 +50,7 @@ export const seedData: Record<string, Data> = {
           items: JSON.stringify([
             { quote: "ProbateDesk made a stressful process manageable. Clear documents, fast turnaround.", name: "A. Thompson", role: "Vancouver executor" },
             { quote: "I was dreading probate. ProbateDesk made it straightforward.", name: "M. Chen", role: "Surrey executor" },
+            { quote: "Finished intake in one evening and had filing-ready documents the next day. Every form was correct.", name: "S. Lau", role: "Kelowna executor" },
           ]),
         },
       },
